@@ -1,0 +1,26 @@
+{
+  "name": "code-forensics",
+  "version": "1.0.0",
+  "description": "A toolset for code forensics analysis",
+  "author": "Silvio Montanari",
+  "main": "src/index.js",
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+
+  },
+  "peerDependencies": {
+    "gulp": "^3.9.1"
+  },
+  "devDependencies": {
+    "gulp-jasmine-browser": "^1.0.1",
+    "jasmine": "^2.4.1",
+    "jshint": "^2.9.1-rc2"
+  },
+  "scripts": {
+    "test": "./node_modules/jasmine/bin/jasmine.js",
+    "jshint": "./node_modules/jshint/bin/jshint.js"
+  },
+  "license": "MIT"
+}
