@@ -5,10 +5,10 @@
   "author": "Silvio Montanari",
   "main": "src/index.js",
   "files": [
-    "src"
+    "lib"
   ],
   "dependencies": {
-
+    "lodash": "^4.6.1"
   },
   "peerDependencies": {
     "gulp": "^3.9.1"
