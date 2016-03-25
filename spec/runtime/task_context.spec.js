@@ -1,10 +1,10 @@
 var _ = require('lodash');
 
-var TaskContext       = require_src('runtime/task_context').TaskContext,
-    timePeriodBuilder = require_src('time_interval/time_period_builder');
-    pp                = require_src('parallel_processing/index'),
-    repository        = require_src('runtime/repository'),
-    appConfig         = require_src('runtime/app_config');
+var TaskContext  = require_src('runtime/task_context').TaskContext,
+    timeInterval = require_src('time_interval/builder');
+    pp           = require_src('parallel_processing/index'),
+    repository   = require_src('runtime/repository'),
+    appConfig    = require_src('runtime/app_config');
 
 describe('TaskContext', function() {
   var mockPeriodBuilder;
@@ -18,7 +18,7 @@ describe('TaskContext', function() {
       {startDate: 'date1', endDate: 'date2'},
       {startDate: 'date3', endDate: 'date4'}
     ]);
-    spyOn(timePeriodBuilder, 'TimePeriodBuilder').and.returnValue(mockPeriodBuilder);
+    spyOn(timeInterval, 'Builder').and.returnValue(mockPeriodBuilder);
 
     spyOn(repository, 'RepositoryConfiguration').and.returnValue({obj: 'test-repo'});
     spyOn(pp, 'JobRunner').and.returnValue({obj: 'test-runner'});;
@@ -49,7 +49,7 @@ describe('TaskContext', function() {
 
     expect(ctx.dateRange).toEqual({startDate: 'date1', endDate: 'date4'});
 
-    expect(timePeriodBuilder.TimePeriodBuilder).toHaveBeenCalledWith('YYYY');
+    expect(timeInterval.Builder).toHaveBeenCalledWith('YYYY');
     expect(mockPeriodBuilder.from).toHaveBeenCalledWith('test-date1');
     expect(mockPeriodBuilder.to).toHaveBeenCalledWith('test-date2');
     expect(mockPeriodBuilder.split).toHaveBeenCalledWith('test-frequency');
