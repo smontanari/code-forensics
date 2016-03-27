@@ -21,7 +21,7 @@ describe('TaskContext', function() {
     spyOn(timeInterval, 'Builder').and.returnValue(mockPeriodBuilder);
 
     spyOn(repository, 'RepositoryConfiguration').and.returnValue({obj: 'test-repo'});
-    spyOn(pp, 'JobRunner').and.returnValue({obj: 'test-runner'});;
+    spyOn(pp, 'ParallelJobRunner').and.returnValue({obj: 'test-runner'});;
   });
 
   it('initialises the repository configuration', function() {
@@ -35,7 +35,7 @@ describe('TaskContext', function() {
     appConfig.maxConcurrency = 5;
     var ctx = new TaskContext({}, {});
 
-    expect(pp.JobRunner).toHaveBeenCalledWith(5);
+    expect(pp.ParallelJobRunner).toHaveBeenCalledWith(5);
     expect(ctx.jobRunner).toEqual({obj: 'test-runner'});
   });
 

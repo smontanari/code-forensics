@@ -15,5 +15,5 @@ var plugin = new JasminePlugin();
     }))
     .on('error', function(err) {console.log(err);})
     .pipe(jasmineBrowser.specRunner())
-    .pipe(jasmineBrowser.server({port: 8888}));
+    .pipe(jasmineBrowser.server({port: 8888, whenReady: plugin.whenReady}));
 });

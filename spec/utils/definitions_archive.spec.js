@@ -1,6 +1,6 @@
-var DefinitionsArchive = require_src('utils/definitions_archive');
+var DefinitionsArchive = require_src('utils/index').DefinitionsArchive;
 
-describe('DefinitionsArchive', function() {
+describe('utils/DefinitionsArchive', function() {
   it('archives definitions', function() {
     var archive = new DefinitionsArchive();
     archive.addDefinition('testD1', {obj: 'definition1'});
