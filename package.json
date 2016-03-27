@@ -8,13 +8,23 @@
     "lib"
   ],
   "dependencies": {
-    "lodash": "^4.6.1"
+    "JSONStream": "^1.1.1",
+    "chalk": "^1.1.1",
+    "fancy-log": "^1.2.0",
+    "glob": "^7.0.3",
+    "is-stream": "^1.0.1",
+    "lodash": "^4.6.1",
+    "moment": "^2.12.0",
+    "multipipe": "^0.3.0",
+    "q": "^1.4.1",
+    "string_decoder": "^0.10.31",
+    "through2": "^2.0.1",
+    "through2-map": "^2.0.0"
   },
   "peerDependencies": {
     "gulp": "^3.9.1"
   },
   "devDependencies": {
-    "gulp-jasmine-browser": "^1.0.1",
     "jasmine": "^2.4.1",
     "jshint": "^2.9.1-rc2"
   },
