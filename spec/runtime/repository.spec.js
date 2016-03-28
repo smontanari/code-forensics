@@ -4,6 +4,7 @@ var _    = require('lodash'),
 
 var RepositoryConfiguration = require_src('runtime/repository').RepositoryConfiguration,
     repositoryPath          = require_src('runtime/repository_path');
+    languages               = require_src('runtime/language_definitions');
 
 describe('RepositoryConfiguration', function() {
   it('resolves the root path', function() {
@@ -30,7 +31,7 @@ describe('RepositoryConfiguration', function() {
     expect(this.subject.allFilenames()).toEqual(['file1', 'file3']);
   });
 
-  describe('isValidPath()', function() {
+  describe('.isValidPath()', function() {
     beforeEach(function() {
       this.subject = new RepositoryConfiguration({ root: '/root/' });
       spyOn(this.subject, 'allFilenames').and.returnValue(['/root/all', '/root/filenames']);
@@ -53,19 +54,22 @@ describe('RepositoryConfiguration', function() {
     });
   });
 
-  describe('collectCodePaths()', function() {
+  describe('.collectCodePaths()', function() {
     it('returns all source code files for each defined language', function() {
+      spyOn(languages, 'getDefinition').and.returnValue(['py']);
+
       this.subject = new RepositoryConfiguration({ root: '/root/' });
       spyOn(this.subject, 'allFilenames').and.returnValue([
         'file1.js',
         'file2.txt',
-        'file3.rb',
+        'file3.py',
         'file4.rb',
-        'file5.xml',
+        'file5.py',
         'file6.js'
       ]);
 
-      expect(this.subject.collectCodePaths('javascript')).toEqual(['file1.js', 'file6.js']);
+      expect(this.subject.collectCodePaths('python')).toEqual(['file3.py', 'file5.py']);
+      expect(languages.getDefinition).toHaveBeenCalledWith('python');
     });
   });
 });

@@ -2,7 +2,7 @@ var _ = require('lodash');
 
 var TaskContext  = require_src('runtime/task_context').TaskContext,
     timeInterval = require_src('time_interval/builder');
-    pp           = require_src('parallel_processing/index'),
+    pp           = require_src('parallel_processing'),
     repository   = require_src('runtime/repository'),
     appConfig    = require_src('runtime/app_config');
 

@@ -1,7 +1,7 @@
 var stream = require('stream'),
     Q      = require('q');
 
-var utils          = require_src('utils/index'),
+var utils             = require_src('utils'),
     MultiTaskExecutor = require_src('parallel_processing/multitask_executor');
 
 describe('MultiTaskExecutor', function() {

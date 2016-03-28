@@ -19,17 +19,17 @@ describe('MultiStreamCollector', function() {
       addJob: function(fn) { fn(); }
     });
 
+    finalStream.pipe(reduce(function(data, chunk) { return data + chunk; }, ""))
+    .on('data', function(s) {
+      expect(s.toString()).toEqual('data-0 data-1 data-1 data-0 ');
+    })
+    .on('end', done);
+
     this.streams[0].write('data-0 ');
     this.streams[1].write('data-1 ');
     this.streams[1].write('data-1 ');
     this.streams[0].write('data-0 ');
     this.streams[0].end();
     this.streams[1].end();
-
-    finalStream.pipe(reduce(function(data, chunk) { return data + chunk; }, ""))
-    .on('data', function(s) {
-      expect(s.toString()).toEqual('data-0 data-1 data-1 data-0 ');
-    })
-    .on('end', done);
   });
 });

@@ -3,7 +3,7 @@ var repositoryPath = require_src('runtime/repository_path'),
 
 describe('repositoryPath', function() {
   beforeEach(function() {
-    fs.statSync = jasmine.createSpy();
+    spyOn(fs, 'statSync');
   });
 
   describe('makeGlob()', function() {

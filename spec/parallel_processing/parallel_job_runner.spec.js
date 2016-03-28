@@ -10,7 +10,7 @@ describe('ParallelJobRunner', function() {
     }).promise;
   };
 
-  describe('addJob', function() {
+  describe('.addJob()', function() {
     it('starts executing the added job if not other job in the queue', function() {
       var runner = new ParallelJobRunner();
       var jobFn = jasmine.createSpy('jobFn').and.returnValue(Q());

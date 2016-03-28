@@ -2,12 +2,12 @@ var fs     = require('fs')
     _      = require('lodash'),
     stream = require('stream');
 
-var streamUtils = require_src('utils/index').stream;
+var streamUtils = require_src('utils').stream;
 
 describe('utils/stream', function() {
-  describe('parseFileToObjectStream()', function() {
+  describe('.parseFileToObjectStream()', function() {
     beforeEach(function() {
-      fs.readFile = jasmine.createSpy('readFile').and.callFake(function(file, callback) {
+      spyOn(fs, 'readFile').and.callFake(function(file, callback) {
         _.delay(function() { callback(null, 'test-file-content'); }, 100);
       });
     });
@@ -37,7 +37,7 @@ describe('utils/stream', function() {
     });
   });
 
-  describe('reduceToObjectStream()', function() {
+  describe('.reduceToObjectStream()', function() {
     describe('when the parsed stream is an object', function() {
       it('streams through the object', function(done) {
         var input = new stream.PassThrough();
@@ -74,7 +74,7 @@ describe('utils/stream', function() {
     });
   });
 
-  describe('streamToPromise()', function() {
+  describe('.streamToPromise()', function() {
     describe('with a readable stream', function() {
       it('returns a promise that completes when the stream ends', function(done) {
         var completed = false;

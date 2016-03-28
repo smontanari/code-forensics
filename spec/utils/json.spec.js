@@ -3,7 +3,7 @@ var fs     = require('fs'),
 
 var json = require_src('utils').json;
 
-describe('json', function() {
+describe('utils/json', function() {
   describe('.parseFile()', function() {
     beforeEach(function() {
       spyOn(fs, 'readFile').and.callFake(function(file, callback) {

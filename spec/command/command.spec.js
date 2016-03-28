@@ -1,11 +1,20 @@
 var childProcess = require('child_process'),
     stream       = require('stream');
 
-var command = require_src('command/index');
+var command = require_src('command'),
+    cmdDefinitions = require_src('command/command_definitions');
 
 describe('command', function() {
   beforeEach(function() {
+    spyOn(cmdDefinitions, 'getDefinition').and.returnValue({
+      cmd: 'path/to/executable',
+      args: ['--param1', '--param2', '-a', '-b']
+    });
     spyOn(process.stderr, 'write');
+  });
+
+  afterEach(function() {
+    expect(cmdDefinitions.getDefinition).toHaveBeenCalledWith('test-command');
   });
 
   describe('.run()', function() {
@@ -15,13 +24,12 @@ describe('command', function() {
         stderr: 'test err'
       });
 
-      this.cmdOutput = command.run('gitlog_analysis', ['arg1', 'arg2'], {opt1: 123, opt2: 'abc'});
+      this.cmdOutput = command.run('test-command', ['arg1', 'arg2'], {opt1: 123, opt2: 'abc'});
     });
 
     it('spawns the process with the expected parameters', function() {
-      expect(childProcess.spawnSync).toHaveBeenCalledWith('git', [
-        'log', '--all', '-M', '-C', '--numstat', '--date=short', '--no-renames',
-        '--pretty=format:--%h--%ad--%an', 'arg1', 'arg2'
+      expect(childProcess.spawnSync).toHaveBeenCalledWith('path/to/executable', [
+        '--param1', '--param2', '-a', '-b', 'arg1', 'arg2'
       ], { opt1: 123, opt2: 'abc' });
     });
 
@@ -44,13 +52,12 @@ describe('command', function() {
       spawnOutput.stderr.push(null);
       spyOn(spawnOutput.stderr, 'pipe');
 
-      this.cmdStream = command.stream('gitlog_analysis', ['arg1', 'arg2'], {opt1: 123, opt2: 'abc'});
+      this.cmdStream = command.stream('test-command', ['arg1', 'arg2'], {opt1: 123, opt2: 'abc'});
     });
 
     it('spawns the process with the expected parameters', function() {
-      expect(childProcess.spawn).toHaveBeenCalledWith('git', [
-        'log', '--all', '-M', '-C', '--numstat', '--date=short', '--no-renames', '--pretty=format:--%h--%ad--%an',
-        'arg1', 'arg2'
+      expect(childProcess.spawn).toHaveBeenCalledWith('path/to/executable', [
+        '--param1', '--param2', '-a', '-b', 'arg1', 'arg2'
       ], { opt1: 123, opt2: 'abc' });
     });
 
@@ -67,22 +74,20 @@ describe('command', function() {
     it('returns a synchronous child process', function() {
       spyOn(childProcess, 'spawnSync').and.returnValue('sync process');
 
-      var proc = command.create('gitlog_analysis', ['arg1', 'arg2'], {opt1: 123, opt2: 'abc'}).syncProcess();
+      var proc = command.create('test-command', ['arg1', 'arg2'], {opt1: 123, opt2: 'abc'}).syncProcess();
       expect(proc).toEqual('sync process');
-      expect(childProcess.spawnSync).toHaveBeenCalledWith('git', [
-        'log', '--all', '-M', '-C', '--numstat', '--date=short', '--no-renames',
-        '--pretty=format:--%h--%ad--%an', 'arg1', 'arg2'
+      expect(childProcess.spawnSync).toHaveBeenCalledWith('path/to/executable', [
+        '--param1', '--param2', '-a', '-b', 'arg1', 'arg2'
       ], { opt1: 123, opt2: 'abc' });
     });
 
     it('returns an asynchronous child process', function() {
       spyOn(childProcess, 'spawn').and.returnValue('async process');
 
-      var proc = command.create('gitlog_analysis', ['arg1', 'arg2'], {opt1: 123, opt2: 'abc'}).asyncProcess();
+      var proc = command.create('test-command', ['arg1', 'arg2'], {opt1: 123, opt2: 'abc'}).asyncProcess();
       expect(proc).toEqual('async process');
-      expect(childProcess.spawn).toHaveBeenCalledWith('git', [
-        'log', '--all', '-M', '-C', '--numstat', '--date=short', '--no-renames',
-        '--pretty=format:--%h--%ad--%an', 'arg1', 'arg2'
+      expect(childProcess.spawn).toHaveBeenCalledWith('path/to/executable', [
+        '--param1', '--param2', '-a', '-b', 'arg1', 'arg2'
       ], { opt1: 123, opt2: 'abc' });
     });
   });
