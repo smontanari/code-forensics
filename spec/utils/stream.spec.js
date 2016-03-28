@@ -6,7 +6,7 @@ var streamUtils = require_src('utils').stream;
 
 describe('utils', function() {
   describe('stream', function() {
-    describe('.parseFileToObjectStream()', function() {
+    describe('.readFileToObjectStream()', function() {
       beforeEach(function() {
         spyOn(fs, 'readFile').and.callFake(function(file, callback) {
           _.delay(function() { callback(null, 'test-file-content'); }, 100);
@@ -15,7 +15,7 @@ describe('utils', function() {
 
       describe('when the parsed content is an object', function() {
         it('streams the object through', function(done) {
-          streamUtils.parseFileToObjectStream('test/file', function(data) {
+          streamUtils.readFileToObjectStream('test/file', function(data) {
             return { obj: data };
           })
           .on('data', function(obj) {
@@ -28,7 +28,7 @@ describe('utils', function() {
       describe('when the parsed content is not an object', function() {
         it('returns an empty stream', function(done) {
           var data = null;
-          streamUtils.parseFileToObjectStream('test/file', function() {})
+          streamUtils.readFileToObjectStream('test/file', function() {})
           .on('data', function(obj) { data = obj; })
           .once('end', function() {
             expect(data).toBeNull();

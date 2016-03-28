@@ -11,6 +11,8 @@
   "dependencies": {
     "JSONStream": "^1.1.1",
     "chalk": "^1.1.1",
+    "escomplex": "^2.0.0-alpha",
+    "esprima": "^2.7.2",
     "fancy-log": "^1.2.0",
     "glob": "^7.0.3",
     "is-stream": "^1.0.1",
