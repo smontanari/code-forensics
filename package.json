@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "A toolset for code forensics analysis",
   "author": "Silvio Montanari",
-  "main": "src/index.js",
+  "main": "lib/index.js",
   "files": [
-    "lib"
+    "lib",
+    "scripts"
   ],
   "dependencies": {
     "JSONStream": "^1.1.1",
@@ -14,6 +15,7 @@
     "glob": "^7.0.3",
     "is-stream": "^1.0.1",
     "lodash": "^4.6.1",
+    "minimist": "^1.2.0",
     "moment": "^2.12.0",
     "multipipe": "^0.3.0",
     "q": "^1.4.1",
@@ -26,10 +28,11 @@
   },
   "devDependencies": {
     "jasmine": "^2.4.1",
+    "jasmine-spec-reporter": "^2.4.0",
     "jshint": "^2.9.1-rc2"
   },
   "scripts": {
-    "test": "./node_modules/jasmine/bin/jasmine.js",
+    "test": "./scripts/jasmine-runner.js",
     "jshint": "./node_modules/jshint/bin/jshint.js"
   },
   "license": "MIT"
