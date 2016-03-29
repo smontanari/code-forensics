@@ -11,6 +11,7 @@
   "dependencies": {
     "JSONStream": "^1.1.1",
     "chalk": "^1.1.1",
+    "duplexer2": "^0.1.4",
     "escomplex": "^2.0.0-alpha",
     "esprima": "^2.7.2",
     "fancy-log": "^1.2.0",
@@ -23,7 +24,8 @@
     "q": "^1.4.1",
     "string_decoder": "^0.10.31",
     "through2": "^2.0.1",
-    "through2-map": "^2.0.0"
+    "through2-map": "^2.0.0",
+    "through2-reduce": "^1.1.1"
   },
   "peerDependencies": {
     "gulp": "^3.9.1"
