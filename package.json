@@ -11,6 +11,7 @@
   "dependencies": {
     "JSONStream": "^1.1.1",
     "chalk": "^1.1.1",
+    "csv": "^0.4.6",
     "duplexer2": "^0.1.4",
     "escomplex": "^2.0.0-alpha",
     "esprima": "^2.7.2",
