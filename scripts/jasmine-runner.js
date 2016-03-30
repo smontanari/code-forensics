@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 var path           = require('path'),
-    Jasmine        = require('jasmine');
+    Jasmine        = require('jasmine'),
     JasmineCommand = require('jasmine/lib/command'),
     SpecReporter   = require('jasmine-spec-reporter');
 

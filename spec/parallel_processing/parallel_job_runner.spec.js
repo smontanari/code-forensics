@@ -35,7 +35,7 @@ describe('parallel_processing', function() {
         _.delay(function() {
           expect(job3).toHaveBeenCalled();
           done();
-        }, 350)
+        }, 350);
       });
     });
   });

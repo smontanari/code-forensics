@@ -38,7 +38,7 @@
   },
   "scripts": {
     "test": "./scripts/jasmine-runner.js",
-    "jshint": "./node_modules/jshint/bin/jshint"
+    "jshint": "./node_modules/jshint/bin/jshint lib spec scripts"
   },
   "license": "MIT"
 }

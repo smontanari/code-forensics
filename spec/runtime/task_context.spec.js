@@ -1,7 +1,7 @@
 var _ = require('lodash');
 
 var TaskContext  = require_src('runtime/task_context').TaskContext,
-    timeInterval = require_src('time_interval/builder');
+    timeInterval = require_src('time_interval/builder'),
     pp           = require_src('parallel_processing'),
     repository   = require_src('runtime/repository'),
     appConfig    = require_src('runtime/app_config');
@@ -22,7 +22,7 @@ describe('runtime', function() {
       spyOn(timeInterval, 'Builder').and.returnValue(mockPeriodBuilder);
 
       spyOn(repository, 'RepositoryConfiguration').and.returnValue({obj: 'test-repo'});
-      spyOn(pp, 'ParallelJobRunner').and.returnValue({obj: 'test-runner'});;
+      spyOn(pp, 'ParallelJobRunner').and.returnValue({obj: 'test-runner'});
     });
 
     it('initialises the repository configuration', function() {

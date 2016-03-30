@@ -10,7 +10,7 @@ describe('time_interval', function() {
 
     it('does not split', function() {
       var subject = new TimeSplitter(moment('2014-01-01'), moment('2016-01-01'));
-      expect(subject.split()).toEqual([{start: moment('2014-01-01'), end: moment('2016-01-01')}])
+      expect(subject.split()).toEqual([{start: moment('2014-01-01'), end: moment('2016-01-01')}]);
     });
 
     it('splits by year', function() {
