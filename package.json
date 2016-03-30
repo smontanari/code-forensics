@@ -10,6 +10,7 @@
   ],
   "dependencies": {
     "JSONStream": "^1.1.1",
+    "byline": "^4.2.1",
     "chalk": "^1.1.1",
     "csv": "^0.4.6",
     "duplexer2": "^0.1.4",
@@ -26,6 +27,7 @@
     "sloc": "^0.1.10",
     "string_decoder": "^0.10.31",
     "through2": "^2.0.1",
+    "through2-filter": "^2.0.0",
     "through2-map": "^2.0.0",
     "through2-reduce": "^1.1.1"
   },
