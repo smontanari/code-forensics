@@ -41,7 +41,7 @@ describe('Tree', function() {
     this.subject = new tree.Tree('root/path', 'path');
   });
 
-  describe('.addNode', function() {
+  describe('.addNode()', function() {
     var childNode;
 
     beforeEach(function() {
