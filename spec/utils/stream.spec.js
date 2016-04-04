@@ -92,65 +92,70 @@ describe('utils.stream', function() {
 
   describe('.streamToPromise()', function() {
     describe('with a readable stream', function() {
+      beforeEach(function() {
+        this.inputStream = new stream.Readable({read: _.noop});
+      });
+
       it('returns a promise that completes when the stream ends', function(done) {
         var completed = false;
-        var readable = new stream.PassThrough();
-        readable.on('end', function() { completed = true; });
+        this.inputStream.on('end', function() { completed = true; });
 
-        streamUtils.streamToPromise(readable).then(function() {
+        streamUtils.streamToPromise(this.inputStream).then(function() {
           expect(completed).toBe(true);
           done();
         });
 
-        readable.resume();
-        readable.push('something');
-        readable.push(null);
+        this.inputStream.resume();
+        this.inputStream.push('something');
+        this.inputStream.push(null);
       });
 
       it('returns a promise that fails when the stream emits an error', function(done) {
-        var readable = new stream.PassThrough();
-        streamUtils.streamToPromise(readable).catch(function(err) {
+        streamUtils.streamToPromise(this.inputStream).catch(function(err) {
           expect(err.message).toEqual('Something went wrong');
           done();
         });
 
-        readable.push('something');
-        readable.emit('error', new Error('Something went wrong'));
+        this.inputStream.push('something');
+        this.inputStream.emit('error', new Error('Something went wrong'));
       });
     });
 
     describe('with a writable stream', function() {
+      beforeEach(function() {
+        this.inputStream = new stream.Writable({write: function(c, e, cb) {
+          cb();
+        }});
+      });
+
       it('returns a promise that completes when the stream finishes', function(done) {
         var completed = false;
-        var writable = new stream.PassThrough();
-        writable.on('finish', function() { completed = true; });
+        this.inputStream.on('finish', function() { completed = true; });
 
-        streamUtils.streamToPromise(writable).then(function() {
+        streamUtils.streamToPromise(this.inputStream).then(function() {
           expect(completed).toBe(true);
           done();
         });
 
-        writable.write('something');
-        writable.end();
+        this.inputStream.write('something');
+        this.inputStream.end();
       });
 
       it('returns a promise that fails when the stream emits an error', function(done) {
-        var writable = new stream.PassThrough();
-
-        streamUtils.streamToPromise(writable).catch(function(err) {
+        streamUtils.streamToPromise(this.inputStream).catch(function(err) {
           expect(err.message).toEqual('Something went wrong');
           done();
         });
 
-        writable.write('something');
-        writable.emit('error', new Error('Something went wrong'));
+        this.inputStream.write('something');
+        this.inputStream.emit('error', new Error('Something went wrong'));
       });
     });
 
     describe('with an invalid stream', function() {
       it('returns a promise that fails', function() {
-        streamUtils.streamToPromise("not really a stream").catch(function(err) {
-          expect(err.message).toEqual('Not a valid stream');
+        streamUtils.streamToPromise('not really a stream').catch(function(err) {
+          expect(err.message).toEqual('Not a stream');
           done();
         });
       });
