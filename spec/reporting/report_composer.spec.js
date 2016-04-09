@@ -1,5 +1,4 @@
-var fs = require('fs'),
-    Q  = require('q'),
+var Q  = require('q'),
     stream = require('stream');
 
 var ReportComposer = require_src('reporting/report_composer'),
@@ -23,7 +22,7 @@ describe('ReportComposer', function() {
 
   describe('when initialised with a json file', function() {
     it('builds a report from the file data', function(done) {
-      spyOn(fs, 'statSync').and.returnValue({ isFile: function() { return true; }});
+      spyOn(utils.fileSystem, 'isFile').and.returnValue(true);
       spyOn(utils.json, 'parseFile').and.returnValue(
         Q([{ a: 123, b: "zxc" },{ a: 456, b: "vbn" }])
       );
@@ -33,7 +32,7 @@ describe('ReportComposer', function() {
           { a: 123, b: "zxc" },
           { a: 456, b: "vbn" }
         ]);
-        expect(fs.statSync).toHaveBeenCalledWith('test/file.json');
+        expect(utils.fileSystem.isFile).toHaveBeenCalledWith('test/file.json');
         expect(utils.json.parseFile).toHaveBeenCalledWith('test/file.json');
         done();
       });
@@ -60,7 +59,7 @@ describe('ReportComposer', function() {
   describe('when merging multiple reports', function() {
     it('builds a report from the merged data sources', function(done) {
       var matchFn = function(d1, d2) { return d1.a === d2.a; };
-      spyOn(fs, 'statSync').and.returnValue({ isFile: function() { return true; }});
+      spyOn(utils.fileSystem, 'isFile').and.returnValue(true);
       spyOn(utils.json, 'parseFile').and.returnValue(
         Q([{ a: 123, c: "XXX" }, { a: 456, c: "YYY" }, { a: 789, c: 'ZZZ' }])
       );
@@ -77,7 +76,7 @@ describe('ReportComposer', function() {
           { a: 123, b: "zxc", c: 'XXX', d: { d1: 111, d2: 222 } },
           { a: 456, b: "vbn", c: 'YYY', d: { d1: 333, d2: 444 } },
         ]);
-        expect(fs.statSync).toHaveBeenCalledWith('test/file.json');
+        expect(utils.fileSystem.isFile).toHaveBeenCalledWith('test/file.json');
         expect(utils.json.parseFile).toHaveBeenCalledWith('test/file.json');
         done();
       });
@@ -90,9 +89,10 @@ describe('ReportComposer', function() {
   });
 
   it('fails if initialised with an invalid data source', function(done) {
-    spyOn(fs, 'statSync').and.returnValue({ isFile: function() { return false; }});
+    spyOn(utils.fileSystem, 'isFile').and.returnValue(false);
     new ReportComposer('some invalid thing').buildReport().catch(function(err) {
       expect(err.message).toEqual('Invalid report source data: some invalid thing');
+      expect(utils.fileSystem.isFile).toHaveBeenCalledWith('some invalid thing');
       done();
     });
   });
