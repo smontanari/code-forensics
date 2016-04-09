@@ -22,7 +22,7 @@ describe('FlogAnalyser', function() {
       this.subject.fileAnalysisStream('test/file')
       .on('data', function(data) {
         expect(command.stream).toHaveBeenCalledWith('flog', ['test/file']);
-        expect(data).toEqual({ flog: 'complexity report' });
+        expect(data).toEqual({ path: 'test/file', flog: 'complexity report' });
       })
       .on('finish', done);
 
@@ -46,10 +46,10 @@ describe('FlogAnalyser', function() {
       });
 
       var inputStream = new stream.PassThrough();
-      inputStream.pipe(this.subject.sourceAnalysisStream())
+      inputStream.pipe(this.subject.sourceAnalysisStream('test/file'))
       .on('data', function(data) {
         expect(command.create).toHaveBeenCalledWith('flog', []);
-        expect(data).toEqual({ flog: 'complexity report' });
+        expect(data).toEqual({ path: 'test/file', flog: 'complexity report' });
       })
       .on('end', done);
 

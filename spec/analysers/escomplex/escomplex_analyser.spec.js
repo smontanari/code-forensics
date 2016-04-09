@@ -27,6 +27,7 @@ describe('ESComplexAnalyser', function() {
       this.subject.fileAnalysisStream('test/file.js')
       .on('data', function(report) {
         expect(report).toEqual({
+          path: 'test/file.js',
           totalComplexity: 123,
           averageComplexity: 622.5,
           methodComplexity: [
@@ -48,6 +49,7 @@ describe('ESComplexAnalyser', function() {
       inputStream.pipe(this.subject.sourceAnalysisStream('test/file.js'))
       .on('data', function(report) {
         expect(report).toEqual({
+          path: 'test/file.js',
           totalComplexity: 123,
           averageComplexity: 622.5,
           methodComplexity: [
