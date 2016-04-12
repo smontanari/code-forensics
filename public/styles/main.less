@@ -1,0 +1,133 @@
+body {
+  font: 10px sans-serif;
+}
+
+.circle-packing {
+  .node {
+    cursor: pointer;
+    &:hover {
+      stroke: #000;
+      stroke-width: 1.5px;
+    }
+    &.node--root {
+      stroke: #777;
+      stroke-width: 2px;
+    }
+    &.node--leaf {
+      fill: white;
+      stroke: #777;
+      stroke-width: 1px;
+    }
+  }
+
+  .label {
+    font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
+    text-anchor: middle;
+    &.label-parent {
+      fill: #04F;
+      font-weight: bold;
+      text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
+    }
+    &.label--light {
+      fill: #000;
+      text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
+    }
+    &.label--heavy {
+      fill: #FFF;
+      text-shadow: 0 1px 0 #000, 1px 0 0 #000, -1px 0 0 #000, 0 -1px 0 #000;
+    }
+  }
+
+
+
+  .label,
+  .node--root,
+  .node--leaf {
+    pointer-events: none;
+  }
+}
+
+.line-chart {
+  .axis path,
+  .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+  }
+
+  .line {
+    fill: none;
+    stroke-width: 2px;
+  }
+}
+
+.bar-chart {
+  .axis {
+    path, line {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+  }
+}
+
+#container {
+  margin: 0 auto;
+  width: 1250px;
+
+  input.graph-selector {
+    height: 2.5em;
+    visibility: hidden;
+    &:checked + label {
+      color: #FFF;
+      background-color: steelblue;
+    }
+  }
+
+  label {
+    background-color: #f9f9f9;
+    border-radius: .25em .25em 0 0;
+    color: #000;
+    cursor: pointer;
+    display: block;
+    float: left;
+    font-size: 1.2em;
+    height: 2.5em;
+    line-height: 2.5em;
+    margin-right: .25em;
+    padding: 0 1.5em;
+    text-align: center;
+    &:hover {
+      background-color: #ddd;
+      color: #666;
+    }
+  }
+}
+
+#content {
+  background-color: #f1f1f1;
+  border: 1px solid #C0C0C0;
+  position: relative;
+  z-index: 5;
+
+  div.graph-container {
+    padding: 1.5em;
+    position: absolute;
+    opacity: 0;
+    z-index: -100;
+    display: flex;
+    &.showing {
+      opacity: 1;
+      z-index: 100;
+    }
+    .graph {
+      line-chart-diagram, circle-packing-diagram,bar-chart-diagram {
+        border: solid 1px #A0A0A0;
+      }
+      margin: 0 10px;
+    }
+    .controls {
+
+    }
+  }
+}

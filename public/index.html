@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+  <link rel="stylesheet/less" media="screen, projection" type="text/css" href="styles/main.less" />
+</head>
+<body>
+
+<div id="container">
+  <h1 data-bind="text: title"></h1>
+  <h2 data-bind="text: description"></h2>
+  <!-- ko foreach: graphModels -->
+  <input class="graph-selector" data-bind="attr: {name: id, checked: isVisible}" type="radio" />
+  <label data-bind="text: label, attr: {for: id}, click: $root.controller.selectGraph"></label>
+  <!-- /ko -->
+  <span/>
+  <div id="content">
+    <!-- ko foreach: graphModels -->
+    <div class="graph-container" data-bind="attr: {id: id}, css: {showing: isVisible}">
+      <div class="graph" data-bind="css: diagramType"></div>
+      <div class="controls" data-bind="if: controlsTemplate">
+        <div data-bind="template: {name: controlsTemplate}"></div>
+      </div>
+    </div>
+    <!-- /ko -->
+  </div>
+</div>
+
+<script src="/lib/less/dist/less.min.js"></script>
+<script src="/lib/lodash/lodash.js"></script>
+<script src="/lib/knockout/build/output/knockout-latest.js"></script>
+<script src="/lib/d3/d3.min.js"></script>
+<script src="/lib/d3-cloud/build/d3.layout.cloud.js"></script>
+<script src="javascript/ViewModel.js"></script>
+<script src="javascript/GraphController.js"></script>
+<script src="javascript/GraphModel.js"></script>
+<script src="javascript/diagrams/CirclePackingDiagram.js"></script>
+<script src="javascript/diagrams/LineChartDiagram.js"></script>
+<script src="javascript/diagrams/BarChartDiagram.js"></script>
+<script src="javascript/diagrams/WordCloudDiagram.js"></script>
+<script src="javascript/graph-types/complexity-trend.js"></script>
+<script src="javascript/graph-types/hotspot-analysis.js"></script>
+<script src="javascript/graph-types/temporal-coupling.js"></script>
+<script src="javascript/graph-types/system-code-evolution.js"></script>
+<script src="javascript/graph-types/commit-cloud.js"></script>
+
+<script type="text/html" id="size-range-control-template">
+  <h2>Controls</h2>
+  <p>Size threshold: <input type="text" data-bind="textInput: diagram.visibilityThreshold"/></p>
+</script>
+
+<script>
+(function() {
+  var QueryParameter = function() { this.values = []; };
+  QueryParameter.prototype.addValue = function(v) { this.values.push(decodeURIComponent(v)); };
+  QueryParameter.prototype.getValue = function() { return this.values[0]; };
+  QueryParameter.prototype.getValues = function() { return this.values; };
+
+  var urlParameters = {};
+  var queryString = document.location.search.substr(1);
+  _.each(queryString.split('&'), function(s){
+    var nameValuePair = s.split('=');
+    var paramName = nameValuePair[0];
+    if (_.isUndefined(urlParameters[paramName])) {
+      urlParameters[paramName] = new QueryParameter();
+    }
+    urlParameters[paramName].addValue(nameValuePair[1]);
+  });
+
+  var viewModel = new CodeForensics.ViewModel(urlParameters);
+  ko.applyBindings(viewModel);
+  window.viewModel = viewModel;
+})();
+</script>
+</body>
+</html>
