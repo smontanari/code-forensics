@@ -8,7 +8,7 @@ describe('MultiTaskExecutor', function() {
   beforeEach(function() {
     this.subject = new MultiTaskExecutor({
       addJob: function(fn) { fn(); }
-    })
+    });
   });
 
   describe('when processing simple functions or simple values', function() {

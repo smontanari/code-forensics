@@ -48,7 +48,7 @@ describe('utils.stream', function() {
         .on('error', function(err) {
           expect(err.message).toEqual('Something went wrong');
           done();
-        })
+        });
       });
     });
   });

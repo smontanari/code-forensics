@@ -38,7 +38,7 @@ describe('TreeNode', function() {
 
 describe('Tree', function() {
   beforeEach(function() {
-    this.subject = new tree.Tree('root/path', 'path');
+    this.subject = new tree.Tree('/root/path', 'path');
   });
 
   describe('.addNode()', function() {
@@ -46,10 +46,14 @@ describe('Tree', function() {
 
     beforeEach(function() {
       childNode = this.subject.addNode({
-        path: 'branch/child',
+        path: '/root/path/branch/child',
         stringProperty: 'test-property',
         numberProperty: 123
       });
+    });
+
+    it('has a root node with empty name', function() {
+      expect(this.subject.rootNode.name).toBeUndefined();
     });
 
     it('returns the child node', function() {
@@ -67,7 +71,7 @@ describe('Tree', function() {
 
     it('adds another child node', function() {
       var node = this.subject.addNode({
-        path: 'branch/child/anotherChild',
+        path: '/root/path/branch/child/anotherChild',
         booleanProperty: true,
         numberProperty: 456
       });

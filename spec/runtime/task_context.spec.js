@@ -47,7 +47,7 @@ describe('TaskContext', function() {
       {startDate: 'date3', endDate: 'date4'}
     ]);
 
-    expect(ctx.dateRange).toEqual({startDate: 'date1', endDate: 'date4'});
+    expect(ctx.dateRange.toString()).toEqual('date1_date4');
 
     expect(timeInterval.Builder).toHaveBeenCalledWith('YYYY');
     expect(mockPeriodBuilder.from).toHaveBeenCalledWith('test-date1');
