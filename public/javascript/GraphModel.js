@@ -5,18 +5,21 @@ var CodeForensics = (function(module) {
     });
   };
 
-  module.GraphModel = function(config) {
+  module.GraphModel = function(diagramConfig) {
     var self = this;
-    this.id = config.id;
-    this.label = config.label;
-    this.diagramType = dasherize(config.diagramClass);
-    this.isVisible = ko.observable(false);
-    this.diagram = new Diagrams[config.diagramClass]("#" + config.id + " .graph", _.pick(config, "style", "series"));;
+    this.id = diagramConfig.id;
+    this.label = diagramConfig.label;
+    this.diagramType = dasherize(diagramConfig.diagramClass);
+    this.isSelected = ko.observable(false);
+    this.diagram = new Diagrams[diagramConfig.diagramClass]("#" + diagramConfig.id + " .graph", _.pick(diagramConfig, "style", "series"));;
 
     this.populate = function() {
-      d3.json(config.url, function(error, series) {
-        self.diagram.draw((config.transformData || _.identity).call(null, series));
+      var deferred = Q.defer();
+      d3.json(diagramConfig.url, function(error, series) {
+        self.diagram.onData((diagramConfig.transformData || _.identity).call(null, series));
+        deferred.resolve();
       });
+      return deferred.promise;
     };
   };
 

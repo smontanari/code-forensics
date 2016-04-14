@@ -37,16 +37,16 @@ var Diagrams = (function(module) {
 
     var nodeFill = function(node) {
       if (nodeHiglighted(node)) { return styleConfig.nodeHighlight.color; }
-      return node.weight > 0.0 ? styleConfig.colorValues.weightColor : node.children ? color(node.depth) : styleConfig.colorValues.noColor;
+      return node[seriesConfig.weightProperty] > 0.0 ? styleConfig.colorValues.weightColor : node.children ? color(node.depth) : styleConfig.colorValues.noColor;
     };
 
     var nodeOpacity = function(node) {
       if (nodeHiglighted(node)) { return 1; }
-      return node.weight;
+      return node[seriesConfig.weightProperty];
     };
 
     var nodeVisible = function(node) {
-      return nodeHiglighted(node) || node.weight > 0 || node.value >= self.visibilityThreshold();
+      return nodeHiglighted(node) || node[seriesConfig.weightProperty] > 0 || node.value >= self.visibilityThreshold();
     };
 
     var zoom = function(f, d, i) {
@@ -82,7 +82,7 @@ var Diagrams = (function(module) {
       elements.filter("text").style("display", function(d) { return nodeVisible(d) ? "inline" : "none"; });
     });
 
-    this.draw = function(data) {
+    var draw = function(data) {
       var svg = d3.select(svgContainerSelector).append("svg");
       svg.attr("class", "circle-packing")
       .attr("width", outerDiameter)
@@ -116,7 +116,7 @@ var Diagrams = (function(module) {
           if (d.children) {
             labelClasses.push('label-parent');
           } else {
-            labelClasses.push((d.weight > 0.4 ? "label--heavy" : "label--light"));
+            labelClasses.push((d[seriesConfig.weightProperty] > 0.4 ? "label--heavy" : "label--light"));
           }
           return labelClasses.join(' ');
         })
@@ -126,6 +126,14 @@ var Diagrams = (function(module) {
         .text(function(d) { return nodeVisible(d) ? d.name : null; });
 
       d3.select(svgContainerSelector).on("click", function() { currentFocus = zoom(currentFocus, rootNode); });
+    };
+
+    this.onData = function(data) {
+      try {
+        draw(data);
+      } catch(e) {
+        console.log(e);
+      }
     };
   };
 

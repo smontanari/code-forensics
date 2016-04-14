@@ -10,7 +10,7 @@
     "scripts"
   ],
   "bin": {
-    "cs-setup": "./scripts/setup.js"
+    "cf-check": "./scripts/language_support.js"
   },
   "dependencies": {
     "JSONStream": "^1.1.1",
@@ -37,6 +37,7 @@
     "multipipe": "^0.3.0",
     "multistream": "^2.0.5",
     "q": "^1.4.1",
+    "shelljs": "^0.6.0",
     "sloc": "^0.1.10",
     "string_decoder": "^0.10.31",
     "through2": "^2.0.1",
