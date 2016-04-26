@@ -5,42 +5,27 @@ var CodeForensics = (function(module) {
     });
   };
 
-  module.GraphModel = function(diagramConfig) {
+  module.GraphModel = function(graphConfig) {
     var self = this;
-    this.id = diagramConfig.id;
-    this.label = diagramConfig.label;
-    this.diagramType = dasherize(diagramConfig.diagramClass);
+    this.id = graphConfig.id;
+    this.label = graphConfig.label;
+    this.diagramType = dasherize(graphConfig.diagram.type);
     this.isSelected = ko.observable(false);
-    this.diagram = new Diagrams[diagramConfig.diagramClass]("#" + diagramConfig.id + " .graph", _.pick(diagramConfig, "style", "series"));;
+    this.controlsTemplateId = graphConfig.controlsTemplateId;
+    this.diagram = new Diagrams[graphConfig.diagram.type]('#' + graphConfig.id + ' .graph', _.pick(graphConfig.diagram, 'style', 'series', 'filters'));
 
     this.populate = function() {
       var deferred = Q.defer();
-      d3.json(diagramConfig.url, function(error, series) {
-        self.diagram.onData((diagramConfig.transformData || _.identity).call(null, series));
+      d3.json(graphConfig.url, function(error, series) {
+        self.diagram.onData((graphConfig.transformData || _.identity).call(null, series));
         deferred.resolve();
       });
       return deferred.promise;
     };
   };
 
-  var graphExtensions = {
-    LineChartDiagram: {
-      controlsTemplate: null
-    },
-    BarChartDiagram: {
-      controlsTemplate: null
-    },
-    WordCloudDiagram: {
-      controlsTemplate: null
-    },
-    CirclePackingDiagram: {
-      controlsTemplate: "size-range-control-template"
-    }
-  };
-
   module.GraphModel.create = function(config) {
-    var model = new module.GraphModel(config);
-    return _.extend(model, graphExtensions[config.diagramClass]);
+    return new module.GraphModel(config);
   };
 
   return module;

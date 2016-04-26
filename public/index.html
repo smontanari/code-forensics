@@ -6,24 +6,43 @@
 <body>
 
 <div id="container">
-  <h1 data-bind="text: title"></h1>
-  <h2 data-bind="text: description"></h2>
-  <!-- ko foreach: graphModels -->
-  <input class="graph-selector" data-bind="attr: {name: id, checked: isSelected}" type="radio" />
-  <label data-bind="text: label, attr: {for: id}, click: $root.controller.selectGraph"></label>
-  <!-- /ko -->
-  <span/>
-  <div id="content">
-    <!-- ko foreach: graphModels -->
-    <div class="graph-container" data-bind="attr: {id: id}, css: {showing: isSelected}">
-      <div class="graph" data-bind="css: diagramType"></div>
-      <div class="controls" data-bind="if: controlsTemplate">
-        <div data-bind="template: {name: controlsTemplate}"></div>
+  <div class="report-info">
+    <span class="title" data-bind="text: metadata.title"></span>
+    <span class="description" data-bind="text: metadata.description"></span>
+  </div>
+  <div class="report-controls">
+    <h2 data-bind="text: metadata.diagramSelectionTitle"></h2>
+    <div class="diagram-selection" data-bind="foreach: graphModels">
+      <div>
+        <input type="radio" data-bind="attr: {name: id, checked: isSelected}">
+        <label data-bind="text: label, attr: {for: id}, click: $root.controller.selectGraph"></label>
       </div>
     </div>
-    <!-- /ko -->
+    <div data-bind="foreach: graphModels">
+      <div data-bind="if: controlsTemplateId &amp;&amp; isSelected">
+        <div data-bind="template: {name: controlsTemplateId}"></div>
+      </div>
+    </div>
+  </div>
+  <div class="graph-content" data-bind="foreach: graphModels">
+    <div class="graph-container" data-bind="attr: {id: id}, css: {showing: isSelected}">
+      <div data-bind="if: diagram.hasData">
+        <div class="graph" data-bind="css: diagramType"></div>
+      </div>
+      <div data-bind="ifnot: diagram.hasData" class="msg-large">No data available.</div>
+    </div>
   </div>
 </div>
+
+<script type="text/html" id="hotspot-control-template">
+  <h2>Filters</h2>
+  <div data-bind="foreach: diagram.rangeFilters">
+    <p class="metric-filter"><span data-bind="text: label"></span> <output data-bind="text: displayValue"></output></p>
+    <div class="slider">
+      <input class="bar" type="range" name="size-range" data-bind="textInput: inputContinuousValue, value:inputChangeValue"/>
+    </div>
+  </div>
+</script>
 
 <script src="/lib/less/dist/less.min.js"></script>
 <script src="/lib/lodash/lodash.js"></script>
@@ -31,7 +50,7 @@
 <script src="/lib/q/q.js"></script>
 <script src="/lib/d3/d3.min.js"></script>
 <script src="/lib/d3-cloud/build/d3.layout.cloud.js"></script>
-<script src="/lib/d3-cloud/build/d3.layout.cloud.js"></script>
+<script src="javascript/query_parameter.js"></script>
 <script src="javascript/ViewModel.js"></script>
 <script src="javascript/GraphController.js"></script>
 <script src="javascript/GraphModel.js"></script>
@@ -39,36 +58,16 @@
 <script src="javascript/diagrams/LineChartDiagram.js"></script>
 <script src="javascript/diagrams/BarChartDiagram.js"></script>
 <script src="javascript/diagrams/WordCloudDiagram.js"></script>
+<script src="javascript/filters/range_filters.js"></script>
 <script src="javascript/graph-types/complexity-trend.js"></script>
 <script src="javascript/graph-types/hotspot-analysis.js"></script>
 <script src="javascript/graph-types/temporal-coupling.js"></script>
 <script src="javascript/graph-types/system-code-evolution.js"></script>
 <script src="javascript/graph-types/commit-cloud.js"></script>
 
-<script type="text/html" id="size-range-control-template">
-  <h2>Controls</h2>
-  <p>Size threshold: <input type="text" data-bind="textInput: diagram.visibilityThreshold"/></p>
-</script>
-
 <script>
 (function() {
-  var QueryParameter = function() { this.values = []; };
-  QueryParameter.prototype.addValue = function(v) { this.values.push(decodeURIComponent(v)); };
-  QueryParameter.prototype.getValue = function() { return this.values[0]; };
-  QueryParameter.prototype.getValues = function() { return this.values; };
-
-  var urlParameters = {};
-  var queryString = document.location.search.substr(1);
-  _.each(queryString.split('&'), function(s){
-    var nameValuePair = s.split('=');
-    var paramName = nameValuePair[0];
-    if (_.isUndefined(urlParameters[paramName])) {
-      urlParameters[paramName] = new QueryParameter();
-    }
-    urlParameters[paramName].addValue(nameValuePair[1]);
-  });
-
-  var viewModel = new CodeForensics.ViewModel(urlParameters);
+  var viewModel = new CodeForensics.ViewModel(CodeForensics.QueryParameter.fromRequestUrl());
   ko.applyBindings(viewModel);
   window.viewModel = viewModel;
 })();

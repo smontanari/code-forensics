@@ -1,0 +1,68 @@
+.circle-packing {
+  .node {
+    cursor: pointer;
+    &:hover {
+      stroke: #000;
+      stroke-width: 1.5px;
+    }
+    &.node--root {
+      stroke: #777;
+      stroke-width: 2px;
+    }
+    &.node--leaf {
+      fill: white;
+      stroke: #777;
+      stroke-width: 1px;
+    }
+  }
+
+  .label {
+    font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
+    text-anchor: middle;
+    &.label-parent {
+      fill: #04F;
+      font-weight: bold;
+      text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
+    }
+    &.label--light {
+      fill: #000;
+      text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
+    }
+    &.label--heavy {
+      fill: #FFF;
+      text-shadow: 0 1px 0 #000, 1px 0 0 #000, -1px 0 0 #000, 0 -1px 0 #000;
+    }
+  }
+
+
+
+  .label,
+  .node--root,
+  .node--leaf {
+    pointer-events: none;
+  }
+}
+
+.line-chart {
+  .axis path,
+  .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+  }
+
+  .line {
+    fill: none;
+    stroke-width: 2px;
+  }
+}
+
+.bar-chart {
+  .axis {
+    path, line {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+  }
+}

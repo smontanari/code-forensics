@@ -1,27 +1,10 @@
 var Diagrams = (function(module) {
-  module.CirclePackingDiagram = function(svgContainerSelector, options) {
-    var self = this;
-
-    var styleConfig = options.style;
-    var seriesConfig = options.series;
-
-    var outerDiameter = styleConfig.diameter,
-    innerDiameter = styleConfig.diameter - (2 * styleConfig.margin);
-
-    var x = d3.scale.linear().range([0, innerDiameter]);
-    var y = d3.scale.linear().range([0, innerDiameter]);
-
-    var color = d3.scale.linear()
-      .domain([-1, 5])
-      .range([styleConfig.colorRange.from, styleConfig.colorRange.to])
-      .interpolate(d3.interpolateHcl);
-
-    var pack = d3.layout.pack()
-      .padding(2)
-      .size([innerDiameter, innerDiameter])
-      .value(function(d) { return d[seriesConfig.valueProperty]; });
-
-    var nodeFullName = function(node) {
+  module.DatumHelper = function(styleConfig, seriesConfig, colorScale, filters) {
+    var self = this; //forced autobinding
+    this.nodeValue = function(node) {
+      return node[seriesConfig.valueProperty];
+    };
+    this.nodeFullName = function(node) {
       var names = [];
       var currentNode = node;
       _.times(node.depth, function() {
@@ -30,110 +13,161 @@ var Diagrams = (function(module) {
       })
       return names.reverse().join("/");
     };
+    this.nodeHiglighted = function(node) {
+      return styleConfig.nodeHighlight && self.nodeFullName(node) === styleConfig.nodeHighlight.name;
+    };
+    this.nodeVisible = function(node) {
+      return self.nodeHiglighted(node) ||
+        (_.isUndefined(node[seriesConfig.calculatedWeightProperty]) ||
+        node[seriesConfig.calculatedWeightProperty] >= filters.weightFilter.changeValue()) &&
+        node.value >= filters.valueFilter.changeValue();
+    };
+    this.nodeTransform = function(node) {
+      return "translate(" + node.x + "," + node.y + ")";
+    };
+    this.circleNodeDisplay = function(node) {
+      return self.nodeVisible(node) ? "block" : "none";
+    };
+    this.circleNodeFill = function(node) {
+      if (self.nodeHiglighted(node)) { return styleConfig.nodeHighlight.color; }
+      return node[seriesConfig.calculatedWeightProperty] > 0.0 ? styleConfig.colorValues.weightColor : node.children ? colorScale(node.depth) : styleConfig.colorValues.noColor;
+    };
+    this.circleNodeOpacity = function(node) {
+      if (self.nodeHiglighted(node)) { return 1; }
+      return node[seriesConfig.calculatedWeightProperty];
+    };
+    this.circleNodeClass = function(node) {
+      return node.parent ? node.children ? "node" : "node node--leaf" : "node node--root";
+    };
+    this.circleNodeRadius = function(node) {
+      return node.r;
+    };
+    this.textNodeOpacity = function(parentNode, node) {
+      return self.nodeFocused(parentNode, node) ? 1 : 0;
+    };
+    this.textNodeContent = function(node) {
+      return self.nodeVisible(node) ? node.name : null;
+    };
+    this.textNodeDisplay = function(parentNode, node){
+      return self.nodeFocused(parentNode, node) && self.nodeVisible(node) ? "inline" : "none";
+    };
+    this.textNodeClass = function(node) {
+      var labelClasses = ['label'];
+      if (node.children) {
+        labelClasses.push('label-parent');
+      } else {
+        labelClasses.push((node[seriesConfig.calculatedWeightProperty] > 0.4 ? "label--heavy" : "label--light"));
+      }
+      return labelClasses.join(' ');
+    };
+    this.nodeFocused = function(focus, node) {
+      return focus === null || focus === undefined || node.parent === focus;
+    };
+  };
 
-    var nodeHiglighted = function(node) {
-      return styleConfig.nodeHighlight && nodeFullName(node) === styleConfig.nodeHighlight.name;
+  module.CirclePackingDiagram = function(svgContainerSelector, options) {
+    var self = this;
+    var styleConfig = options.style;
+    var x = d3.scale.linear().range([0, styleConfig.diameter]);
+    var y = d3.scale.linear().range([0, styleConfig.diameter]);
+    var colorScale = d3.scale.linear()
+      .domain([-1, 5])
+      .range([styleConfig.colorRange.from, styleConfig.colorRange.to])
+      .interpolate(d3.interpolateHcl);
+
+    var applyFilters = function() {
+      self.allCircleNodes.style("display", datumHelper.circleNodeDisplay);
+      self.allTextNodes.style("display", _.wrap(null, datumHelper.textNodeDisplay));
     };
 
-    var nodeFill = function(node) {
-      if (nodeHiglighted(node)) { return styleConfig.nodeHighlight.color; }
-      return node[seriesConfig.weightProperty] > 0.0 ? styleConfig.colorValues.weightColor : node.children ? color(node.depth) : styleConfig.colorValues.noColor;
-    };
+    var filters = _.reduce(options.filters, function(filtersObj, filterCfg) {
+      filtersObj[filterCfg.name] = new Filters[filterCfg.type](filterCfg.label);
+      filtersObj[filterCfg.name].onChange(applyFilters);
+      return filtersObj;
+    }, {});
 
-    var nodeOpacity = function(node) {
-      if (nodeHiglighted(node)) { return 1; }
-      return node[seriesConfig.weightProperty];
-    };
+    var datumHelper = new module.DatumHelper(options.style, options.series, colorScale, filters);
 
-    var nodeVisible = function(node) {
-      return nodeHiglighted(node) || node[seriesConfig.weightProperty] > 0 || node.value >= self.visibilityThreshold();
-    };
+    var pack = d3.layout.pack()
+      .padding(2)
+      .size([styleConfig.diameter, styleConfig.diameter])
+      .value(datumHelper.nodeValue);
 
-    var zoom = function(f, d, i) {
+    var zoom = function(f, node) {
       var previousFocus = f;
-      var focus = d;
+      var focus = node;
 
-      var k = innerDiameter / d.r / 2;
-      x.domain([d.x - d.r, d.x + d.r]);
-      y.domain([d.y - d.r, d.y + d.r]);
+      var k = styleConfig.diameter / node.r / 2;
+      x.domain([node.x - node.r, node.x + node.r]);
+      y.domain([node.y - node.r, node.y + node.r]);
       d3.event.stopPropagation();
 
       var transition = d3.select(svgContainerSelector).selectAll("text,circle").transition()
-          .duration(d3.event.altKey ? 7500 : 750)
+          .duration(d3.event.altKey ? 7500 : 100)
           .attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
 
       transition.filter("circle")
-        .style("display", function(d) { return nodeVisible(d) ? "block" : "none"; })
+        .style("display", datumHelper.circleNodeDisplay)
         .attr("r", function(d) { return k * d.r; });
 
       transition.filter("text")
         .filter(function(d) { return d.parent === focus || d.parent === previousFocus; })
-          .style("fill-opacity", function(d) { return d.parent === focus ? 1 : 0; })
-          .each("start", function(d) { if (d.parent === focus && nodeVisible(d)) this.style.display = "inline"; })
-          .each("end", function(d) { if (d.parent !== focus) this.style.display = "none"; });
+          .style("fill-opacity", _.wrap(focus, datumHelper.textNodeOpacity))
+          .each(function(d) { this.style.display = datumHelper.textNodeDisplay(focus, d); });
 
       return focus;
     };
 
-    this.visibilityThreshold = ko.observable(0);
-    this.visibilityThreshold.subscribe(function(t) {
-      var elements = d3.select(svgContainerSelector).selectAll("text,circle");
-      elements.filter("circle").style("display", function(d) { return nodeVisible(d) ? "block" : "none"; });
-      elements.filter("text").style("display", function(d) { return nodeVisible(d) ? "inline" : "none"; });
-    });
-
-    var draw = function(data) {
+    var draw = function(nodesArray) {
+      var currentFocus = self.rootNode;
       var svg = d3.select(svgContainerSelector).append("svg");
       svg.attr("class", "circle-packing")
-      .attr("width", outerDiameter)
-      .attr("height", outerDiameter)
-      .style("background", '#333')
+      .attr("width", styleConfig.diameter)
+      .attr("height", styleConfig.diameter)
       .append("g")
       .attr("transform", "translate(" + styleConfig.margin + "," + styleConfig.margin + ")");
 
-      var rootNode = data;
-      var nodesArray = pack.nodes(rootNode);
-      var currentFocus = rootNode;
-
-      svg.append("g").selectAll("circle")
+      self.allCircleNodes = svg.append("g").selectAll("circle")
         .data(nodesArray)
         .enter().append("circle")
-        .attr("class", function(d) { return d.parent ? d.children ? "node" : "node node--leaf" : "node node--root"; })
-        .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
-        .attr("r", function(d) { return d.r; })
-        .style("fill", nodeFill)
-        .style("fill-opacity", nodeOpacity)
+        .attr("class", datumHelper.circleNodeClass)
+        .attr("transform", datumHelper.nodeTransform)
+        .attr("r", datumHelper.circleNodeRadius)
+        .style("fill", datumHelper.circleNodeFill)
+        .style("fill-opacity", datumHelper.circleNodeOpacity)
         .on("click", function(d) {
-          var target = currentFocus === d ? rootNode : d;
+          var target = currentFocus === d ? self.rootNode : d;
           currentFocus = zoom(currentFocus, target);
         });
 
-      svg.append("g").selectAll("text")
+      self.allTextNodes = svg.append("g").selectAll("text")
         .data(nodesArray)
         .enter().append("text")
-        .attr("class", function(d) {
-          var labelClasses = ['label'];
-          if (d.children) {
-            labelClasses.push('label-parent');
-          } else {
-            labelClasses.push((d[seriesConfig.weightProperty] > 0.4 ? "label--heavy" : "label--light"));
-          }
-          return labelClasses.join(' ');
-        })
-        .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
-        .style("fill-opacity", function(d) { return d.parent === rootNode ? 1 : 0; })
-        .style("display", function(d) { return d.parent === rootNode ? null : "none"; })
-        .text(function(d) { return nodeVisible(d) ? d.name : null; });
+        .attr("class", datumHelper.textNodeClass)
+        .attr("transform", datumHelper.nodeTransform)
+        .style("fill-opacity", _.wrap(self.rootNode, datumHelper.textNodeOpacity))
+        .style("display", _.wrap(self.rootNode, datumHelper.textNodeDisplay))
+        .text(datumHelper.textNodeContent);
 
-      d3.select(svgContainerSelector).on("click", function() { currentFocus = zoom(currentFocus, rootNode); });
+      d3.select(svgContainerSelector).on("click", function() { currentFocus = zoom(currentFocus, self.rootNode); });
     };
 
+    this.rangeFilters = _.values(filters);
+    this.hasData = ko.observable(true);
+
     this.onData = function(data) {
-      try {
-        draw(data);
-      } catch(e) {
-        console.log(e);
-      }
+      this.rootNode = data;
+      var nodesArray = _.reject(pack.nodes(data), function(d) {
+        return _.isNaN(d.r) || _.isNaN(d.x) || _.isNaN(d.y);
+      });
+
+      this.hasData(nodesArray.length > 0);
+
+      if (nodesArray.length === 0) { return; }
+
+      filters.valueFilter.init(0, d3.max(nodesArray, datumHelper.nodeValue));
+      filters.weightFilter.init(0, 1);
+      draw(nodesArray);
     };
   };
 
