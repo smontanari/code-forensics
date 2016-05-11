@@ -9,7 +9,8 @@ var args = require('minimist')(process.argv.slice(2));
 var host = '127.0.0.1';
 var port = args.p || 8080;
 var webPath = Path.resolve(__dirname + '/../public');
-var scriptsPath = Path.resolve('node_modules');
+var jsPath = Path.resolve(__dirname + '/../lib/web');
+var libPath = Path.resolve('node_modules');
 var dataPath = args.d || Path.resolve(__dirname + '/../output');
 
 var options = {
@@ -18,7 +19,8 @@ var options = {
   showDir: true,
   autoIndex: true,
   before: [
-    ecstatic({root: scriptsPath, baseDir: "/lib"}),
+    ecstatic({root: jsPath, baseDir: "/js"}),
+    ecstatic({root: libPath, baseDir: "/lib"}),
     ecstatic({root: dataPath, baseDir: "/data"}),
   ]
 };
@@ -29,7 +31,8 @@ server.listen(port, host, function () {
   console.log(chalk.yellow('Starting up http-server'));
   console.log(chalk.cyan('listening on ' + port));
   console.log(chalk.cyan('serving pages from ' + webPath));
-  console.log(chalk.cyan('serving scripts from ' + scriptsPath));
+  console.log(chalk.cyan('serving js files from ' + jsPath));
+  console.log(chalk.cyan('serving js libraries from ' + libPath));
   console.log(chalk.cyan('serving data from ' + dataPath));
   console.log('Hit CTRL-C to stop the server');
 });
