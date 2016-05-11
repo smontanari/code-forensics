@@ -1,6 +1,7 @@
 @import 'diagrams.less';
 @import 'graph_controls.less';
 @import 'slider.less';
+@import 'd3_tip.less';
 
 body {
   font: 10px sans-serif;
@@ -61,19 +62,19 @@ body {
   .graph-content {
     margin-left: 210px;
     background-color: #f1f1f1;
-    // border: 1px solid #C0C0C0;
+    border: 1px solid #C0C0C0;
     position: relative;
-    z-index: 5;
+    // z-index: 5;
 
     .graph-container {
       margin-top: 10px;
       position: absolute;
       opacity: 0;
-      z-index: -100;
+      z-index: -10;
       display: flex;
       &.showing {
         opacity: 1;
-        z-index: 100;
+        z-index: 10;
       }
       .graph {
         &.line-chart-diagram {

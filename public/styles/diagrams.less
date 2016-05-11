@@ -10,7 +10,7 @@
       stroke-width: 2px;
     }
     &.node--leaf {
-      fill: white;
+      fill: #fff;
       stroke: #777;
       stroke-width: 1px;
     }
@@ -34,13 +34,15 @@
     }
   }
 
-
-
   .label,
-  .node--root,
-  .node--leaf {
+  .node--root {
     pointer-events: none;
   }
+
+  .node--leaf {
+    pointer-events: fill;
+  }
+
 }
 
 .line-chart {

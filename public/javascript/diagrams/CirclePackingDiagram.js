@@ -13,6 +13,9 @@ var Diagrams = (function(module) {
       })
       return names.reverse().join("/");
     };
+    this.leafNode = function(node) {
+      return _.isObject(node.parent) && _.isEmpty(node.children);
+    };
     this.nodeHiglighted = function(node) {
       return styleConfig.nodeHighlight && self.nodeFullName(node) === styleConfig.nodeHighlight.name;
     };
@@ -56,6 +59,7 @@ var Diagrams = (function(module) {
       if (node.children) {
         labelClasses.push('label-parent');
       } else {
+        labelClasses.push('label-leaf');
         labelClasses.push((node[seriesConfig.calculatedWeightProperty] > 0.4 ? "label--heavy" : "label--light"));
       }
       return labelClasses.join(' ');
@@ -100,7 +104,6 @@ var Diagrams = (function(module) {
       var k = styleConfig.diameter / node.r / 2;
       x.domain([node.x - node.r, node.x + node.r]);
       y.domain([node.y - node.r, node.y + node.r]);
-      d3.event.stopPropagation();
 
       var transition = d3.select(svgContainerSelector).selectAll("text,circle").transition()
           .duration(d3.event.altKey ? 7500 : 100)
@@ -120,7 +123,24 @@ var Diagrams = (function(module) {
 
     var draw = function(nodesArray) {
       var currentFocus = self.rootNode;
-      var svg = d3.select(svgContainerSelector).append("svg");
+      var tip = d3.tip()
+      .attr('class', 'd3-tip circle-packing-diagram')
+      .html(function(d) {
+        if (datumHelper.nodeFocused(currentFocus, d) && datumHelper.leafNode(d)) {
+          return '<div class="node-name">' + datumHelper.nodeFullName(d) + '</div>' +
+                 '<div class="node-property">' +
+                 '<span class="property-label">' + options.series.valueLabel + '</span><span class="property-value">' + d[options.series.valueProperty] + '</span>' +
+                 '</div>' +
+                 '<div class="node-property">' +
+                 '<span class="property-label">' + options.series.weightLabel + '</span><span class="property-value">' + (d[options.series.weightProperty] || 'n/a') + '</span>' +
+                 '</div>';
+        }
+      });
+
+      var svg = d3.select(svgContainerSelector)
+      .append("svg")
+      .call(tip);
+
       svg.attr("class", "circle-packing")
       .attr("width", styleConfig.diameter)
       .attr("height", styleConfig.diameter)
@@ -136,9 +156,18 @@ var Diagrams = (function(module) {
         .style("fill", datumHelper.circleNodeFill)
         .style("fill-opacity", datumHelper.circleNodeOpacity)
         .on("click", function(d) {
-          var target = currentFocus === d ? self.rootNode : d;
-          currentFocus = zoom(currentFocus, target);
-        });
+          if (!datumHelper.leafNode(d)) {
+            var target = currentFocus === d ? self.rootNode : d;
+            currentFocus = zoom(currentFocus, target);
+          }
+          d3.event.stopPropagation();
+        })
+        .on('mouseover', function(d) {
+          if (datumHelper.nodeFocused(currentFocus, d) && datumHelper.leafNode(d)) {
+            tip.show(d);
+          }
+        })
+        .on('mouseout', tip.hide);
 
       self.allTextNodes = svg.append("g").selectAll("text")
         .data(nodesArray)

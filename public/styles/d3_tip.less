@@ -1,0 +1,37 @@
+.d3-tip {
+  z-index: 10;
+  line-height: 1;
+  font-size: 12px;
+  padding: 12px;
+  border-radius: 0 0 5px 5px;
+  pointer-events: none;
+
+  &.circle-packing-diagram {
+    background: #FFF;
+    color: #000;
+    display: table;
+
+    .node-name {
+      font-size: 14px;
+      padding: 5px;
+      color: #FFF;
+      text-align: center;
+      background-color: #4682B4;
+      display: table-caption;
+      border-radius: 5px 5px 0 0;
+    }
+
+    .node-property {
+      display: table-row;
+      .property-label {
+        padding: 2px;
+        display: table-cell;
+      }
+      .property-value {
+        text-align: right;
+        display: table-cell;
+        color: #4682B4;
+      }
+    }
+  }
+}
