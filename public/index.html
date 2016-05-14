@@ -34,16 +34,7 @@
   </div>
 </div>
 
-<script type="text/html" id="hotspot-control-template">
-  <h2>Filters</h2>
-  <div data-bind="foreach: diagram.rangeFilters">
-    <p class="metric-filter"><span data-bind="text: label"></span> <output data-bind="text: displayValue"></output></p>
-    <div class="slider">
-      <input class="bar" type="range" name="size-range" data-bind="textInput: inputContinuousValue, value:inputChangeValue"/>
-    </div>
-  </div>
-</script>
-
+<div id="templates"></div>
 <script src="/lib/less/dist/less.min.js"></script>
 <script src="/lib/lodash/lodash.js"></script>
 <script src="/lib/knockout/build/output/knockout-latest.js"></script>
@@ -51,7 +42,9 @@
 <script src="/lib/d3/d3.min.js"></script>
 <script src="/lib/d3-cloud/build/d3.layout.cloud.js"></script>
 <script src="/lib/d3-tip/index.js"></script>
+<script src="/lib/mustache/mustache.min.js"></script>
 <script src="/js/query_parameter.js"></script>
+<script src="/js/async_loader.js"></script>
 <script src="/js/view_model.js"></script>
 <script src="/js/graph_controller.js"></script>
 <script src="/js/graph_model.js"></script>
