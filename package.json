@@ -42,6 +42,7 @@
     "shelljs": "^0.6.0",
     "sloc": "^0.1.10",
     "string_decoder": "^0.10.31",
+    "systemjs": "^0.19.27",
     "through2": "^2.0.1",
     "through2-filter": "^2.0.0",
     "through2-map": "^2.0.0",

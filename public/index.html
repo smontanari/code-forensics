@@ -25,45 +25,37 @@
     </div>
   </div>
   <div class="graph-content" data-bind="foreach: graphModels">
-    <div class="graph-container" data-bind="attr: {id: id}, css: {showing: isSelected}">
-      <div data-bind="if: diagram.hasData">
-        <div class="graph" data-bind="css: diagramType"></div>
+    <div class="graph-container" data-bind="css: {showing: isSelected}">
+      <div data-bind="visible: diagram.hasData">
+        <div class="graph" data-bind="attr: {id: id}, css: diagramType"></div>
       </div>
-      <div data-bind="ifnot: diagram.hasData" class="msg-large">No data available.</div>
+      <div data-bind="visible: !diagram.hasData()" class="msg-large">No data available.</div>
     </div>
   </div>
 </div>
 
 <div id="templates"></div>
 <script src="/lib/less/dist/less.min.js"></script>
-<script src="/lib/lodash/lodash.js"></script>
-<script src="/lib/knockout/build/output/knockout-latest.js"></script>
-<script src="/lib/q/q.js"></script>
-<script src="/lib/d3/d3.min.js"></script>
-<script src="/lib/d3-cloud/build/d3.layout.cloud.js"></script>
-<script src="/lib/d3-tip/index.js"></script>
-<script src="/lib/mustache/mustache.min.js"></script>
-<script src="/js/query_parameter.js"></script>
-<script src="/js/async_loader.js"></script>
-<script src="/js/view_model.js"></script>
-<script src="/js/graph_controller.js"></script>
-<script src="/js/graph_model.js"></script>
-<script src="/js/diagrams/circle_packing_diagram.js"></script>
-<script src="/js/diagrams/line_chart_diagram.js"></script>
-<script src="/js/diagrams/bar_chart_diagram.js"></script>
-<script src="/js/diagrams/word_cloud_diagram.js"></script>
-<script src="/js/filters/range_filters.js"></script>
-<script src="/js/graph_types/complexity-trend.js"></script>
-<script src="/js/graph_types/hotspot-analysis.js"></script>
-<script src="/js/graph_types/temporal-coupling.js"></script>
-<script src="/js/graph_types/system-code-evolution.js"></script>
-<script src="/js/graph_types/commit-cloud.js"></script>
-
+<script src="/lib/systemjs/dist/system.js"></script>
 <script>
 (function() {
-  var viewModel = new CodeForensics.ViewModel(CodeForensics.QueryParameter.fromRequestUrl());
-  ko.applyBindings(viewModel);
-  window.viewModel = viewModel; //for debugging purposes
+  System.config({
+    map: {
+      lodash:   '/lib/lodash/lodash.js',
+      knockout: '/lib/knockout/build/output/knockout-latest.js',
+      q:        '/lib/q/q.js',
+      mustache: '/lib/mustache/mustache.min.js',
+      d3:       '/lib/d3/d3.min.js',
+      d3Cloud:  '/lib/d3-cloud/build/d3.layout.cloud.js',
+      d3Tip:    '/lib/d3-tip/index.js',
+    },
+    meta: {
+      'd3': { format: 'global' },
+      'd3Tip': { format: 'global', deps: ['d3'] },
+      'd3Cloud': { format: 'global', deps: ['d3'] }
+    }
+  });
+  System.import('/js/main.js').then(function(module) { module.run(); });
 })();
 </script>
 </body>
