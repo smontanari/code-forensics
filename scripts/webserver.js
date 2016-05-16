@@ -19,9 +19,9 @@ var options = {
   showDir: true,
   autoIndex: true,
   before: [
-    ecstatic({root: jsPath, baseDir: "/js"}),
-    ecstatic({root: libPath, baseDir: "/lib"}),
-    ecstatic({root: dataPath, baseDir: "/data"}),
+    ecstatic({ root: jsPath, baseDir: '/js' }),
+    ecstatic({ root: libPath, baseDir: '/lib' }),
+    ecstatic({ root: dataPath, baseDir: '/data' })
   ]
 };
 
