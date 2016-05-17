@@ -1,6 +1,14 @@
 {
   "name": "code-forensics",
-  "version": "1.0.0",
+  "version": "0.9.0",
+  "homepage": "https://github.com/smontanari/code-forensics",
+  "bugs": "https://github.com/smontanari/code-forensics/issues",
+  "license": "MIT",
+  "main": "./src",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/smontanari/code-forensics.git"
+  },
   "description": "A toolset for code forensics analysis",
   "author": "Silvio Montanari",
   "main": "lib/index.js",
@@ -59,6 +67,5 @@
   "scripts": {
     "test": "./scripts/jasmine-runner.js",
     "jshint": "./node_modules/jshint/bin/jshint lib spec scripts"
-  },
-  "license": "MIT"
+  }
 }
