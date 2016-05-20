@@ -1,11 +1,17 @@
 var stream    = require('stream'),
     fs        = require('fs'),
-    escomplex = require('escomplex');
+    escomplex = require('escomplex/src/core');
 
-var ESComplexAnalyser = require_src('analysers/escomplex/escomplex_analyser');
+var ESComplexAnalyser = require_src('analysers/escomplex/escomplex_analyser'),
+    Parser            = require_src('analysers/escomplex/parser');
 
 describe('ESComplexAnalyser', function() {
+  var mockParser;
+
   beforeEach(function() {
+    mockParser = jasmine.createSpyObj('parser', ['parse']);
+    mockParser.parse.and.returnValue('test abstract syntax tree');
+    spyOn(Parser, 'create').and.returnValue(mockParser);
     spyOn(escomplex, 'analyse').and.returnValue({
       aggregate: { cyclomatic: 123 },
       functions: [
@@ -35,10 +41,13 @@ describe('ESComplexAnalyser', function() {
             { name: 'fn2', complexity: 789 }
           ]
         });
-        expect(escomplex.analyse).toHaveBeenCalledWith('test content', jasmine.any(Object));
-        expect(fs.readFile).toHaveBeenCalledWith('test/file.js', jasmine.any(Function));
       })
-      .on('end', done);
+      .on('end', function(){
+        expect(mockParser.parse).toHaveBeenCalledWith('test content');
+        expect(escomplex.analyse).toHaveBeenCalledWith('test abstract syntax tree', jasmine.any(Object), jasmine.any(Object));
+        expect(fs.readFile).toHaveBeenCalledWith('test/file.js', jasmine.any(Function));
+        done();
+      });
     });
   });
 
@@ -57,9 +66,11 @@ describe('ESComplexAnalyser', function() {
             { name: 'fn2', complexity: 789 }
           ]
         });
-        expect(escomplex.analyse).toHaveBeenCalledWith('test content', jasmine.any(Object));
       })
-      .on('end', done);
+      .on('end', function() {
+        expect(escomplex.analyse).toHaveBeenCalledWith('test abstract syntax tree', jasmine.any(Object), jasmine.any(Object));
+        done();
+      });
 
       inputStream.write('test content');
       inputStream.end();
