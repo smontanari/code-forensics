@@ -7,7 +7,7 @@ var utils             = require_src('utils'),
 describe('MultiTaskExecutor', function() {
   beforeEach(function() {
     this.subject = new MultiTaskExecutor({
-      addJob: function(fn) { fn(); }
+      addJob: function(fn) { setTimeout(fn, 100); }
     });
   });
 
