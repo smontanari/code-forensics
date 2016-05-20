@@ -23,7 +23,7 @@ describe('ReportComposer', function() {
   describe('when initialised with a json file', function() {
     it('builds a report from the file data', function(done) {
       spyOn(utils.fileSystem, 'isFile').and.returnValue(true);
-      spyOn(utils.json, 'parseFile').and.returnValue(
+      spyOn(utils.json, 'fileToObject').and.returnValue(
         Q([{ a: 123, b: "zxc" },{ a: 456, b: "vbn" }])
       );
 
@@ -33,7 +33,7 @@ describe('ReportComposer', function() {
           { a: 456, b: "vbn" }
         ]);
         expect(utils.fileSystem.isFile).toHaveBeenCalledWith('test/file.json');
-        expect(utils.json.parseFile).toHaveBeenCalledWith('test/file.json');
+        expect(utils.json.fileToObject).toHaveBeenCalledWith('test/file.json');
         done();
       });
     });
@@ -60,7 +60,7 @@ describe('ReportComposer', function() {
     it('builds a report from the merged data sources', function(done) {
       var matchFn = function(d1, d2) { return d1.a === d2.a; };
       spyOn(utils.fileSystem, 'isFile').and.returnValue(true);
-      spyOn(utils.json, 'parseFile').and.returnValue(
+      spyOn(utils.json, 'fileToObject').and.returnValue(
         Q([{ a: 123, c: "XXX" }, { a: 456, c: "YYY" }, { a: 789, c: 'ZZZ' }])
       );
       var inputStream = new stream.PassThrough({ objectMode: true });
@@ -77,7 +77,7 @@ describe('ReportComposer', function() {
           { a: 456, b: "vbn", c: 'YYY', d: { d1: 333, d2: 444 } },
         ]);
         expect(utils.fileSystem.isFile).toHaveBeenCalledWith('test/file.json');
-        expect(utils.json.parseFile).toHaveBeenCalledWith('test/file.json');
+        expect(utils.json.fileToObject).toHaveBeenCalledWith('test/file.json');
         done();
       });
 
