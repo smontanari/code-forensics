@@ -1,20 +1,21 @@
 var childProcess = require('child_process'),
     stream       = require('stream');
 
-var command = require_src('command'),
-    cmdDefinitions = require_src('command/command_definitions');
+var command = require_src('command');
 
 describe('command', function() {
   beforeEach(function() {
-    spyOn(cmdDefinitions, 'getDefinition').and.returnValue({
+    this.commandDef = {
       cmd: 'path/to/executable',
       args: ['--param1', '--param2', '-a', '-b']
-    });
+    };
+
+    spyOn(command.Command.definitions, 'getDefinition').and.returnValue(this.commandDef);
     spyOn(process.stderr, 'write');
   });
 
   afterEach(function() {
-    expect(cmdDefinitions.getDefinition).toHaveBeenCalledWith('test-command');
+    expect(command.Command.definitions.getDefinition).toHaveBeenCalledWith('test-command');
   });
 
   describe('.run()', function() {

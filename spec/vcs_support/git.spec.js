@@ -1,6 +1,19 @@
 var Git        = require_src('vcs_support/git'),
     command    = require_src('command');
 
+describe('git command definitions', function() {
+  [
+    'gitlog_analysis',
+    'gitlog_messages',
+    'gitlog_revisions',
+    'git_show'
+  ].forEach(function(name) {
+    it('defines the "' + name + '" command', function() {
+      expect(command.Command.definitions.getDefinition(name)).toEqual(jasmine.anything());
+    });
+  });
+});
+
 describe('Git', function() {
   beforeEach(function() {
     spyOn(command, 'stream').and.returnValue('output-stream');

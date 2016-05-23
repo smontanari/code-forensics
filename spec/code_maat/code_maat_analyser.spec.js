@@ -4,6 +4,12 @@ var stream = require('stream'),
 var CodeMaatAnalyser = require_src('analysers/code_maat/code_maat_analyser'),
     command          = require_src('command');
 
+describe('codemaat command definition', function() {
+  it('defines the "codemaat" command', function() {
+    expect(command.Command.definitions.getDefinition('codemaat')).toEqual(jasmine.anything());
+  });
+});
+
 describe('CodeMaatAnalyser', function() {
   var commandOutputStream;
 

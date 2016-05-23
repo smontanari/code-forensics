@@ -3,10 +3,15 @@ var stream = require('stream');
 var FlogAnalyser = require_src('analysers/flog/flog_analyser'),
     command      = require_src('command');
 
+describe('flog command definition', function() {
+  it('defines the "flog" command', function() {
+    expect(command.Command.definitions.getDefinition('flog')).toEqual(jasmine.anything());
+  });
+});
+
 describe('FlogAnalyser', function() {
   var flogParser;
   beforeEach(function() {
-
     flogParser = jasmine.createSpyObj('FlogParser', ['read']);
     flogParser.read.and.callFake(function(report) {
       return {flog: report};
