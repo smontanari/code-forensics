@@ -4,19 +4,41 @@ var FlogAnalyser = require_src('analysers/flog/flog_analyser'),
     command      = require_src('command');
 
 describe('flog command definition', function() {
+  beforeEach(function() {
+    this.subject = command.Command.definitions.getDefinition('flog');
+    this.mockCheck = jasmine.createSpyObj('check', ['findExecutable', 'verifyPackage']);
+  });
+
   it('defines the "flog" command', function() {
-    expect(command.Command.definitions.getDefinition('flog')).toEqual(jasmine.anything());
+    expect(this.subject).toEqual(jasmine.anything());
+  });
+
+  it('checks the executable', function() {
+    this.subject.installCheck.apply(this.mockCheck);
+
+    expect(this.mockCheck.findExecutable).toHaveBeenCalledWith('ruby', jasmine.any(String));
+  });
+
+  it('checks the flog gem', function() {
+    this.subject.installCheck.apply(this.mockCheck);
+
+    expect(this.mockCheck.verifyPackage).toHaveBeenCalledWith(jasmine.stringMatching(/gem list flog -i -v/), 'true', jasmine.any(String));
   });
 });
 
 describe('FlogAnalyser', function() {
   var flogParser;
   beforeEach(function() {
+    spyOn(command.Command, 'ensure');
     flogParser = jasmine.createSpyObj('FlogParser', ['read']);
     flogParser.read.and.callFake(function(report) {
       return {flog: report};
     });
     this.subject = new FlogAnalyser(flogParser);
+  });
+
+  it('ensures the flog command is installed', function() {
+    expect(command.Command.ensure).toHaveBeenCalledWith('flog');
   });
 
   describe('.fileAnalysisStream()', function() {

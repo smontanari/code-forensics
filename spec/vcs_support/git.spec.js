@@ -1,45 +1,56 @@
 var Git        = require_src('vcs_support/git'),
     command    = require_src('command');
 
-describe('git command definitions', function() {
-  [
-    'gitlog_analysis',
-    'gitlog_messages',
-    'gitlog_revisions',
-    'git_show'
-  ].forEach(function(name) {
-    it('defines the "' + name + '" command', function() {
-      expect(command.Command.definitions.getDefinition(name)).toEqual(jasmine.anything());
-    });
+describe('git command definition', function() {
+  beforeEach(function() {
+    this.subject = command.Command.definitions.getDefinition('git');
+    this.mockCheck = jasmine.createSpyObj('check', ['findExecutable', 'verifyPackage']);
+  });
+
+  it('defines the "git" command', function() {
+    expect(this.subject).toEqual(jasmine.anything());
+  });
+
+  it('checks the executable', function() {
+    this.subject.installCheck.apply(this.mockCheck);
+
+    expect(this.mockCheck.findExecutable).toHaveBeenCalledWith('git', jasmine.any(String));
   });
 });
 
 describe('Git', function() {
   beforeEach(function() {
+    spyOn(command.Command, 'ensure');
     spyOn(command, 'stream').and.returnValue('output-stream');
 
     this.subject = new Git('/root/dir');
+  });
+
+  it('ensures the git command is installed', function() {
+    expect(command.Command.ensure).toHaveBeenCalledWith('git');
   });
 
   it('returns the git log as a stream', function() {
     var output = this.subject.logStream({ startDate: 'xxx', endDate: 'yyy' });
 
     expect(output).toEqual('output-stream');
-    expect(command.stream).toHaveBeenCalledWith('gitlog_analysis', ['--after=xxx', '--before=yyy'], {cwd: '/root/dir'});
+    expect(command.stream).toHaveBeenCalledWith('git',
+      ['log', '--all', '-M', '-C', '--numstat', '--date=short', '--no-renames', '--pretty=format:--%h--%ad--%an', '--after=xxx', '--before=yyy'], {cwd: '/root/dir'});
   });
 
   it('returns the git commit messages as a stream', function() {
     var output = this.subject.commitMessagesStream({ startDate: 'xxx', endDate: 'yyy' });
 
     expect(output).toEqual('output-stream');
-    expect(command.stream).toHaveBeenCalledWith('gitlog_messages', ['--after=xxx', '--before=yyy'], {cwd: '/root/dir'});
+    expect(command.stream).toHaveBeenCalledWith('git',
+      ['log', '--date=short', '--pretty=format:%s', '--after=xxx', '--before=yyy'], {cwd: '/root/dir'});
   });
 
   it('returns the git revision content as a stream', function() {
     var output = this.subject.showRevisionStream('qwe123', 'test/file');
 
     expect(output).toEqual('output-stream');
-    expect(command.stream).toHaveBeenCalledWith('git_show', ['qwe123:test/file'], {cwd: '/root/dir'});
+    expect(command.stream).toHaveBeenCalledWith('git', ['show', 'qwe123:test/file'], {cwd: '/root/dir'});
   });
 
   it('returns the list of revisions for the given time period', function() {
@@ -54,7 +65,7 @@ describe('Git', function() {
       { revisionId: '789', date: 'test-date3' }
     ]);
 
-    expect(command.run).toHaveBeenCalledWith('gitlog_revisions',
-      ['--after=xxx', '--before=yyy', 'test/file'], {cwd: '/root/dir'});
+    expect(command.run).toHaveBeenCalledWith('git',
+      ['log', '--date=iso', '--pretty=format:%h,%ad', '--after=xxx', '--before=yyy', 'test/file'], {cwd: '/root/dir'});
   });
 });

@@ -5,20 +5,39 @@ var CodeMaatAnalyser = require_src('analysers/code_maat/code_maat_analyser'),
     command          = require_src('command');
 
 describe('codemaat command definition', function() {
+  beforeEach(function() {
+    this.subject = command.Command.definitions.getDefinition('codemaat');
+    this.mockCheck = jasmine.createSpyObj('check', ['findExecutable', 'verifyPackage']);
+  });
+
   it('defines the "codemaat" command', function() {
-    expect(command.Command.definitions.getDefinition('codemaat')).toEqual(jasmine.anything());
+    expect(this.subject).toEqual(jasmine.anything());
+  });
+
+  it('checks the java executable', function() {
+    this.subject.installCheck.apply(this.mockCheck);
+
+    expect(this.mockCheck.findExecutable).toHaveBeenCalledWith('java', jasmine.any(String));
   });
 });
 
 describe('CodeMaatAnalyser', function() {
   var commandOutputStream;
 
-  var analyserStream = function(instruction) {
-    return new CodeMaatAnalyser(instruction).gitlogFileAnalysisStream('test/file', ['arg1', 'arg2'])
-    .pipe(reduce.obj(function(data, obj) {
-      data.push(obj);
-      return data;
-    }, []));
+  var prepareAnalyserStream = function(instruction) {
+    beforeEach(function() {
+      this.subject = new CodeMaatAnalyser(instruction).gitlogFileAnalysisStream('test/file', ['arg1', 'arg2'])
+      .pipe(reduce.obj(function(data, obj) {
+        data.push(obj);
+        return data;
+      }, []));
+    });
+  };
+
+  var verifyInstallCheck = function() {
+    it('ensures the codemaat command is installed', function() {
+      expect(command.Command.ensure).toHaveBeenCalledWith('codemaat');
+    });
   };
 
   var stubCodeMaatReport = function(data) {
@@ -30,13 +49,16 @@ describe('CodeMaatAnalyser', function() {
 
   beforeEach(function() {
     commandOutputStream = new stream.PassThrough();
+    spyOn(command.Command, 'ensure');
     spyOn(command, 'stream').and.returnValue(commandOutputStream);
   });
 
   describe('revisions analysis', function() {
+    prepareAnalyserStream('revisions');
+    verifyInstallCheck();
+
     it('returns a stream of the revision data for each repository file', function(done) {
-      analyserStream('revisions')
-      .on('data', function(data) {
+      this.subject.on('data', function(data) {
         expect(data).toEqual([
           { path: 'test/path1', revisions: 18 },
           { path: 'test/path2', revisions: 17 },
@@ -60,9 +82,11 @@ describe('CodeMaatAnalyser', function() {
   });
 
   describe('soc analysis', function() {
+    prepareAnalyserStream('soc');
+    verifyInstallCheck();
+
     it('returns a stream of the sum coupling data for each repository file', function(done) {
-      analyserStream('soc')
-      .on('data', function(data) {
+      this.subject.on('data', function(data) {
         expect(data).toEqual([
           { path: 'test/path1', soc: 62 },
           { path: 'test/path2', soc: 32 },
@@ -86,9 +110,11 @@ describe('CodeMaatAnalyser', function() {
   });
 
   describe('coupling analysis', function() {
+    prepareAnalyserStream('coupling');
+    verifyInstallCheck();
+
     it('returns a stream of the temporal coupling data for each repository file', function(done) {
-      analyserStream('coupling')
-      .on('data', function(data) {
+      this.subject.on('data', function(data) {
         expect(data).toEqual([
           { path: 'test/path1', coupledPath: 'test/coupledFile1', couplingDegree: 100, revisionsAvg: 5 },
           { path: 'test/path2', coupledPath: 'test/coupledFile2', couplingDegree: 89, revisionsAvg: 4 },
@@ -112,9 +138,11 @@ describe('CodeMaatAnalyser', function() {
   });
 
   describe('authors analysis', function() {
+    prepareAnalyserStream('authors');
+    verifyInstallCheck();
+
     it('returns a stream of the authors data for each repository file', function(done) {
-      analyserStream('authors')
-      .on('data', function(data) {
+      this.subject.on('data', function(data) {
         expect(data).toEqual([
           { path: 'test/path1', authors: 6, revisions: 18 },
           { path: 'test/path2', authors: 5, revisions: 7 },
@@ -138,9 +166,11 @@ describe('CodeMaatAnalyser', function() {
   });
 
   describe('entity-ownership analysis', function() {
+    prepareAnalyserStream('entity-ownership');
+    verifyInstallCheck();
+
     it('returns a stream of the entity-ownership data for each repository file', function(done) {
-      analyserStream('entity-ownership')
-      .on('data', function(data) {
+      this.subject.on('data', function(data) {
         expect(data).toEqual([
           { path: 'test/path1', author: 'Pat', added: 3 },
           { path: 'test/path2', author: 'Jason', added: 34 },

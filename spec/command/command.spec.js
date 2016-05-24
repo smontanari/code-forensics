@@ -1,7 +1,35 @@
 var childProcess = require('child_process'),
     stream       = require('stream');
 
-var command = require_src('command');
+var command = require_src('command'),
+    utils = require_src('utils');
+
+describe('Command.ensure()', function() {
+  beforeEach(function() {
+    this.commandDef = {};
+
+    spyOn(command.Command.definitions, 'getDefinition').and.returnValue(this.commandDef);
+  });
+
+  describe('when an installCheck function is provided', function() {
+    beforeEach(function() {
+      this.commandDef.installCheck = jasmine.createSpy('command check');
+    });
+
+    it('uses the installCheck function to ensure the command is available', function() {
+      command.Command.ensure('test-command');
+
+      expect(this.commandDef.installCheck).toHaveBeenCalled();
+      expect(this.commandDef.installCheck.calls.mostRecent().object).toBe(utils.platformCheck);
+    });
+  });
+
+  describe('when no installCheck function is provided', function() {
+    it('performs no check and no errors are returned', function() {
+      command.Command.ensure('test-command');
+    });
+  });
+});
 
 describe('command', function() {
   beforeEach(function() {
