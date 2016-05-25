@@ -18,7 +18,7 @@ describe('MultiStreamCollector', function() {
     ];
     var streamFnList = _.map(streams, function(s) { return function() { return s; }; });
 
-    this.subject.mergeStream(streamFnList)
+    this.subject.mergeAll(streamFnList)
     .pipe(reduce(function(data, chunk) { return data + chunk; }, ""))
     .on('data', function(s) {
       expect(s.toString()).toEqual('data-0 data-1 data-1 data-0 ');
