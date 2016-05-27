@@ -41,17 +41,18 @@
   .label {
     font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
     text-anchor: middle;
+
     &.label-parent {
-      fill: #04F;
+      fill: #0044ff;
       font-weight: bold;
       text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
     }
     &.label--light {
-      fill: #000;
+      fill: #000000;
       text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
     }
     &.label--heavy {
-      fill: #FFF;
+      fill: #ffffff;
       text-shadow: 0 1px 0 #000, 1px 0 0 #000, -1px 0 0 #000, 0 -1px 0 #000;
     }
   }
@@ -68,11 +69,23 @@
 }
 
 .line-chart {
-  .axis path,
-  .axis line {
-    fill: none;
-    stroke: #000;
-    shape-rendering: crispEdges;
+  background-color: #f3f9ff;
+
+  .x, .y {
+    fill: #0044ff;
+    .label {
+      // font-weight: bold;
+      text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
+      font-size: large;
+    }
+  }
+
+  .axis {
+    path, .line {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
   }
 
   .line {

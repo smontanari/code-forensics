@@ -19,7 +19,7 @@
       </div>
     </div>
     <div data-bind="foreach: graphModels">
-      <div data-bind="if: controlsTemplateId &amp;&amp; isSelected">
+      <div data-bind="if: controlsTemplateId() &amp;&amp; isSelected">
         <div data-bind="template: {name: controlsTemplateId}"></div>
       </div>
     </div>
