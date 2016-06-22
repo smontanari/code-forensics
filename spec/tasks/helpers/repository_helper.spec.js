@@ -22,7 +22,7 @@ describe('repositoryHelper', function() {
           { id: 'file3', path: 'test/valid-path/file3' }
         ]);
         done();
-      })
+      });
 
       this.inputStream.write({ id: 'file1', path: 'test/valid-path/file1' });
       this.inputStream.write({ id: 'file2', path: 'test/invalid-path/file2' });
@@ -42,7 +42,7 @@ describe('repositoryHelper', function() {
           { id: 'file2', path: '/repo-root/test/file2' }
         ]);
         done();
-      })
+      });
 
       this.inputStream.write({ id: 'file1', path: 'test/file1' });
       this.inputStream.write({ id: 'file2', path: 'test/file2' });

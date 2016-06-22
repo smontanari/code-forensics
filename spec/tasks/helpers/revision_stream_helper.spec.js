@@ -51,7 +51,7 @@ describe('RevisionStreamHelper', function() {
       });
 
       var revisionStream = new stream.PassThrough({ objectMode: true });
-      this.mockGit.showRevisionStream.and.returnValue(revisionStream)
+      this.mockGit.showRevisionStream.and.returnValue(revisionStream);
 
       this.subject.revisionAnalysisStream('/test/file', 'date-range', analyserFn);
       streamAnalysisFn({ revisionId: '123', date: '2014-01-31' })

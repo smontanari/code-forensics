@@ -3,7 +3,7 @@ var WeightedTree = require_src('graph_support/weighted_tree');
 describe('WeightedTree', function() {
   it('returns a one node tree with no weight', function() {
     var node = new WeightedTree('test/root', 'branch', {weightedProperty: 'value'}).rootNode();
-    expect(node.name).toBeUndefined()
+    expect(node.name).toBeUndefined();
     expect(node.children).toEqual([]);
   });
 
