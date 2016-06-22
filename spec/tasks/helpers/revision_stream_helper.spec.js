@@ -9,8 +9,8 @@ var RevisionStreamHelper = require_src('tasks/helpers/revision_stream_helper'),
 
 describe('RevisionStreamHelper', function() {
   beforeEach(function() {
-    this.mockGit = jasmine.createSpyObj('Git', ['revisions', 'showRevisionStream']);
-    spyOn(vcsSupport, 'Git').and.returnValue(this.mockGit);
+    this.mockVcs = jasmine.createSpyObj('vcs adapter', ['revisions', 'showRevisionStream']);
+    spyOn(vcsSupport, 'adapter').and.returnValue(this.mockVcs);
 
     this.subject = new RevisionStreamHelper({ root: 'repo_root' }, 'jobRunner');
   });
@@ -23,14 +23,14 @@ describe('RevisionStreamHelper', function() {
     };
 
     beforeEach(function() {
-      this.mockGit.revisions.and.returnValue(['revision1', 'revision2']);
+      this.mockVcs.revisions.and.returnValue(['revision1', 'revision2']);
 
       this.mockStreamCollector = jasmine.createSpyObj('objectStreamCollector', ['mergeAll']);
       spyOn(pp, 'objectStreamCollector').and.returnValue(this.mockStreamCollector);
     });
 
-    it('creates a Git object with the repository root', function() {
-      expect(vcsSupport.Git).toHaveBeenCalledWith('repo_root');
+    it('creates a vcs Adapter object with the repository root', function() {
+      expect(vcsSupport.adapter).toHaveBeenCalledWith('repo_root');
     });
 
     it('returns the stream aggregate of all the revisions', function() {
@@ -39,7 +39,7 @@ describe('RevisionStreamHelper', function() {
 
       expect(this.subject.revisionAnalysisStream('/test/file', 'date-range')).toEqual('final stream');
 
-      expect(this.mockGit.revisions).toHaveBeenCalledWith('/test/file', 'date-range');
+      expect(this.mockVcs.revisions).toHaveBeenCalledWith('/test/file', 'date-range');
       expect(utils.functions.arrayToFnFactory).toHaveBeenCalledWith(['revision1', 'revision2'], jasmine.any(Function));
       expect(this.mockStreamCollector.mergeAll).toHaveBeenCalledWith('revisions');
     });
@@ -51,7 +51,7 @@ describe('RevisionStreamHelper', function() {
       });
 
       var revisionStream = new stream.PassThrough({ objectMode: true });
-      this.mockGit.showRevisionStream.and.returnValue(revisionStream);
+      this.mockVcs.showRevisionStream.and.returnValue(revisionStream);
 
       this.subject.revisionAnalysisStream('/test/file', 'date-range', analyserFn);
       streamAnalysisFn({ revisionId: '123', date: '2014-01-31' })

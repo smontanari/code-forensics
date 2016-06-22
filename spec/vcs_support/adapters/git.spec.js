@@ -1,4 +1,4 @@
-var Git        = require_src('vcs_support/git'),
+var Git        = require_src('vcs_support/adapters/git'),
     command    = require_src('command');
 
 describe('git command definition', function() {
