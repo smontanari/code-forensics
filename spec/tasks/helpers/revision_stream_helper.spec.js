@@ -12,7 +12,7 @@ describe('RevisionStreamHelper', function() {
     this.mockVcs = jasmine.createSpyObj('vcs adapter', ['revisions', 'showRevisionStream']);
     spyOn(vcsSupport, 'adapter').and.returnValue(this.mockVcs);
 
-    this.subject = new RevisionStreamHelper({ root: 'repo_root' }, 'jobRunner');
+    this.subject = new RevisionStreamHelper('repo_root', 'jobRunner');
   });
 
   describe('.revisionAnalysisStream()', function() {

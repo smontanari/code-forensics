@@ -2,7 +2,6 @@ var _ = require('lodash');
 
 var TaskContext  = require_src('runtime/task_context').TaskContext,
     timeInterval = require_src('time_interval/builder'),
-    pp           = require_src('parallel_processing'),
     repository   = require_src('runtime/repository'),
     appConfig    = require_src('runtime/app_config');
 
@@ -21,7 +20,6 @@ describe('TaskContext', function() {
     spyOn(timeInterval, 'Builder').and.returnValue(mockPeriodBuilder);
 
     spyOn(repository, 'RepositoryConfiguration').and.returnValue({obj: 'test-repo'});
-    spyOn(pp, 'ParallelJobRunner').and.returnValue({obj: 'test-runner'});
   });
 
   it('initialises the repository configuration', function() {
@@ -29,14 +27,6 @@ describe('TaskContext', function() {
 
     expect(repository.RepositoryConfiguration).toHaveBeenCalledWith('repo-config');
     expect(ctx.repository).toEqual({obj: 'test-repo'});
-  });
-
-  it('initialises a job runner', function() {
-    appConfig.maxConcurrency = 5;
-    var ctx = new TaskContext({}, {});
-
-    expect(pp.ParallelJobRunner).toHaveBeenCalledWith(5);
-    expect(ctx.jobRunner).toEqual({obj: 'test-runner'});
   });
 
   it('creates the time periods and a date range', function() {
