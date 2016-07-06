@@ -1,15 +1,24 @@
-.metric-filter {
+.filter {
   padding: 0 5px;
   color: #4682B4;
   font-size: small;
   font-weight: bold;
   margin-bottom: 0;
 
-  output {
-    float: right;
-    color: #000;
-    padding-right: 5px;
-    font-weight: normal;
-    text-align: right;
+  &.metric-filter {
+    output {
+      float: right;
+      color: #000;
+      padding-right: 5px;
+      font-weight: normal;
+      text-align: right;
+    }
+  }
+}
+
+.filter-parameter {
+  input[type=text] {
+    width: 190px;
+    margin: 5px 0px 0px 5px;
   }
 }

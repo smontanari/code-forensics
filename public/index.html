@@ -7,12 +7,12 @@
 
 <div id="container">
   <div class="report-info">
-    <span class="title" data-bind="text: metadata.title"></span>
+    <span class="title" data-bind="text: metadata.title"></span><span class="title" data-bind="if: metadata.description"> &ndash; </span>
     <span class="description" data-bind="text: metadata.description"></span>
   </div>
   <div class="report-controls">
     <h2 data-bind="text: metadata.diagramSelectionTitle"></h2>
-    <div class="diagram-selection" data-bind="foreach: graphModels">
+    <div class="diagram-selection" data-bind="visible: hasMultipleGraphs, foreach: graphModels">
       <div>
         <input type="radio" data-bind="attr: {name: id, checked: isSelected}">
         <label data-bind="text: label, attr: {for: id}, click: $root.controller.selectGraph"></label>

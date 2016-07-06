@@ -1,6 +1,8 @@
 .graph-container {
   .diagram {
     &.circle-packing-diagram {
+      width: 960px;
+      height: 960px;
       background-color: #333;
       svg {
         padding: 5px;
@@ -11,10 +13,13 @@
     }
     &.bar-chart-diagram {
       border: solid 1px #A0A0A0;
+      width: 960px;
+      height: 680px;
+      overflow: auto;
     }
   }
   .msg-large {
-    color: #dd1010;
+    color: #DD1010;
     text-align: center;
     font-size: large;
   }
@@ -32,7 +37,7 @@
       stroke-width: 2px;
     }
     &.node--leaf {
-      fill: #fff;
+      fill: #FFF;
       stroke: #777;
       stroke-width: 1px;
     }
@@ -45,11 +50,11 @@
     &.label-parent {
       fill: #0044ff;
       font-weight: bold;
-      text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
+      text-shadow: 0 1px 0 #FFF, 1px 0 0 #FFF, -1px 0 0 #FFF, 0 -1px 0 #FFF;
     }
     &.label--light {
       fill: #000000;
-      text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
+      text-shadow: 0 1px 0 #FFF, 1px 0 0 #FFF, -1px 0 0 #FFF, 0 -1px 0 #FFF;
     }
     &.label--heavy {
       fill: #ffffff;
@@ -65,17 +70,16 @@
   .node--leaf {
     pointer-events: fill;
   }
-
 }
 
 .line-chart {
-  background-color: #f3f9ff;
+  background-color: #F3F9FF;
 
   .x, .y {
     fill: #0044ff;
     .label {
       // font-weight: bold;
-      text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
+      text-shadow: 0 1px 0 #FFF, 1px 0 0 #FFF, -1px 0 0 #FFF, 0 -1px 0 #FFF;
       font-size: large;
     }
   }
@@ -92,14 +96,37 @@
     fill: none;
     stroke-width: 2px;
   }
+
+  .tick line {
+      stroke: #D3D3D3;
+      opacity: 0.7;
+  }
 }
 
 .bar-chart {
+  padding: 10px;
   .axis {
     path, line {
       fill: none;
       stroke: #000;
+      stroke-width: 2;
       shape-rendering: crispEdges;
+    }
+  }
+
+  .bars {
+    text {
+      font-size: 14px;
+    }
+  }
+
+  .tick {
+    line {
+      stroke: #D3D3D3;
+      opacity: 0.7;
+    }
+    text {
+      font-size: 12px;
     }
   }
 }
