@@ -42,46 +42,110 @@ describe('FlogAnalyser', function() {
   });
 
   describe('.fileAnalysisStream()', function() {
-    it('parses and streams results from the flog command applied to a file', function(done) {
-      var commadStream = new stream.PassThrough();
-      spyOn(command, 'stream').and.returnValue(commadStream);
+    describe('without any transformation', function() {
+      it('parses and streams results from the flog command applied to a file', function(done) {
+        var commadStream = new stream.PassThrough();
+        spyOn(command, 'stream').and.returnValue(commadStream);
+        var report;
 
-      this.subject.fileAnalysisStream('test/file')
-      .on('data', function(data) {
-        expect(command.stream).toHaveBeenCalledWith('flog', ['test/file']);
-        expect(data).toEqual({ path: 'test/file', flog: 'complexity report' });
-      })
-      .on('finish', done);
+        this.subject.fileAnalysisStream('test/file')
+        .on('data', function(data) {
+          report = data;
+        })
+        .on('finish', function() {
+          expect(command.stream).toHaveBeenCalledWith('flog', ['test/file']);
+          expect(report).toEqual({ path: 'test/file', flog: 'complexity report' });
+          done();
+        });
 
-      commadStream.write('complexity report');
-      commadStream.end();
+        commadStream.write('complexity report');
+        commadStream.end();
+      });
+    });
+
+    describe('with a transformation applied to the report', function() {
+      it('parses and streams results from the flog command applied to a file and tranforms the end report', function(done) {
+        var commadStream = new stream.PassThrough();
+        spyOn(command, 'stream').and.returnValue(commadStream);
+        var report;
+
+        this.subject.fileAnalysisStream('test/file', function(report) { return { test: 'some value', result: report.flog }; })
+        .on('data', function(data) {
+          report = data;
+        })
+        .on('finish', function() {
+          expect(command.stream).toHaveBeenCalledWith('flog', ['test/file']);
+          expect(report).toEqual({ test: 'some value', result: 'complexity report' });
+          done();
+        });
+
+        commadStream.write('complexity report');
+        commadStream.end();
+      });
     });
   });
 
   describe('.sourceAnalysisStream()', function() {
-    it('parses and streams results from the flog command applied to an input stream', function(done) {
-      var commandProcess = { stdin: new stream.PassThrough(), stdout: new stream.PassThrough() };
-      spyOn(command, 'create').and.returnValue({ asyncProcess: function() { return commandProcess; } });
+    describe('without any transformation', function() {
+      it('parses and streams results from the flog command applied to an input stream', function(done) {
+        var commandProcess = { stdin: new stream.PassThrough(), stdout: new stream.PassThrough() };
+        spyOn(command, 'create').and.returnValue({ asyncProcess: function() { return commandProcess; } });
+        var report;
 
-      commandProcess.stdin
-      .on('data', function(data) {
-        expect(data.toString()).toEqual('test content');
-        commandProcess.stdout.write('complexity report');
-      })
-      .on('end', function() {
-        commandProcess.stdout.end();
+        commandProcess.stdin
+        .on('data', function(data) {
+          expect(data.toString()).toEqual('test content');
+          commandProcess.stdout.write('complexity report');
+        })
+        .on('end', function() {
+          commandProcess.stdout.end();
+        });
+
+        var inputStream = new stream.PassThrough();
+        inputStream.pipe(this.subject.sourceAnalysisStream('test/file'))
+        .on('data', function(data) {
+          report = data;
+        })
+        .on('end', function() {
+          expect(report).toEqual({ path: 'test/file', flog: 'complexity report' });
+          expect(command.create).toHaveBeenCalledWith('flog', []);
+          done();
+        });
+
+        inputStream.write('test content');
+        inputStream.end();
       });
+    });
 
-      var inputStream = new stream.PassThrough();
-      inputStream.pipe(this.subject.sourceAnalysisStream('test/file'))
-      .on('data', function(data) {
-        expect(command.create).toHaveBeenCalledWith('flog', []);
-        expect(data).toEqual({ path: 'test/file', flog: 'complexity report' });
-      })
-      .on('end', done);
+    describe('with a transformation applied to the report', function() {
+      it('parses and streams results from the flog command applied to a stream and tranforms the end report', function(done) {
+        var commandProcess = { stdin: new stream.PassThrough(), stdout: new stream.PassThrough() };
+        spyOn(command, 'create').and.returnValue({ asyncProcess: function() { return commandProcess; } });
+        var report;
 
-      inputStream.write('test content');
-      inputStream.end();
+        commandProcess.stdin
+        .on('data', function(data) {
+          expect(data.toString()).toEqual('test content');
+          commandProcess.stdout.write('complexity report');
+        })
+        .on('end', function() {
+          commandProcess.stdout.end();
+        });
+
+        var inputStream = new stream.PassThrough();
+        inputStream.pipe(this.subject.sourceAnalysisStream('test/file', function(report) { return { test: 'some value', result: report.flog }; }))
+        .on('data', function(data) {
+          report = data;
+        })
+        .on('end', function() {
+          expect(report).toEqual({ test: 'some value', result: 'complexity report' });
+          expect(command.create).toHaveBeenCalledWith('flog', []);
+          done();
+        });
+
+        inputStream.write('test content');
+        inputStream.end();
+      });
     });
   });
 });
