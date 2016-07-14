@@ -56,4 +56,14 @@ describe('repositoryPath', function() {
       ]);
     });
   });
+
+  describe('.relativise()', function() {
+    it('returns the same path when it does not begin with the root', function() {
+      expect(repositoryPath.relativise('/test/root', 'root/some/path')).toEqual('root/some/path');
+    });
+
+    it('returns the path as relative to the root path', function() {
+      expect(repositoryPath.relativise('/test/root/', '/test/root/some/path')).toEqual('some/path');
+    });
+  });
 });
