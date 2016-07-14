@@ -28,6 +28,7 @@
 .circle-packing {
   .node {
     cursor: pointer;
+
     &:hover {
       stroke: #000;
       stroke-width: 1.5px;
@@ -35,17 +36,20 @@
     &.node--root {
       stroke: #777;
       stroke-width: 2px;
+      pointer-events: none;
     }
     &.node--leaf {
       fill: #FFF;
       stroke: #777;
       stroke-width: 1px;
+      pointer-events: fill;
     }
   }
 
   .label {
     font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
     text-anchor: middle;
+    pointer-events: none;
 
     &.label-parent {
       fill: #0044ff;
@@ -60,15 +64,6 @@
       fill: #ffffff;
       text-shadow: 0 1px 0 #000, 1px 0 0 #000, -1px 0 0 #000, 0 -1px 0 #000;
     }
-  }
-
-  .label,
-  .node--root {
-    pointer-events: none;
-  }
-
-  .node--leaf {
-    pointer-events: fill;
   }
 }
 
