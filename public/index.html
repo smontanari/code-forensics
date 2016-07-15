@@ -9,8 +9,8 @@
   <div class="report-info">
     <span class="title" data-bind="text: metadata.title"></span><span class="title" data-bind="if: metadata.description"> &ndash; </span>
     <span class="description" data-bind="text: metadata.description"></span>
-    <p class="time-period" data-bind="visible: timePeriod">
-      from <span data-bind="text: timePeriod.from"></span> to <span data-bind="text: timePeriod.to"></span>
+    <p class="time-period" data-bind="visible: timePeriod, with: timePeriod">
+      Time period: <span data-bind="text: from"></span> to <span data-bind="text: to"></span>
     </p>
   </div>
   <div class="report-controls">
