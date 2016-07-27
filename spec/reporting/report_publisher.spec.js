@@ -10,7 +10,7 @@ describe('ReportPublisher', function() {
       jasmine.clock().install();
       jasmine.clock().mockDate(new Date(2013, 9, 23));
       spyOn(fs, 'mkdir');
-      this.subject = new ReportPublisher('hotspot-analysis-report', {
+      this.subject = new ReportPublisher('hotspot-analysis', {
         dateRange: new TimePeriod('start', 'finish'),
         targetFile: 'test/file',
         boundary: 'test_boundary',
@@ -23,7 +23,7 @@ describe('ReportPublisher', function() {
     });
 
     it('creates the output folder', function() {
-      expect(fs.mkdir.calls.mostRecent().args[0]).toEqual('/test/output/e24b407c4abd71028891c51b72b42540e51d3643');
+      expect(fs.mkdir.calls.mostRecent().args[0]).toEqual('/test/output/f25c4175a548f46f6d1e49489b8406a5e985dac4');
     });
 
     describe('.addReportFile()', function() {
@@ -31,7 +31,7 @@ describe('ReportPublisher', function() {
         it('returns the full path to the file corresponding to the date range', function() {
           var filepath = this.subject.addReportFile();
 
-          expect(filepath).toEqual('/test/output/e24b407c4abd71028891c51b72b42540e51d3643/start_finish_revisions-hotspot-data.json');
+          expect(filepath).toEqual('/test/output/f25c4175a548f46f6d1e49489b8406a5e985dac4/start_finish_revisions-hotspot-data.json');
         });
       });
 
@@ -39,7 +39,7 @@ describe('ReportPublisher', function() {
         it('returns the full path to the file corresponding to the time period', function() {
           var filepath = this.subject.addReportFile(new TimePeriod('begin', 'end'));
 
-          expect(filepath).toEqual('/test/output/e24b407c4abd71028891c51b72b42540e51d3643/begin_end_revisions-hotspot-data.json');
+          expect(filepath).toEqual('/test/output/f25c4175a548f46f6d1e49489b8406a5e985dac4/begin_end_revisions-hotspot-data.json');
         });
       });
     });
@@ -56,8 +56,8 @@ describe('ReportPublisher', function() {
         this.subject.createManifest();
 
         var manifest = utils.json.objectToFile.calls.mostRecent().args[1];
-        expect(manifest.id).toEqual('e24b407c4abd71028891c51b72b42540e51d3643');
-        expect(manifest.reportType).toEqual('hotspot-analysis-report');
+        expect(manifest.id).toEqual('f25c4175a548f46f6d1e49489b8406a5e985dac4');
+        expect(manifest.reportType).toEqual('hotspot-analysis');
         expect(manifest.time).toEqual('2013-10-22T13:00:00.000Z');
         expect(manifest.dateRange).toEqual('start_finish');
         expect(manifest.targetFile).toEqual('test/file');
