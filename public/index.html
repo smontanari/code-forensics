@@ -2,42 +2,78 @@
 <meta charset="utf-8">
 <head>
   <link rel="stylesheet/less" media="screen, projection" type="text/css" href="styles/main.less" />
+  <style type="text/css" media="screen">
+    .hidden {
+      display: none;
+    }
+  </style>
 </head>
 <body>
 
-<div id="container">
-  <div class="report-info">
-    <span class="title" data-bind="text: metadata.title"></span><span class="title" data-bind="if: metadata.description"> &ndash; </span>
-    <span class="description" data-bind="text: metadata.description"></span>
-    <p class="time-period" data-bind="visible: timePeriod, with: timePeriod">
-      Time period: <span data-bind="text: from"></span> to <span data-bind="text: to"></span>
-    </p>
-  </div>
-  <div class="report-controls">
-    <h2 data-bind="text: metadata.diagramSelectionTitle"></h2>
-    <div class="diagram-selection" data-bind="visible: hasMultipleGraphs, foreach: graphModels">
-      <div>
-        <input type="radio" data-bind="attr: {name: id, checked: isSelected}">
-        <label data-bind="text: label, attr: {for: id}, click: $root.controller.selectGraph"></label>
+<div id="container" class="hidden" data-bind="css: { hidden: false }">
+  <div data-bind="if: reportModel">
+    <div data-bind="with: reportModel">
+      <div class="report-info">
+        <span class="title" data-bind="text: metadata.title"></span><span class="title" data-bind="if: metadata.description"> &ndash; </span>
+        <span class="description" data-bind="text: metadata.description"></span>
+        <p class="time-period" data-bind="visible: metadata.dateRange, with: metadata.dateRange">
+          Date range: <span data-bind="text: from"></span> to <span data-bind="text: to"></span>
+        </p>
+      </div>
+      <div class="report-controls">
+        <h2 data-bind="text: metadata.diagramSelectionTitle"></h2>
+        <div class="diagram-selection" data-bind="visible: hasMultipleGraphs, foreach: graphModels">
+          <div>
+            <input type="radio" data-bind="attr: {name: id, checked: isSelected}">
+            <label data-bind="text: label, attr: {for: id}, click: $root.reportController.selectGraph"></label>
+          </div>
+        </div>
+        <div data-bind="foreach: graphModels">
+          <div data-bind="if: controlsTemplateId() &amp;&amp; isSelected">
+            <div data-bind="template: {name: controlsTemplateId}"></div>
+          </div>
+        </div>
+      </div>
+      <div class="graph-content" data-bind="foreach: graphModels">
+        <div class="graph-container" data-bind="css: {showing: isSelected}">
+          <div data-bind="visible: diagram.hasData">
+            <div class="diagram" data-bind="attr: {id: id}, css: diagramType"></div>
+          </div>
+          <div class="msg-large" data-bind="visible: !diagram.hasData()">No data available</div>
+        </div>
       </div>
     </div>
-    <div data-bind="foreach: graphModels">
-      <div data-bind="if: controlsTemplateId() &amp;&amp; isSelected">
-        <div data-bind="template: {name: controlsTemplateId}"></div>
-      </div>
-    </div>
   </div>
-  <div class="graph-content" data-bind="foreach: graphModels">
-    <div class="graph-container" data-bind="css: {showing: isSelected}">
-      <div data-bind="visible: diagram.hasData">
-        <div class="diagram" data-bind="attr: {id: id}, css: diagramType"></div>
-      </div>
-      <div data-bind="visible: !diagram.hasData()" class="msg-large">No data available</div>
+  <div data-bind="if: reportsListModel">
+    <div class="reports-list" data-bind="with: reportsListModel">
+      <p class="title">Available reports</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Report type</th>
+            <th>Time</th>
+            <th>Parameters</th>
+          </tr>
+        </thead>
+        <tbody data-bind="foreach: reportsInfo">
+          <tr>
+            <td>
+              <a data-bind="text: reportType, attr: { href: reportUrl }"/>
+            </td>
+            <td><span data-bind="text: time"></span></td>
+            <td data-bind="foreach: parameters">
+              <div class="report-parameter">
+                <span class="label" data-bind="text: name"></span><span data-bind="text: value"></span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </div>
-
 <div id="templates"></div>
+
 <script src="/lib/less/dist/less.min.js"></script>
 <script src="/lib/systemjs/dist/system.js"></script>
 <script src="/js/bootstrap.js"></script>
