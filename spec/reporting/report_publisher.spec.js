@@ -48,8 +48,8 @@ describe('ReportPublisher', function() {
       beforeEach(function() {
         spyOn(utils.json, 'objectToFile');
         spyOn(utils.messages, 'logReportUrl');
-        this.subject.addReportFile(new TimePeriod('p1Start', 'p1End'));
         this.subject.addReportFile(new TimePeriod('p2Start', 'p2End'));
+        this.subject.addReportFile(new TimePeriod('p1Start', 'p1End'));
       });
 
       it('creates a manifest file', function() {

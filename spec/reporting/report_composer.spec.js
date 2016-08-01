@@ -56,7 +56,39 @@ describe('ReportComposer', function() {
     });
   });
 
-  describe('when merging multiple reports', function() {
+  describe('.merge()', function() {
+    it('builds a report from the merged data sources', function(done) {
+      var matchFn = function(d1, d2) { return d1.a === d2.a; };
+      spyOn(utils.fileSystem, 'isFile').and.returnValue(true);
+      spyOn(utils.json, 'fileToObject').and.returnValue(
+        Q([{ a: 123, c: "XXX" }, { a: 456, c: "YYY" }, { a: 789, c: 'ZZZ' }])
+      );
+      var inputStream = new stream.PassThrough({ objectMode: true });
+
+      new ReportComposer([
+        { a: 123, b: "zxc" },
+        { a: 456, b: "vbn" }
+      ]).mergeAll([
+        { source: 'test/file.json', matchFn: matchFn, transformOption: 'c'},
+        { source: inputStream, matchFn: matchFn, transformOption: function(item) { return { d: item.d }; }}
+      ]).buildReport().then(function(reportData) {
+        expect(reportData).toEqual([
+          { a: 123, b: "zxc", c: 'XXX', d: { d1: 111, d2: 222 } },
+          { a: 456, b: "vbn", c: 'YYY', d: { d1: 333, d2: 444 } },
+        ]);
+        expect(utils.fileSystem.isFile).toHaveBeenCalledWith('test/file.json');
+        expect(utils.json.fileToObject).toHaveBeenCalledWith('test/file.json');
+        done();
+      });
+
+      inputStream.write({ a: 123, d: { d1: 111, d2: 222 } });
+      inputStream.write({ a: 456, d: { d1: 333, d2: 444 } });
+      inputStream.write({ a: 789, d: { d1: 555, d2: 666 } });
+      inputStream.end();
+    });
+  });
+
+  describe('.mergeWith()', function() {
     it('builds a report from the merged data sources', function(done) {
       var matchFn = function(d1, d2) { return d1.a === d2.a; };
       spyOn(utils.fileSystem, 'isFile').and.returnValue(true);
