@@ -1,34 +1,52 @@
-var reportHelper = require_src('tasks/helpers/report_helper'),
+var stream = require('stream'),
+    Q      = require('q');
+
+var ReportHelper = require_src('tasks/helpers/report_helper'),
     reporting = require_src('reporting');
 
 describe('reportHelper', function() {
-  describe('.hotspotAnalysis()', function() {
-    var mockComposer;
+  describe('.publish()', function() {
+    var mockPublisher;
+
     beforeEach(function() {
-      mockComposer = jasmine.createSpyObj('composer', ['mergeWith', 'buildReport']);
-      spyOn(reporting, 'ReportComposer').and.returnValue(mockComposer);
-      mockComposer.buildReport.and.returnValue('test-report');
+      mockPublisher = jasmine.createSpyObj('publisher', ['publish', 'createManifest']);
+      spyOn(reporting, 'Publisher').and.returnValue(mockPublisher);
+      this.subject = new ReportHelper('test_context');
     });
 
-    it('uses a path matching function in the composer', function() {
-      mockComposer.mergeWith.and.callFake(function(file, fn, prop) {
-        expect(fn({path: 'test/path'}, {path: 'test/path'})).toBe(true);
-        expect(fn({path: 'test/path1'}, {path: 'test/path2'})).toBe(false);
-        return mockComposer;
+    describe('when generating a report stream', function() {
+      it('creates the report manifest when the stream is closed', function(done) {
+        var testStream = new stream.PassThrough()
+
+        var output = this.subject.publish('test-report-type', function() {
+          return testStream;
+        });
+        expect(reporting.Publisher).toHaveBeenCalledWith('test-report-type', 'test_context');
+        expect(mockPublisher.createManifest).not.toHaveBeenCalled();
+
+        output.on('close', function() {
+          expect(mockPublisher.createManifest).toHaveBeenCalled();
+          done();
+        });
+
+        testStream.emit('close');
       });
-
-      reportHelper.hotspotAnalysis('slocFile', 'revisionsFile', ['complexityFile1', 'complexityFile2']);
     });
 
-    it('composes a report out of the given data sources', function() {
-      var output = reportHelper.hotspotAnalysis('slocFile', 'revisionsFile', ['complexityFile1', 'complexityFile2']);
+    describe('when generating a report promise', function() {
+      it('creates the report manifest when the promise is fulfilled', function(done) {
+        var deferred = Q.defer();
 
-      expect(output).toEqual('test-report');
-
-      expect(reporting.ReportComposer).toHaveBeenCalledWith('slocFile');
-      expect(mockComposer.mergeWith).toHaveBeenCalledWith('revisionsFile', jasmine.any(Function), 'revisions');
-      expect(mockComposer.mergeWith).toHaveBeenCalledWith('complexityFile1', jasmine.any(Function), 'totalComplexity');
-      expect(mockComposer.mergeWith).toHaveBeenCalledWith('complexityFile2', jasmine.any(Function), 'totalComplexity');
+        this.subject.publish('test-report-type', function() {
+          return deferred.promise;
+        }).then(function() {
+          expect(mockPublisher.createManifest).toHaveBeenCalled();
+          done();
+        });
+        expect(reporting.Publisher).toHaveBeenCalledWith('test-report-type', 'test_context');
+        expect(mockPublisher.createManifest).not.toHaveBeenCalled();
+        deferred.resolve();
+      });
     });
   });
 });
