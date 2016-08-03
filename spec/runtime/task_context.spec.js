@@ -50,15 +50,17 @@ describe('TaskContext', function() {
       tempDir: '/test-temp-dir',
       outputDir: '/test-out-dir',
       dateFormat: 'XXXX',
-      architecturalBoundaries: {obj: 'boundary'},
+      architecturalBoundaries: {'test-boundary-name': 'test-boundaries'},
       commitCloudFilters: [/filter1/, 'filter2'],
       languages: ['lang1', 'lang2']
-    }, {});
+    }, { boundary: 'test-boundary-name', taskName: 'test-task', frequency: 'test-frequency' });
 
     expect(ctx.tempDir).toEqual('/test-temp-dir');
     expect(ctx.outputDir).toEqual('/test-out-dir');
     expect(ctx.dateFormat).toEqual('XXXX');
-    expect(ctx.architecturalBoundaries).toEqual({obj: 'boundary'});
+    expect(ctx.helpTaskName).toEqual('test-task');
+    expect(ctx.frequency).toEqual('test-frequency');
+    expect(ctx.boundaryDefinition).toEqual({ name: 'test-boundary-name', boundaries: 'test-boundaries' });
     expect(ctx.commitCloudFilters).toEqual([/filter1/, 'filter2']);
     expect(ctx.languages).toEqual(['lang1', 'lang2']);
   });

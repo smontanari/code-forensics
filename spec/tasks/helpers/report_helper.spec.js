@@ -11,30 +11,31 @@ describe('reportHelper', function() {
     beforeEach(function() {
       mockPublisher = jasmine.createSpyObj('publisher', ['publish', 'createManifest']);
       spyOn(reporting, 'Publisher').and.returnValue(mockPublisher);
+
       this.subject = new ReportHelper('test_context');
     });
 
     describe('when generating a report stream', function() {
       it('creates the report manifest when the stream is closed', function(done) {
+        var self = this;
         var testStream = new stream.PassThrough()
 
-        var output = this.subject.publish('test-report-type', function() {
+        this.subject.publish('test-report-type', function() {
           return testStream;
+        }).then(function() {
+          expect(mockPublisher.createManifest).toHaveBeenCalled();
+          done();
         });
         expect(reporting.Publisher).toHaveBeenCalledWith('test-report-type', 'test_context');
         expect(mockPublisher.createManifest).not.toHaveBeenCalled();
 
-        output.on('close', function() {
-          expect(mockPublisher.createManifest).toHaveBeenCalled();
-          done();
-        });
-
-        testStream.emit('close');
+        testStream.end();
       });
     });
 
     describe('when generating a report promise', function() {
       it('creates the report manifest when the promise is fulfilled', function(done) {
+        var self = this;
         var deferred = Q.defer();
 
         this.subject.publish('test-report-type', function() {
