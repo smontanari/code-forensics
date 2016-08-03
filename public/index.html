@@ -21,11 +21,13 @@
         </p>
       </div>
       <div class="report-controls">
-        <h2 data-bind="text: metadata.diagramSelectionTitle"></h2>
-        <div class="diagram-selection" data-bind="visible: hasMultipleGraphs, foreach: graphModels">
-          <div>
-            <input type="radio" data-bind="attr: {name: id, checked: isSelected}">
-            <label data-bind="text: label, attr: {for: id}, click: $root.reportController.selectGraph"></label>
+        <div data-bind="visible: hasMultipleGraphs">
+          <h2 data-bind="text: metadata.diagramSelectionTitle"></h2>
+          <div class="diagram-selection" data-bind="foreach: graphModels">
+            <div>
+              <input type="radio" data-bind="attr: {name: id, checked: isSelected}">
+              <label data-bind="text: label, attr: {for: id}, click: $root.reportController.selectGraph"></label>
+            </div>
           </div>
         </div>
         <div data-bind="foreach: graphModels">
