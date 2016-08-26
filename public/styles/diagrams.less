@@ -1,8 +1,6 @@
 .graph-container {
   .diagram {
     &.circle-packing-diagram {
-      width: 960px;
-      height: 960px;
       background-color: #333333;
       svg {
         padding: 5px;
@@ -13,9 +11,23 @@
     }
     &.bar-chart-diagram {
       border: solid 1px #A0A0A0;
-      width: 960px;
-      height: 680px;
       overflow: auto;
+      background-color: #F3F9FF;
+
+      .chart-axis {
+        background-color: #F3F9FF;
+        path {
+          fill: none;
+          stroke: #000000;
+          shape-rendering: crispEdges;
+        }
+
+        .tick {
+          text {
+            fill: #0044ff;
+          }
+        }
+      }
     }
   }
   .msg-large {
@@ -40,6 +52,7 @@
       pointer-events: none;
     }
     &.node--leaf {
+      cursor: default;
       fill: #FFFFFF;
       stroke: #777777;
       stroke-width: 1px;
@@ -71,19 +84,28 @@
 .line-chart {
   background-color: #F3F9FF;
 
-  .x, .y {
-    fill: #0044ff;
-    .label {
-      text-shadow: 0 1px 0 #FFF, 1px 0 0 #FFF, -1px 0 0 #FFF, 0 -1px 0 #FFF;
-      font-size: large;
-    }
-  }
-
   .axis {
-    path, .line {
+    path {
       fill: none;
-      stroke: #000;
+      stroke: #000000;
       shape-rendering: crispEdges;
+    }
+    .tick {
+      line {
+        fill: none;
+        stroke-width: 1px;
+        stroke: #D3D3D3;
+        opacity: 0.7;
+      }
+      text {
+        fill: #0044ff;
+      }
+    }
+
+    .label {
+      fill: #0044ff;
+      font-size: large;
+      text-anchor: end;
     }
   }
 
@@ -92,20 +114,38 @@
     stroke-width: 2px;
   }
 
-  .tick line {
-      stroke: #D3D3D3;
-      opacity: 0.7;
+  .legend {
+    text {
+      font-size: 12px;
+      text-anchor: end;
+    }
   }
 }
 
 .bar-chart {
-  padding: 10px;
   .axis {
-    path, line {
+    path {
       fill: none;
-      stroke: #000;
-      stroke-width: 2;
+      stroke: #000000;
       shape-rendering: crispEdges;
+    }
+
+    .tick {
+      line {
+        fill: none;
+        stroke-width: 1px;
+        stroke: #D3D3D3;
+        opacity: 0.7;
+      }
+      text {
+        fill: #0044ff;
+      }
+    }
+
+    .label {
+      fill: #0044ff;
+      font-size: large;
+      text-anchor: end;
     }
   }
 
@@ -115,13 +155,10 @@
     }
   }
 
-  .tick {
-    line {
-      stroke: #D3D3D3;
-      opacity: 0.7;
-    }
+  .legend {
     text {
       font-size: 12px;
+      text-anchor: end;
     }
   }
 }

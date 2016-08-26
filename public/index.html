@@ -39,7 +39,7 @@
       <div class="graph-content" data-bind="foreach: graphModels">
         <div class="graph-container" data-bind="css: {showing: isSelected}">
           <div data-bind="visible: diagram.hasData">
-            <div class="diagram" data-bind="attr: {id: id}, css: diagramType"></div>
+            <div class="diagram" data-bind="attr: {id: id}, style: {width: diagram.width, height: diagram.height}, css: diagram.cssClass"></div>
           </div>
           <div class="msg-large" data-bind="visible: !diagram.hasData()">No data available</div>
         </div>
