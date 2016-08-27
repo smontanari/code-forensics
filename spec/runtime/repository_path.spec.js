@@ -1,5 +1,6 @@
-var repositoryPath = require_src('runtime/repository_path'),
-    fs             = require('fs');
+var fs = require('fs');
+
+var repositoryPath = require_src('runtime/repository_path');
 
 describe('repositoryPath', function() {
   beforeEach(function() {

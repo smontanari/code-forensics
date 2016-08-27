@@ -26,23 +26,23 @@ describe('Parser', function() {
 
       expect(this.subject('test source', { c: 'zxc' })).toEqual('test AST');
       expect(espree.parse.calls.allArgs()).toEqual([
-        [ 'test source', { a: 123, b: 456, c: 'zxc', sourceType: 'script' } ],
-        [ 'test source', { a: 123, b: 456, c: 'zxc', sourceType: 'module' } ]
+        ['test source', { a: 123, b: 456, c: 'zxc', sourceType: 'script' }],
+        ['test source', { a: 123, b: 456, c: 'zxc', sourceType: 'module' }]
       ]);
     });
   });
 
   describe("when parsing with 'script' and 'module' sourceType option fails", function() {
     it("throws the last parsing error", function() {
-      spyOn(espree, 'parse').and.callFake(function(source, options) {
+      spyOn(espree, 'parse').and.callFake(function() {
         throw new Error('Parsing error');
       });
 
       expect(this.subject.bind(this.subject, 'test source', { c: 'zxc' })).toThrowError('Parsing error');
 
       expect(espree.parse.calls.allArgs()).toEqual([
-        [ 'test source', { a: 123, b: 456, c: 'zxc', sourceType: 'script' } ],
-        [ 'test source', { a: 123, b: 456, c: 'zxc', sourceType: 'module' } ]
+        ['test source', { a: 123, b: 456, c: 'zxc', sourceType: 'script' }],
+        ['test source', { a: 123, b: 456, c: 'zxc', sourceType: 'module' }]
       ]);
     });
   });

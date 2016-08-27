@@ -50,10 +50,10 @@ describe('WeightedCollection', function() {
         it('assigns the weights corresponding to the property value', function() {
           var wcoll = new WeightedCollection(function(item) { return item.value + 1; }, false);
           _.each(collection, function(item) { wcoll.addItem(item); }, this);
-          wcoll.assignWeights('_weight');
+          wcoll.assignWeights('a_weight');
 
           _.each([3, 6, 8], function(value, idx) {
-            expect(collection[idx]._weight).toEqual(value);
+            expect(collection[idx].a_weight).toEqual(value);
           });
         });
       });

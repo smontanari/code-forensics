@@ -105,7 +105,7 @@ describe('SlocAnalyser', function() {
         var inputStream = new stream.PassThrough();
 
         inputStream.pipe(this.subject.sourceAnalysisStream('test/file.txt'))
-        .on('data', function(report) {
+        .on('data', function() {
           fail('the stream has data when it should not');
         })
         .on('end', done);

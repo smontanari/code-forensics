@@ -24,7 +24,7 @@ describe('ReportComposer', function() {
     it('builds a report from the file data', function(done) {
       spyOn(utils.fileSystem, 'isFile').and.returnValue(true);
       spyOn(utils.json, 'fileToObject').and.returnValue(
-        Q([{ a: 123, b: "zxc" },{ a: 456, b: "vbn" }])
+        Q([{ a: 123, b: "zxc" }, { a: 456, b: "vbn" }])
       );
 
       new ReportComposer('test/file.json').buildReport().then(function(reportData) {

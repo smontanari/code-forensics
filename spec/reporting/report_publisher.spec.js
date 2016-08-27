@@ -1,5 +1,6 @@
-var fs              = require('fs'),
-    ReportPublisher = require_src('reporting/report_publisher'),
+var fs              = require('fs');
+
+var ReportPublisher = require_src('reporting/report_publisher'),
     utils           = require_src('utils'),
     taskFiles       = require_src('runtime/task_files'),
     TimePeriod      = require_src('time_interval/time_period');

@@ -2,7 +2,7 @@ var gulp = require('gulp');
 var TaskDefinitions = require_src('runtime/task_definitions');
 
 describe('TaskDefinitions', function() {
-  var gulpStub;
+  var gulpTask;
 
   beforeEach(function() {
     gulpTask = spyOn(gulp, 'task');

@@ -2,8 +2,7 @@ var _ = require('lodash');
 
 var TaskContext  = require_src('runtime/task_context').TaskContext,
     timeInterval = require_src('time_interval/builder'),
-    repository   = require_src('runtime/repository'),
-    appConfig    = require_src('runtime/app_config');
+    repository   = require_src('runtime/repository');
 
 describe('TaskContext', function() {
   var mockPeriodBuilder;

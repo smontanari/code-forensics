@@ -58,12 +58,12 @@
     "gulp": "^3.9.1"
   },
   "devDependencies": {
+    "eslint": "^3.4.0",
     "jasmine": "^2.4.1",
-    "jasmine-spec-reporter": "^2.4.0",
-    "jshint": "^2.9.1"
+    "jasmine-spec-reporter": "^2.4.0"
   },
   "scripts": {
     "test": "./scripts/jasmine-runner.js",
-    "jshint": "./node_modules/jshint/bin/jshint lib spec scripts"
+    "lint": "./node_modules/.bin/eslint lib spec scripts --quiet"
   }
 }

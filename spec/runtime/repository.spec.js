@@ -3,7 +3,7 @@ var _    = require('lodash'),
     glob = require("glob");
 
 var RepositoryConfiguration = require_src('runtime/repository').RepositoryConfiguration,
-    repositoryPath          = require_src('runtime/repository_path');
+    repositoryPath          = require_src('runtime/repository_path'),
     languages               = require_src('runtime/language_definitions');
 
 describe('RepositoryConfiguration', function() {
@@ -20,8 +20,8 @@ describe('RepositoryConfiguration', function() {
   describe('.allFiles()', function() {
     beforeEach(function() {
       spyOn(repositoryPath, 'normalise').and.callFake(function(root, paths) {
-        if (paths == 'some/paths') { return ['/root/path/file1', '/root/path/file2', '/root/path/file3', '/root/path/file4']; }
-        if (paths == 'some/other/paths') { return ['/root/path/file2', '/root/path/file4']; }
+        if (paths === 'some/paths') { return ['/root/path/file1', '/root/path/file2', '/root/path/file3', '/root/path/file4']; }
+        if (paths === 'some/other/paths') { return ['/root/path/file2', '/root/path/file4']; }
       });
       spyOn(glob, 'sync').and.callFake(_.identity);
 
