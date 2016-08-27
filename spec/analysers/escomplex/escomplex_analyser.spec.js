@@ -1,17 +1,15 @@
 var stream    = require('stream'),
     fs        = require('fs'),
-    escomplex = require('escomplex/src/core');
+    escomplex = require('escomplex');
 
 var ESComplexAnalyser = require_src('analysers/escomplex/escomplex_analyser'),
-    Parser            = require_src('analysers/escomplex/parser');
+    Parser            = require_src('analysers/escomplex/parser'),
+    appConfig         = require_src('runtime/app_config');
 
 describe('ESComplexAnalyser', function() {
-  var mockParser;
-
   beforeEach(function() {
-    mockParser = jasmine.createSpyObj('parser', ['parse']);
-    mockParser.parse.and.returnValue('test abstract syntax tree');
-    spyOn(Parser, 'create').and.returnValue(mockParser);
+    appConfig.javascriptParser = { module: 'testParser', options: { a: 123, b: 456 }};
+    spyOn(Parser, 'create').and.returnValue('TestParser');
     spyOn(escomplex, 'analyse').and.returnValue({
       aggregate: { cyclomatic: 123 },
       functions: [
@@ -46,8 +44,7 @@ describe('ESComplexAnalyser', function() {
               { name: 'fn2', complexity: 789 }
             ]
           });
-          expect(mockParser.parse).toHaveBeenCalledWith('test content');
-          expect(escomplex.analyse).toHaveBeenCalledWith('test abstract syntax tree', jasmine.any(Object), jasmine.any(Object));
+          expect(escomplex.analyse).toHaveBeenCalledWith('test content', jasmine.any(Object), 'TestParser');
           expect(fs.readFile).toHaveBeenCalledWith('test/file.js', jasmine.any(Function));
           done();
         });
@@ -66,8 +63,7 @@ describe('ESComplexAnalyser', function() {
             test: 'some value',
             result: 123
           });
-          expect(mockParser.parse).toHaveBeenCalledWith('test content');
-          expect(escomplex.analyse).toHaveBeenCalledWith('test abstract syntax tree', jasmine.any(Object), jasmine.any(Object));
+          expect(escomplex.analyse).toHaveBeenCalledWith('test content', jasmine.any(Object), 'TestParser');
           expect(fs.readFile).toHaveBeenCalledWith('test/file.js', jasmine.any(Function));
           done();
         });
@@ -95,7 +91,7 @@ describe('ESComplexAnalyser', function() {
               { name: 'fn2', complexity: 789 }
             ]
           });
-          expect(escomplex.analyse).toHaveBeenCalledWith('test abstract syntax tree', jasmine.any(Object), jasmine.any(Object));
+          expect(escomplex.analyse).toHaveBeenCalledWith('test content', jasmine.any(Object), 'TestParser');
           done();
         });
 
@@ -118,7 +114,7 @@ describe('ESComplexAnalyser', function() {
             test: 'some value',
             result: 123
           });
-          expect(escomplex.analyse).toHaveBeenCalledWith('test abstract syntax tree', jasmine.any(Object), jasmine.any(Object));
+          expect(escomplex.analyse).toHaveBeenCalledWith('test content', jasmine.any(Object), 'TestParser');
           done();
         });
 
