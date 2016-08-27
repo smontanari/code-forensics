@@ -18,7 +18,7 @@ describe('reportHelper', function() {
     describe('when generating a report stream', function() {
       it('creates the report manifest when the stream is closed', function(done) {
         var self = this;
-        var testStream = new stream.PassThrough()
+        var testStream = new stream.PassThrough();
 
         this.subject.publish('test-report-type', function() {
           return testStream;

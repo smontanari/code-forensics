@@ -30,7 +30,7 @@
     "d3-tip": "^0.6.7",
     "del": "^2.2.0",
     "duplexer2": "^0.1.4",
-    "escomplex": "^2.0.0-alpha",
+    "escomplex": "escomplex/escomplex#fc78654e38d56d8d79c71ad8922950b8c34e6614",
     "esprima": "^2.7.2",
     "fancy-log": "^1.2.0",
     "glob": "^7.0.3",
