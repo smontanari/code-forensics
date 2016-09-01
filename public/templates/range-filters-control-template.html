@@ -1,0 +1,9 @@
+<script id="range-filters-control-template" type="text/html">
+  <h2>Filters</h2>
+  <div data-bind="foreach: diagram.filters">
+    <p class="filter metric-filter"><span data-bind="text: label"></span> <output data-bind="text: displayValue"></output></p>
+    <div class="slider">
+      <input class="bar" type="range" data-bind="textInput: inputContinuousValue, value:inputChangeValue"/>
+    </div>
+  </div>
+</script>

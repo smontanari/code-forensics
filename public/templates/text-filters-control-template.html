@@ -1,0 +1,9 @@
+<script id="text-filters-control-template" type="text/html">
+  <h2>Filters</h2>
+  <div data-bind="foreach: diagram.filters">
+    <p class="filter" data-bind="text: label"></p>
+    <div class="filter-parameter">
+      <input type="text" data-bind="textInput: inputValue"/>
+    </div>
+  </div>
+</script>
