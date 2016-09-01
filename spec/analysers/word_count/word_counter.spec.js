@@ -15,4 +15,19 @@ describe('WordCounter', function() {
       { text: 'qux', count: 1 }
     ]);
   });
+
+  it('handles special javascript keywords', function() {
+    var counter = new WordCounter();
+    counter.addWords(['foo', 'bar', 'constructor']);
+    counter.addWords(['bar', 'toString', 'qux']);
+    counter.addWords(['toString', 'bar', 'foo']);
+
+    expect(counter.report()).toEqual([
+      { text: 'bar',         count: 3 },
+      { text: 'foo',         count: 2 },
+      { text: 'toString',    count: 2 },
+      { text: 'constructor', count: 1 },
+      { text: 'qux',         count: 1 }
+    ]);
+  });
 });
