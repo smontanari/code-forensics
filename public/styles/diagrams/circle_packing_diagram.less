@@ -1,0 +1,81 @@
+.circle-packing-diagram {
+  background-color: #333333;
+  svg {
+    padding: 5px;
+  }
+  .circle-packing {
+    .node {
+      cursor: pointer;
+      pointer-events: visible;
+
+      &:hover {
+        stroke: #000000;
+        stroke-width: 1.5px;
+      }
+      &.node--root {
+        stroke: #777777;
+        stroke-width: 2px;
+        pointer-events: none;
+      }
+      &.node--leaf {
+        cursor: default;
+        fill: #FFFFFF;
+        stroke: #777777;
+        stroke-width: 1px;
+        pointer-events: fill;
+      }
+    }
+
+    .label {
+      font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
+      text-anchor: middle;
+      pointer-events: none;
+
+      &.label-parent {
+        fill: #0044ff;
+        font-weight: bold;
+        font-size: 16px;
+        text-shadow: 0 3px 0 #FFF, 3px 0 0 #FFF, -3px 0 0 #FFF, 0 -3px 0 #FFF;
+      }
+      &.label--light {
+        fill: #000000;
+        text-shadow: 0 2px 0 #FFF, 2px 0 0 #FFF, -2px 0 0 #FFF, 0 -2px 0 #FFF;
+      }
+      &.label--heavy {
+        fill: #ffffff;
+        text-shadow: 0 2px 0 #000, 2px 0 0 #000, -2px 0 0 #000, 0 -2px 0 #000;
+      }
+    }
+  }
+}
+
+.d3-tip {
+  &.circle-packing-diagram {
+    background-color: #FFF;
+    color: #000;
+    display: table;
+
+    .node-name {
+      font-size: 14px;
+      padding: 5px;
+      color: #FFF;
+      text-align: center;
+      background-color: #4682B4;
+      display: table-caption;
+      border-radius: 5px 5px 0 0;
+    }
+
+    .node-property {
+      display: table-row;
+      .property-label {
+        padding: 2px;
+        display: table-cell;
+      }
+      .property-value {
+        text-align: right;
+        display: table-cell;
+        color: #4682B4;
+      }
+    }
+  }
+}
