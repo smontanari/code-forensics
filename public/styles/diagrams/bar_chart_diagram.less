@@ -2,8 +2,11 @@
   overflow: auto;
   background-color: #F3F9FF;
 
-  .fixed-axis {
+  .opaque {
     background-color: #F3F9FF;
+  }
+
+  .axis {
     path {
       fill: none;
       stroke: #000000;
@@ -15,46 +18,24 @@
         fill: #0044ff;
       }
     }
+
+    .label {
+      fill: #0044ff;
+      font-size: large;
+      text-anchor: end;
+    }
   }
 
-  .bar-chart {
-    .axis {
-      path {
-        fill: none;
-        stroke: #000000;
-        shape-rendering: crispEdges;
-      }
-
-      .tick {
-        line {
-          fill: none;
-          stroke-width: 1px;
-          stroke: #D3D3D3;
-          opacity: 0.7;
-        }
-        text {
-          fill: #0044ff;
-        }
-      }
-
-      .label {
-        fill: #0044ff;
-        font-size: large;
-        text-anchor: end;
-      }
+  .bars {
+    text {
+      font-size: 14px;
     }
+  }
 
-    .bars {
-      text {
-        font-size: 14px;
-      }
-    }
-
-    .legend {
-      text {
-        font-size: 12px;
-        text-anchor: end;
-      }
+  .legend {
+    text {
+      font-size: 12px;
+      text-anchor: end;
     }
   }
 }
