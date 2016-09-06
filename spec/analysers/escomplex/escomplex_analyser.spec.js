@@ -3,12 +3,16 @@ var stream    = require('stream'),
     escomplex = require('escomplex');
 
 var ESComplexAnalyser = require_src('analysers/escomplex/escomplex_analyser'),
-    Parser            = require_src('analysers/escomplex/parser'),
-    appConfig         = require_src('runtime/app_config');
+    Parser            = require_src('analysers/escomplex/parser');
 
 describe('ESComplexAnalyser', function() {
   beforeEach(function() {
-    appConfig.javascriptParser = { module: 'testParser', options: { a: 123, b: 456 }};
+    this.appConfigStub({
+      javascriptParser: {
+        module: 'testParser', options: { a: 123, b: 456 }
+      }
+    });
+
     spyOn(Parser, 'create').and.returnValue('TestParser');
     spyOn(escomplex, 'analyse').and.returnValue({
       aggregate: { cyclomatic: 123 },

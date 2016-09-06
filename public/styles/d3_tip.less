@@ -1,8 +1,51 @@
+@tooltip-arrow: {
+  display: inline;
+  color: rgba(0, 0, 0, 0.8);
+  position: absolute;
+  text-align: center;
+};
+
 .d3-tip {
   z-index: 10;
   line-height: 1;
   font-size: 12px;
   padding: 12px;
-  border-radius: 0 0 5px 5px;
   pointer-events: none;
+
+  &.top-arrow {
+    &:after {
+      @tooltip-arrow();
+      top: -10px;
+      left: 45%;
+      content: "\25B2";
+      line-height: 1;
+    }
+  }
+  &.right-arrow {
+    &:after {
+      @tooltip-arrow();
+      right: -10px;
+      top: 50%;
+      content: "\25BA";
+      line-height: 0.5;
+    }
+  }
+  &.bottom-arrow {
+    &:after {
+      @tooltip-arrow();
+      bottom: -12px;
+      left: 45%;
+      content: "\25BC";
+      line-height: 1;
+    }
+  }
+  &.left-arrow {
+    &:after {
+      @tooltip-arrow();
+      left: -10px;
+      top: 50%;
+      content: "\25C0";
+      line-height: 0.5;
+    }
+  }
 }
