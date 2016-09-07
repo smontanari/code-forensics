@@ -14,7 +14,7 @@ describe('codemaat command definition', function() {
     expect(this.subject.cmd).toEqual('java');
     expect(this.subject.args[0]).toEqual('-jar');
     expect(this.subject.args[1]).toEqual('-Djava.awt.headless=true');
-    expect(this.subject.args[2]).toMatch('code-maat-0.9.2-SNAPSHOT-standalone.jar');
+    expect(this.subject.args[2]).toMatch('code-maat-1.0-SNAPSHOT-standalone.jar');
   });
 
   it('checks the java executable', function() {
