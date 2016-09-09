@@ -1,4 +1,4 @@
-var pathMatchers = require_src('tasks/helpers/path_matchers');
+var pathMatchers = require_src('utils/path_matchers');
 
 describe('PathMatchers', function() {
   describe('.haveSamePath()', function() {

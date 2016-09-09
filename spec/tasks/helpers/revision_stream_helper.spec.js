@@ -3,16 +3,18 @@ var stream = require('stream'),
     moment = require('moment');
 
 var RevisionStreamHelper = require_src('tasks/helpers/revision_stream_helper'),
-    vcsSupport = require_src('vcs_support'),
-    pp     = require_src('parallel_processing'),
-    utils = require_src('utils');
+    vcsSupport           = require_src('vcs_support'),
+    pp                   = require_src('parallel_processing'),
+    utils                = require_src('utils');
 
 describe('RevisionStreamHelper', function() {
   beforeEach(function() {
     this.mockVcs = jasmine.createSpyObj('vcs adapter', ['revisions', 'showRevisionStream']);
     spyOn(vcsSupport, 'adapter').and.returnValue(this.mockVcs);
 
-    this.subject = new RevisionStreamHelper('repo_root', 'jobRunner');
+    this.subject = new RevisionStreamHelper({
+      repository: { root: 'repo_root' }
+    }, 'jobRunner');
   });
 
   describe('.revisionAnalysisStream()', function() {

@@ -1,7 +1,7 @@
-var graphDataHelper = require_src('tasks/helpers/graph_data_helper'),
+var GraphDataHelper = require_src('tasks/helpers/graph_data_helper'),
     graphSupport    = require_src('graph_support');
 
-describe('graphDataHelper', function() {
+describe('GraphDataHelper', function() {
   describe('.weightedTree()', function() {
     var mockTree;
     beforeEach(function() {
@@ -11,7 +11,7 @@ describe('graphDataHelper', function() {
     });
 
     it('builds a weighted tree with the report data items', function() {
-      var output = graphDataHelper.weightedTree(['reportData1', 'reportData2'], 'pathProperty', 'someProperty');
+      var output = new GraphDataHelper().weightedTree(['reportData1', 'reportData2'], 'pathProperty', 'someProperty');
 
       expect(output).toEqual('test-root');
 
