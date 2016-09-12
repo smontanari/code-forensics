@@ -12,9 +12,8 @@ describe('codemaat command definition', function() {
 
   it('defines the "codemaat" command', function() {
     expect(this.subject.cmd).toEqual('java');
-    expect(this.subject.args[0]).toEqual('-jar');
-    expect(this.subject.args[1]).toEqual('-Djava.awt.headless=true');
-    expect(this.subject.args[2]).toMatch('code-maat-1.0-SNAPSHOT-standalone.jar');
+    expect(this.subject.args[0]).toEqual('-Djava.awt.headless=true');
+    expect(this.subject.args[1]).toEqual({ '-jar': jasmine.stringMatching('code-maat-1.0-SNAPSHOT-standalone.jar') });
   });
 
   it('checks the java executable', function() {
@@ -29,7 +28,8 @@ describe('CodeMaatAnalyser', function() {
 
   var prepareAnalyserStream = function(instruction) {
     beforeEach(function() {
-      this.subject = new CodeMaatAnalyser(instruction).fileAnalysisStream('test/file', ['arg1', 'arg2'])
+      this.subject = new CodeMaatAnalyser(instruction)
+      .fileAnalysisStream('test/file', { 'arg1' : 'qwe', 'arg2': 'asd' })
       .pipe(reduce.obj(function(data, obj) {
         data.push(obj);
         return data;
@@ -50,7 +50,14 @@ describe('CodeMaatAnalyser', function() {
     commandOutputStream.end();
   };
 
+  var assertCommand = function(revision) {
+    expect(command.stream).toHaveBeenCalledWith('codemaat', [
+      { '-c': 'git2', '-l': 'test/file', '-a': revision }, { 'arg1' : 'qwe', 'arg2': 'zxc', 'arg3': 'xxx' }
+    ]);
+  };
+
   beforeEach(function() {
+    this.appConfigStub({ versionControlSystem: 'git', codemaatOptions: { 'arg2': 'zxc', 'arg3': 'xxx' } });
     commandOutputStream = new stream.PassThrough();
     spyOn(command.Command, 'ensure');
     spyOn(command, 'stream').and.returnValue(commandOutputStream);
@@ -68,9 +75,7 @@ describe('CodeMaatAnalyser', function() {
           { path: 'test/path3', revisions: 15 },
           { path: 'test/path4', revisions: 14 }
         ]);
-        expect(command.stream).toHaveBeenCalledWith('codemaat', [
-          '-c', 'git2', '-l', 'test/file', '-a', 'revisions', 'arg1', 'arg2'
-        ]);
+        assertCommand('revisions');
       })
       .on('end', done);
 
@@ -96,9 +101,7 @@ describe('CodeMaatAnalyser', function() {
           { path: 'test/path3', soc: 60 },
           { path: 'test/path4', soc: 52 }
         ]);
-        expect(command.stream).toHaveBeenCalledWith('codemaat', [
-          '-c', 'git2', '-l', 'test/file', '-a', 'soc', 'arg1', 'arg2'
-        ]);
+        assertCommand('soc');
       })
       .on('end', done);
 
@@ -124,9 +127,7 @@ describe('CodeMaatAnalyser', function() {
           { path: 'test/path3', coupledPath: 'test/coupledFile3', couplingDegree: 65, revisionsAvg: 3 },
           { path: 'test/path4', coupledPath: 'test/coupledFile4', couplingDegree: 34, revisionsAvg: 3 }
         ]);
-        expect(command.stream).toHaveBeenCalledWith('codemaat', [
-          '-c', 'git2', '-l', 'test/file', '-a', 'coupling', 'arg1', 'arg2'
-        ]);
+        assertCommand('coupling');
       })
       .on('end', done);
 
@@ -152,9 +153,7 @@ describe('CodeMaatAnalyser', function() {
           { path: 'test/path3', authors: 4, revisions: 36 },
           { path: 'test/path4', authors: 4, revisions: 14 }
         ]);
-        expect(command.stream).toHaveBeenCalledWith('codemaat', [
-          '-c', 'git2', '-l', 'test/file', '-a', 'authors', 'arg1', 'arg2'
-        ]);
+        assertCommand('authors');
       })
       .on('end', done);
 
@@ -180,9 +179,7 @@ describe('CodeMaatAnalyser', function() {
           { path: 'test/path3', author: 'Georg', added: 3 },
           { path: 'test/path4', author: 'Tom', added: 12 }
         ]);
-        expect(command.stream).toHaveBeenCalledWith('codemaat', [
-          '-c', 'git2', '-l', 'test/file', '-a', 'entity-ownership', 'arg1', 'arg2'
-        ]);
+        assertCommand('entity-ownership');
       })
       .on('end', done);
 

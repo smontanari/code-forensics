@@ -36,19 +36,19 @@ describe('RevisionStreamHelper', function() {
     });
 
     it('returns the stream aggregate of all the revisions', function() {
-      spyOn(utils.functions, 'arrayToFnFactory').and.returnValue('revisions');
+      spyOn(utils.arrays, 'arrayToFnFactory').and.returnValue('revisions');
       this.mockStreamCollector.mergeAll.and.returnValue('final stream');
 
       expect(this.subject.revisionAnalysisStream('/test/file', 'date-range')).toEqual('final stream');
 
       expect(this.mockVcs.revisions).toHaveBeenCalledWith('/test/file', 'date-range');
-      expect(utils.functions.arrayToFnFactory).toHaveBeenCalledWith(['revision1', 'revision2'], jasmine.any(Function));
+      expect(utils.arrays.arrayToFnFactory).toHaveBeenCalledWith(['revision1', 'revision2'], jasmine.any(Function));
       expect(this.mockStreamCollector.mergeAll).toHaveBeenCalledWith('revisions');
     });
 
     it('collects an analysis result stream for each individual revision', function(done) {
       var streamAnalysisFn;
-      spyOn(utils.functions, 'arrayToFnFactory').and.callFake(function(revisions, fn) {
+      spyOn(utils.arrays, 'arrayToFnFactory').and.callFake(function(revisions, fn) {
         streamAnalysisFn = fn;
       });
 
