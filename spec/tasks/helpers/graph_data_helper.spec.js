@@ -20,4 +20,20 @@ describe('GraphDataHelper', function() {
       expect(mockTree.withItem.calls.argsFor(1)[0]).toEqual('reportData2');
     });
   });
+
+  describe('.flatWeightedTree()', function() {
+    it('returns a tree with only one level of children', function() {
+      var output = new GraphDataHelper().flatWeightedTree([
+        { pathProperty: 'item1', data: 'reportData1', weightProperty: 5 },
+        { pathProperty: 'item2', data: 'reportData2', weightProperty: 3 }
+      ], 'weightProperty');
+
+      expect(output).toEqual({
+        children: [
+          { pathProperty: 'item1', data: 'reportData1', weightProperty: 5, weight: 1 },
+          { pathProperty: 'item2', data: 'reportData2', weightProperty: 3, weight: 0.6 }
+        ]
+      });
+    });
+  });
 });
