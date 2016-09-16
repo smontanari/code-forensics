@@ -124,7 +124,7 @@ describe('CodeMaatAnalyser', function() {
         expect(data).toEqual([
           { path: 'test/path1', coupledPath: 'test/coupledFile1', couplingDegree: 100, revisionsAvg: 5 },
           { path: 'test/path2', coupledPath: 'test/coupledFile2', couplingDegree: 89, revisionsAvg: 4 },
-          { path: 'test/path3', coupledPath: 'test/coupledFile3', couplingDegree: 65, revisionsAvg: 3 },
+          { path: 'test/path3', coupledPath: 'test/coupledFile3', couplingDegree: 64, revisionsAvg: 3 },
           { path: 'test/path4', coupledPath: 'test/coupledFile4', couplingDegree: 34, revisionsAvg: 3 }
         ]);
         assertCommand('coupling');
@@ -135,7 +135,7 @@ describe('CodeMaatAnalyser', function() {
         "entity,coupled,degree,average-revs\n",
         "test/path1,test/coupledFile1,100,5\n",
         "test/path2,test/coupledFile2,89,4\n",
-        "test/path3,test/coupledFile3,65,3\n",
+        "test/path3,test/coupledFile3,64,3\n",
         "test/path4,test/coupledFile4,34,3\n"
       ]);
     });
@@ -189,6 +189,32 @@ describe('CodeMaatAnalyser', function() {
         "test/path2,Jason,34,3\n",
         "test/path3,Georg,3,1\n",
         "test/path4,Tom,12,4\n"
+      ]);
+    });
+  });
+
+  describe('main-dev analysis', function() {
+    prepareAnalyserStream('main-dev');
+    verifyInstallCheck();
+
+    it('returns a stream of the main-dev data for each repository file', function(done) {
+      this.subject.on('data', function(data) {
+        expect(data).toEqual([
+          { path: 'test/path1', mainDev: 'Pat', ownership: 45 },
+          { path: 'test/path2', mainDev: 'Jason', ownership: 68 },
+          { path: 'test/path3', mainDev: 'Georg', ownership: 25 },
+          { path: 'test/path4', mainDev: 'Tom', ownership: 26 }
+        ]);
+        assertCommand('main-dev');
+      })
+      .on('end', done);
+
+      stubCodeMaatReport([
+        "entity,main-dev,added,total-added,ownership\n",
+        "test/path1,Pat,3,5,0.45\n",
+        "test/path2,Jason,34,60, 0.68\n",
+        "test/path3,Georg,3,12,0.25\n",
+        "test/path4,Tom,12,40,0.26\n"
       ]);
     });
   });

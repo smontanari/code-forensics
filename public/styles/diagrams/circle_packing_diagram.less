@@ -1,17 +1,24 @@
+.circle-pack {
+  padding: 5px;
+
+  .node {
+    cursor: pointer;
+    pointer-events: visible;
+
+    &:hover {
+      stroke: #000000;
+      stroke-width: 1.5px;
+    }
+  }
+}
+
 .circle-packing-diagram {
   background-color: #333333;
 
-  .circle-pack {
-    padding: 5px;
+  &.hotspot-analysis {
+    .circle-pack
 
     .node {
-      cursor: pointer;
-      pointer-events: visible;
-
-      &:hover {
-        stroke: #000000;
-        stroke-width: 1.5px;
-      }
       &.node--root {
         stroke: #777777;
         stroke-width: 2px;
@@ -43,17 +50,47 @@
       }
       &.label--heavy {
         fill: #ffffff;
-        text-shadow: 0 2px 0 #000, 2px 0 0 #000, -2px 0 0 #000, 0 -2px 0 #000;
+        text-shadow: 0 1px 0 #000, 1px 0 0 #000, -1px 0 0 #000, 0 -1px 0 #000;
       }
     }
   }
+
+  &.authors-coupling {
+    .circle-pack
+
+    .node {
+      stroke: #777777;
+      stroke-width: 1px;
+
+      &.node--root {
+        fill: #F5F5F5;
+        pointer-events: none;
+      }
+
+      &.selected {
+        stroke: #000;
+        stroke-width: 3px;
+      }
+    }
+
+    .label {
+      dy: 0.3em;
+      text-anchor: middle;
+      pointer-events: none;
+    }
+  }
 }
+
+@tooltip-border: 1px solid #000;
 
 .d3-tip {
   &.circle-packing-diagram {
     background-color: #FFF;
     color: #000;
     border-radius: 0 0 5px 5px;
+    border-left: @tooltip-border;
+    border-right: @tooltip-border;
+    border-bottom: @tooltip-border;
     display: table;
 
     .node-name {
@@ -64,6 +101,9 @@
       background-color: #4682B4;
       display: table-caption;
       border-radius: 5px 5px 0 0;
+      border-top: @tooltip-border;
+      border-left: @tooltip-border;
+      border-right: @tooltip-border;
     }
 
     .node-property {
