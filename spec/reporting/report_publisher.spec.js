@@ -2,7 +2,6 @@ var fs              = require('fs');
 
 var ReportPublisher = require_src('reporting/report_publisher'),
     utils           = require_src('utils'),
-    taskFiles       = require_src('runtime/task_files'),
     TimePeriod      = require_src('time_interval/time_period');
 
 describe('ReportPublisher', function() {
@@ -14,9 +13,11 @@ describe('ReportPublisher', function() {
       this.context = {
         dateRange: new TimePeriod('start', 'finish'),
         targetFile: 'test/file',
-        boundaryDefinition: { name: 'test_boundary' },
-        frequency: 'test-frequency',
-        files: taskFiles('/test/tmp', '/test/output')
+        outputDir: '/test/output',
+        parameters: {
+          boundary: 'test_boundary',
+          frequency: 'test-frequency',
+        }
       };
     });
 
