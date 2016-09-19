@@ -56,7 +56,6 @@ describe('ReportPublisher', function() {
       describe('.createManifest()', function() {
         beforeEach(function() {
           spyOn(utils.json, 'objectToFile');
-          spyOn(utils.messages, 'logReportUrl');
           this.subject.addReportFile(new TimePeriod('p2Start', 'p2End'));
           this.subject.addReportFile(new TimePeriod('p1Start', 'p1End'));
         });
@@ -106,7 +105,6 @@ describe('ReportPublisher', function() {
       describe('.createManifest()', function() {
         beforeEach(function() {
           spyOn(utils.json, 'objectToFile');
-          spyOn(utils.messages, 'logReportUrl');
           this.subject.addReportFileForType('coupling-trend', new TimePeriod('p2Start', 'p2End'));
           this.subject.addReportFileForType('revisions-trend', new TimePeriod('p1Start', 'p1End'));
         });

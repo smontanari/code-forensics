@@ -33,8 +33,6 @@
     "glob": "^7.0.6",
     "http-server": "^0.9.0",
     "is-stream": "^1.0.1",
-    "jasmine": "^2.5.2",
-    "jasmine-spec-reporter": "^2.7.0",
     "knockout": "^3.4.0",
     "less": "^2.7.1",
     "lodash": "^4.15.0",
@@ -60,7 +58,7 @@
   },
   "devDependencies": {
     "eslint": "^3.4.0",
-    "jasmine": "^2.5.0",
+    "jasmine": "^2.5.2",
     "jasmine-spec-reporter": "^2.7.0"
   },
   "scripts": {

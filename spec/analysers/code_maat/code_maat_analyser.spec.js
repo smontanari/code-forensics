@@ -57,7 +57,7 @@ describe('CodeMaatAnalyser', function() {
   };
 
   beforeEach(function() {
-    this.appConfigStub({ versionControlSystem: 'git', codemaatOptions: { 'arg2': 'zxc', 'arg3': 'xxx' } });
+    this.appConfigStub({ versionControlSystem: 'git', codeMaatOptions: { 'arg2': 'zxc', 'arg3': 'xxx' } });
     commandOutputStream = new stream.PassThrough();
     spyOn(command.Command, 'ensure');
     spyOn(command, 'stream').and.returnValue(commandOutputStream);
@@ -167,28 +167,36 @@ describe('CodeMaatAnalyser', function() {
     });
   });
 
-  describe('entity-ownership analysis', function() {
-    prepareAnalyserStream('entity-ownership');
+  describe('entity-effort analysis', function() {
+    prepareAnalyserStream('entity-effort');
     verifyInstallCheck();
 
-    it('returns a stream of the entity-ownership data for each repository file', function(done) {
+    it('returns a stream of the entity-effort data for each repository file', function(done) {
       this.subject.on('data', function(data) {
         expect(data).toEqual([
-          { path: 'test/path1', author: 'Pat', added: 3 },
-          { path: 'test/path2', author: 'Jason', added: 34 },
-          { path: 'test/path3', author: 'Georg', added: 3 },
-          { path: 'test/path4', author: 'Tom', added: 12 }
+          { path: 'test/path1', author: 'Pat', revisions: 2 },
+          { path: 'test/path1', author: 'Jason', revisions: 3 },
+          { path: 'test/path2', author: 'Jason', revisions: 4 },
+          { path: 'test/path2', author: 'Tom', revisions: 5 },
+          { path: 'test/path2', author: 'Georg', revisions: 4 },
+          { path: 'test/path3', author: 'Georg', revisions: 3 },
+          { path: 'test/path3', author: 'Tom', revisions: 1 },
+          { path: 'test/path4', author: 'Tom', revisions: 12 }
         ]);
-        assertCommand('entity-ownership');
+        assertCommand('entity-effort');
       })
       .on('end', done);
 
       stubCodeMaatReport([
-        "entity,author,added,deleted\n",
-        "test/path1,Pat,3,5\n",
-        "test/path2,Jason,34,3\n",
-        "test/path3,Georg,3,1\n",
-        "test/path4,Tom,12,4\n"
+        "entity,author,author-revs,total-revs\n",
+        "test/path1,Pat,2,5\n",
+        "test/path1,Jason,3,5\n",
+        "test/path2,Jason,4,13\n",
+        "test/path2,Tom,5,13\n",
+        "test/path2,Georg,4,13\n",
+        "test/path3,Georg,3,4\n",
+        "test/path3,Tom,1,4\n",
+        "test/path4,Tom,12,12\n"
       ]);
     });
   });
