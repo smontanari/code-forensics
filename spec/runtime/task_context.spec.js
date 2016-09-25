@@ -2,6 +2,7 @@ var _ = require('lodash');
 
 var TaskContext  = require_src('runtime/task_context').TaskContext,
     timeInterval = require_src('time_interval/builder'),
+    models = require_src('models'),
     repository   = require_src('runtime/repository');
 
 describe('TaskContext', function() {
@@ -18,14 +19,22 @@ describe('TaskContext', function() {
     ]);
     spyOn(timeInterval, 'Builder').and.returnValue(mockPeriodBuilder);
 
-    spyOn(repository, 'RepositoryConfiguration').and.returnValue({obj: 'test-repo'});
+    spyOn(repository, 'RepositoryConfiguration').and.returnValue({ obj: 'test-repo' });
+    spyOn(models, 'DeveloperInfo').and.returnValue({ obj: 'test-devInfo' });
   });
 
   it('initialises the repository configuration', function() {
     var ctx = new TaskContext({repository: 'repo-config'}, {});
 
     expect(repository.RepositoryConfiguration).toHaveBeenCalledWith('repo-config');
-    expect(ctx.repository).toEqual({obj: 'test-repo'});
+    expect(ctx.repository).toEqual({ obj: 'test-repo' });
+  });
+
+  it('initialises the developer information', function() {
+    var ctx = new TaskContext({teamsComposition: 'team-config'}, {});
+
+    expect(models.DeveloperInfo).toHaveBeenCalledWith('team-config');
+    expect(ctx.developerInfo).toEqual({ obj: 'test-devInfo' });
   });
 
   it('creates the time periods and a date range', function() {

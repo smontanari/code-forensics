@@ -21,6 +21,28 @@ describe('GraphDataHelper', function() {
     });
   });
 
+  describe('.tree()', function() {
+    var mockTree;
+    beforeEach(function() {
+      mockTree = {
+        rootNode: 'test-root',
+        addNode: jasmine.createSpy('addNode')
+      };
+
+      spyOn(graphSupport, 'Tree').and.returnValue(mockTree);
+    });
+
+    it('builds a tree with the report data items', function() {
+      var output = new GraphDataHelper().tree(['reportData1', 'reportData2'], 'pathProperty');
+
+      expect(output).toEqual('test-root');
+
+      expect(graphSupport.Tree).toHaveBeenCalledWith(null, 'pathProperty');
+      expect(mockTree.addNode.calls.argsFor(0)[0]).toEqual('reportData1');
+      expect(mockTree.addNode.calls.argsFor(1)[0]).toEqual('reportData2');
+    });
+  });
+
   describe('.flatWeightedTree()', function() {
     it('returns a tree with only one level of children', function() {
       var output = new GraphDataHelper().flatWeightedTree([

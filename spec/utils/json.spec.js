@@ -24,6 +24,45 @@ describe('utils.json', function() {
     });
   });
 
+  describe('.fileToObjectStream()', function() {
+    beforeEach(function() {
+      this.input = new stream.PassThrough();
+      spyOn(fs, 'createReadStream').and.returnValue(this.input);
+    });
+
+    it('returns a stream of objects from the json array file', function(done) {
+      var data = [];
+      json.fileToObjectStream('test/file')
+        .on('data', function(content) { data.push(content); })
+        .once('end', function() {
+          expect(data).toEqual([
+            { a: 123 },
+            { a: 456, b: { c: 'test' } }
+          ]);
+          done();
+        });
+
+      this.input.write('[{"a": 123},{"a": 456, "b": {"c": "test"}}]');
+      this.input.end();
+    });
+
+    it('returns a stream of objects from the json object property file', function(done) {
+      var data = [];
+      json.fileToObjectStream('test/file', 'properties.*')
+        .on('data', function(content) { data.push(content); })
+        .once('end', function() {
+          expect(data).toEqual([
+            { a: 123 },
+            { a: 456, b: { c: 'test' } }
+          ]);
+          done();
+        });
+
+      this.input.write('{ "properties": [{"a": 123},{"a": 456, "b": {"c": "test"}}]');
+      this.input.end();
+    });
+  });
+
   describe('.objectToFile', function() {
     it('writes json to a file', function() {
       spyOn(fs, 'writeFile');
