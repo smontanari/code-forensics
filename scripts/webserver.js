@@ -34,10 +34,10 @@ var webServer = httpServer.createServer(options);
 webServer.listen(port, host, function () {
   console.log(chalk.yellow('Starting up http-server'));
   console.log(chalk.cyan('listening on ' + port));
-  console.log(chalk.cyan('serving pages from ' + webPath));
-  console.log(chalk.cyan('serving js files from ' + jsPath));
-  console.log(chalk.cyan('serving js libraries from ' + libPath));
-  console.log(chalk.cyan('serving data from ' + dataPath));
+  console.log(chalk.cyan('serving "/"     files from ' + webPath));
+  console.log(chalk.cyan('serving "/js"   files from ' + jsPath));
+  console.log(chalk.cyan('serving "/lib"  files from ' + libPath));
+  console.log(chalk.cyan('serving "/data" files from ' + dataPath));
   console.log('Hit CTRL-C to stop the server');
 });
 
