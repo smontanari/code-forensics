@@ -1,0 +1,59 @@
+.treemap-diagram {
+  padding: 5px;
+  background: #333333;
+
+  .root-tile {
+    fill: #333333;
+    rect {
+      stroke: none;
+    }
+
+    text {
+      font-size: 16px;
+      fill: #FFF;
+      pointer-events: visible;
+      cursor: pointer;
+    }
+  }
+
+  .treemap-container {
+    shape-rendering: crispEdges;
+
+    rect {
+      pointer-events: visibleFill;
+      fill: none;
+      stroke: #000;
+      stroke-width: 1px;
+
+      &.parent-tile {
+        fill: #F3F9FF;
+        fill-opacity: 0.3;
+
+        &:hover {
+          cursor: auto;
+          stroke-width: 3px;
+          stroke: #FFF;
+          fill-opacity: 0.45;
+        }
+
+        &.last:hover {
+          fill-opacity: 0;
+        }
+      }
+    }
+
+    text.tile-title {
+      pointer-events: none;
+      tspan.parent-tile {
+        fill: #0044ff;
+        font-weight: bold;
+        font-size: 14px;
+        text-shadow: 0 1px 0 #FFF, 1px 0 0 #FFF, -1px 0 0 #FFF, 0 -1px 0 #FFF;
+      }
+
+      tspan.child-tile, tspan.leaf-tile {
+        font-size: 12px;
+      }
+    }
+  }
+}
