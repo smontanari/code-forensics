@@ -13,7 +13,7 @@ describe('RevisionStreamHelper', function() {
     spyOn(vcsSupport, 'adapter').and.returnValue(this.mockVcs);
 
     this.subject = new RevisionStreamHelper({
-      repository: { root: 'repo_root' }
+      repository: { rootPath: 'repo_root' }
     }, 'jobRunner');
   });
 

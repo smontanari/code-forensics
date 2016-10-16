@@ -1,4 +1,4 @@
-var TimePeriodBuilder = require_src('time_interval/builder').Builder;
+var TimePeriodBuilder = require_src('models/time_interval/builder');
 
 describe('TimePeriodBuilder', function() {
   beforeEach(function() {

@@ -1,6 +1,6 @@
 var moment = require('moment');
 
-var TimeSplitter = require_src('time_interval/time_splitter');
+var TimeSplitter = require_src('models/time_interval/time_splitter');
 
 describe('TimeSplitter', function() {
   beforeEach(function() {

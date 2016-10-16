@@ -2,18 +2,19 @@ var _    = require('lodash'),
     Path = require('path'),
     glob = require("glob");
 
-var RepositoryConfiguration = require_src('runtime/repository').RepositoryConfiguration,
-    repositoryPath          = require_src('runtime/repository_path'),
-    languages               = require_src('runtime/language_definitions');
+var Repository     = require_src('models/repository'),
+    repositoryPath = require_src('models/repository_path'),
+    languages      = require_src('models/language_definitions');
 
-describe('RepositoryConfiguration', function() {
-  describe('.root', function() {
+describe('Repository', function() {
+  describe('.rootPath', function() {
     it('resolves the root path', function() {
       spyOn(Path, 'resolve').and.returnValue('actual/path');
 
-      this.subject = new RepositoryConfiguration({root: '/some/path'});
+      this.subject = new Repository({ rootPath: '/some/path' });
 
-      expect(this.subject.root).toEqual('actual/path');
+      expect(this.subject.rootPath).toEqual('actual/path');
+      expect(Path.resolve).toHaveBeenCalledWith('/some/path');
     });
   });
 
@@ -25,10 +26,10 @@ describe('RepositoryConfiguration', function() {
       });
       spyOn(glob, 'sync').and.callFake(_.identity);
 
-      this.subject = new RepositoryConfiguration({
-        root: '/root/path',
-        paths: 'some/paths',
-        exclude: 'some/other/paths'
+      this.subject = new Repository({
+        rootPath: '/root/path',
+        includePaths: 'some/paths',
+        excludePaths: 'some/other/paths'
       });
     });
 
@@ -42,7 +43,7 @@ describe('RepositoryConfiguration', function() {
 
   describe('.isValidPath()', function() {
     beforeEach(function() {
-      this.subject = new RepositoryConfiguration({root: '/some/path'});
+      this.subject = new Repository({rootPath: '/some/path'});
 
       spyOn(this.subject, 'allFiles').and.returnValue([
         { relativePath: 'test/valid-path/file1' },
@@ -60,7 +61,7 @@ describe('RepositoryConfiguration', function() {
   describe('.sourceFiles()', function() {
     beforeEach(function() {
       spyOn(languages, 'getDefinition').and.returnValue(['py']);
-      this.subject = new RepositoryConfiguration({root: '/some/path'});
+      this.subject = new Repository({rootPath: '/some/path'});
       spyOn(this.subject, 'allFiles').and.returnValue([
         { absolutePath: '/root/test/file1.js', relativePath: 'test/file1.js' },
         { absolutePath: '/root/test/file3.py', relativePath: 'test/file3.py' },

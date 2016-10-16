@@ -2,13 +2,13 @@ var fs              = require('fs');
 
 var ReportPublisher = require_src('reporting/report_publisher'),
     utils           = require_src('utils'),
-    TimePeriod      = require_src('time_interval/time_period');
+    TimePeriod      = require_src('models').TimePeriod;
 
 describe('ReportPublisher', function() {
   describe('with a valid report type', function() {
     beforeEach(function() {
       jasmine.clock().install();
-      jasmine.clock().mockDate(new Date(2013, 9, 23));
+      jasmine.clock().mockDate(new Date('2013-10-22T13:00:00.000Z'));
       spyOn(fs, 'mkdir');
       this.context = {
         dateRange: new TimePeriod('start', 'finish'),
