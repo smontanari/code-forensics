@@ -4,7 +4,7 @@ var stream = require('stream'),
 var ReportHelper = require_src('tasks/helpers/report_helper'),
     reporting = require_src('reporting');
 
-describe('reportHelper', function() {
+describe('ReportHelper', function() {
   describe('.publish()', function() {
     var mockPublisher;
 

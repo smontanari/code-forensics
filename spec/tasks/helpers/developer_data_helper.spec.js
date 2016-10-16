@@ -1,7 +1,7 @@
-var DeveloperData = require_src('tasks/helpers/developer_data'),
-    DeveloperInfo = require_src('models/developer_info');
+var DeveloperDataHelper = require_src('tasks/helpers/developer_data_helper'),
+    DeveloperInfo       = require_src('models/developer_info');
 
-describe('DeveloperData', function() {
+describe('DeveloperDataHelper', function() {
   var testData = [
     { path: 'test/file1', author: 'Dev1', revisions: 3 },
     { path: 'test/file1', author: 'Dev2', revisions: 2 },
@@ -13,7 +13,7 @@ describe('DeveloperData', function() {
   ];
 
   beforeEach(function() {
-    this.subject = new DeveloperData({
+    this.subject = new DeveloperDataHelper({
       developerInfo: new DeveloperInfo({
         'Team 1': [['Dev1', 'Alias Dev1'], 'Dev2'],
         'Team 2': ['Dev3', 'Dev4']
