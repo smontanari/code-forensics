@@ -1,24 +1,49 @@
-.filter {
-  padding: 0 5px;
-  color: #4682B4;
-  font-size: small;
-  font-weight: bold;
-  margin-bottom: 0;
+.report-controls {
+  .filter {
+    padding: 0 5px;
+    color: #4682B4;
+    font-size: small;
+    font-weight: bold;
+    margin-bottom: 0;
 
-  &.metric-filter {
-    output {
-      float: right;
-      color: #000000;
-      padding-right: 5px;
-      font-weight: normal;
-      text-align: right;
+    &.metric-filter {
+      output {
+        float: right;
+        color: #000000;
+        padding-right: 5px;
+        font-weight: normal;
+        text-align: right;
+      }
     }
   }
-}
 
-.filter-parameter {
-  input[type=text] {
-    width: 190px;
-    margin: 5px 0px 0px 5px;
+  .filter-parameter {
+    input[type=text] {
+      width: 190px;
+      margin: 5px 0px 0px 5px;
+    }
+  }
+
+  .color-map {
+    border: 1px solid;
+    border-radius: 5px;
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 5px 0;
+
+    .color-box {
+      margin: 5px 0 0 5px;
+      padding: 5px;
+      border: 1px solid #ddd;
+      display: inline-block;
+    }
+
+    .color-value {
+      font-size: 12px;
+      color: #000;
+      padding-left: 5px;
+      bottom: 2px;
+      position: relative;
+    }
   }
 }

@@ -1,0 +1,11 @@
+<script id="color-legend" type="text/html">
+  <h2>Color map</h2>
+  <div data-bind="with: diagram.model" class="color-map">
+    <div data-bind="foreach: colorMap">
+      <div>
+        <div class="color-box" data-bind="style: { 'background-color': color }"></div>
+        <span class="color-value" data-bind="text: name"></span>
+      </div>
+    </div>
+  </div>
+</script>
