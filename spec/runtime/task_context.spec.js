@@ -1,6 +1,6 @@
 var _ = require('lodash');
 
-var TaskContext  = require_src('runtime/task_context').TaskContext,
+var TaskContext  = require_src('runtime/task_context'),
     models = require_src('models');
 
 describe('TaskContext', function() {

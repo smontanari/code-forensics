@@ -1,5 +1,4 @@
 node_modules/
-output/
-tmp/
+spec_files/
 .DS_Store
 .node-version
