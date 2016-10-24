@@ -64,12 +64,14 @@ describe('utils.json', function() {
   });
 
   describe('.objectToFile', function() {
-    it('writes json to a file', function() {
-      spyOn(fs, 'writeFile');
+    it('writes json to a file', function(done) {
+      spyOn(fs, 'writeFile').and.callFake(function(file, data, cb) { cb(); });
 
-      json.objectToFile('test/file', {obj: {a: 123, b: 'zxc'}});
+      json.objectToFile('test/file', {obj: {a: 123, b: 'zxc'}}).then(function() {
+        expect(fs.writeFile).toHaveBeenCalledWith('test/file', '{\n  "obj": {\n    "a": 123,\n    "b": "zxc"\n  }\n}', jasmine.any(Function));
 
-      expect(fs.writeFile).toHaveBeenCalledWith('test/file', '{\n  "obj": {\n    "a": 123,\n    "b": "zxc"\n  }\n}');
+        done();
+      });
     });
   });
 
@@ -89,9 +91,8 @@ describe('utils.json', function() {
 
     it('writes a stream of objects into a file as a json array', function(done) {
       var input = new stream.PassThrough({objectMode: true});
-
-      input.pipe(json.objectArrayToFileStream('test/path'))
-      .on('end', function() {
+      json.objectArrayToFileStream('test/path', input)
+      .on('finish', function() {
         expect(output.toString()).toEqual('[\n{"obj":{"a":123,"b":"zxc"}},\n{"obj":{"c":456,"d":[789,"vbn"]}}\n]\n');
         done();
       });
@@ -119,8 +120,7 @@ describe('utils.json', function() {
     it('writes an object from a stream into a file as json', function(done) {
       var input = new stream.PassThrough({objectMode: true});
 
-      input.pipe(json.objectToFileStream('test/path'))
-      .on('end', function() {
+      json.objectToFileStream('test/path', input).on('finish', function() {
         expect(output.toString()).toEqual('{\n  "obj": {\n    "a": 123,\n    "b": "zxc"\n  }\n}\n');
         done();
       });

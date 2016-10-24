@@ -1,4 +1,7 @@
 node_modules/
 spec_files/
+Gemfile
+Gemfile.lock
+.ruby-version
 .DS_Store
 .node-version

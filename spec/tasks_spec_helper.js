@@ -18,18 +18,19 @@ beforeEach(function() {
 
   this.tasksWorkingFolders = {
     tempDir: TEST_TMP_DIR,
-    outputDir: TEST_OUTPUT_DIR
+    outputDir: TEST_OUTPUT_DIR,
+    repoDir: TEST_REPO_DIR
   };
 
   this.tasksSetup = function(tasksFn, configOverride, parameters) {
-    del.sync([TEST_TMP_DIR + '/*', TEST_OUTPUT_DIR + '/*']);
+    del.sync([TEST_TMP_DIR + '/*', TEST_OUTPUT_DIR + '/*', TEST_REPO_DIR + '/*']);
 
     var config = _.merge({
         tempDir: TEST_TMP_DIR,
         outputDir: TEST_OUTPUT_DIR,
         repository: { rootPath: TEST_REPO_DIR }
       }, configOverride);
-    var taskContext = new TaskContext(config, parameters);
+    var taskContext = new TaskContext(config, parameters || {});
 
     tasksFn(taskDefinitions, taskContext, taskHelpers(taskContext));
 
