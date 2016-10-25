@@ -25,7 +25,7 @@ describe('javascript tasks', function() {
 
       taskFunctions['javascript-complexity-analysis']()
       .on('close', function() {
-        var reportContent = fs.readFileSync(Path.join(tempDir, 'javascript-complexity-analysis.json'));
+        var reportContent = fs.readFileSync(Path.join(tempDir, 'javascript-complexity-report.json'));
         var report = JSON.parse(reportContent.toString());
         expect(report).toEqual([
           { path: "test_file1.js", totalComplexity: 1, averageComplexity: 1, methodComplexity: [{ name: 'sum', complexity: 1 }] },
@@ -54,7 +54,7 @@ describe('javascript tasks', function() {
       jasmine.clock().uninstall();
     });
 
-    it('writes a report on the complexity trend for a given javascript file in the repository', function(done) {
+    it('publishes an analysis on the complexity trend for a given javascript file in the repository', function(done) {
       var revisionStream1 = new stream.PassThrough();
       var revisionStream2 = new stream.PassThrough();
 

@@ -22,21 +22,21 @@ describe('TaskContext', function() {
   });
 
   it('initialises the repository configuration', function() {
-    var ctx = new TaskContext({repository: 'repo-config'}, {});
+    var ctx = new TaskContext({repository: 'repo-config'});
 
     expect(models.Repository).toHaveBeenCalledWith('repo-config');
     expect(ctx.repository).toEqual({ obj: 'test-repo' });
   });
 
   it('initialises the developer information', function() {
-    var ctx = new TaskContext({teamsComposition: 'team-config'}, {});
+    var ctx = new TaskContext({teamsComposition: 'team-config'});
 
     expect(models.DeveloperInfo).toHaveBeenCalledWith('team-config');
     expect(ctx.developerInfo).toEqual({ obj: 'test-devInfo' });
   });
 
   it('creates the time periods and a date range', function() {
-    var ctx = new TaskContext({dateFormat: 'YYYY'}, {dateFrom: 'test-date1', dateTo: 'test-date2', frequency: 'test-frequency'});
+    var ctx = new TaskContext({ dateFormat: 'YYYY' }, { dateFrom: 'test-date1', dateTo: 'test-date2', frequency: 'test-frequency' });
 
     expect(ctx.timePeriods).toEqual([
       {startDate: 'date1', endDate: 'date2'},
@@ -51,6 +51,12 @@ describe('TaskContext', function() {
     expect(mockPeriodBuilder.split).toHaveBeenCalledWith('test-frequency');
   });
 
+  it('throws an error for a non supported configuration language', function() {
+    expect(function() {
+      new TaskContext({ languages: ['javascript', 'ruby', 'some-weird-language'] });
+    }).toThrowError('Language "some-weird-language" is not supported');
+  });
+
   it('initialises properties from given configuration', function() {
     var ctx = new TaskContext({
       tempDir: '/test-temp-dir',
@@ -58,7 +64,7 @@ describe('TaskContext', function() {
       dateFormat: 'XXXX',
       architecturalBoundaries: {'test-boundary-name': 'test-boundaries'},
       commitCloudFilters: [/filter1/, 'filter2'],
-      languages: ['lang1', 'lang2']
+      languages: ['javascript', 'ruby']
     }, { boundary: 'test-boundary-name', taskName: 'test-task', frequency: 'test-frequency' });
 
     expect(ctx.tempDir).toEqual('/test-temp-dir');
@@ -66,7 +72,7 @@ describe('TaskContext', function() {
     expect(ctx.dateFormat).toEqual('XXXX');
     expect(ctx.boundaries).toEqual('test-boundaries');
     expect(ctx.commitCloudFilters).toEqual([/filter1/, 'filter2']);
-    expect(ctx.languages).toEqual(['lang1', 'lang2']);
+    expect(ctx.languages).toEqual(['javascript', 'ruby']);
   });
 
   it('passes through all the command line parameters merging default values', function() {

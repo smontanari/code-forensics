@@ -3,7 +3,7 @@ var Path = require('path'),
 
 var codeAnalysisTasks = require_src('tasks/code_analysis_tasks');
 
-describe('sloc-analysis', function() {
+describe('sloc-report', function() {
   it('writes a report on the number of lines of code for each file in the repository', function(done) {
     var taskFunctions = this.tasksSetup(codeAnalysisTasks);
     var repoDir = this.tasksWorkingFolders.repoDir;
@@ -11,9 +11,9 @@ describe('sloc-analysis', function() {
     fs.writeFileSync(Path.join(repoDir, 'test_file1.js'), "line1\nline2");
     fs.writeFileSync(Path.join(repoDir, 'test_file2.rb'), "line1\nline2\nline3\n");
 
-    taskFunctions['sloc-analysis']()
+    taskFunctions['sloc-report']()
     .on('close', function() {
-      var reportContent = fs.readFileSync(Path.join(tempDir, 'sloc-analysis.json'));
+      var reportContent = fs.readFileSync(Path.join(tempDir, 'sloc-report.json'));
       var report = JSON.parse(reportContent.toString());
       expect(report).toEqual([
         { path: 'test_file1.js', sloc: 2 },

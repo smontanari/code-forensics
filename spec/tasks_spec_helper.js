@@ -31,14 +31,14 @@ beforeEach(function() {
     repoDir: TEST_REPO_DIR
   };
 
-  this.tasksSetup = function(tasksFn, configOverride, parameters) {
+  this.tasksSetup = function(tasksFn, contextConfig, parameters) {
     del.sync([TEST_TMP_DIR + '/*', TEST_OUTPUT_DIR + '/*', TEST_REPO_DIR + '/*']);
 
     var config = _.merge({
         tempDir: TEST_TMP_DIR,
         outputDir: TEST_OUTPUT_DIR,
         repository: { rootPath: TEST_REPO_DIR }
-      }, configOverride);
+      }, contextConfig);
 
     var taskContext = new TaskContext(config, parameters || {});
 

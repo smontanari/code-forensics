@@ -25,7 +25,7 @@ describe('ruby tasks', function() {
 
       taskFunctions['ruby-complexity-analysis']()
       .on('close', function() {
-        var reportContent = fs.readFileSync(Path.join(tempDir, 'ruby-complexity-analysis.json'));
+        var reportContent = fs.readFileSync(Path.join(tempDir, 'ruby-complexity-report.json'));
         var report = JSON.parse(reportContent.toString());
         expect(report.length).toEqual(2);
         expect(report).toContain({ path: "test_file1.rb", totalComplexity: 1, averageComplexity: 1, methodComplexity: [{ name: 'main#sum                         ' + repoDir + '/test_file1.rb:1', complexity: 1 }] });
@@ -53,7 +53,7 @@ describe('ruby tasks', function() {
       jasmine.clock().uninstall();
     });
 
-    it('writes a report on the complexity trend for a given ruby file in the repository', function(done) {
+    it('publishes an analysis on the complexity trend for a given ruby file in the repository', function(done) {
       var revisionStream1 = new stream.PassThrough();
       var revisionStream2 = new stream.PassThrough();
 
