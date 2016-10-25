@@ -73,14 +73,14 @@ describe('ruby tasks', function() {
         done();
       });
 
-      revisionStream1.write("def abs(a,b)\n");
-      revisionStream1.write("a - b\nend");
+      revisionStream1.push("def abs(a,b)\n");
+      revisionStream1.push("a - b\nend");
       revisionStream1.end();
 
-      revisionStream2.write("def abs(a,b)\n");
-      revisionStream2.write("return b - a if (a < b)\n");
-      revisionStream2.write("a - b\n");
-      revisionStream2.write("end\n");
+      revisionStream2.push("def abs(a,b)\n");
+      revisionStream2.push("return b - a if (a < b)\n");
+      revisionStream2.push("a - b\n");
+      revisionStream2.push("end\n");
       revisionStream2.end();
     });
   });

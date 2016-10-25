@@ -13,7 +13,16 @@ var TEST_TMP_DIR    = Path.resolve('./spec_files/tmp'),
 beforeEach(function() {
   var taskFunctions = {};
   var taskDefinitions = {
-    add: function(name, desc, fn) { taskFunctions[name] = fn; }
+    add: function() {
+      var args = _.toArray(arguments);
+      var name = args.shift();
+      var nextArg;
+      do { nextArg = args.shift(); } while(!_.isFunction(nextArg) && !_.isUndefined(nextArg));
+
+      if (_.isFunction(nextArg)) {
+        taskFunctions[name] = nextArg;
+      }
+    }
   };
 
   this.tasksWorkingFolders = {
@@ -30,6 +39,7 @@ beforeEach(function() {
         outputDir: TEST_OUTPUT_DIR,
         repository: { rootPath: TEST_REPO_DIR }
       }, configOverride);
+
     var taskContext = new TaskContext(config, parameters || {});
 
     tasksFn(taskDefinitions, taskContext, taskHelpers(taskContext));

@@ -1,5 +1,5 @@
-var Path   = require('path'),
-    fs     = require('fs');
+var Path = require('path'),
+    fs   = require('fs');
 
 var codeAnalysisTasks = require_src('tasks/code_analysis_tasks');
 
@@ -16,8 +16,8 @@ describe('sloc-analysis', function() {
       var reportContent = fs.readFileSync(Path.join(tempDir, 'sloc-analysis.json'));
       var report = JSON.parse(reportContent.toString());
       expect(report).toEqual([
-        { path: "test_file1.js", sloc: 2 },
-        { path: "test_file2.rb", sloc: 3 }
+        { path: 'test_file1.js', sloc: 2 },
+        { path: 'test_file2.rb', sloc: 3 }
       ]);
 
       done();

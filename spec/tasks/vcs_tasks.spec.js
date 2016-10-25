@@ -24,13 +24,13 @@ describe('VCS Tasks', function() {
           done();
         });
 
-        outStream1.write('log-line1\n');
-        outStream1.write('log-line2\n');
+        outStream1.push('log-line1\n');
+        outStream1.push('log-line2\n');
         outStream1.end();
 
-        outStream2.write('log-line1\n');
-        outStream2.write('log-line2\n');
-        outStream2.write('log-line3\n');
+        outStream2.push('log-line1\n');
+        outStream2.push('log-line2\n');
+        outStream2.push('log-line3\n');
         outStream2.end();
       });
 
@@ -49,9 +49,9 @@ describe('VCS Tasks', function() {
           done();
         });
 
-        outStream.write('log-line1\n');
-        outStream.write('log-line2\n');
-        outStream.write('log-line3\n');
+        outStream.push('log-line1\n');
+        outStream.push('log-line2\n');
+        outStream.push('log-line3\n');
         outStream.end();
       });
     });

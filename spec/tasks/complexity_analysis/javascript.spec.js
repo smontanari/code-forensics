@@ -75,15 +75,15 @@ describe('javascript tasks', function() {
         done();
       });
 
-      revisionStream1.write("var abs = function(a,b) {\n");
-      revisionStream1.write("return a - b;\n};");
+      revisionStream1.push("var abs = function(a,b) {\n");
+      revisionStream1.push("return a - b;\n};");
       revisionStream1.end();
 
-      revisionStream2.write("var abs = function(a,b) {\n");
-      revisionStream2.write("if (a < b) {\n;");
-      revisionStream2.write("return b - a;\n};\n");
-      revisionStream2.write("return a - b;\n");
-      revisionStream2.write("};\n");
+      revisionStream2.push("var abs = function(a,b) {\n");
+      revisionStream2.push("if (a < b) {\n;");
+      revisionStream2.push("return b - a;\n};\n");
+      revisionStream2.push("return a - b;\n");
+      revisionStream2.push("};\n");
       revisionStream2.end();
     });
   });
