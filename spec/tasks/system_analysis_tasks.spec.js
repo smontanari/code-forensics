@@ -16,7 +16,7 @@ describe('System analysis tasks', function() {
   });
 
   describe('system-evolution-analysis', function() {
-    it('publishes an analysis report on revisions and coupling between architectural layers of the system', function(done) {
+    it('publishes a revisions report and a coupling report for each architectural layer of the system', function(done) {
       var couplingStream1 = new stream.PassThrough({ objectMode: true });
       var couplingStream2 = new stream.PassThrough({ objectMode: true });
       spyOn(codeMaat.temporalCouplingAnalyser, 'fileAnalysisStream').and.returnValues(couplingStream1, couplingStream2);

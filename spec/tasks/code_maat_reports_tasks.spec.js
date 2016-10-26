@@ -6,7 +6,7 @@ var codeMaatReportTasks = require_src('tasks/code_maat_reports_tasks'),
     codeMaat            = require_src('analysers/code_maat');
 
 describe('CodeMaat report tasks', function() {
-  var taskFunctions, repoDir, tempDir;
+  var taskFunctions, tempDir;
 
   var assertTaskReport = function(exampleDescription, analyser, taskName, reportFilename) {
     describe(taskName, function() {
@@ -38,12 +38,11 @@ describe('CodeMaat report tasks', function() {
     taskFunctions = this.tasksSetup(codeMaatReportTasks, {
       repository: { excludePaths: ['test_invalid_file'] }
     });
-    repoDir = this.tasksWorkingFolders.repoDir;
     tempDir = this.tasksWorkingFolders.tempDir;
 
-    fs.writeFileSync(Path.join(repoDir, 'test_file1'), '');
-    fs.writeFileSync(Path.join(repoDir, 'test_file2'), '');
-    fs.writeFileSync(Path.join(repoDir, 'test_invalid_file'), '');
+    fs.writeFileSync(Path.join(this.tasksWorkingFolders.repoDir, 'test_file1'), '');
+    fs.writeFileSync(Path.join(this.tasksWorkingFolders.repoDir, 'test_file2'), '');
+    fs.writeFileSync(Path.join(this.tasksWorkingFolders.repoDir, 'test_invalid_file'), '');
   });
 
   assertTaskReport('writes a report on the number of revisions for each valid file', 'revisionsAnalyser', 'revisions-report', 'revisions-report.json');
