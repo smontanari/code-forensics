@@ -5,10 +5,10 @@ var Path   = require('path'),
 var codeMaatReportTasks = require_src('tasks/code_maat_reports_tasks'),
     codeMaat            = require_src('analysers/code_maat');
 
-describe('CodeMaat tasks', function() {
+describe('CodeMaat report tasks', function() {
   var taskFunctions, repoDir, tempDir;
 
-  var assertReport = function(exampleDescription, analyser, taskName, reportFilename) {
+  var assertTaskReport = function(exampleDescription, analyser, taskName, reportFilename) {
     describe(taskName, function() {
       it(exampleDescription, function(done) {
         var analysisStream = new stream.PassThrough({ objectMode: true });
@@ -46,9 +46,9 @@ describe('CodeMaat tasks', function() {
     fs.writeFileSync(Path.join(repoDir, 'test_invalid_file'), '');
   });
 
-  assertReport('writes a report on the number of revisions for each valid file', 'revisionsAnalyser', 'revisions-report', 'revisions-report.json');
-  assertReport('writes a report on the effort distribution for each file', 'effortAnalyser', 'effort-report', 'effort-report.json');
-  assertReport('writes a report on the number of authors and revisions for each file', 'authorsAnalyser', 'authors-report', 'authors-report.json');
-  assertReport('writes a report on the main developers (by revisions) for each file', 'mainDevAnalyser', 'main-dev-report', 'main-dev-report.json');
+  assertTaskReport('writes a report on the number of revisions for each valid file', 'revisionsAnalyser', 'revisions-report', 'revisions-report.json');
+  assertTaskReport('writes a report on the effort distribution for each file', 'effortAnalyser', 'effort-report', 'effort-report.json');
+  assertTaskReport('writes a report on the number of authors and revisions for each file', 'authorsAnalyser', 'authors-report', 'authors-report.json');
+  assertTaskReport('writes a report on the main developers (by revisions) for each file', 'mainDevAnalyser', 'main-dev-report', 'main-dev-report.json');
 });
 

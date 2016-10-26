@@ -8,7 +8,7 @@ var gitTasks   = require_src('tasks/vcs_tasks'),
 describe('VCS Tasks', function() {
   var taskFunctions, mockAdapter;
 
-  var sharedExampleStreamFiles = function(description, adapterMethod, taskName, filenamePrefix) {
+  var assertTaskReport = function(description, adapterMethod, taskName, filenamePrefix) {
     describe(taskName, function() {
       it(description, function(done) {
         var tempDir = this.tasksWorkingFolders.tempDir;
@@ -66,7 +66,7 @@ describe('VCS Tasks', function() {
     });
   });
 
-  sharedExampleStreamFiles('writes the vcs log content for each period into the temp folder', 'logStream', 'vcs-log-dump', 'vcslog');
+  assertTaskReport('writes the vcs log content for each period into the temp folder', 'logStream', 'vcs-log-dump', 'vcslog');
 
-  sharedExampleStreamFiles('writes the vcs commit messages for each period into the temp folder', 'commitMessagesStream', 'vcs-commit-messages', 'vcs_commit_messages');
+  assertTaskReport('writes the vcs commit messages for each period into the temp folder', 'commitMessagesStream', 'vcs-commit-messages', 'vcs_commit_messages');
 });

@@ -1,11 +1,11 @@
 var fs = require('fs'),
     Q  = require('q');
 
-var ReportPublisher = require_src('reporting/report_publisher'),
-    utils           = require_src('utils'),
-    TimePeriod      = require_src('models').TimePeriod;
+var Publisher  = require_src('reporting/publisher'),
+    utils      = require_src('utils'),
+    TimePeriod = require_src('models').TimePeriod;
 
-describe('ReportPublisher', function() {
+describe('Publisher', function() {
   describe('with a valid report type', function() {
     beforeEach(function() {
       jasmine.clock().install();
@@ -27,13 +27,13 @@ describe('ReportPublisher', function() {
     });
 
     it('creates the output folder', function() {
-      this.subject = new ReportPublisher('hotspot-analysis', this.context);
+      this.subject = new Publisher('hotspot-analysis', this.context);
       expect(fs.mkdir.calls.mostRecent().args[0]).toEqual('/test/output/f25c4175a548f46f6d1e49489b8406a5e985dac4');
     });
 
     describe('with one report file type', function() {
       beforeEach(function() {
-        this.subject = new ReportPublisher('hotspot-analysis', this.context);
+        this.subject = new Publisher('hotspot-analysis', this.context);
       });
 
       describe('.addReportFile()', function() {
@@ -84,7 +84,7 @@ describe('ReportPublisher', function() {
 
     describe('with many report file types', function() {
       beforeEach(function() {
-        this.subject = new ReportPublisher('system-evolution', this.context);
+        this.subject = new Publisher('system-evolution', this.context);
       });
 
       describe('.addReportFile()', function() {
@@ -136,7 +136,7 @@ describe('ReportPublisher', function() {
 
   describe('without a valid report type', function() {
     it('raises an error when creating the publisher', function() {
-      expect(function() { new ReportPublisher('test-report-type', {}); }).toThrowError('Invalid report type: test-report-type');
+      expect(function() { new Publisher('test-report-type', {}); }).toThrowError('Invalid report type: test-report-type');
     });
   });
 });
