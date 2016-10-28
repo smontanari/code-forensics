@@ -36,7 +36,7 @@ describe('WordCountAnalyser', function() {
         expect(wordCountReport).toEqual([
           { text: 'message', count: 3 },
           { text: 'bar', count: 2 },
-          { text: 'baz', count: 1 }
+          { text: 'baz-qaz', count: 1 }
         ]);
       })
       .on('end', done);
@@ -44,7 +44,7 @@ describe('WordCountAnalyser', function() {
       this.inputStream.write("123 message\n");
       this.inputStream.write("Bar message\n");
       this.inputStream.write("Foo Bar message\n");
-      this.inputStream.write("Baz message\n");
+      this.inputStream.write("Baz-qaz  message\n");
       this.inputStream.write("qaz\n");
       this.inputStream.end();
     });

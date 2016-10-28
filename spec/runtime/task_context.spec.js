@@ -63,7 +63,7 @@ describe('TaskContext', function() {
       outputDir: '/test-out-dir',
       dateFormat: 'XXXX',
       architecturalBoundaries: {'test-boundary-name': 'test-boundaries'},
-      commitCloudFilters: [/filter1/, 'filter2'],
+      commitMessagesFilters: [/filter1/, 'filter2'],
       languages: ['javascript', 'ruby']
     }, { boundary: 'test-boundary-name', taskName: 'test-task', frequency: 'test-frequency' });
 
@@ -71,7 +71,7 @@ describe('TaskContext', function() {
     expect(ctx.outputDir).toEqual('/test-out-dir');
     expect(ctx.dateFormat).toEqual('XXXX');
     expect(ctx.boundaries).toEqual('test-boundaries');
-    expect(ctx.commitCloudFilters).toEqual([/filter1/, 'filter2']);
+    expect(ctx.commitMessagesFilters).toEqual([/filter1/, 'filter2']);
     expect(ctx.languages).toEqual(['javascript', 'ruby']);
   });
 

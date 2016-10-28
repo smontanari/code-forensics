@@ -1,4 +1,5 @@
-var Path   = require('path'),
+var _      = require('lodash'),
+    Path   = require('path'),
     fs     = require('fs'),
     stream = require('stream');
 
@@ -25,9 +26,10 @@ describe('Coupling analysis tasks', function() {
         { dateFrom: '2015-03-01' }
       );
 
-      fs.writeFileSync(Path.join(this.tasksWorkingFolders.repoDir, 'test_file1'), '');
-      fs.writeFileSync(Path.join(this.tasksWorkingFolders.repoDir, 'test_file2'), '');
-      fs.writeFileSync(Path.join(this.tasksWorkingFolders.repoDir, 'test_invalid_file'), '');
+      var repoDir = this.tasksWorkingFolders.repoDir;
+      _.each(['test_file1', 'test_file2', 'test_invalid_file'], function(f) {
+        fs.writeFileSync(Path.join(repoDir, f), '');
+      });
     });
 
     it('publishes a report on the sum of coupling for each file', function(done) {
@@ -53,6 +55,12 @@ describe('Coupling analysis tasks', function() {
   });
 
   describe('temporal-coupling-analysis', function() {
+    var assertTaskReport = function(file, content) {
+      var reportContent = fs.readFileSync(file);
+      var report = JSON.parse(reportContent.toString());
+      expect(report).toEqual(content);
+    };
+
     beforeEach(function() {
       taskFunctions = this.tasksSetup(couplingAnalysisTasks,
         null,
@@ -75,133 +83,135 @@ describe('Coupling analysis tasks', function() {
       spyOn(codeMaat.temporalCouplingAnalyser, 'fileAnalysisStream').and.returnValues(couplingStream1, couplingStream2);
 
       taskFunctions['temporal-coupling-analysis']().then(function() {
-        var reportContent1 = fs.readFileSync(Path.join(outputDir, '2730ad81c2034de6922e8c68b20e0cb6368a0750', '2016-01-01_2016-01-31_temporal-coupling-data.json'));
-        var report1 = JSON.parse(reportContent1.toString());
-        expect(report1).toEqual({
-          children: [
-            {
-              name: 'test',
-              children: [
-                {
-                  name: 'a',
-                  children: [
-                    {
-                      name: 'file1',
-                      children: [],
-                      sloc: 33,
-                      couplingDegree: 23,
-                      weight: 0.7666666666666667
-                    }
-                  ]
-                },
-                {
-                  name: 'b',
-                  children: [
-                    {
-                      name: 'file2',
-                      children: [],
-                      sloc: 23,
-                      weight: 0
-                    }
-                  ]
-                },
-                {
-                  name: 'c',
-                  children: [
-                    {
-                      name: 'file3',
-                      children: [],
-                      sloc: 15,
-                      couplingDegree: 30,
-                      weight: 1
-                    }
-                  ]
-                },
-                {
-                  name: 'd',
-                  children: [
-                    {
-                      name: 'file4',
-                      children: [],
-                      sloc: 25,
-                      weight: 0
-                    }
-                  ]
-                },
-                {
-                  name: 'target_file',
-                  children: [],
-                  sloc: 55,
-                  weight: 0
-                }
-              ]
-            }
-          ]
-        });
+        assertTaskReport(
+          Path.join(outputDir, '2730ad81c2034de6922e8c68b20e0cb6368a0750', '2016-01-01_2016-01-31_temporal-coupling-data.json'),
+          {
+            children: [
+              {
+                name: 'test',
+                children: [
+                  {
+                    name: 'a',
+                    children: [
+                      {
+                        name: 'file1',
+                        children: [],
+                        sloc: 33,
+                        couplingDegree: 23,
+                        weight: 0.7666666666666667
+                      }
+                    ]
+                  },
+                  {
+                    name: 'b',
+                    children: [
+                      {
+                        name: 'file2',
+                        children: [],
+                        sloc: 23,
+                        weight: 0
+                      }
+                    ]
+                  },
+                  {
+                    name: 'c',
+                    children: [
+                      {
+                        name: 'file3',
+                        children: [],
+                        sloc: 15,
+                        couplingDegree: 30,
+                        weight: 1
+                      }
+                    ]
+                  },
+                  {
+                    name: 'd',
+                    children: [
+                      {
+                        name: 'file4',
+                        children: [],
+                        sloc: 25,
+                        weight: 0
+                      }
+                    ]
+                  },
+                  {
+                    name: 'target_file',
+                    children: [],
+                    sloc: 55,
+                    weight: 0
+                  }
+                ]
+              }
+            ]
+          }
+        );
 
-        var reportContent2 = fs.readFileSync(Path.join(outputDir, '2730ad81c2034de6922e8c68b20e0cb6368a0750', '2016-02-01_2016-02-28_temporal-coupling-data.json'));
-        var report2 = JSON.parse(reportContent2.toString());
-        expect(report2).toEqual({
-          children: [
-            {
-              name: 'test',
-              children: [
-                {
-                  name: 'a',
-                  children: [
-                    {
-                      name: 'file1',
-                      children: [],
-                      sloc: 33,
-                      couplingDegree: 10,
-                      weight: 0.30303030303030304
-                    }
-                  ]
-                },
-                {
-                  name: 'b',
-                  children: [
-                    {
-                      name: 'file2',
-                      children: [],
-                      sloc: 23,
-                      weight: 0
-                    }
-                  ]
-                },
-                {
-                  name: 'c',
-                  children: [
-                    {
-                      name: 'file3',
-                      children: [],
-                      sloc: 15,
-                      weight: 0
-                    }
-                  ]
-                },
-                {
-                  name: 'd',
-                  children: [
-                    {
-                      name: 'file4',
-                      children: [],
-                      sloc: 25,
-                      couplingDegree: 33,
-                      weight: 1
-                    }
-                  ]
-                },
-                {
-                  name: 'target_file',
-                  children: [],
-                  sloc: 55,
-                  weight: 0
-                }
-              ]
-            }
-          ]
-        });
+        assertTaskReport(
+          Path.join(outputDir, '2730ad81c2034de6922e8c68b20e0cb6368a0750', '2016-02-01_2016-02-28_temporal-coupling-data.json'),
+          {
+            children: [
+              {
+                name: 'test',
+                children: [
+                  {
+                    name: 'a',
+                    children: [
+                      {
+                        name: 'file1',
+                        children: [],
+                        sloc: 33,
+                        couplingDegree: 10,
+                        weight: 0.30303030303030304
+                      }
+                    ]
+                  },
+                  {
+                    name: 'b',
+                    children: [
+                      {
+                        name: 'file2',
+                        children: [],
+                        sloc: 23,
+                        weight: 0
+                      }
+                    ]
+                  },
+                  {
+                    name: 'c',
+                    children: [
+                      {
+                        name: 'file3',
+                        children: [],
+                        sloc: 15,
+                        weight: 0
+                      }
+                    ]
+                  },
+                  {
+                    name: 'd',
+                    children: [
+                      {
+                        name: 'file4',
+                        children: [],
+                        sloc: 25,
+                        couplingDegree: 33,
+                        weight: 1
+                      }
+                    ]
+                  },
+                  {
+                    name: 'target_file',
+                    children: [],
+                    sloc: 55,
+                    weight: 0
+                  }
+                ]
+              }
+            ]
+          }
+        );
 
         done();
       });

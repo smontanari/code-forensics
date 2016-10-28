@@ -208,10 +208,10 @@ describe('CodeMaatAnalyser', function() {
     it('returns a stream of the main-dev data for each repository file', function(done) {
       this.subject.on('data', function(data) {
         expect(data).toEqual([
-          { path: 'test/path1', mainDev: 'Pat', ownership: 45 },
-          { path: 'test/path2', mainDev: 'Jason', ownership: 68 },
-          { path: 'test/path3', mainDev: 'Georg', ownership: 25 },
-          { path: 'test/path4', mainDev: 'Tom', ownership: 26 }
+          { path: 'test/path1', author: 'Pat', ownership: 45 },
+          { path: 'test/path2', author: 'Jason', ownership: 68 },
+          { path: 'test/path3', author: 'Georg', ownership: 25 },
+          { path: 'test/path4', author: 'Tom', ownership: 26 }
         ]);
         assertCommand('main-dev');
       })
@@ -223,6 +223,39 @@ describe('CodeMaatAnalyser', function() {
         "test/path2,Jason,34,60, 0.68\n",
         "test/path3,Georg,3,12,0.25\n",
         "test/path4,Tom,12,40,0.26\n"
+      ]);
+    });
+  });
+
+  describe('entity-ownership analysis', function() {
+    prepareAnalyserStream('entity-ownership');
+    verifyInstallCheck();
+
+    it('returns a stream of the entity-ownership data for each repository file', function(done) {
+      this.subject.on('data', function(data) {
+        expect(data).toEqual([
+          { path: 'test/path1', author: 'Pat', addedLines: 2, deletedLines: 5 },
+          { path: 'test/path1', author: 'Jason', addedLines: 3, deletedLines: 5 },
+          { path: 'test/path2', author: 'Jason', addedLines: 4, deletedLines: 3 },
+          { path: 'test/path2', author: 'Tom', addedLines: 5, deletedLines: 3 },
+          { path: 'test/path2', author: 'Georg', addedLines: 4, deletedLines: 3 },
+          { path: 'test/path3', author: 'Georg', addedLines: 3, deletedLines: 2 },
+          { path: 'test/path3', author: 'Tom', addedLines: 9, deletedLines: 8 },
+          { path: 'test/path4', author: 'Tom', addedLines: 12, deletedLines: 4 }
+        ]);
+        assertCommand('entity-ownership');
+      }).on('end', done);
+
+      stubCodeMaatReport([
+        "entity,author,added,deleted\n",
+        "test/path1,Pat,2,5\n",
+        "test/path1,Jason,3,5\n",
+        "test/path2,Jason,4,3\n",
+        "test/path2,Tom,5,3\n",
+        "test/path2,Georg,4,3\n",
+        "test/path3,Georg,3,2\n",
+        "test/path3,Tom,9,8\n",
+        "test/path4,Tom,12,4\n"
       ]);
     });
   });
