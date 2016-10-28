@@ -62,7 +62,7 @@ describe('Social analysis tasks', function() {
     it('publishes a report on the frequency of words in commit messages', function(done) {
       taskFunctions['commit-message-analysis']().then(function() {
         assertTaskReport(
-          Path.join(outputDir, 'b5fff4aa885972ca544fba2b1e2aa052c77e98b2', '2016-01-01_2016-01-31_word-cloud-data.json'),
+          Path.join(outputDir, '56c26a285607667e2904c44c2b6eca0bca5b1246', '2016-01-01_2016-01-31_commit-words-data.json'),
           [
             { text: 'message', count: 4 },
             { text: 'abc', count: 2 },
@@ -74,7 +74,7 @@ describe('Social analysis tasks', function() {
         );
 
         assertTaskReport(
-          Path.join(outputDir, 'b5fff4aa885972ca544fba2b1e2aa052c77e98b2', '2016-02-01_2016-02-28_word-cloud-data.json'),
+          Path.join(outputDir, '56c26a285607667e2904c44c2b6eca0bca5b1246', '2016-02-01_2016-02-28_commit-words-data.json'),
           [
             { text: 'message', count: 3 },
             { text: 'www', count: 2 },
