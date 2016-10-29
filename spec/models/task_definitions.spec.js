@@ -9,49 +9,58 @@ describe('TaskDefinitions', function() {
     this.subject = new TaskDefinitions();
   });
 
-  describe('adding a definition with a description', function() {
-    beforeEach(function() {
-      this.subject.add('test-task', 'test task description', 'test-arg1', 'test-arg2');
+  describe('Adding task definitions', function() {
+    describe('adding a definition with task information', function() {
+      it('adds a task with gulp', function() {
+        this.subject.add('test-task', {
+          description: 'test task description',
+          parameters: [{ name: 'testParam', required: true }]
+        }, 'test-arg1', 'test-arg2');
+
+        expect(gulpTask).toHaveBeenCalledWith('test-task', 'test-arg1', 'test-arg2');
+      });
     });
 
-    it('adds a task with gulp', function() {
-      expect(gulpTask).toHaveBeenCalledWith('test-task', 'test-arg1', 'test-arg2');
+    describe('adding a definition without task information', function() {
+      it('adds a task with gulp', function() {
+        this.subject.add('test-task', 'test-arg1', 'test-arg2');
+
+        expect(gulpTask).toHaveBeenCalledWith('test-task', 'test-arg1', 'test-arg2');
+      });
     });
 
-    it('associates the description to the task', function() {
-      expect(this.subject.describe('test-task')).toEqual('test task description');
-    });
-  });
+    describe('adding a duplicate definition', function() {
+      beforeEach(function() {
+        this.subject.add('test-task', 123, 'test-arg');
+      });
 
-  describe('adding a definition without a description', function() {
-    beforeEach(function() {
-      this.subject.add('test-task', 123, 'test-arg');
-    });
-
-    it('adds a task with gulp', function() {
-      expect(gulpTask).toHaveBeenCalledWith('test-task', 123, 'test-arg');
-    });
-
-    it('associates a default description to the task', function() {
-      expect(this.subject.describe('test-task')).toEqual('No description available');
-    });
-  });
-
-  describe('adding a duplicate task', function() {
-    beforeEach(function() {
-      this.subject.add('test-task', 123, 'test-arg');
-    });
-
-    it('throws an error', function() {
-      var dup = function() { this.subject.add('test-task', 456, 'test-arg'); };
-      expect(dup.bind(this)).toThrowError();
+      it('throws an error', function() {
+        var dup = function() { this.subject.add('test-task', 456, 'test-arg'); };
+        expect(dup.bind(this)).toThrowError('Task name test-task already defined');
+      });
     });
   });
 
-  describe('Finding existing tasks', function() {
+  describe('Existing tasks', function() {
     beforeEach(function() {
-      this.subject.add('test-task1', 123, 'test-arg1');
+      this.subject.add('test-task1', {
+        description: 'test task description',
+        parameters: [{ name: 'testParam', required: true }]
+      }, 'test-arg1');
       this.subject.add('test-task2', 456, 'test-arg2');
+    });
+
+    it('returns all the top level tasks (with a description)', function() {
+      var tasks = this.subject.topLevelTasks();
+      expect(tasks.length).toEqual(1);
+      expect(tasks[0].name).toEqual('test-task1');
+    });
+
+    it('returns the task ', function() {
+      var task = this.subject.getTask('test-task1');
+      expect(task.name).toEqual('test-task1');
+      expect(task.description).toEqual('test task description');
+      expect(task.usage).toEqual('gulp test-task1 --testParam <testParam> [--dateFrom <dateFrom> --dateTo <dateTo>]');
     });
 
     it('returns true for a defined task', function() {
