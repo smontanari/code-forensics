@@ -1,13 +1,21 @@
 var gulp = require('gulp');
 
-var TaskDefinitions = require_src('models/task/task_definitions');
+var TaskDefinitions = require_src('models/task/task_definitions'),
+    runners         = require_src('models/task/runners');
 
 describe('TaskDefinitions', function() {
-  var gulpTask, gulpFunction;
+  var gulpTask, gulpFunction, mockRunners;
 
   beforeEach(function() {
+    mockRunners = {
+      default: { run: jasmine.createSpy().and.returnValue('default-output') },
+      report: { run: jasmine.createSpy().and.returnValue('report-output') }
+    };
+
     gulpTask = spyOn(gulp, 'task');
     gulpTask.and.callFake(function(taskName, deps, fn) { gulpFunction = fn; });
+    spyOn(runners, 'Default').and.returnValue(mockRunners.default);
+    spyOn(runners, 'Report').and.returnValue(mockRunners.report);
     this.taskFunction = jasmine.createSpy('taskFn').and.returnValue('test-output');
   });
 
@@ -16,94 +24,161 @@ describe('TaskDefinitions', function() {
       this.subject = new TaskDefinitions({});
     });
 
-    describe('adding a definition with task information', function() {
+    var assertTaskExecution = function(runner) {
+      it('adds a task with gulp', function() {
+        expect(gulpTask).toHaveBeenCalledWith('test-task', ['task-dependencies'], jasmine.any(Function));
+      });
+
+      it('executes the task function through the ' + runner + ' runner', function() {
+        expect(gulpFunction('gulp-param1', 'gulp-param2')).toEqual(runner + '-output');
+        expect(mockRunners[runner].run).toHaveBeenCalledWith(['gulp-param1', 'gulp-param2']);
+      });
+    };
+
+    describe('adding a task with information', function() {
       beforeEach(function() {
-        this.subject.add('test-task', {
+        this.subject.addTask('test-task', {
           description: 'test task description',
           parameters: [{ name: 'testParam' }]
         }, ['task-dependencies'], this.taskFunction);
       });
 
-      it('adds a task with gulp', function() {
-        expect(gulpTask).toHaveBeenCalledWith('test-task', ['task-dependencies'], jasmine.any(Function));
-      });
-
-      it('executes the task function through gulp', function() {
-        expect(gulpFunction('gulp-param1', 'gulp-param2')).toEqual('test-output');
-        expect(this.taskFunction).toHaveBeenCalledWith('gulp-param1', 'gulp-param2');
-      });
+      assertTaskExecution('default');
     });
 
-    describe('adding a definition without task information', function() {
+    describe('adding an analysis task with information', function() {
       beforeEach(function() {
-        this.subject.add('test-task', ['task-dependencies'], this.taskFunction);
+        this.subject.addAnalysisTask('test-task', {
+          description: 'test task description',
+          parameters: [{ name: 'testParam' }]
+        }, ['task-dependencies'], this.taskFunction);
       });
 
-      it('adds a task with gulp', function() {
-        expect(gulpTask).toHaveBeenCalledWith('test-task', ['task-dependencies'], jasmine.any(Function));
-      });
-
-      it('executes the task function through gulp', function() {
-        expect(gulpFunction('gulp-param1', 'gulp-param2')).toEqual('test-output');
-        expect(this.taskFunction).toHaveBeenCalledWith('gulp-param1', 'gulp-param2');
-      });
+      assertTaskExecution('report');
     });
 
-    describe('adding a duplicate definition', function() {
+    describe('adding a task without information', function() {
       beforeEach(function() {
-        this.subject.add('test-task', ['task-dependencies'], this.taskFunction);
+        this.subject.addTask('test-task', ['task-dependencies'], this.taskFunction);
+      });
+
+      assertTaskExecution('default');
+    });
+
+    describe('adding an analysis task without information', function() {
+      beforeEach(function() {
+        this.subject.addAnalysisTask('test-task', ['task-dependencies'], this.taskFunction);
+      });
+
+      assertTaskExecution('report');
+    });
+
+    describe('adding a duplicate task definition', function() {
+      beforeEach(function() {
+        this.subject.addTask('test-task', ['task-dependencies'], this.taskFunction);
+        this.subject.addAnalysisTask('test-analysis-task', ['task-dependencies'], this.taskFunction);
       });
 
       it('throws an error', function() {
-        var dup = function() { this.subject.add('test-task', ['task-dependencies']); };
+        var dup = function() { this.subject.addTask('test-task', ['task-dependencies']); };
+        expect(dup.bind(this)).toThrowError('Task name test-task already defined');
 
+        dup = function() { this.subject.addTask('test-analysis-task', ['task-dependencies']); };
+        expect(dup.bind(this)).toThrowError('Task name test-analysis-task already defined');
+
+        dup = function() { this.subject.addTask('test-analysis-task', ['task-dependencies']); };
+        expect(dup.bind(this)).toThrowError('Task name test-analysis-task already defined');
+
+        dup = function() { this.subject.addAnalysisTask('test-task', ['task-dependencies']); };
         expect(dup.bind(this)).toThrowError('Task name test-task already defined');
       });
     });
   });
 
-
   describe('Task parameters validation', function() {
+    var assertTaskExecution = function(runner) {
+      it('it invokes the task function when all required parameters are present', function() {
+        gulpFunction();
+        expect(mockRunners[runner].run).toHaveBeenCalled();
+      });
+    };
+
     beforeEach(function() {
       this.subject = new TaskDefinitions({
         parameters: { testParam1: 123 }
       });
     });
 
-    it('it invokes the task function when all required parameters are present', function() {
-      this.subject.add('test-task', {
-        description: 'test task description',
-        parameters: [{ name: 'testParam1', required: true }, { name: 'testParam2' }]
-      }, ['task-dependencies'], this.taskFunction);
+    describe('when successful', function() {
+      describe('for a default task', function() {
+        beforeEach(function() {
+          this.subject.addTask('test-task', {
+            description: 'test task description',
+            parameters: [{ name: 'testParam1', required: true }, { name: 'testParam2' }]
+          }, ['task-dependencies'], this.taskFunction);
+        });
 
-      gulpFunction();
-      expect(this.taskFunction).toHaveBeenCalled();
+        assertTaskExecution('default');
+      });
+
+      describe('for an analysis task', function() {
+        beforeEach(function() {
+          this.subject.addAnalysisTask('test-task', {
+            description: 'test task description',
+            parameters: [{ name: 'testParam1', required: true }, { name: 'testParam2' }]
+          }, ['task-dependencies'], this.taskFunction);
+        });
+
+        assertTaskExecution('report');
+      });
     });
 
-    it('it throws an error if any required parameter is not present', function() {
-      this.subject.add('test-task', {
-        description: 'test task description',
-        parameters: [{ name: 'testParam2', required: true }]
-      }, ['task-dependencies'], this.taskFunction);
+    describe('when unsuccessful ', function() {
+      describe('for a default task', function() {
+        it('it throws an error if any required parameter is not present', function() {
+          this.subject.addTask('test-task', {
+            description: 'test task description',
+            parameters: [{ name: 'testParam2', required: true }]
+          }, ['task-dependencies'], this.taskFunction);
 
-      expect(gulpFunction).toThrowError();
+          expect(gulpFunction).toThrowError();
+        });
+      });
+
+      describe('for an analysis task', function() {
+        it('it throws an error if any required parameter is not present', function() {
+          this.subject.addAnalysisTask('test-task', {
+            description: 'test task description',
+            parameters: [{ name: 'testParam2', required: true }]
+          }, ['task-dependencies'], this.taskFunction);
+
+          expect(gulpFunction).toThrowError();
+        });
+      });
     });
   });
 
   describe('Existing tasks', function() {
     beforeEach(function() {
       this.subject = new TaskDefinitions({ parameters: { testParam: 123 } });
-      this.subject.add('test-task1', {
+      this.subject.addTask('test-task1', {
         description: 'test task description',
         parameters: [{ name: 'testParam', required: true }]
       }, this.taskFunction);
-      this.subject.add('test-task2', ['task-dependencies'], this.taskFunction);
+      this.subject.addAnalysisTask('test-task2', ['task-dependencies'], this.taskFunction);
     });
 
-    it('returns all the top level tasks (with a description)', function() {
-      var tasks = this.subject.topLevelTasks();
+    it('returns all the analysis tasks', function() {
+      var tasks = this.subject.analysisTasks();
       expect(tasks.length).toEqual(1);
-      expect(tasks[0].name).toEqual('test-task1');
+      expect(tasks[0].name).toEqual('test-task2');
+    });
+
+    it('returns all the tasks', function() {
+      var tasks = this.subject.allTasks();
+      expect(tasks.length).toEqual(2);
+      expect(tasks[0].name).toEqual('test-task2');
+      expect(tasks[1].name).toEqual('test-task1');
     });
 
     it('returns the task', function() {
@@ -118,7 +193,7 @@ describe('TaskDefinitions', function() {
     });
 
     it('returns false for a non defined task', function() {
-      expect(this.subject.isTaskDefined('test-task3')).toBeFalsy();
+      expect(this.subject.isTaskDefined('not-a-task')).toBeFalsy();
     });
   });
 });

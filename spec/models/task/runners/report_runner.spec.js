@@ -1,6 +1,6 @@
 var stream = require('stream');
 
-var ReportRunner = require_src('models/task/report_runner'),
+var ReportRunner = require_src('models/task/runners/report_runner'),
     reporting     = require_src('reporting');
 
 describe('ReportRunner', function() {
@@ -43,6 +43,15 @@ describe('ReportRunner', function() {
         expect(mockPublisher.createManifest).toHaveBeenCalled();
         done();
       });
+    });
+  });
+
+  describe('when a task function is not defined', function() {
+    it('returns without creating a manifest', function() {
+      var output = new ReportRunner({}).run('test_param1', 'test_param2');
+
+      expect(output).toBeUndefined();
+      expect(mockPublisher.createManifest).not.toHaveBeenCalled();
     });
   });
 });

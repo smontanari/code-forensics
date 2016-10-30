@@ -1,10 +1,9 @@
 var Task = require_src('models/task/gulp_task');
 
 describe('Task', function() {
-  var assertTask = function(task, description, dependencies, fn, isTopLevel, usage) {
+  var assertTask = function(task, description, dependencies, fn, usage) {
     expect(task.name).toEqual('test-task');
     expect(task.description).toEqual(description);
-    expect(task.isTopLevel).toEqual(isTopLevel);
     expect(task.usage).toEqual(usage);
     expect(task.dependencies).toEqual(dependencies);
     expect(task.taskFunction).toEqual(fn);
@@ -14,7 +13,7 @@ describe('Task', function() {
     it('returns a Task with the given description', function() {
       var task = new Task('test-task', { description: 'test task description' }, ['test-dep1', 'test-dep2'], 'testFunction');
 
-      assertTask(task, 'test task description', ['test-dep1', 'test-dep2'], 'testFunction', true, 'gulp test-task');
+      assertTask(task, 'test task description', ['test-dep1', 'test-dep2'], 'testFunction', 'gulp test-task');
     });
   });
 
@@ -22,7 +21,7 @@ describe('Task', function() {
     it('returns a Task with the default description', function() {
       var task = new Task('test-task', ['test-dep1', 'test-dep2'], 'testFunction');
 
-      assertTask(task, 'No description available', ['test-dep1', 'test-dep2'], 'testFunction', false, 'gulp test-task');
+      assertTask(task, 'No description available', ['test-dep1', 'test-dep2'], 'testFunction', 'gulp test-task');
     });
   });
 
@@ -33,7 +32,7 @@ describe('Task', function() {
         parameters: [{ name: 'param1', required: true }, { name: 'param2' }, { name: 'param3' }]
       }, ['test-dep1', 'test-dep2'], 'testFunction');
 
-      assertTask(task, 'test task description', ['test-dep1', 'test-dep2'], 'testFunction', true, 'gulp test-task --param1 <param1> [--param2 <param2> --param3 <param3>]');
+      assertTask(task, 'test task description', ['test-dep1', 'test-dep2'], 'testFunction', 'gulp test-task --param1 <param1> [--param2 <param2> --param3 <param3>]');
     });
   });
 
@@ -43,7 +42,7 @@ describe('Task', function() {
         parameters: [{ name: 'param1', required: true }, { name: 'param2' }, { name: 'param3' }]
       }, ['test-dep1', 'test-dep2'], 'testFunction');
 
-      assertTask(task, 'No description available', ['test-dep1', 'test-dep2'], 'testFunction', false, 'gulp test-task --param1 <param1> [--param2 <param2> --param3 <param3>]');
+      assertTask(task, 'No description available', ['test-dep1', 'test-dep2'], 'testFunction', 'gulp test-task --param1 <param1> [--param2 <param2> --param3 <param3>]');
     });
   });
 
@@ -61,7 +60,7 @@ describe('Task', function() {
     it('returns a task with an empty array of dependencies', function() {
       var task = new Task('test-task', 'testFunction');
 
-      assertTask(task, 'No description available', [], 'testFunction', false, 'gulp test-task');
+      assertTask(task, 'No description available', [], 'testFunction', 'gulp test-task');
     });
   });
 
@@ -69,7 +68,7 @@ describe('Task', function() {
     it('returns a task with no task function to execute', function() {
       var task = new Task('test-task', ['test-dep1']);
 
-      assertTask(task, 'No description available', ['test-dep1'], undefined, false, 'gulp test-task');
+      assertTask(task, 'No description available', ['test-dep1'], undefined, 'gulp test-task');
     });
   });
 
