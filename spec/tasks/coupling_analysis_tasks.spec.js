@@ -37,7 +37,7 @@ describe('Coupling analysis tasks', function() {
       spyOn(codeMaat.sumCouplingAnalyser, 'fileAnalysisStream').and.returnValue(analysisStream);
 
       taskFunctions['sum-of-coupling-analysis']().then(function() {
-        var reportContent = fs.readFileSync(Path.join(outputDir, '804d6699b30c2d16444886b4adfc516f2c0d15b4', '2015-03-01_2015-10-22_sum-of-coupling-data.json'));
+        var reportContent = fs.readFileSync(Path.join(outputDir, 'cccbd27e6e715fa48728f9f6363785835b73ba58', '2015-03-01_2015-10-22_sum-of-coupling-data.json'));
         var report = JSON.parse(reportContent.toString());
         expect(report).toEqual([
           { path: 'test_file1', soc: 34 },
@@ -84,7 +84,7 @@ describe('Coupling analysis tasks', function() {
 
       taskFunctions['temporal-coupling-analysis']().then(function() {
         assertTaskReport(
-          Path.join(outputDir, '2730ad81c2034de6922e8c68b20e0cb6368a0750', '2016-01-01_2016-01-31_temporal-coupling-data.json'),
+          Path.join(outputDir, '7a25dcda038c13953d38dcf1969cf09fadf23ad0', '2016-01-01_2016-01-31_temporal-coupling-data.json'),
           {
             children: [
               {
@@ -149,7 +149,7 @@ describe('Coupling analysis tasks', function() {
         );
 
         assertTaskReport(
-          Path.join(outputDir, '2730ad81c2034de6922e8c68b20e0cb6368a0750', '2016-02-01_2016-02-28_temporal-coupling-data.json'),
+          Path.join(outputDir, '7a25dcda038c13953d38dcf1969cf09fadf23ad0', '2016-02-01_2016-02-28_temporal-coupling-data.json'),
           {
             children: [
               {

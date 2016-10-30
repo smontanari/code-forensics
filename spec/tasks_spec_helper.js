@@ -5,7 +5,7 @@ var Path   = require('path'),
     _      = require('lodash');
 
 var TaskContext     = require_src('runtime/task_context'),
-    TaskDefinitions = require_src('./models/task_definitions'),
+    TaskDefinitions = require_src('./models/task/task_definitions'),
     taskHelpers     = require_src('tasks/helpers');
 
 var TEST_TMP_DIR    = Path.resolve('./spec_files/tmp'),

@@ -64,7 +64,7 @@ describe('ruby tasks', function() {
       mockAdapter.showRevisionStream.and.returnValues(revisionStream1, revisionStream2);
 
       taskFunctions['ruby-complexity-trend-analysis']().then(function() {
-        var reportContent = fs.readFileSync(Path.join(outputDir, '1e3bebd4760a96a316b64690b7d9d96a4cfa3558', '2015-03-01_2015-10-22_complexity-trend-data.json'));
+        var reportContent = fs.readFileSync(Path.join(outputDir, 'd319335c98cc00b068ecd0927761ff3f3d693137', '2015-03-01_2015-10-22_complexity-trend-data.json'));
         var report = JSON.parse(reportContent.toString());
         expect(report.length).toEqual(2);
         expect(report).toContain({ revision: 123, date: '2015-04-29T23:00:00.000Z', path: 'test_abs.rb', totalComplexity: 1, averageComplexity: 1, methodComplexity: [{ name: 'main#abs                         -:1', complexity: 1 }] });

@@ -1,5 +1,4 @@
 var fs = require('fs'),
-    _  = require('lodash'),
     Q  = require('q');
 
 var Publisher  = require_src('reporting/publisher'),
@@ -7,160 +6,181 @@ var Publisher  = require_src('reporting/publisher'),
     TimePeriod = require_src('models').TimePeriod;
 
 describe('Publisher', function() {
-  describe('with a valid report type', function() {
-    beforeEach(function() {
-      jasmine.clock().install();
-      jasmine.clock().mockDate(new Date('2013-10-22T13:00:00.000Z'));
-      spyOn(fs, 'mkdir');
-      this.context = {
-        dateRange: new TimePeriod('start', 'finish'),
-        outputDir: '/test/output',
-        parameters: {
-          targetFile: 'test/file',
-          boundary: 'test_boundary',
-          frequency: 'test_frequency',
-          maxCoupledFiles: 3
-        }
-      };
+  beforeEach(function() {
+    jasmine.clock().install();
+    jasmine.clock().mockDate(new Date('2013-10-22T13:00:00.000Z'));
+    spyOn(fs, 'mkdir');
+    this.context = {
+      dateRange: new TimePeriod('start', 'finish'),
+      outputDir: '/test/output',
+      parameters: {
+        param1: 'test_param1',
+        param3: 'test_param3',
+        dateFrom: 'test_date'
+      }
+    };
+  });
+
+  afterEach(function() {
+    jasmine.clock().uninstall();
+  });
+
+  it('creates the output folder', function() {
+    this.subject = new Publisher({ name: 'test-task' }, this.context);
+    expect(fs.mkdir.calls.mostRecent().args[0]).toEqual('/test/output/c8c1dcae8f21797ee19a82d7958caf0aba7da1c6');
+  });
+
+  describe('.addReportFile()', function() {
+    describe('with no report file information', function() {
+      it('raises an error adding a report file', function() {
+        this.subject = new Publisher({ name: 'test-task' }, this.context);
+
+        expect(this.subject.addReportFile.bind(this.subject)).toThrowError('Missing report file information');
+        expect(this.subject.addReportFileForType.bind(this.subject, 'report-type')).toThrowError('Invalid report file type: report-type');
+      });
     });
 
-    afterEach(function() {
-      jasmine.clock().uninstall();
-    });
+    describe('with one report file type', function() {
+      beforeEach(function() {
+        this.subject = new Publisher({
+          name: 'test-task', reportFile: 'test-file.json'
+        }, this.context);
+      });
 
-    it('creates the output folder', function() {
-      this.subject = new Publisher('hotspot-analysis', this.context);
-      expect(fs.mkdir.calls.mostRecent().args[0]).toEqual('/test/output/f25c4175a548f46f6d1e49489b8406a5e985dac4');
-    });
+      describe('with no time period given', function() {
+        it('returns the full path to the file corresponding to the date range', function() {
+          var filepath = this.subject.addReportFile();
 
-    describe('.addReportFile()', function() {
-      describe('with one report file type', function() {
-        beforeEach(function() {
-          this.subject = new Publisher('hotspot-analysis', this.context);
-        });
-
-        describe('with no time period given', function() {
-          it('returns the full path to the file corresponding to the date range', function() {
-            var filepath = this.subject.addReportFile();
-
-            expect(filepath).toEqual('/test/output/f25c4175a548f46f6d1e49489b8406a5e985dac4/start_finish_revisions-hotspot-data.json');
-          });
-        });
-
-        describe('with a given time period', function() {
-          it('returns the full path to the file corresponding to the time period', function() {
-            var filepath = this.subject.addReportFile(new TimePeriod('begin', 'end'));
-
-            expect(filepath).toEqual('/test/output/f25c4175a548f46f6d1e49489b8406a5e985dac4/begin_end_revisions-hotspot-data.json');
-          });
+          expect(filepath).toEqual('/test/output/c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/start_finish_test-file.json');
         });
       });
 
-      describe('with many report file types', function() {
-        beforeEach(function() {
-          this.subject = new Publisher('system-evolution', this.context);
+      describe('with a given time period', function() {
+        it('returns the full path to the file corresponding to the time period', function() {
+          var filepath = this.subject.addReportFile(new TimePeriod('begin', 'end'));
+
+          expect(filepath).toEqual('/test/output/c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/begin_end_test-file.json');
         });
+      });
 
-        describe('with no time period given', function() {
-          it('returns the full path to the file corresponding to the date range', function() {
-            var filepath = this.subject.addReportFileForType('coupling-trend');
-
-            expect(filepath).toEqual('/test/output/21833855c56ebd0dff4d2b42aa2bd9aafe252b08/start_finish_system-coupling-data.json');
-          });
-        });
-
-        describe('with a given time period', function() {
-          it('returns the full path to the file corresponding to the time period', function() {
-            var filepath = this.subject.addReportFileForType('revisions-trend', new TimePeriod('begin', 'end'));
-
-            expect(filepath).toEqual('/test/output/21833855c56ebd0dff4d2b42aa2bd9aafe252b08/begin_end_system-revisions-data.json');
-          });
+      describe('with incorrect report file information', function() {
+        it('raises an error when adding a report file', function() {
+          expect(this.subject.addReportFileForType.bind(this.subject, 'report-type')).toThrowError('Invalid report file type: report-type');
         });
       });
     });
 
-    describe('.createManifest()', function() {
-      describe('with one report file type', function() {
-        beforeEach(function() {
-          spyOn(utils.json, 'objectToFile').and.returnValue(Q());
-          this.subject = new Publisher('hotspot-analysis', this.context);
-          this.subject.addReportFile(new TimePeriod('p2Start', 'p2End'));
-          this.subject.addReportFile(new TimePeriod('p1Start', 'p1End'));
-        });
+    describe('with many report file types', function() {
+      beforeEach(function() {
+        this.subject = new Publisher({
+          name: 'test-task',
+          reportFiles: {
+            'report-type1': 'test-file1.json',
+            'report-type2': 'test-file2.json'
+          }
+        }, this.context);
+      });
 
-        it('creates a manifest file', function(done) {
-          this.subject.createManifest().then(function() {
-            var manifest = utils.json.objectToFile.calls.mostRecent().args[1];
-            expect(manifest.id).toEqual('f25c4175a548f46f6d1e49489b8406a5e985dac4');
-            expect(manifest.reportType).toEqual('hotspot-analysis');
-            expect(manifest.time).toEqual('2013-10-22T13:00:00.000Z');
-            expect(manifest.dateRange).toEqual('start_finish');
-            expect(manifest.dataFiles).toEqual([
-              { fileType: undefined, timePeriod: 'p1Start_p1End', fileUrl: 'f25c4175a548f46f6d1e49489b8406a5e985dac4/p1Start_p1End_revisions-hotspot-data.json'},
-              { fileType: undefined, timePeriod: 'p2Start_p2End', fileUrl: 'f25c4175a548f46f6d1e49489b8406a5e985dac4/p2Start_p2End_revisions-hotspot-data.json'}
-            ]);
+      describe('with no time period given', function() {
+        it('returns the full path to the file corresponding to the date range', function() {
+          var filepath = this.subject.addReportFileForType('report-type1');
 
-            done();
-          });
+          expect(filepath).toEqual('/test/output/c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/start_finish_test-file1.json');
         });
       });
 
-      describe('with many report file types', function() {
-        beforeEach(function() {
-          spyOn(utils.json, 'objectToFile').and.returnValue(Q());
-          this.subject = new Publisher('system-evolution', this.context);
-          this.subject.addReportFileForType('coupling-trend', new TimePeriod('p2Start', 'p2End'));
-          this.subject.addReportFileForType('revisions-trend', new TimePeriod('p1Start', 'p1End'));
-        });
+      describe('with a given time period', function() {
+        it('returns the full path to the file corresponding to the time period', function() {
+          var filepath = this.subject.addReportFileForType('report-type2', new TimePeriod('begin', 'end'));
 
-        it('creates a manifest file', function(done) {
-          this.subject.createManifest().then(function() {
-            var manifest = utils.json.objectToFile.calls.mostRecent().args[1];
-            expect(manifest.id).toEqual('21833855c56ebd0dff4d2b42aa2bd9aafe252b08');
-            expect(manifest.reportType).toEqual('system-evolution');
-            expect(manifest.time).toEqual('2013-10-22T13:00:00.000Z');
-            expect(manifest.dateRange).toEqual('start_finish');
-            expect(manifest.dataFiles).toEqual([
-              { fileType: 'revisions-trend', timePeriod: 'p1Start_p1End', fileUrl: '21833855c56ebd0dff4d2b42aa2bd9aafe252b08/p1Start_p1End_system-revisions-data.json'},
-              { fileType: 'coupling-trend', timePeriod: 'p2Start_p2End', fileUrl: '21833855c56ebd0dff4d2b42aa2bd9aafe252b08/p2Start_p2End_system-coupling-data.json'}
-            ]);
-
-            done();
-          });
+          expect(filepath).toEqual('/test/output/c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/begin_end_test-file2.json');
         });
       });
 
-      describe('manifest parameters', function() {
-        var assertManifestParameters = function(reportType, paramNames) {
-          it('exposes the relevant parameters for the "' + reportType + '" analysis report', function(done) {
-            var expectedParameters = _.pick(this.context.parameters, paramNames);
-            new Publisher(reportType, this.context).createManifest().then(function() {
-              var manifest = utils.json.objectToFile.calls.mostRecent().args[1];
-              expect(manifest.parameters).toEqual(expectedParameters);
-              done();
-            });
-          });
-        };
-
-        beforeEach(function() {
-          spyOn(utils.json, 'objectToFile').and.returnValue(Q());
+      describe('with incorrect report type information', function() {
+        it('raises an error when adding a report file', function() {
+          expect(this.subject.addReportFileForType.bind(this.subject, 'report-type3')).toThrowError('Invalid report file type: report-type3');
         });
-
-        assertManifestParameters('sum-of-coupling');
-        assertManifestParameters('hotspot-analysis');
-        assertManifestParameters('developer-effort');
-        assertManifestParameters('temporal-coupling', ['targetFile', 'frequency']);
-        assertManifestParameters('complexity-trend', 'targetFile');
-        assertManifestParameters('commit-messages', 'frequency');
-        assertManifestParameters('system-evolution', ['frequency', 'boundary']);
-        assertManifestParameters('authors-coupling', ['maxCoupledFiles']);
       });
     });
   });
 
-  describe('without a valid report type', function() {
-    it('raises an error when creating the publisher', function() {
-      expect(function() { new Publisher('test-report-type', {}); }).toThrowError('Invalid report type: test-report-type');
+  describe('.createManifest()', function() {
+    describe('with one report file type', function() {
+      beforeEach(function() {
+        spyOn(utils.json, 'objectToFile').and.returnValue(Q());
+        this.subject = new Publisher({
+          name: 'test-task',
+          reportFile: 'test-file.json'
+        }, this.context);
+        this.subject.addReportFile(new TimePeriod('p2Start', 'p2End'));
+        this.subject.addReportFile(new TimePeriod('p1Start', 'p1End'));
+      });
+
+      it('creates a manifest file', function(done) {
+        this.subject.createManifest().then(function() {
+          var manifest = utils.json.objectToFile.calls.mostRecent().args[1];
+          expect(manifest.id).toEqual('c8c1dcae8f21797ee19a82d7958caf0aba7da1c6');
+          expect(manifest.reportType).toEqual('test-task');
+          expect(manifest.time).toEqual('2013-10-22T13:00:00.000Z');
+          expect(manifest.dateRange).toEqual('start_finish');
+          expect(manifest.dataFiles).toEqual([
+            { fileType: undefined, timePeriod: 'p1Start_p1End', fileUrl: 'c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/p1Start_p1End_test-file.json'},
+            { fileType: undefined, timePeriod: 'p2Start_p2End', fileUrl: 'c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/p2Start_p2End_test-file.json'}
+          ]);
+
+          done();
+        });
+      });
+    });
+
+    describe('with many report file types', function() {
+      beforeEach(function() {
+        spyOn(utils.json, 'objectToFile').and.returnValue(Q());
+        this.subject = new Publisher({
+          name: 'test-task',
+          reportFiles: {
+            'report-type1': 'test-file1.json',
+            'report-type2': 'test-file2.json'
+          }
+        }, this.context);
+        this.subject.addReportFileForType('report-type2', new TimePeriod('p2Start', 'p2End'));
+        this.subject.addReportFileForType('report-type1', new TimePeriod('p1Start', 'p1End'));
+      });
+
+      it('creates a manifest file', function(done) {
+        this.subject.createManifest().then(function() {
+          var manifest = utils.json.objectToFile.calls.mostRecent().args[1];
+          expect(manifest.id).toEqual('c8c1dcae8f21797ee19a82d7958caf0aba7da1c6');
+          expect(manifest.reportType).toEqual('test-task');
+          expect(manifest.time).toEqual('2013-10-22T13:00:00.000Z');
+          expect(manifest.dateRange).toEqual('start_finish');
+          expect(manifest.dataFiles).toEqual([
+            { fileType: 'report-type1', timePeriod: 'p1Start_p1End', fileUrl: 'c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/p1Start_p1End_test-file1.json'},
+            { fileType: 'report-type2', timePeriod: 'p2Start_p2End', fileUrl: 'c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/p2Start_p2End_test-file2.json'}
+          ]);
+
+          done();
+        });
+      });
+    });
+
+    describe('manifest parameters', function() {
+      beforeEach(function() {
+        spyOn(utils.json, 'objectToFile').and.returnValue(Q());
+      });
+
+      it('exposes the relevane context parameters for the analysis report', function(done) {
+        new Publisher({
+          name: 'test-task',
+          parameters: [{ name: 'param1' }, { name: 'param2' }],
+          reportFile: 'test-file.json'
+        }, this.context).createManifest().then(function() {
+          var manifest = utils.json.objectToFile.calls.mostRecent().args[1];
+          expect(manifest.parameters).toEqual({ param1: 'test_param1' });
+          done();
+        });
+      });
     });
   });
 });

@@ -1,4 +1,4 @@
-var Task = require_src('models/gulp_task');
+var Task = require_src('models/task/gulp_task');
 
 describe('Task', function() {
   var assertTask = function(task, description, dependencies, fn, isTopLevel, usage) {
@@ -44,6 +44,16 @@ describe('Task', function() {
       }, ['test-dep1', 'test-dep2'], 'testFunction');
 
       assertTask(task, 'No description available', ['test-dep1', 'test-dep2'], 'testFunction', false, 'gulp test-task --param1 <param1> [--param2 <param2> --param3 <param3>]');
+    });
+  });
+
+  describe('with additional attributes', function() {
+    it('returns a Task with the given attributes', function() {
+      var task = new Task('test-task', {
+        testProperty: 123
+      }, ['test-dep1', 'test-dep2'], 'testFunction');
+
+      expect(task.testProperty).toEqual(123);
     });
   });
 

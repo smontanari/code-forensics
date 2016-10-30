@@ -1,5 +1,6 @@
 var gulp = require('gulp');
-var TaskDefinitions = require_src('models/task_definitions');
+
+var TaskDefinitions = require_src('models/task/task_definitions');
 
 describe('TaskDefinitions', function() {
   var gulpTask, gulpFunction;

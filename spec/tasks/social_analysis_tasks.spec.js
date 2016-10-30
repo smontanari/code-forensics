@@ -62,7 +62,7 @@ describe('Social analysis tasks', function() {
     it('publishes a report on the frequency of words in commit messages', function(done) {
       taskFunctions['commit-message-analysis']().then(function() {
         assertTaskReport(
-          Path.join(outputDir, '56c26a285607667e2904c44c2b6eca0bca5b1246', '2016-01-01_2016-01-31_commit-words-data.json'),
+          Path.join(outputDir, '7a52722f61ebbf6b67c3052225297ec62701debb', '2016-01-01_2016-01-31_commit-words-data.json'),
           [
             { text: 'message', count: 4 },
             { text: 'abc', count: 2 },
@@ -74,7 +74,7 @@ describe('Social analysis tasks', function() {
         );
 
         assertTaskReport(
-          Path.join(outputDir, '56c26a285607667e2904c44c2b6eca0bca5b1246', '2016-02-01_2016-02-28_commit-words-data.json'),
+          Path.join(outputDir, '7a52722f61ebbf6b67c3052225297ec62701debb', '2016-02-01_2016-02-28_commit-words-data.json'),
           [
             { text: 'message', count: 3 },
             { text: 'www', count: 2 },
@@ -117,7 +117,7 @@ describe('Social analysis tasks', function() {
     it('publishes reports on the revisions distribution between developers and between teams', function(done) {
       taskFunctions['developer-effort-analysis']().then(function() {
         assertTaskReport(
-          Path.join(outputDir, '60c7f8e2cd1e8a2200fed93a9e47207704dd7bbd', '2016-01-01_2016-10-22_developer-effort-data.json'),
+          Path.join(outputDir, '003a77e0e1ae9594f143f49d2b211269308c4489', '2016-01-01_2016-10-22_developer-effort-data.json'),
           {
             children: [
               {
@@ -167,7 +167,7 @@ describe('Social analysis tasks', function() {
         );
 
         assertTaskReport(
-          Path.join(outputDir, '60c7f8e2cd1e8a2200fed93a9e47207704dd7bbd', '2016-01-01_2016-10-22_team-effort-data.json'),
+          Path.join(outputDir, '003a77e0e1ae9594f143f49d2b211269308c4489', '2016-01-01_2016-10-22_team-effort-data.json'),
           {
             children: [
               {
@@ -273,7 +273,7 @@ describe('Social analysis tasks', function() {
       spyOn(codeMaat.temporalCouplingAnalyser, 'fileAnalysisStream').and.returnValue(couplingStream);
       taskFunctions['authors-coupling-analysis']().then(function() {
         assertTaskReport(
-          Path.join(outputDir, '84419f00fe41a0ae8350be112816002d3c456f97', '2016-01-01_2016-10-22_authors-coupling-data.json'),
+          Path.join(outputDir, '1961adc0bbb3946a5401622e3905df77a9876312', '2016-01-01_2016-10-22_authors-coupling-data.json'),
           {
             children: [
               {

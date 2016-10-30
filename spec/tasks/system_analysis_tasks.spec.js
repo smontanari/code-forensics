@@ -39,7 +39,7 @@ describe('System analysis tasks', function() {
 
       taskFunctions['system-evolution-analysis']().then(function() {
         assertTaskReport(
-          Path.join(outputDir, '24072f17712bc0579ba71dc1bff47b0438b9c065', '2016-01-01_2016-02-28_system-coupling-data.json'),
+          Path.join(outputDir, '376716484935bc38610b095a36fabbe9c01527ad', '2016-01-01_2016-02-28_system-coupling-data.json'),
           [
             { name: 'test_layer1', coupledName: 'test_layer2', couplingDegree: 23, date: '2016-01-31'},
             { name: 'test_layer1', coupledName: 'test_layer3', couplingDegree: 41, date: '2016-01-31'},
@@ -51,7 +51,7 @@ describe('System analysis tasks', function() {
         );
 
         assertTaskReport(
-          Path.join(outputDir, '24072f17712bc0579ba71dc1bff47b0438b9c065', '2016-01-01_2016-02-28_system-revisions-data.json'),
+          Path.join(outputDir, '376716484935bc38610b095a36fabbe9c01527ad', '2016-01-01_2016-02-28_system-revisions-data.json'),
           [
             { name: 'test_layer1', revisions: 32, date: '2016-01-31'},
             { name: 'test_layer2', revisions: 47, date: '2016-01-31'},

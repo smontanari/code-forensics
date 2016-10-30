@@ -65,7 +65,7 @@ describe('javascript tasks', function() {
       mockAdapter.showRevisionStream.and.returnValues(revisionStream1, revisionStream2);
 
       taskFunctions['javascript-complexity-trend-analysis']().then(function() {
-        var reportContent = fs.readFileSync(Path.join(outputDir, '1e3bebd4760a96a316b64690b7d9d96a4cfa3558', '2015-03-01_2015-10-22_complexity-trend-data.json'));
+        var reportContent = fs.readFileSync(Path.join(outputDir, '41ab3dc9b2f3c211c9e26ce4bef11eb8104fc930', '2015-03-01_2015-10-22_complexity-trend-data.json'));
         var report = JSON.parse(reportContent.toString());
         expect(report).toEqual([
           { revision: 123, date: '2015-04-29T23:00:00.000Z', path: 'test_abs.js', totalComplexity: 1, averageComplexity: 1, methodComplexity: [{ name: 'abs', complexity: 1 }] },
