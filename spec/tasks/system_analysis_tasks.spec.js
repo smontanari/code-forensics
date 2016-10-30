@@ -32,7 +32,7 @@ describe('System analysis tasks', function() {
       spyOn(codeMaat.revisionsAnalyser, 'fileAnalysisStream').and.returnValues(revisionsStream1, revisionsStream2);
 
       var taskFunctions = this.tasksSetup(systemAnalysisTasks, null,
-        { dateFrom: '2016-01-01', dateTo: '2016-02-28', frequency: 'monthly' }
+        { dateFrom: '2016-01-01', dateTo: '2016-02-28', frequency: 'monthly', boundary: 'test-boundary' }
       );
       var outputDir = this.tasksWorkingFolders.outputDir;
 
