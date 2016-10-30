@@ -100,7 +100,7 @@ describe('TaskDefinitions', function() {
       var task = this.subject.getTask('test-task1');
       expect(task.name).toEqual('test-task1');
       expect(task.description).toEqual('test task description');
-      expect(task.usage).toEqual('gulp test-task1 --testParam <testParam> [--dateFrom <dateFrom> --dateTo <dateTo>]');
+      expect(task.usage).toEqual('gulp test-task1 --testParam <testParam>');
     });
 
     it('returns true for a defined task', function() {
