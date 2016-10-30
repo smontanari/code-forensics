@@ -16,27 +16,35 @@ describe('TaskDefinitions', function() {
     });
 
     describe('adding a definition with task information', function() {
-      it('adds a task with gulp', function() {
+      beforeEach(function() {
         this.subject.add('test-task', {
           description: 'test task description',
           parameters: [{ name: 'testParam' }]
         }, ['task-dependencies'], this.taskFunction);
+      });
 
-        expect(gulpFunction()).toEqual('test-output');
-
+      it('adds a task with gulp', function() {
         expect(gulpTask).toHaveBeenCalledWith('test-task', ['task-dependencies'], jasmine.any(Function));
-        expect(this.taskFunction).toHaveBeenCalled();
+      });
+
+      it('executes the task function through gulp', function() {
+        expect(gulpFunction('gulp-param1', 'gulp-param2')).toEqual('test-output');
+        expect(this.taskFunction).toHaveBeenCalledWith('gulp-param1', 'gulp-param2');
       });
     });
 
     describe('adding a definition without task information', function() {
-      it('adds a task with gulp', function() {
+      beforeEach(function() {
         this.subject.add('test-task', ['task-dependencies'], this.taskFunction);
+      });
 
-        expect(gulpFunction()).toEqual('test-output');
-
+      it('adds a task with gulp', function() {
         expect(gulpTask).toHaveBeenCalledWith('test-task', ['task-dependencies'], jasmine.any(Function));
-        expect(this.taskFunction).toHaveBeenCalled();
+      });
+
+      it('executes the task function through gulp', function() {
+        expect(gulpFunction('gulp-param1', 'gulp-param2')).toEqual('test-output');
+        expect(this.taskFunction).toHaveBeenCalledWith('gulp-param1', 'gulp-param2');
       });
     });
 
@@ -53,6 +61,7 @@ describe('TaskDefinitions', function() {
     });
   });
 
+
   describe('Task parameters validation', function() {
     beforeEach(function() {
       this.subject = new TaskDefinitions({
@@ -66,7 +75,7 @@ describe('TaskDefinitions', function() {
         parameters: [{ name: 'testParam1', required: true }, { name: 'testParam2' }]
       }, ['task-dependencies'], this.taskFunction);
 
-      expect(gulpFunction()).toEqual('test-output');
+      gulpFunction();
       expect(this.taskFunction).toHaveBeenCalled();
     });
 
