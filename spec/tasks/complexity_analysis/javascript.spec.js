@@ -13,7 +13,7 @@ describe('javascript tasks', function() {
     outputDir = this.tasksWorkingFolders.outputDir;
   });
 
-  describe('javascript-complexity-analysis', function() {
+  describe('javascript-complexity-report', function() {
     beforeEach(function() {
       taskFunctions = this.tasksSetup(javascriptTasks);
     });
@@ -23,7 +23,7 @@ describe('javascript tasks', function() {
       fs.writeFileSync(Path.join(repoDir, 'test_file2.rb'), "line1\nline2\nline3\n");
       fs.writeFileSync(Path.join(repoDir, 'test_file3.js'), "function Calculator() { this.division = function(a,b) { if (b > 0) { return a/b; } }; };");
 
-      taskFunctions['javascript-complexity-analysis']()
+      taskFunctions['javascript-complexity-report']()
       .on('close', function() {
         var reportContent = fs.readFileSync(Path.join(tempDir, 'javascript-complexity-report.json'));
         var report = JSON.parse(reportContent.toString());

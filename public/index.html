@@ -54,7 +54,7 @@
       <table>
         <thead>
           <tr>
-            <th>Report type</th>
+            <th>Report</th>
             <th>Time</th>
             <th>Parameters</th>
           </tr>
@@ -62,7 +62,7 @@
         <tbody data-bind="foreach: reportsInfo">
           <tr>
             <td>
-              <a data-bind="text: reportType, attr: { href: reportUrl }"/>
+              <a data-bind="text: reportName, attr: { href: reportUrl }"/>
             </td>
             <td><span data-bind="text: time"></span></td>
             <td data-bind="foreach: parameters">

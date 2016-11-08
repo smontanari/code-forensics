@@ -13,7 +13,7 @@ describe('ruby tasks', function() {
     outputDir = this.tasksWorkingFolders.outputDir;
   });
 
-  describe('ruby-complexity-analysis', function() {
+  describe('ruby-complexity-report', function() {
     beforeEach(function() {
       taskFunctions = this.tasksSetup(rubyTasks);
     });
@@ -23,7 +23,7 @@ describe('ruby tasks', function() {
       fs.writeFileSync(Path.join(repoDir, 'test_file2.js'), "line1\nline2\nline3\n");
       fs.writeFileSync(Path.join(repoDir, 'test_file3.rb'), "class Calculator; def division(a,b); return a/b if b > 0; end; end");
 
-      taskFunctions['ruby-complexity-analysis']()
+      taskFunctions['ruby-complexity-report']()
       .on('close', function() {
         var reportContent = fs.readFileSync(Path.join(tempDir, 'ruby-complexity-report.json'));
         var report = JSON.parse(reportContent.toString());

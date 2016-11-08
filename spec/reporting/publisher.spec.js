@@ -106,6 +106,61 @@ describe('Publisher', function() {
   });
 
   describe('.createManifest()', function() {
+    describe('with a report name', function() {
+      beforeEach(function() {
+        spyOn(utils.json, 'objectToFile').and.returnValue(Q());
+        this.subject = new Publisher({
+          name: 'test-task',
+          reportName: 'test-report',
+          reportFile: 'test-file.json'
+        }, this.context);
+        this.subject.addReportFile(new TimePeriod('p1Start', 'p1End'));
+      });
+
+      it('creates a manifest file', function(done) {
+        this.subject.createManifest().then(function() {
+          var manifest = utils.json.objectToFile.calls.mostRecent().args[1];
+          expect(manifest.id).toEqual('c8c1dcae8f21797ee19a82d7958caf0aba7da1c6');
+          expect(manifest.reportName).toEqual('test-report');
+          expect(manifest.taskName).toEqual('test-task');
+          expect(manifest.time).toEqual('2013-10-22T13:00:00.000Z');
+          expect(manifest.dateRange).toEqual('start_finish');
+          expect(manifest.dataFiles).toEqual([
+            { fileType: undefined, timePeriod: 'p1Start_p1End', fileUrl: 'c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/p1Start_p1End_test-file.json'},
+          ]);
+
+          done();
+        });
+      });
+    });
+
+    describe('without a report name', function() {
+      beforeEach(function() {
+        spyOn(utils.json, 'objectToFile').and.returnValue(Q());
+        this.subject = new Publisher({
+          name: 'test-task',
+          reportFile: 'test-file.json'
+        }, this.context);
+        this.subject.addReportFile(new TimePeriod('p1Start', 'p1End'));
+      });
+
+      it('creates a manifest file', function(done) {
+        this.subject.createManifest().then(function() {
+          var manifest = utils.json.objectToFile.calls.mostRecent().args[1];
+          expect(manifest.id).toEqual('c8c1dcae8f21797ee19a82d7958caf0aba7da1c6');
+          expect(manifest.reportName).toEqual('test-task');
+          expect(manifest.taskName).toEqual('test-task');
+          expect(manifest.time).toEqual('2013-10-22T13:00:00.000Z');
+          expect(manifest.dateRange).toEqual('start_finish');
+          expect(manifest.dataFiles).toEqual([
+            { fileType: undefined, timePeriod: 'p1Start_p1End', fileUrl: 'c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/p1Start_p1End_test-file.json'},
+          ]);
+
+          done();
+        });
+      });
+    });
+
     describe('with one report file type', function() {
       beforeEach(function() {
         spyOn(utils.json, 'objectToFile').and.returnValue(Q());
@@ -121,7 +176,7 @@ describe('Publisher', function() {
         this.subject.createManifest().then(function() {
           var manifest = utils.json.objectToFile.calls.mostRecent().args[1];
           expect(manifest.id).toEqual('c8c1dcae8f21797ee19a82d7958caf0aba7da1c6');
-          expect(manifest.reportType).toEqual('test-task');
+          expect(manifest.taskName).toEqual('test-task');
           expect(manifest.time).toEqual('2013-10-22T13:00:00.000Z');
           expect(manifest.dateRange).toEqual('start_finish');
           expect(manifest.dataFiles).toEqual([
@@ -152,7 +207,7 @@ describe('Publisher', function() {
         this.subject.createManifest().then(function() {
           var manifest = utils.json.objectToFile.calls.mostRecent().args[1];
           expect(manifest.id).toEqual('c8c1dcae8f21797ee19a82d7958caf0aba7da1c6');
-          expect(manifest.reportType).toEqual('test-task');
+          expect(manifest.taskName).toEqual('test-task');
           expect(manifest.time).toEqual('2013-10-22T13:00:00.000Z');
           expect(manifest.dateRange).toEqual('start_finish');
           expect(manifest.dataFiles).toEqual([
