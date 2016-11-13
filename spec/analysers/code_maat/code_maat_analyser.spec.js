@@ -208,10 +208,10 @@ describe('CodeMaatAnalyser', function() {
     it('returns a stream of the main-dev data for each repository file', function(done) {
       this.subject.on('data', function(data) {
         expect(data).toEqual([
-          { path: 'test/path1', author: 'Pat', ownership: 45 },
-          { path: 'test/path2', author: 'Jason', ownership: 68 },
-          { path: 'test/path3', author: 'Georg', ownership: 25 },
-          { path: 'test/path4', author: 'Tom', ownership: 26 }
+          { path: 'test/path1', author: 'Pat', ownership: 45, addedLines: 3 },
+          { path: 'test/path2', author: 'Jason', ownership: 68, addedLines: 34 },
+          { path: 'test/path3', author: 'Georg', ownership: 25, addedLines: 3 },
+          { path: 'test/path4', author: 'Tom', ownership: 26, addedLines: 12 }
         ]);
         assertCommand('main-dev');
       })

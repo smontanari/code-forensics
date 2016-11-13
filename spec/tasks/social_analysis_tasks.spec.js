@@ -260,7 +260,6 @@ describe('Social analysis tasks', function() {
         ], function(f) {
         fs.writeFileSync(Path.join(repoDir, f), '');
       });
-
     });
 
     it('publishes a report on files with the most authors and the respective coupling between main developers', function(done) {
@@ -343,6 +342,121 @@ describe('Social analysis tasks', function() {
       couplingStream.push({ path: 'test_file6', coupledPath: 'test_invalid_file', couplingDegree: 37, revisionsAvg: 18 });
       couplingStream.push({ path: 'test_file1', coupledPath: 'test_file5', couplingDegree: 30, revisionsAvg: 5 });
       couplingStream.end();
+    });
+  });
+
+  describe('knowledge-map-analysis', function() {
+    beforeEach(function() {
+      taskFunctions = this.tasksSetup(socialAnalysisTasks,
+        {
+          teamsComposition: {
+            'Team 1': ['Dev1', 'Dev2'],
+            'Team 2': ['Dev3', ['Dev4', 'Alias dev 4']],
+            'Ex team': ['Dev5']
+          }
+        },
+        { dateFrom: '2016-01-01' }
+      );
+
+      fs.writeFileSync(Path.join(this.tasksWorkingFolders.tempDir, 'main-dev-report.json'), JSON.stringify(
+        [
+          { path: 'test/ruby/app/file1.rb', author: 'Dev1', addedLines: 10, ownership: 53 },
+          { path: 'test/web/styles/file2.css', author: 'Dev2', addedLines: 23, ownership: 26 },
+          { path: 'test/ruby/app/models/file3.rb', author: 'Dev5', addedLines: 9, ownership: 44 },
+          { path: 'test/web/js/file4.js', author: 'Alias dev 4', addedLines: 16, ownership: 29 }
+        ]
+      ));
+
+      fs.writeFileSync(Path.join(this.tasksWorkingFolders.tempDir, 'sloc-report.json'), JSON.stringify([
+        { path: 'test/ruby/app/file1.rb', sloc: 33 },
+        { path: 'test/web/styles/file2.css', sloc: 23 },
+        { path: 'test/ruby/app/models/file3.rb', sloc: 15 },
+        { path: 'test/web/js/file4.js', sloc: 25 }
+      ]));
+    });
+
+    it('publishes a report on the main developer for each file ', function(done) {
+      taskFunctions['knowledge-map-analysis']().then(function() {
+        assertTaskReport(
+          Path.join(outputDir, '4ba9307ceb8a58877cfad22bb9b4f7cf5bec32f8', '2016-01-01_2016-10-22_knowledge-map-data.json'),
+          {
+            children: [
+              {
+                name: 'test',
+                children: [
+                  {
+                    name: 'ruby',
+                    children: [
+                      {
+                        name: 'app',
+                        children: [
+                          {
+                            name: 'file1.rb',
+                            children: [],
+                            sloc: 33,
+                            mainDev: 'Dev1',
+                            team: 'Team 1',
+                            addedLines: 10,
+                            ownership: 53
+                          },
+                          {
+                            name: 'models',
+                            children: [
+                              {
+                                name: 'file3.rb',
+                                children: [],
+                                sloc: 15,
+                                mainDev: 'Dev5',
+                                team: 'Ex team',
+                                addedLines: 9,
+                                ownership: 44
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    name: 'web',
+                    children: [
+                      {
+                        name: 'styles',
+                        children: [
+                          {
+                            name: 'file2.css',
+                            children: [],
+                            sloc: 23,
+                            mainDev: 'Dev2',
+                            team: 'Team 1',
+                            addedLines: 23,
+                            ownership: 26
+                          }
+                        ]
+                      },
+                      {
+                        name: 'js',
+                        children: [
+                          {
+                            name: 'file4.js',
+                            children: [],
+                            sloc: 25,
+                            mainDev: 'Dev4',
+                            team: 'Team 2',
+                            addedLines: 16,
+                            ownership: 29
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        );
+        done();
+      });
     });
   });
 });

@@ -32,18 +32,36 @@ describe('GraphDataHelper', function() {
       spyOn(graphSupport, 'Tree').and.returnValue(mockTree);
     });
 
-    it('builds a tree with the report data items, replacing the named property as the "children" property', function() {
-      var data = [
-        { path: 'path1', name: 'reportData1', items: [123, 456] },
-        { path: 'path1', name: 'reportData2', items: ['qwe', 'zxc'] }
-      ];
-      var output = new GraphDataHelper().tree(data, 'path', 'items');
+    describe('with a children property name', function() {
+      it('builds a tree with the report data items, replacing the named property as the "children" property', function() {
+        var data = [
+          { path: 'path1', name: 'reportData1', items: [123, 456] },
+          { path: 'path1', name: 'reportData2', items: ['qwe', 'zxc'] }
+        ];
+        var output = new GraphDataHelper().tree(data, 'path', 'items');
 
-      expect(output).toEqual('test-root');
+        expect(output).toEqual('test-root');
 
-      expect(graphSupport.Tree).toHaveBeenCalledWith(null, 'path');
-      expect(mockTree.addNode.calls.argsFor(0)[0]).toEqual({ path: 'path1', name: 'reportData1', children: [123, 456] });
-      expect(mockTree.addNode.calls.argsFor(1)[0]).toEqual({ path: 'path1', name: 'reportData2', children: ['qwe', 'zxc'] });
+        expect(graphSupport.Tree).toHaveBeenCalledWith(null, 'path');
+        expect(mockTree.addNode.calls.argsFor(0)[0]).toEqual({ path: 'path1', name: 'reportData1', children: [123, 456] });
+        expect(mockTree.addNode.calls.argsFor(1)[0]).toEqual({ path: 'path1', name: 'reportData2', children: ['qwe', 'zxc'] });
+      });
+    });
+
+    describe('without a children property name', function() {
+      it('builds a tree with the report data items, replacing the named property as the "children" property', function() {
+        var data = [
+          { path: 'path1', name: 'reportData1' },
+          { path: 'path1', name: 'reportData2' }
+        ];
+        var output = new GraphDataHelper().tree(data, 'path');
+
+        expect(output).toEqual('test-root');
+
+        expect(graphSupport.Tree).toHaveBeenCalledWith(null, 'path');
+        expect(mockTree.addNode.calls.argsFor(0)[0]).toEqual({ path: 'path1', name: 'reportData1' });
+        expect(mockTree.addNode.calls.argsFor(1)[0]).toEqual({ path: 'path1', name: 'reportData2' });
+      });
     });
   });
 
