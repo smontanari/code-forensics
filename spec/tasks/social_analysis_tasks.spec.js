@@ -52,7 +52,7 @@ describe('Social analysis tasks', function() {
             /^xxx-/
           ]
         },
-        { dateFrom: '2016-01-01', dateTo: '2016-02-28', frequency: 'monthly' }
+        { dateFrom: '2016-01-01', dateTo: '2016-02-28', frequency: 'monthly', minWordCount: 2 }
       );
 
       fs.writeFileSync(Path.join(this.tasksWorkingFolders.tempDir, 'vcs_commit_messages_2016-01-01_2016-01-31.log'), messages1);
@@ -67,9 +67,7 @@ describe('Social analysis tasks', function() {
             { text: 'message', count: 4 },
             { text: 'abc', count: 2 },
             { text: 'second', count: 2 },
-            { text: 'third', count: 2 },
-            { text: 'first-only', count: 1 },
-            { text: 'www', count: 1 }
+            { text: 'third', count: 2 }
           ]
         );
 
@@ -78,10 +76,7 @@ describe('Social analysis tasks', function() {
           [
             { text: 'message', count: 3 },
             { text: 'www', count: 2 },
-            { text: 'last', count: 2 },
-            { text: 'second', count: 1 },
-            { text: 'abc', count: 1 },
-            { text: 'third', count: 1 }
+            { text: 'last', count: 2 }
           ]
         );
         done();

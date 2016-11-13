@@ -78,6 +78,11 @@ describe('TaskContext', function() {
   it('passes through all the command line parameters merging default values', function() {
     var ctx = new TaskContext({}, { param1: 'test_param1', param2: 'test_param2' });
 
-    expect(ctx.parameters).toEqual({ param1: 'test_param1', param2: 'test_param2', maxCoupledFiles: 5 });
+    expect(ctx.parameters).toEqual({
+      param1: 'test_param1',
+      param2: 'test_param2',
+      maxCoupledFiles: 5,
+      minWordCount: 5
+    });
   });
 });
