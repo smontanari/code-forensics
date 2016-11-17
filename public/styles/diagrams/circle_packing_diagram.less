@@ -1,66 +1,82 @@
-.circle-pack {
-  padding: 5px;
+.node-mixin() {
+  cursor: pointer;
+  pointer-events: visible;
 
-  .node {
-    cursor: pointer;
-    pointer-events: visible;
+  &:hover {
+    stroke: #000000;
+    stroke-width: 1.5px;
+  }
+}
 
-    &:hover {
-      stroke: #000000;
-      stroke-width: 1.5px;
-    }
+.hierarchical-node-mixin() {
+  .node-mixin;
+  &.node-root {
+    stroke: #777777;
+    stroke-width: 2px;
+    pointer-events: none;
+  }
+  &.node-leaf {
+    cursor: default;
+    fill: #FFFFFF;
+    stroke: #777777;
+    stroke-width: 1px;
+    pointer-events: fill;
+  }
+}
+
+.hierarchical-label-mixin(@parent_color, @leaf_color, @parent_shadow_color, @leaf_shadow_color) {
+  font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-anchor: middle;
+  pointer-events: none;
+
+  &.label-parent {
+    fill: @parent_color;
+    font-weight: bold;
+    font-size: 16px;
+    text-shadow: 0 2px 0 @parent_shadow_color, 2px 0 0 @parent_shadow_color, -2px 0 0 @parent_shadow_color, 0 -2px 0 @parent_shadow_color;
+  }
+
+  &.label-leaf {
+    fill: @leaf_color;
+    text-shadow: 0 1px 0 @leaf_shadow_color, 1px 0 0 @leaf_shadow_color, -1px 0 0 @leaf_shadow_color, 0 -1px 0 @leaf_shadow_color;
   }
 }
 
 .circle-packing-diagram {
   background-color: #333333;
 
-  &.hotspot-analysis {
-    .circle-pack
+  svg {
+    padding: 5px;
+  }
 
+  &#hotspot-analysis-sloc, &#hotspot-analysis-totalComplexity, &.temporal-coupling {
     .node {
-      &.node--root {
-        stroke: #777777;
-        stroke-width: 2px;
-        pointer-events: none;
-      }
-      &.node--leaf {
-        cursor: default;
-        fill: #FFFFFF;
-        stroke: #777777;
-        stroke-width: 1px;
-        pointer-events: fill;
-      }
+      .hierarchical-node-mixin;
     }
 
     .label {
-      font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
-      text-anchor: middle;
-      pointer-events: none;
+      .hierarchical-label-mixin(#0044ff, #000000, #FFFFFF, #FFFFFF);
 
-      &.label-parent {
-        fill: #0044ff;
-        font-weight: bold;
-        font-size: 16px;
-        text-shadow: 0 2px 0 #FFF, 2px 0 0 #FFF, -2px 0 0 #FFF, 0 -2px 0 #FFF;
-      }
-      &.label--light {
-        fill: #000000;
-        text-shadow: 0 2px 0 #FFF, 2px 0 0 #FFF, -2px 0 0 #FFF, 0 -2px 0 #FFF;
-      }
-      &.label--heavy {
+      &.label-heavy {
         fill: #ffffff;
         text-shadow: 0 1px 0 #000, 1px 0 0 #000, -1px 0 0 #000, 0 -1px 0 #000;
       }
     }
   }
 
-  &.authors-coupling {
-    font-size: 10px;
-
-    .circle-pack
-
+  &#knowledge-map {
     .node {
+      .hierarchical-node-mixin;
+    }
+    .label {
+      .hierarchical-label-mixin(#FFFFFF, #000000, #000000, #FFFFFF);
+    }
+  }
+
+  &#authors-coupling {
+    font-size: 10px;
+    .node {
+      .node-mixin;
       stroke: #777777;
       stroke-width: 1px;
 

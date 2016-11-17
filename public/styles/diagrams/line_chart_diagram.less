@@ -1,20 +1,12 @@
 .line-chart-diagram {
   background-color: #FaFaFa;
 
-  .line-chart {
+  .axis-mixin() {
     .axis {
       path {
-        fill: none;
-        stroke: #000000;
         shape-rendering: crispEdges;
       }
       .tick {
-        line {
-          fill: none;
-          stroke-width: 1px;
-          stroke: #D3D3D3;
-          opacity: 0.7;
-        }
         text {
           fill: #0044ff;
         }
@@ -26,18 +18,34 @@
         text-anchor: end;
       }
     }
+  }
 
+  .line-mixin() {
     .line {
       fill: none;
       stroke-width: 2px;
     }
+  }
 
+  .legend-mixin() {
     .legend {
       text {
         font-size: 12px;
         text-anchor: end;
       }
     }
+  }
+
+  &#system-evolution-revisions {
+    .axis-mixin;
+    .line-mixin;
+    .legend-mixin;
+  }
+
+  &#cx-complexity, &#cx-mean, &#cx-deviation {
+    .axis-mixin;
+    .line-mixin;
+    .legend-mixin;
 
     .brush rect {
       fill-opacity: 0.1;
