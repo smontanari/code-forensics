@@ -1,0 +1,13 @@
+<script id="color-map-filters" type="text/html">
+  <div data-bind="foreach: diagram.filters.colorRange">
+    <p class="control-name"><span data-bind="text: label"></span></p>
+    <div class="color-map">
+      <div data-bind="foreach: colorMap">
+        <div class="filter-selectable" data-bind="click: $parent.select, css: { opaque: !isVisible() }">
+          <div class="color-box" data-bind="style: { 'background-color': color }"></div>
+          <span class="color-value" data-bind="text: name"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</script>

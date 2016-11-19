@@ -32,8 +32,13 @@
         </div>
         <div data-bind="foreach: graphModels">
           <div data-bind="if: isSelected">
-            <div data-bind="foreach: layoutTemplates.graphControls">
-              <div data-bind="template: {name: templateId, data: $parent}"></div>
+            <div data-bind="foreach: graphControlGroups">
+              <div data-bind="if: hasTemplates()">
+                <h2 data-bind="text: heading"></h2>
+                <div data-bind="foreach: templateIds">
+                  <div data-bind="template: {name: $data, data: $parents[1]}"></div>
+                </div>
+              </div>
             </div>
           </div>
          </div>

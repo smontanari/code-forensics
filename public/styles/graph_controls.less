@@ -1,19 +1,19 @@
 .report-controls {
-  .filter {
+  .control-name {
     padding: 0 5px;
     color: #4682B4;
     font-size: small;
     font-weight: bold;
-    margin-bottom: 0;
+    margin-bottom: 3px;
+  }
 
-    &.metric-filter {
-      output {
-        float: right;
-        color: #000000;
-        padding-right: 5px;
-        font-weight: normal;
-        text-align: right;
-      }
+  .metric-filter {
+    output {
+      float: right;
+      color: #000000;
+      padding-right: 5px;
+      font-weight: normal;
+      text-align: right;
     }
   }
 
@@ -24,12 +24,31 @@
     }
   }
 
+  .filter-selectable {
+    border-top: 1px solid transparent;
+    border-bottom: 1px solid transparent;
+
+    &:hover {
+      cursor: default;
+      border-top: 1px dotted #000000;
+      border-bottom: 1px dotted #000000;
+    }
+
+    &.opaque {
+      background-color: transparent;
+      opacity: 0.1;
+    }
+  }
+
   .color-map {
-    border: 1px solid;
-    border-radius: 5px;
     max-height: 200px;
     overflow-y: auto;
     padding: 5px 0;
+
+    &.bordered {
+      border: 1px solid;
+      border-radius: 5px;
+    }
 
     .color-box {
       margin: 5px 0 0 5px;
