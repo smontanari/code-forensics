@@ -4,7 +4,8 @@ var _      = require('lodash'),
     stream = require('stream');
 
 var couplingAnalysisTasks = require_src('tasks/coupling_analysis_tasks'),
-    codeMaat              = require_src('analysers/code_maat');
+    codeMaat              = require_src('analysers/code_maat'),
+    command               = require_src('command');
 
 describe('Coupling analysis tasks', function() {
   var taskFunctions, outputDir;
@@ -13,6 +14,7 @@ describe('Coupling analysis tasks', function() {
     jasmine.clock().install();
     jasmine.clock().mockDate(new Date('2015-10-22T10:00:00.000Z'));
     outputDir = this.tasksWorkingFolders.outputDir;
+    spyOn(command.Command, 'ensure');
   });
 
   afterEach(function() {
@@ -34,7 +36,9 @@ describe('Coupling analysis tasks', function() {
 
     it('publishes a report on the sum of coupling for each file', function(done) {
       var analysisStream = new stream.PassThrough({ objectMode: true });
-      spyOn(codeMaat.sumCouplingAnalyser, 'fileAnalysisStream').and.returnValue(analysisStream);
+      spyOn(codeMaat, 'sumCouplingAnalyser').and.returnValue(
+        { fileAnalysisStream: function() { return analysisStream; } }
+      );
 
       taskFunctions['sum-of-coupling-analysis']().then(function() {
         var reportContent = fs.readFileSync(Path.join(outputDir, 'cccbd27e6e715fa48728f9f6363785835b73ba58', '2015-03-01_2015-10-22_sum-of-coupling-data.json'));
@@ -80,7 +84,9 @@ describe('Coupling analysis tasks', function() {
     it('publishes as many reports as the given time periods with coupling information between each file and a target file', function(done) {
       var couplingStream1 = new stream.PassThrough({ objectMode: true });
       var couplingStream2 = new stream.PassThrough({ objectMode: true });
-      spyOn(codeMaat.temporalCouplingAnalyser, 'fileAnalysisStream').and.returnValues(couplingStream1, couplingStream2);
+      spyOn(codeMaat, 'temporalCouplingAnalyser').and.returnValue(
+        { fileAnalysisStream: jasmine.createSpy().and.returnValues(couplingStream1, couplingStream2) }
+      );
 
       taskFunctions['temporal-coupling-analysis']().then(function() {
         assertTaskReport(

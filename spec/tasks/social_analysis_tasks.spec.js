@@ -5,7 +5,8 @@ var _      = require('lodash'),
     stream = require('stream');
 
 var socialAnalysisTasks = require_src('tasks/social_analysis_tasks'),
-    codeMaat            = require_src('analysers/code_maat');
+    codeMaat            = require_src('analysers/code_maat'),
+    command             = require_src('command');
 
 describe('Social analysis tasks', function() {
   var taskFunctions, outputDir, repoDir;
@@ -15,6 +16,7 @@ describe('Social analysis tasks', function() {
     jasmine.clock().mockDate(new Date('2016-10-22T10:00:00.000Z'));
     outputDir = this.tasksWorkingFolders.outputDir;
     repoDir = this.tasksWorkingFolders.repoDir;
+    spyOn(command.Command, 'ensure');
   });
 
   afterEach(function() {
@@ -264,7 +266,9 @@ describe('Social analysis tasks', function() {
 
     it('publishes a report on files with the most authors and the respective coupling between main developers', function(done) {
       var couplingStream = new stream.PassThrough({ objectMode: true });
-      spyOn(codeMaat.temporalCouplingAnalyser, 'fileAnalysisStream').and.returnValue(couplingStream);
+      spyOn(codeMaat, 'temporalCouplingAnalyser').and.returnValue(
+        { fileAnalysisStream: function() { return couplingStream; } }
+      );
       taskFunctions['authors-coupling-analysis']().then(function() {
         assertTaskReport(
           Path.join(outputDir, '1961adc0bbb3946a5401622e3905df77a9876312', '2016-01-01_2016-10-22_authors-coupling-data.json'),

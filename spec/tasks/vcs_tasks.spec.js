@@ -3,7 +3,8 @@ var Path   = require('path'),
     stream = require('stream');
 
 var gitTasks   = require_src('tasks/vcs_tasks'),
-    vcsSupport = require_src('vcs_support');
+    vcsSupport = require_src('vcs_support'),
+    command    = require_src('command');
 
 describe('VCS Tasks', function() {
   var taskFunctions, mockAdapter;
@@ -64,6 +65,7 @@ describe('VCS Tasks', function() {
     taskFunctions = this.tasksSetup(gitTasks, null, {
       dateFrom: '2016-01-01', dateTo: '2016-02-28', frequency: 'monthly'
     });
+    spyOn(command.Command, 'ensure');
   });
 
   assertTaskReport('writes the vcs log content for each period into the temp folder', 'logStream', 'vcs-log-dump', 'vcslog');

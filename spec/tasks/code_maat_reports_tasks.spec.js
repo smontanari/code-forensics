@@ -4,7 +4,8 @@ var _      = require('lodash'),
     stream = require('stream');
 
 var codeMaatReportTasks = require_src('tasks/code_maat_reports_tasks'),
-    codeMaat            = require_src('analysers/code_maat');
+    codeMaat            = require_src('analysers/code_maat'),
+    command             = require_src('command');
 
 describe('CodeMaat report tasks', function() {
   var taskFunctions, tempDir, repoDir;
@@ -13,7 +14,9 @@ describe('CodeMaat report tasks', function() {
     describe(taskName, function() {
       it(exampleDescription, function(done) {
         var analysisStream = new stream.PassThrough({ objectMode: true });
-        spyOn(codeMaat[analyser], 'fileAnalysisStream').and.returnValue(analysisStream);
+        spyOn(codeMaat, analyser).and.returnValue(
+          { fileAnalysisStream: function() { return analysisStream; } }
+        );
 
         taskFunctions[taskName]()
           .on('close', function() {
@@ -45,6 +48,7 @@ describe('CodeMaat report tasks', function() {
     _.each(['test_file1', 'test_file2', 'test_invalid_file'], function(f) {
       fs.writeFileSync(Path.join(repoDir, f), '');
     });
+    spyOn(command.Command, 'ensure');
   });
 
   assertTaskReport('writes a report on the number of revisions for each valid file', 'revisionsAnalyser', 'revisions-report', 'revisions-report.json');

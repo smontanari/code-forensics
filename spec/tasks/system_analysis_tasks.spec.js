@@ -3,12 +3,14 @@ var Path   = require('path'),
     stream = require('stream');
 
 var systemAnalysisTasks = require_src('tasks/system_analysis_tasks'),
-    codeMaat            = require_src('analysers/code_maat');
+    codeMaat            = require_src('analysers/code_maat'),
+    command             = require_src('command');
 
 describe('System analysis tasks', function() {
   beforeEach(function() {
     jasmine.clock().install();
     jasmine.clock().mockDate(new Date('2015-10-22T10:00:00.000Z'));
+    spyOn(command.Command, 'ensure');
   });
 
   afterEach(function() {
@@ -25,11 +27,15 @@ describe('System analysis tasks', function() {
     it('publishes a revisions report and a coupling report for each architectural layer of the system', function(done) {
       var couplingStream1 = new stream.PassThrough({ objectMode: true });
       var couplingStream2 = new stream.PassThrough({ objectMode: true });
-      spyOn(codeMaat.temporalCouplingAnalyser, 'fileAnalysisStream').and.returnValues(couplingStream1, couplingStream2);
+      spyOn(codeMaat, 'temporalCouplingAnalyser').and.returnValue(
+        { fileAnalysisStream: jasmine.createSpy().and.returnValues(couplingStream1, couplingStream2) }
+      );
 
       var revisionsStream1 = new stream.PassThrough({ objectMode: true });
       var revisionsStream2 = new stream.PassThrough({ objectMode: true });
-      spyOn(codeMaat.revisionsAnalyser, 'fileAnalysisStream').and.returnValues(revisionsStream1, revisionsStream2);
+      spyOn(codeMaat, 'revisionsAnalyser').and.returnValue(
+        { fileAnalysisStream: jasmine.createSpy().and.returnValues(revisionsStream1, revisionsStream2) }
+      );
 
       var taskFunctions = this.tasksSetup(systemAnalysisTasks, null,
         { dateFrom: '2016-01-01', dateTo: '2016-02-28', frequency: 'monthly', boundary: 'test-boundary' }
