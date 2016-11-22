@@ -174,14 +174,14 @@ describe('CodeMaatAnalyser', function() {
     it('returns a stream of the entity-effort data for each repository file', function(done) {
       this.subject.on('data', function(data) {
         expect(data).toEqual([
-          { path: 'test/path1', author: 'Pat', revisions: 2 },
-          { path: 'test/path1', author: 'Jason', revisions: 3 },
-          { path: 'test/path2', author: 'Jason', revisions: 4 },
-          { path: 'test/path2', author: 'Tom', revisions: 5 },
-          { path: 'test/path2', author: 'Georg', revisions: 4 },
-          { path: 'test/path3', author: 'Georg', revisions: 3 },
-          { path: 'test/path3', author: 'Tom', revisions: 1 },
-          { path: 'test/path4', author: 'Tom', revisions: 12 }
+          { path: 'test/path1', author: 'Dev1', revisions: 2 },
+          { path: 'test/path1', author: 'Dev2', revisions: 3 },
+          { path: 'test/path2', author: 'Dev2', revisions: 4 },
+          { path: 'test/path2', author: 'Dev3', revisions: 5 },
+          { path: 'test/path2', author: 'Dev4', revisions: 4 },
+          { path: 'test/path3', author: 'Dev4', revisions: 3 },
+          { path: 'test/path3', author: 'Dev3', revisions: 1 },
+          { path: 'test/path4', author: 'Dev3', revisions: 12 }
         ]);
         assertCommand('entity-effort');
       })
@@ -189,14 +189,14 @@ describe('CodeMaatAnalyser', function() {
 
       stubCodeMaatReport([
         "entity,author,author-revs,total-revs\n",
-        "test/path1,Pat,2,5\n",
-        "test/path1,Jason,3,5\n",
-        "test/path2,Jason,4,13\n",
-        "test/path2,Tom,5,13\n",
-        "test/path2,Georg,4,13\n",
-        "test/path3,Georg,3,4\n",
-        "test/path3,Tom,1,4\n",
-        "test/path4,Tom,12,12\n"
+        "test/path1,Dev1,2,5\n",
+        "test/path1,Dev2,3,5\n",
+        "test/path2,Dev2,4,13\n",
+        "test/path2,Dev3,5,13\n",
+        "test/path2,Dev4,4,13\n",
+        "test/path3,Dev4,3,4\n",
+        "test/path3,Dev3,1,4\n",
+        "test/path4,Dev3,12,12\n"
       ]);
     });
   });
@@ -208,10 +208,10 @@ describe('CodeMaatAnalyser', function() {
     it('returns a stream of the main-dev data for each repository file', function(done) {
       this.subject.on('data', function(data) {
         expect(data).toEqual([
-          { path: 'test/path1', author: 'Pat', ownership: 45, addedLines: 3 },
-          { path: 'test/path2', author: 'Jason', ownership: 68, addedLines: 34 },
-          { path: 'test/path3', author: 'Georg', ownership: 25, addedLines: 3 },
-          { path: 'test/path4', author: 'Tom', ownership: 26, addedLines: 12 }
+          { path: 'test/path1', author: 'Dev1', ownership: 45, addedLines: 3 },
+          { path: 'test/path2', author: 'Dev2', ownership: 68, addedLines: 34 },
+          { path: 'test/path3', author: 'Dev3', ownership: 25, addedLines: 3 },
+          { path: 'test/path4', author: 'Dev4', ownership: 26, addedLines: 12 }
         ]);
         assertCommand('main-dev');
       })
@@ -219,10 +219,10 @@ describe('CodeMaatAnalyser', function() {
 
       stubCodeMaatReport([
         "entity,main-dev,added,total-added,ownership\n",
-        "test/path1,Pat,3,5,0.45\n",
-        "test/path2,Jason,34,60, 0.68\n",
-        "test/path3,Georg,3,12,0.25\n",
-        "test/path4,Tom,12,40,0.26\n"
+        "test/path1,Dev1,3,5,0.45\n",
+        "test/path2,Dev2,34,60, 0.68\n",
+        "test/path3,Dev3,3,12,0.25\n",
+        "test/path4,Dev4,12,40,0.26\n"
       ]);
     });
   });
@@ -234,28 +234,57 @@ describe('CodeMaatAnalyser', function() {
     it('returns a stream of the entity-ownership data for each repository file', function(done) {
       this.subject.on('data', function(data) {
         expect(data).toEqual([
-          { path: 'test/path1', author: 'Pat', addedLines: 2, deletedLines: 5 },
-          { path: 'test/path1', author: 'Jason', addedLines: 3, deletedLines: 5 },
-          { path: 'test/path2', author: 'Jason', addedLines: 4, deletedLines: 3 },
-          { path: 'test/path2', author: 'Tom', addedLines: 5, deletedLines: 3 },
-          { path: 'test/path2', author: 'Georg', addedLines: 4, deletedLines: 3 },
-          { path: 'test/path3', author: 'Georg', addedLines: 3, deletedLines: 2 },
-          { path: 'test/path3', author: 'Tom', addedLines: 9, deletedLines: 8 },
-          { path: 'test/path4', author: 'Tom', addedLines: 12, deletedLines: 4 }
+          { path: 'test/path1', author: 'Dev1', addedLines: 2, deletedLines: 5 },
+          { path: 'test/path1', author: 'Dev2', addedLines: 3, deletedLines: 5 },
+          { path: 'test/path2', author: 'Dev2', addedLines: 4, deletedLines: 3 },
+          { path: 'test/path2', author: 'Dev3', addedLines: 5, deletedLines: 3 },
+          { path: 'test/path2', author: 'Dev4', addedLines: 4, deletedLines: 3 },
+          { path: 'test/path3', author: 'Dev4', addedLines: 3, deletedLines: 2 },
+          { path: 'test/path3', author: 'Dev3', addedLines: 9, deletedLines: 8 },
+          { path: 'test/path4', author: 'Dev3', addedLines: 12, deletedLines: 4 }
         ]);
         assertCommand('entity-ownership');
       }).on('end', done);
 
       stubCodeMaatReport([
         "entity,author,added,deleted\n",
-        "test/path1,Pat,2,5\n",
-        "test/path1,Jason,3,5\n",
-        "test/path2,Jason,4,3\n",
-        "test/path2,Tom,5,3\n",
-        "test/path2,Georg,4,3\n",
-        "test/path3,Georg,3,2\n",
-        "test/path3,Tom,9,8\n",
-        "test/path4,Tom,12,4\n"
+        "test/path1,Dev1,2,5\n",
+        "test/path1,Dev2,3,5\n",
+        "test/path2,Dev2,4,3\n",
+        "test/path2,Dev3,5,3\n",
+        "test/path2,Dev4,4,3\n",
+        "test/path3,Dev4,3,2\n",
+        "test/path3,Dev3,9,8\n",
+        "test/path4,Dev3,12,4\n"
+      ]);
+    });
+  });
+
+  describe('communication analysis', function() {
+    prepareAnalyserStream('communication');
+    verifyInstallCheck();
+
+    it('returns a stream of the communication coupling for each authors pair', function(done) {
+      this.subject.on('data', function(data) {
+        expect(data).toEqual([
+          { author: 'Dev1', coupledAuthor: 'Dev2', sharedCommits: 65, couplingStrength: 55 },
+          { author: 'Dev2', coupledAuthor: 'Dev1', sharedCommits: 65, couplingStrength: 55 },
+          { author: 'Dev3', coupledAuthor: 'Dev1', sharedCommits: 194, couplingStrength: 51 },
+          { author: 'Dev1', coupledAuthor: 'Dev3', sharedCommits: 194, couplingStrength: 51 },
+          { author: 'Dev4', coupledAuthor: 'Dev5', sharedCommits: 62, couplingStrength: 48 },
+          { author: 'Dev5', coupledAuthor: 'Dev4', sharedCommits: 62, couplingStrength: 48 }
+        ]);
+        assertCommand('communication');
+      }).on('end', done);
+
+      stubCodeMaatReport([
+        "author,peer,shared,average,strength\n",
+        "Dev1,Dev2,65,118,55\n",
+        "Dev2,Dev1,65,118,55\n",
+        "Dev3,Dev1,194,380,51\n",
+        "Dev1,Dev3,194,380,51\n",
+        "Dev4,Dev5,62,127,48\n",
+        "Dev5,Dev4,62,127,48"
       ]);
     });
   });

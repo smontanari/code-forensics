@@ -2,7 +2,7 @@ var childProcess = require('child_process'),
     stream       = require('stream');
 
 var command = require_src('command'),
-    utils = require_src('utils');
+    utils   = require_src('utils');
 
 describe('Command.ensure()', function() {
   beforeEach(function() {

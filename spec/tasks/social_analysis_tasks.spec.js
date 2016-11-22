@@ -104,7 +104,7 @@ describe('Social analysis tasks', function() {
           { path: "test/a/file1", author: 'Dev2', revisions: 2 },
           { path: "test/b/file2", author: 'Dev1', revisions: 8 },
           { path: "test/b/file2", author: 'Dev3', revisions: 5 },
-          { path: "test/b/file2", author: 'Alias dev 4', revisions: 2 },
+          { path: "test/b/file2", author: 'Dev4', revisions: 2 },
           { path: "test/c/file3", author: 'Dev5', revisions: 10 },
           { path: "test/c/file3", author: 'Dev with no team', revisions: 7 }
         ]
@@ -216,7 +216,9 @@ describe('Social analysis tasks', function() {
     });
   });
 
-  describe('authors-coupling-analysis', function() {
+  describe('developers-coupling-analysis', function() {
+    var couplingStream, analysisStream;
+
     beforeEach(function() {
       taskFunctions = this.tasksSetup(socialAnalysisTasks,
         {
@@ -251,7 +253,7 @@ describe('Social analysis tasks', function() {
           { path: "test_file3", author: 'Dev2', addedLines: 4, deletedLines: 1 },
           { path: "test_file4", author: 'Dev5', addedLines: 9, deletedLines: 0 },
           { path: "test_file4", author: 'Dev1', addedLines: 3, deletedLines: 0 },
-          { path: "test_file5", author: 'Alias dev 4', addedLines: 5, deletedLines: 0 },
+          { path: "test_file5", author: 'Dev4', addedLines: 5, deletedLines: 0 },
           { path: "test_file5", author: 'Dev4', addedLines: 5, deletedLines: 0 },
           { path: "test_file6", author: 'Dev5', addedLines: 14, deletedLines: 0 }
         ]
@@ -262,16 +264,22 @@ describe('Social analysis tasks', function() {
         ], function(f) {
         fs.writeFileSync(Path.join(repoDir, f), '');
       });
-    });
 
-    it('publishes a report on files with the most authors and the respective coupling between main developers', function(done) {
-      var couplingStream = new stream.PassThrough({ objectMode: true });
+      couplingStream = new stream.PassThrough({ objectMode: true });
+      analysisStream = new stream.PassThrough({ objectMode: true });
+
       spyOn(codeMaat, 'temporalCouplingAnalyser').and.returnValue(
         { fileAnalysisStream: function() { return couplingStream; } }
       );
-      taskFunctions['authors-coupling-analysis']().then(function() {
+      spyOn(codeMaat, 'communicationAnalyser').and.returnValue(
+        { fileAnalysisStream: function() { return analysisStream; } }
+      );
+    });
+
+    it('publishes a report on files with the most authors and the respective coupling between main developers', function(done) {
+      taskFunctions['developers-coupling-analysis']().then(function() {
         assertTaskReport(
-          Path.join(outputDir, '1961adc0bbb3946a5401622e3905df77a9876312', '2016-01-01_2016-10-22_authors-coupling-data.json'),
+          Path.join(outputDir, '7fe462827f1f7cf0740be7a7138cdfbfbfc327f8', '2016-01-01_2016-10-22_main-dev-coupling-data.json'),
           {
             children: [
               {
@@ -346,6 +354,30 @@ describe('Social analysis tasks', function() {
       couplingStream.push({ path: 'test_file6', coupledPath: 'test_invalid_file', couplingDegree: 37, revisionsAvg: 18 });
       couplingStream.push({ path: 'test_file1', coupledPath: 'test_file5', couplingDegree: 30, revisionsAvg: 5 });
       couplingStream.end();
+      analysisStream.end();
+    });
+
+    it('publishes a report on the coupling between each pair of authors', function(done) {
+      taskFunctions['developers-coupling-analysis']().then(function() {
+        assertTaskReport(
+          Path.join(outputDir, '7fe462827f1f7cf0740be7a7138cdfbfbfc327f8', '2016-01-01_2016-10-22_communication-map-data.json'),
+          [
+            { author: 'Dev1', coupledAuthor: 'Dev2', sharedCommits: 65, couplingStrength: 55 },
+            { author: 'Dev3', coupledAuthor: 'Dev1', sharedCommits: 194, couplingStrength: 51 },
+            { author: 'Dev4', coupledAuthor: 'Dev5', sharedCommits: 62, couplingStrength: 48 }
+          ]
+        );
+        done();
+      });
+
+      analysisStream.push({ author: 'Dev1', coupledAuthor: 'Dev2', sharedCommits: 65, couplingStrength: 55 });
+      analysisStream.push({ author: 'Dev2', coupledAuthor: 'Dev1', sharedCommits: 65, couplingStrength: 55 });
+      analysisStream.push({ author: 'Dev3', coupledAuthor: 'Dev1', sharedCommits: 194, couplingStrength: 51 });
+      analysisStream.push({ author: 'Dev1', coupledAuthor: 'Dev3', sharedCommits: 194, couplingStrength: 51 });
+      analysisStream.push({ author: 'Dev4', coupledAuthor: 'Dev5', sharedCommits: 62, couplingStrength: 48 });
+      analysisStream.push({ author: 'Dev5', coupledAuthor: 'Dev4', sharedCommits: 62, couplingStrength: 48 });
+      analysisStream.end();
+      couplingStream.end();
     });
   });
 
@@ -367,7 +399,7 @@ describe('Social analysis tasks', function() {
           { path: 'test/ruby/app/file1.rb', author: 'Dev1', addedLines: 10, ownership: 53 },
           { path: 'test/web/styles/file2.css', author: 'Dev2', addedLines: 23, ownership: 26 },
           { path: 'test/ruby/app/models/file3.rb', author: 'Dev5', addedLines: 9, ownership: 44 },
-          { path: 'test/web/js/file4.js', author: 'Alias dev 4', addedLines: 16, ownership: 29 }
+          { path: 'test/web/js/file4.js', author: 'Dev4', addedLines: 16, ownership: 29 }
         ]
       ));
 

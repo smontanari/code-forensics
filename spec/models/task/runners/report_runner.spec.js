@@ -1,7 +1,7 @@
 var stream = require('stream');
 
 var ReportRunner = require_src('models/task/runners/report_runner'),
-    reporting     = require_src('reporting');
+    reporting    = require_src('reporting');
 
 describe('ReportRunner', function() {
   var mockPublisher;

@@ -3,7 +3,7 @@ var Path   = require('path'),
     stream = require('stream');
 
 var javascriptTasks = require_src('tasks/complexity_analysis/javascript'),
-    vcsSupport = require_src('vcs_support');
+    vcsSupport      = require_src('vcs_support');
 
 describe('javascript tasks', function() {
   var taskFunctions, repoDir, tempDir, outputDir;

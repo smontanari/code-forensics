@@ -1,4 +1,4 @@
-var Q  = require('q'),
+var Q      = require('q'),
     stream = require('stream');
 
 var ReportComposer  = require_src('reporting/report_composer'),
