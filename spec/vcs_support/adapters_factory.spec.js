@@ -8,7 +8,7 @@ describe('vcs adapters factory', function() {
     });
 
     it('returns a Git adapter', function() {
-      var vcs = factory('test/root');
+      var vcs = factory();
 
       expect(vcs.constructor).toEqual(Git.prototype.constructor);
     });
