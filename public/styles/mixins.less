@@ -1,0 +1,44 @@
+.tooltip-element-mixin(@value-color; @value-text-align: right; @label-padding: 2px; @label-font-weight: normal;) {
+  .element-property {
+    color: #000;
+    display: table-row;
+    .property-label {
+      font-weight: @label-font-weight;
+      padding: @label-padding;
+      display: table-cell;
+    }
+    .property-value {
+      text-align: @value-text-align;
+      display: table-cell;
+      color: @value-color;
+    }
+  }
+}
+
+@tooltip-border: 1px solid #000;
+
+.title-element-info-tooltip(@title-color: #FFF; @title-bg-color: #4682B4; @element-value-color: #4682B4) {
+  background-color: #FFF;
+  border-radius: 0 0 5px 5px;
+  box-shadow: 4px 4px 12px rgba(0,0,0,.5);
+  border-left: @tooltip-border;
+  border-right: @tooltip-border;
+  border-bottom: @tooltip-border;
+  display: table;
+
+  .element-name {
+    font-size: 14px;
+    padding: 5px;
+    color: @title-color;
+    text-align: center;
+    background-color: @title-bg-color;
+    display: table-caption;
+    white-space: nowrap;
+    border-radius: 5px 5px 0 0;
+    border-top: @tooltip-border;
+    border-left: @tooltip-border;
+    border-right: @tooltip-border;
+  }
+
+  .tooltip-element-mixin(@element-value-color);
+}

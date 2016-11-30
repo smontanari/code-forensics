@@ -65,13 +65,13 @@
 
 .d3-tip {
   &.line-chart-diagram {
-    background-color: #FFFFFF;
+    background-color: #FFF;
     padding: 0px 5px 5px 5px;
     border: 1px solid #ddd;
 
     transition: opacity 300ms linear;
     border-radius: 10px;
-    box-shadow: 5px 5px 12px rgba(0,0,0,.5);
+    box-shadow: 4px 4px 12px rgba(0,0,0,.5);
 
     .title {
       font-size: 14px;
@@ -79,18 +79,6 @@
       text-align: center;
     }
 
-    .element-property {
-      color: #000000;
-      display: table-row;
-      .property-label {
-        font-weight: bold;
-        padding: 2px 5px 2px 0;
-        display: table-cell;
-      }
-      .property-value {
-        text-align: left;
-        display: table-cell;
-      }
-    }
+    .tooltip-element-mixin(#000; left; 2px 5px 2px 0; bold);
   }
 }
