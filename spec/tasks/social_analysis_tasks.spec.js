@@ -360,7 +360,7 @@ describe('Social analysis tasks', function() {
     it('publishes a report on the coupling between each pair of authors', function(done) {
       taskFunctions['developer-coupling-analysis']().then(function() {
         assertTaskReport(
-          Path.join(outputDir, '543b3dfc5f7eea00986cf67fe3a738f9432366d5', '2016-01-01_2016-10-22_communication-map-data.json'),
+          Path.join(outputDir, '543b3dfc5f7eea00986cf67fe3a738f9432366d5', '2016-01-01_2016-10-22_communication-network-data.json'),
           [
             { developer: { name: 'Dev1', team: 'Team 1' }, coupledDeveloper: { name: 'Dev2', team: 'Team 1' }, sharedCommits: 65, couplingStrength: 55 },
             { developer: { name: 'Dev3', team: 'Team 2' }, coupledDeveloper: { name: 'Dev1', team: 'Team 1' }, sharedCommits: 194, couplingStrength: 51 },

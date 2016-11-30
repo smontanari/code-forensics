@@ -104,6 +104,7 @@ describe('Coupling analysis tasks', function() {
                         children: [],
                         sloc: 33,
                         couplingDegree: 23,
+                        revisionsAvg: 12,
                         weight: 0.7666666666666667
                       }
                     ]
@@ -126,6 +127,7 @@ describe('Coupling analysis tasks', function() {
                         name: 'file3',
                         children: [],
                         sloc: 15,
+                        revisionsAvg: 5,
                         couplingDegree: 30,
                         weight: 1
                       }
@@ -168,6 +170,7 @@ describe('Coupling analysis tasks', function() {
                         name: 'file1',
                         children: [],
                         sloc: 33,
+                        revisionsAvg: 30,
                         couplingDegree: 10,
                         weight: 0.30303030303030304
                       }
@@ -202,6 +205,7 @@ describe('Coupling analysis tasks', function() {
                         name: 'file4',
                         children: [],
                         sloc: 25,
+                        revisionsAvg: 18,
                         couplingDegree: 33,
                         weight: 1
                       }

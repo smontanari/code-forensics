@@ -1,3 +1,4 @@
+/*eslint-disable max-lines*/
 var stream = require('stream'),
     reduce = require('through2-reduce');
 
@@ -45,7 +46,7 @@ describe('CodeMaatAnalyser', function() {
 
   var stubCodeMaatReport = function(data) {
     data.forEach(function(line) {
-      commandOutputStream.write(line);
+      commandOutputStream.write(line + "\n");
     });
     commandOutputStream.end();
   };
@@ -80,11 +81,11 @@ describe('CodeMaatAnalyser', function() {
       .on('end', done);
 
       stubCodeMaatReport([
-        "entity,n-revs\n",
-        "test/path1,18\n",
-        "test/path2,17\n",
-        "test/path3,15\n",
-        "test/path4,14\n"
+        'entity,n-revs',
+        'test/path1,18',
+        'test/path2,17',
+        'test/path3,15',
+        'test/path4,14'
       ]);
     });
   });
@@ -106,11 +107,11 @@ describe('CodeMaatAnalyser', function() {
       .on('end', done);
 
       stubCodeMaatReport([
-        "entity,soc\n",
-        "test/path1,62\n",
-        "test/path2,32\n",
-        "test/path3,60\n",
-        "test/path4,52\n"
+        'entity,soc',
+        'test/path1,62',
+        'test/path2,32',
+        'test/path3,60',
+        'test/path4,52'
       ]);
     });
   });
@@ -132,11 +133,11 @@ describe('CodeMaatAnalyser', function() {
       .on('end', done);
 
       stubCodeMaatReport([
-        "entity,coupled,degree,average-revs\n",
-        "test/path1,test/coupledFile1,100,5\n",
-        "test/path2,test/coupledFile2,89,4\n",
-        "test/path3,test/coupledFile3,64,3\n",
-        "test/path4,test/coupledFile4,34,3\n"
+        'entity,coupled,degree,average-revs',
+        'test/path1,test/coupledFile1,100,5',
+        'test/path2,test/coupledFile2,89,4',
+        'test/path3,test/coupledFile3,64,3',
+        'test/path4,test/coupledFile4,34,3'
       ]);
     });
   });
@@ -158,11 +159,11 @@ describe('CodeMaatAnalyser', function() {
       .on('end', done);
 
       stubCodeMaatReport([
-        "entity,n-authors,n-revs\n",
-        "test/path1,6,18\n",
-        "test/path2,5,7\n",
-        "test/path3,4,36\n",
-        "test/path4,4,14\n"
+        'entity,n-authors,n-revs',
+        'test/path1,6,18',
+        'test/path2,5,7',
+        'test/path3,4,36',
+        'test/path4,4,14'
       ]);
     });
   });
@@ -188,15 +189,15 @@ describe('CodeMaatAnalyser', function() {
       .on('end', done);
 
       stubCodeMaatReport([
-        "entity,author,author-revs,total-revs\n",
-        "test/path1,Dev1,2,5\n",
-        "test/path1,Dev2,3,5\n",
-        "test/path2,Dev2,4,13\n",
-        "test/path2,Dev3,5,13\n",
-        "test/path2,Dev4,4,13\n",
-        "test/path3,Dev4,3,4\n",
-        "test/path3,Dev3,1,4\n",
-        "test/path4,Dev3,12,12\n"
+        'entity,author,author-revs,total-revs',
+        'test/path1,Dev1,2,5',
+        'test/path1,Dev2,3,5',
+        'test/path2,Dev2,4,13',
+        'test/path2,Dev3,5,13',
+        'test/path2,Dev4,4,13',
+        'test/path3,Dev4,3,4',
+        'test/path3,Dev3,1,4',
+        'test/path4,Dev3,12,12'
       ]);
     });
   });
@@ -218,11 +219,11 @@ describe('CodeMaatAnalyser', function() {
       .on('end', done);
 
       stubCodeMaatReport([
-        "entity,main-dev,added,total-added,ownership\n",
-        "test/path1,Dev1,3,5,0.45\n",
-        "test/path2,Dev2,34,60, 0.68\n",
-        "test/path3,Dev3,3,12,0.25\n",
-        "test/path4,Dev4,12,40,0.26\n"
+        'entity,main-dev,added,total-added,ownership',
+        'test/path1,Dev1,3,5,0.45',
+        'test/path2,Dev2,34,60, 0.68',
+        'test/path3,Dev3,3,12,0.25',
+        'test/path4,Dev4,12,40,0.26'
       ]);
     });
   });
@@ -247,15 +248,15 @@ describe('CodeMaatAnalyser', function() {
       }).on('end', done);
 
       stubCodeMaatReport([
-        "entity,author,added,deleted\n",
-        "test/path1,Dev1,2,5\n",
-        "test/path1,Dev2,3,5\n",
-        "test/path2,Dev2,4,3\n",
-        "test/path2,Dev3,5,3\n",
-        "test/path2,Dev4,4,3\n",
-        "test/path3,Dev4,3,2\n",
-        "test/path3,Dev3,9,8\n",
-        "test/path4,Dev3,12,4\n"
+        'entity,author,added,deleted',
+        'test/path1,Dev1,2,5',
+        'test/path1,Dev2,3,5',
+        'test/path2,Dev2,4,3',
+        'test/path2,Dev3,5,3',
+        'test/path2,Dev4,4,3',
+        'test/path3,Dev4,3,2',
+        'test/path3,Dev3,9,8',
+        'test/path4,Dev3,12,4'
       ]);
     });
   });
@@ -278,13 +279,67 @@ describe('CodeMaatAnalyser', function() {
       }).on('end', done);
 
       stubCodeMaatReport([
-        "author,peer,shared,average,strength\n",
-        "Dev1,Dev2,65,118,55\n",
-        "Dev2,Dev1,65,118,55\n",
-        "Dev3,Dev1,194,380,51\n",
-        "Dev1,Dev3,194,380,51\n",
-        "Dev4,Dev5,62,127,48\n",
-        "Dev5,Dev4,62,127,48"
+        'author,peer,shared,average,strength',
+        'Dev1,Dev2,65,118,55',
+        'Dev2,Dev1,65,118,55',
+        'Dev3,Dev1,194,380,51',
+        'Dev1,Dev3,194,380,51',
+        'Dev4,Dev5,62,127,48',
+        'Dev5,Dev4,62,127,48'
+      ]);
+    });
+  });
+
+  describe('absolute churn analysis', function() {
+    prepareAnalyserStream('absolute-churn');
+    verifyInstallCheck();
+
+    it('returns a stream of the absolute churn analysis', function(done) {
+      this.subject.on('data', function(data) {
+        expect(data).toEqual([
+          { date: '2015-12-11', addedLines: 1959, deletedLines: 2006, commits: 9 },
+          { date: '2015-12-18', addedLines:  724, deletedLines:    0, commits: 4 },
+          { date: '2015-12-21', addedLines:   61, deletedLines:    5, commits: 2 },
+          { date: '2015-12-24', addedLines:  205, deletedLines:  131, commits: 5 },
+          { date: '2015-12-31', addedLines:   22, deletedLines:    1, commits: 1 }
+        ]);
+        assertCommand('absolute-churn');
+      }).on('end', done);
+
+      stubCodeMaatReport([
+        'date,added,deleted,commits',
+        '2015-12-11,1959,2006,9',
+        '2015-12-18,724,0,4',
+        '2015-12-21,61,5,2',
+        '2015-12-24,205,131,5',
+        '2015-12-31,22,1,1'
+      ]);
+    });
+  });
+
+  describe('entity churn analysis', function() {
+    prepareAnalyserStream('entity-churn');
+    verifyInstallCheck();
+
+    it('returns a stream of the entity churn analysis', function(done) {
+      this.subject.on('data', function(data) {
+        expect(data).toEqual([
+          { path: 'test/path1', addedLines:      0, deletedLines: 250878, commits: 1 },
+          { path: 'test/path2', addedLines: 895462, deletedLines: 923349, commits: 2 },
+          { path: 'test/path3', addedLines: 783048, deletedLines:  65489, commits: 3 },
+          { path: 'test/path4', addedLines: 659307, deletedLines:  45631, commits: 3 },
+          { path: 'test/path5', addedLines: 581630, deletedLines:      0, commits: 1 }
+        ]);
+        assertCommand('entity-churn');
+      }).on('end', done);
+
+      stubCodeMaatReport([
+        'entity,added,deleted,commits',
+        'test/path1,0,250878,1',
+        'test/path2,895462,923349,2',
+        'test/path3,783048,65489,3',
+        'test/path4,659307,45631,3',
+        'test/path5,581630,0,1'
       ]);
     });
   });
