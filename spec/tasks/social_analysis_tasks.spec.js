@@ -216,7 +216,7 @@ describe('Social analysis tasks', function() {
     });
   });
 
-  describe('developers-coupling-analysis', function() {
+  describe('developer-coupling-analysis', function() {
     var couplingStream, analysisStream;
 
     beforeEach(function() {
@@ -277,9 +277,9 @@ describe('Social analysis tasks', function() {
     });
 
     it('publishes a report on files with the most authors and the respective coupling between main developers', function(done) {
-      taskFunctions['developers-coupling-analysis']().then(function() {
+      taskFunctions['developer-coupling-analysis']().then(function() {
         assertTaskReport(
-          Path.join(outputDir, '7fe462827f1f7cf0740be7a7138cdfbfbfc327f8', '2016-01-01_2016-10-22_main-dev-coupling-data.json'),
+          Path.join(outputDir, '543b3dfc5f7eea00986cf67fe3a738f9432366d5', '2016-01-01_2016-10-22_main-dev-coupling-data.json'),
           {
             children: [
               {
@@ -358,13 +358,13 @@ describe('Social analysis tasks', function() {
     });
 
     it('publishes a report on the coupling between each pair of authors', function(done) {
-      taskFunctions['developers-coupling-analysis']().then(function() {
+      taskFunctions['developer-coupling-analysis']().then(function() {
         assertTaskReport(
-          Path.join(outputDir, '7fe462827f1f7cf0740be7a7138cdfbfbfc327f8', '2016-01-01_2016-10-22_communication-map-data.json'),
+          Path.join(outputDir, '543b3dfc5f7eea00986cf67fe3a738f9432366d5', '2016-01-01_2016-10-22_communication-map-data.json'),
           [
-            { author: 'Dev1', coupledAuthor: 'Dev2', sharedCommits: 65, couplingStrength: 55 },
-            { author: 'Dev3', coupledAuthor: 'Dev1', sharedCommits: 194, couplingStrength: 51 },
-            { author: 'Dev4', coupledAuthor: 'Dev5', sharedCommits: 62, couplingStrength: 48 }
+            { developer: { name: 'Dev1', team: 'Team 1' }, coupledDeveloper: { name: 'Dev2', team: 'Team 1' }, sharedCommits: 65, couplingStrength: 55 },
+            { developer: { name: 'Dev3', team: 'Team 2' }, coupledDeveloper: { name: 'Dev1', team: 'Team 1' }, sharedCommits: 194, couplingStrength: 51 },
+            { developer: { name: 'Dev4', team: 'Team 2' }, coupledDeveloper: { name: 'Dev5', team: 'Team 2' }, sharedCommits: 62, couplingStrength: 48 }
           ]
         );
         done();

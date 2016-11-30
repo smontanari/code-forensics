@@ -1,0 +1,94 @@
+.network-graph-diagram {
+  .links line {
+    stroke: #AAAAAA;
+    stroke-opacity: 0.6;
+    pointer-events: none;
+
+    &.highlighted {
+      stroke: #000000;
+      stroke-opacity: 1;
+      pointer-events: visible;
+    }
+
+    &.link-hidden {
+      stroke-opacity: 0.1;
+    }
+
+    &:hover {
+      stroke: #4682B4;
+      stroke-width: 5px;
+    }
+  }
+
+  .nodes circle {
+    stroke: #FFFFFF;
+    stroke-width: 1.5px;
+
+    &.node-hidden {
+      fill-opacity: 0.1;
+    }
+  }
+}
+
+@tooltip-border: 1px solid #000;
+
+.d3-tip {
+  &.network-graph-diagram {
+    &.node-info {
+      background-color: #EEEEEE;
+      padding: 5px;
+      border: 1px solid #ddd;
+
+      transition: opacity 300ms linear;
+      border-radius: 10px;
+      box-shadow: 5px 5px 12px rgba(0,0,0,.5);
+
+      .element-property {
+        color: #000000;
+        padding: 2px 0;
+        &.title {
+          font-weight: bold;
+          text-align: center;
+        }
+      }
+    }
+  }
+
+  &.link-info {
+    background-color: #FFF;
+    color: #000;
+    border-radius: 0 0 5px 5px;
+    box-shadow: 4px 4px 12px rgba(0,0,0,.5);
+    border-left: @tooltip-border;
+    border-right: @tooltip-border;
+    border-bottom: @tooltip-border;
+    display: table;
+
+    .element-name {
+      font-size: 14px;
+      padding: 5px;
+      color: #FFF;
+      text-align: center;
+      background-color: #4682B4;
+      display: table-caption;
+      white-space: nowrap;
+      border-radius: 5px 5px 0 0;
+      border-top: @tooltip-border;
+      border-left: @tooltip-border;
+      border-right: @tooltip-border;
+    }
+
+    .element-property {
+      display: table-row;
+      .property-label {
+        padding: 2px;
+        display: table-cell;
+      }
+      .property-value {
+        text-align: right;
+        display: table-cell;
+        color: #4682B4;
+      }
+    }
+  }
+}
