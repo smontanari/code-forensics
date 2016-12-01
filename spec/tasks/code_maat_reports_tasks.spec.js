@@ -10,11 +10,11 @@ var codeMaatReportTasks = require_src('tasks/code_maat_reports_tasks'),
 describe('CodeMaat report tasks', function() {
   var taskFunctions, tempDir, repoDir;
 
-  var assertTaskReport = function(exampleDescription, analyser, taskName, reportFilename) {
+  var assertTaskReport = function(exampleDescription, analysis, taskName, reportFilename) {
     describe(taskName, function() {
       it(exampleDescription, function(done) {
         var analysisStream = new stream.PassThrough({ objectMode: true });
-        spyOn(codeMaat, analyser).and.returnValue(
+        spyOn(codeMaat, 'analyser').and.returnValue(
           { fileAnalysisStream: function() { return analysisStream; } }
         );
 
@@ -29,6 +29,8 @@ describe('CodeMaat report tasks', function() {
 
             done();
           });
+
+        expect(codeMaat.analyser).toHaveBeenCalledWith(analysis);
 
         analysisStream.push({ path: 'test_file1', testData: 123 });
         analysisStream.push({ path: 'test_file2', testData: 456 });
@@ -51,10 +53,10 @@ describe('CodeMaat report tasks', function() {
     spyOn(command.Command, 'ensure');
   });
 
-  assertTaskReport('writes a report on the number of revisions for each valid file', 'revisionsAnalyser', 'revisions-report', 'revisions-report.json');
-  assertTaskReport('writes a report on the effort distribution for each file', 'effortAnalyser', 'effort-report', 'effort-report.json');
-  assertTaskReport('writes a report on the number of authors and revisions for each file', 'authorsAnalyser', 'authors-report', 'authors-report.json');
-  assertTaskReport('writes a report on the main developers (by revisions) for each file', 'mainDevAnalyser', 'main-dev-report', 'main-dev-report.json');
-  assertTaskReport('writes a report on the developer ownership (by added lines of code) for each file', 'codeOwnershipAnalyser', 'code-ownership-report', 'code-ownership-report.json');
+  assertTaskReport('writes a report on the number of revisions for each valid file', 'revisions', 'revisions-report', 'revisions-report.json');
+  assertTaskReport('writes a report on the effort distribution for each file', 'entity-effort', 'effort-report', 'effort-report.json');
+  assertTaskReport('writes a report on the number of authors and revisions for each file', 'authors', 'authors-report', 'authors-report.json');
+  assertTaskReport('writes a report on the main developers (by revisions) for each file', 'main-dev', 'main-dev-report', 'main-dev-report.json');
+  assertTaskReport('writes a report on the developer ownership (by added lines of code) for each file', 'entity-ownership', 'code-ownership-report', 'code-ownership-report.json');
 });
 

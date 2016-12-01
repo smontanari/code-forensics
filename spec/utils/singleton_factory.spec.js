@@ -6,6 +6,12 @@ describe('SingletonFactory', function() {
     this.attribue2 = arg2;
   };
 
+  var MyParameter = function(value) {
+    this.value = value;
+
+    this.method = function() {};
+  };
+
   beforeEach(function() {
     this.subject = new SingletonFactory(MyObject);
   });
@@ -23,10 +29,35 @@ describe('SingletonFactory', function() {
     expect(object.attribue2).toEqual('qwe');
   });
 
-  it('returns the same instance upon multiple invocations', function() {
+  it('returns the same instance upon multiple invocations with same parameters', function() {
     var object1 = this.subject.instance();
     var object2 = this.subject.instance();
+    var object3 = this.subject.instance(123, 'qwe');
+    var object4 = this.subject.instance(123, 'qwe');
+    var object5 = this.subject.instance({ a: 456, b: 'qwe' });
+    var object6 = this.subject.instance({ a: 456, b: 'qwe' });
+    var obj = new MyParameter([456]);
+    var object7 = this.subject.instance(obj);
+    var object8 = this.subject.instance(obj);
 
     expect(object1).toBe(object2);
+    expect(object3).toBe(object4);
+    expect(object5).toBe(object6);
+    expect(object7).toBe(object8);
+  });
+
+  it('returns different instances upon multiple invocations with different parameters', function() {
+    var object1 = this.subject.instance();
+    var object2 = this.subject.instance(123, 'qwe');
+    var object3 = this.subject.instance({ a: 456, b: 'qwe' });
+    var object4 = this.subject.instance(new MyParameter([123]));
+    var object5 = this.subject.instance(new MyParameter([123]));
+
+    expect(object1).not.toBe(object2);
+    expect(object1).not.toBe(object3);
+    expect(object2).not.toBe(object3);
+    expect(object2).not.toBe(object4);
+    expect(object3).not.toBe(object4);
+    expect(object4).not.toBe(object5);
   });
 });

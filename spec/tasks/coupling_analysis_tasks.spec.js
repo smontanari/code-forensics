@@ -36,7 +36,7 @@ describe('Coupling analysis tasks', function() {
 
     it('publishes a report on the sum of coupling for each file', function(done) {
       var analysisStream = new stream.PassThrough({ objectMode: true });
-      spyOn(codeMaat, 'sumCouplingAnalyser').and.returnValue(
+      spyOn(codeMaat, 'analyser').and.returnValue(
         { fileAnalysisStream: function() { return analysisStream; } }
       );
 
@@ -51,6 +51,7 @@ describe('Coupling analysis tasks', function() {
         done();
       });
 
+      expect(codeMaat.analyser).toHaveBeenCalledWith('soc');
       analysisStream.push({ path: 'test_file1', soc: 34 });
       analysisStream.push({ path: 'test_file2', soc: 62 });
       analysisStream.push({ path: 'test_invalid_file', soc: 23 });
@@ -84,7 +85,7 @@ describe('Coupling analysis tasks', function() {
     it('publishes as many reports as the given time periods with coupling information between each file and a target file', function(done) {
       var couplingStream1 = new stream.PassThrough({ objectMode: true });
       var couplingStream2 = new stream.PassThrough({ objectMode: true });
-      spyOn(codeMaat, 'temporalCouplingAnalyser').and.returnValue(
+      spyOn(codeMaat, 'analyser').and.returnValue(
         { fileAnalysisStream: jasmine.createSpy().and.returnValues(couplingStream1, couplingStream2) }
       );
 
@@ -225,6 +226,8 @@ describe('Coupling analysis tasks', function() {
 
         done();
       });
+
+      expect(codeMaat.analyser).toHaveBeenCalledWith('coupling');
 
       couplingStream1.push({ path: 'test/a/file1', coupledPath: 'test/target_file', couplingDegree: 23, revisionsAvg: 12 });
       couplingStream1.push({ path: 'test/b/file2', coupledPath: 'test/a/file1', couplingDegree: 41, revisionsAvg: 22 });

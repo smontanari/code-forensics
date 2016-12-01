@@ -268,10 +268,8 @@ describe('Social analysis tasks', function() {
       couplingStream = new stream.PassThrough({ objectMode: true });
       analysisStream = new stream.PassThrough({ objectMode: true });
 
-      spyOn(codeMaat, 'temporalCouplingAnalyser').and.returnValue(
-        { fileAnalysisStream: function() { return couplingStream; } }
-      );
-      spyOn(codeMaat, 'communicationAnalyser').and.returnValue(
+      spyOn(codeMaat, 'analyser').and.returnValues(
+        { fileAnalysisStream: function() { return couplingStream; } },
         { fileAnalysisStream: function() { return analysisStream; } }
       );
     });
@@ -345,6 +343,8 @@ describe('Social analysis tasks', function() {
         );
         done();
       });
+
+      expect(codeMaat.analyser.calls.allArgs()).toEqual([['coupling'], ['communication']]);
 
       couplingStream.push({ path: 'test_invalid_file', coupledPath: 'test_file2', couplingDegree: 74, revisionsAvg: 68 });
       couplingStream.push({ path: 'test_file2', coupledPath: 'test_file5', couplingDegree: 66, revisionsAvg: 31 });

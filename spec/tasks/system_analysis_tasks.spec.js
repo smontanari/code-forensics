@@ -27,21 +27,20 @@ describe('System analysis tasks', function() {
     it('publishes a revisions report and a coupling report for each architectural layer of the system', function(done) {
       var couplingStream1 = new stream.PassThrough({ objectMode: true });
       var couplingStream2 = new stream.PassThrough({ objectMode: true });
-      spyOn(codeMaat, 'temporalCouplingAnalyser').and.returnValue(
-        { fileAnalysisStream: jasmine.createSpy().and.returnValues(couplingStream1, couplingStream2) }
-      );
-
       var revisionsStream1 = new stream.PassThrough({ objectMode: true });
       var revisionsStream2 = new stream.PassThrough({ objectMode: true });
-      spyOn(codeMaat, 'revisionsAnalyser').and.returnValue(
-        { fileAnalysisStream: jasmine.createSpy().and.returnValues(revisionsStream1, revisionsStream2) }
+
+      spyOn(codeMaat, 'analyser').and.returnValues(
+        { fileAnalysisStream: jasmine.createSpy().and.returnValue(couplingStream1) },
+        { fileAnalysisStream: jasmine.createSpy().and.returnValue(couplingStream2) },
+        { fileAnalysisStream: jasmine.createSpy().and.returnValue(revisionsStream1) },
+        { fileAnalysisStream: jasmine.createSpy().and.returnValue(revisionsStream2) }
       );
 
       var taskFunctions = this.tasksSetup(systemAnalysisTasks, null,
         { dateFrom: '2016-01-01', dateTo: '2016-02-28', frequency: 'monthly', boundary: 'test-boundary' }
       );
       var outputDir = this.tasksWorkingFolders.outputDir;
-
 
       taskFunctions['system-evolution-analysis']().then(function() {
         assertTaskReport(
@@ -70,6 +69,8 @@ describe('System analysis tasks', function() {
 
         done();
       });
+
+      expect(codeMaat.analyser.calls.allArgs()).toEqual([['coupling'], ['coupling'], ['revisions'], ['revisions']]);
 
       couplingStream1.push({ path: 'test_layer1', coupledPath: 'test_layer2', couplingDegree: 23, revisionsAvg: 12 });
       couplingStream1.push({ path: 'test_layer1', coupledPath: 'test_layer3', couplingDegree: 41, revisionsAvg: 22 });
