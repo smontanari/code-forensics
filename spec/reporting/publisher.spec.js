@@ -25,12 +25,15 @@ describe('Publisher', function() {
     jasmine.clock().uninstall();
   });
 
-  it('creates the output folder', function() {
-    this.subject = new Publisher({ name: 'test-task' }, this.context);
-    expect(fs.mkdir.calls.mostRecent().args[0]).toEqual('/test/output/c8c1dcae8f21797ee19a82d7958caf0aba7da1c6');
-  });
-
   describe('.addReportFile()', function() {
+    it('creates the output folder', function() {
+      this.subject = new Publisher({ name: 'test-task', reportFile: 'test-file.json' }, this.context);
+
+      this.subject.addReportFile();
+
+      expect(fs.mkdir.calls.mostRecent().args[0]).toEqual('/test/output/c8c1dcae8f21797ee19a82d7958caf0aba7da1c6');
+    });
+
     describe('with no report file information', function() {
       it('raises an error adding a report file', function() {
         this.subject = new Publisher({ name: 'test-task' }, this.context);
@@ -223,14 +226,17 @@ describe('Publisher', function() {
     describe('manifest parameters', function() {
       beforeEach(function() {
         spyOn(utils.json, 'objectToFile').and.returnValue(Q());
-      });
-
-      it('exposes the relevane context parameters for the analysis report', function(done) {
-        new Publisher({
+        this.subject = new Publisher({
           name: 'test-task',
           parameters: [{ name: 'param1' }, { name: 'param2' }],
           reportFile: 'test-file.json'
-        }, this.context).createManifest().then(function() {
+        }, this.context);
+      });
+
+      it('exposes the relevane context parameters for the analysis report', function(done) {
+        this.subject.addReportFile();
+
+        this.subject.createManifest().then(function() {
           var manifest = utils.json.objectToFile.calls.mostRecent().args[1];
           expect(manifest.parameters).toEqual({ param1: 'test_param1' });
           done();

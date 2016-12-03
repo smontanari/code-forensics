@@ -13,7 +13,7 @@ describe('RevisionHelper', function() {
     spyOn(vcsSupport, 'adapter').and.returnValue(this.mockVcs);
 
     this.subject = new RevisionHelper({
-      repository: { rootPath: 'repo_root' },
+      repository: 'test_repository',
       parameters: { targetFile: '/test/file' },
       dateRange: 'date-range'
     });
@@ -28,48 +28,63 @@ describe('RevisionHelper', function() {
       }
     };
 
-    beforeEach(function() {
-      this.mockVcs.revisions.and.returnValue(['revision1', 'revision2']);
-
-      this.mockStreamCollector = jasmine.createSpyObj('objectStreamCollector', ['mergeAll']);
-      spyOn(pp, 'objectStreamCollector').and.returnValue(this.mockStreamCollector);
-    });
-
     it('creates a vcs Adapter object with the repository root', function() {
-      expect(vcsSupport.adapter).toHaveBeenCalledWith('repo_root');
+      expect(vcsSupport.adapter).toHaveBeenCalledWith('test_repository');
     });
 
-    it('returns the stream aggregate of all the revisions', function() {
-      spyOn(utils.arrays, 'arrayToFnFactory').and.returnValue('revisions');
-      this.mockStreamCollector.mergeAll.and.returnValue('final stream');
-
-      expect(this.subject.revisionComplexityStream(analyser)).toEqual('final stream');
-
-      expect(this.mockVcs.revisions).toHaveBeenCalledWith('/test/file', 'date-range');
-      expect(utils.arrays.arrayToFnFactory).toHaveBeenCalledWith(['revision1', 'revision2'], jasmine.any(Function));
-      expect(this.mockStreamCollector.mergeAll).toHaveBeenCalledWith('revisions');
-    });
-
-    it('collects an analysis result stream for each individual revision', function(done) {
-      var streamAnalysisFn;
-      spyOn(utils.arrays, 'arrayToFnFactory').and.callFake(function(revisions, fn) {
-        streamAnalysisFn = fn;
+    describe('when no revisions exist', function() {
+      beforeEach(function() {
+        this.mockVcs.revisions.and.returnValue([]);
       });
 
-      var revisionStream = new stream.PassThrough({ objectMode: true });
-      this.mockVcs.showRevisionStream.and.returnValue(revisionStream);
+      it('throws an error', function() {
+        var subject = this.subject;
+        expect(function() {
+          subject.revisionComplexityStream(analyser);
+        }).toThrow('No revisions data found');
+      });
+    });
 
-      this.subject.revisionComplexityStream(analyser);
-      streamAnalysisFn({ revisionId: '123', date: '2014-01-31' })
-        .on('data', function(obj) {
-          expect(obj.revision).toEqual('123');
-          expect(obj.date.isSame(moment('2014-01-31'), 'day')).toBeTruthy();
-          expect(obj.result).toEqual('123-test-analysis-result');
-        })
-        .on('end', done);
+    describe('when revisions exist', function() {
+      beforeEach(function() {
+        this.mockVcs.revisions.and.returnValue(['revision1', 'revision2']);
 
-      revisionStream.write({ analysis: '123-test-analysis' });
-      revisionStream.end();
+        this.mockStreamCollector = jasmine.createSpyObj('objectStreamCollector', ['mergeAll']);
+        spyOn(pp, 'objectStreamCollector').and.returnValue(this.mockStreamCollector);
+      });
+
+      it('returns the stream aggregate of all the revisions', function() {
+        spyOn(utils.arrays, 'arrayToFnFactory').and.returnValue('revisions');
+        this.mockStreamCollector.mergeAll.and.returnValue('final stream');
+
+        expect(this.subject.revisionComplexityStream(analyser)).toEqual('final stream');
+
+        expect(this.mockVcs.revisions).toHaveBeenCalledWith('/test/file', 'date-range');
+        expect(utils.arrays.arrayToFnFactory).toHaveBeenCalledWith(['revision1', 'revision2'], jasmine.any(Function));
+        expect(this.mockStreamCollector.mergeAll).toHaveBeenCalledWith('revisions');
+      });
+
+      it('collects an analysis result stream for each individual revision', function(done) {
+        var streamAnalysisFn;
+        spyOn(utils.arrays, 'arrayToFnFactory').and.callFake(function(revisions, fn) {
+          streamAnalysisFn = fn;
+        });
+
+        var revisionStream = new stream.PassThrough({ objectMode: true });
+        this.mockVcs.showRevisionStream.and.returnValue(revisionStream);
+
+        this.subject.revisionComplexityStream(analyser);
+        streamAnalysisFn({ revisionId: '123', date: '2014-01-31' })
+          .on('data', function(obj) {
+            expect(obj.revision).toEqual('123');
+            expect(obj.date.isSame(moment('2014-01-31'), 'day')).toBeTruthy();
+            expect(obj.result).toEqual('123-test-analysis-result');
+          })
+          .on('end', done);
+
+        revisionStream.write({ analysis: '123-test-analysis' });
+        revisionStream.end();
+      });
     });
   });
 });

@@ -54,4 +54,15 @@ describe('ReportRunner', function() {
       expect(mockPublisher.createManifest).not.toHaveBeenCalled();
     });
   });
+
+  describe('when the task function throws an error', function() {
+    it('returns without creating a manifest', function() {
+      var output = new ReportRunner({
+        taskFunction: function() { throw 'something is wrong'; }
+      }).run('test_param1', 'test_param2');
+
+      expect(output).toBeUndefined();
+      expect(mockPublisher.createManifest).not.toHaveBeenCalled();
+    });
+  });
 });
