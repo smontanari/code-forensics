@@ -1,6 +1,6 @@
 <script id="color-map-filters" type="text/html">
+<p class="control-name" data-bind="text: templateData.filters['color-map-filters'].label"></p>
   <div data-bind="foreach: diagram.filters.colorRange">
-    <p class="control-name"><span data-bind="text: label"></span></p>
     <div class="color-map">
       <div data-bind="foreach: colorMap">
         <div class="filter-selectable" data-bind="click: $parent.select, css: { opaque: !isVisible() }">
