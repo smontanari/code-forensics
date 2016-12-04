@@ -26,7 +26,7 @@ describe('System analysis tasks', function() {
     };
 
     var revisionsAnalysisStreams = [
-      { name: 'revisions', data:
+      { analysisName: 'revisions', data:
         [
           { path: 'test_layer1', revisions: 32 },
           { path: 'test_layer2', revisions: 47 },
@@ -34,7 +34,7 @@ describe('System analysis tasks', function() {
         ]
       },
       {
-        name: 'revisions', data:
+        analysisName: 'revisions', data:
         [
           { path: 'test_layer1', revisions: 34 },
           { path: 'test_layer2', revisions: 25 },
@@ -43,16 +43,34 @@ describe('System analysis tasks', function() {
       }
     ];
 
+    var churnAnalysisStreams = [
+      { analysisName: 'entity-churn', data:
+        [
+          { path: 'test_layer1', addedLines: 95295, deletedLines: 10209, commits: 203 },
+          { path: 'test_layer2', addedLines:  6940, deletedLines:  6961, commits: 944 },
+          { path: 'test_layer3', addedLines:   710, deletedLines:    37, commits:  22 }
+        ]
+      },
+      {
+        analysisName: 'entity-churn', data:
+        [
+          { path: 'test_layer1', addedLines: 12091, deletedLines: 10138, commits: 17 },
+          { path: 'test_layer2', addedLines:  1147, deletedLines:  1156, commits: 26 },
+          { path: 'test_layer3', addedLines:   889, deletedLines:   660, commits: 38 }
+        ]
+      }
+    ];
+
     var couplingAnalysisStreams = [
       {
-        name: 'coupling', data: [
+        analysisName: 'coupling', data: [
           { path: 'test_layer1', coupledPath: 'test_layer2', couplingDegree: 23, revisionsAvg: 12 },
           { path: 'test_layer1', coupledPath: 'test_layer3', couplingDegree: 41, revisionsAvg: 22 },
           { path: 'test_layer2', coupledPath: 'test_layer3', couplingDegree: 30, revisionsAvg: 5 }
         ]
       },
       {
-        name: 'coupling', data: [
+        analysisName: 'coupling', data: [
           { path: 'test_layer1', coupledPath: 'test_layer2', couplingDegree: 33, revisionsAvg: 18 },
           { path: 'test_layer1', coupledPath: 'test_layer3', couplingDegree: 52, revisionsAvg: 32 },
           { path: 'test_layer2', coupledPath: 'test_layer3', couplingDegree: 10, revisionsAvg: 30 }
@@ -67,6 +85,15 @@ describe('System analysis tasks', function() {
       { name: 'test_layer1', revisions: 34, date: '2016-02-28'},
       { name: 'test_layer2', revisions: 25, date: '2016-02-28'},
       { name: 'test_layer3', revisions: 11, date: '2016-02-28'}
+    ];
+
+    var churnAnalysisResults = [
+      { name: 'test_layer1', addedLines: 95295, deletedLines: 10209, totalLines: 85086, date: '2016-01-31'},
+      { name: 'test_layer2', addedLines:  6940, deletedLines:  6961, totalLines:   -21, date: '2016-01-31'},
+      { name: 'test_layer3', addedLines:   710, deletedLines:    37, totalLines:   673, date: '2016-01-31'},
+      { name: 'test_layer1', addedLines: 12091, deletedLines: 10138, totalLines:  1953, date: '2016-02-28'},
+      { name: 'test_layer2', addedLines:  1147, deletedLines:  1156, totalLines:    -9, date: '2016-02-28'},
+      { name: 'test_layer3', addedLines:   889, deletedLines:   660, totalLines:   229, date: '2016-02-28'}
     ];
 
     var couplingAnalysisResults = [
@@ -115,7 +142,7 @@ describe('System analysis tasks', function() {
           done();
         });
 
-        var expectedArgs = _.map(streams, function(s) { return [s.name]; });
+        var expectedArgs = _.map(streams, function(s) { return [s.analysisName]; });
 
         expect(codeMaat.analyser.calls.allArgs()).toEqual(expectedArgs);
 
@@ -128,23 +155,36 @@ describe('System analysis tasks', function() {
 
     describe('with no boundary parameter', function() {
       testAnalysis(
-        'publishes a revisions report only',
+        'publishes a revisions report and a churn report with data aggregated for all files',
         { dateFrom: '2016-01-01', dateTo: '2016-02-28', frequency: 'monthly' },
-        revisionsAnalysisStreams,
-        [{ fileName: 'system-revisions-data.json', data: [
-          { name: 'All files', revisions: 94, date: '2016-01-31' },
-          { name: 'All files', revisions: 70, date: '2016-02-28' }
-        ]}]
+        revisionsAnalysisStreams.concat(churnAnalysisStreams),
+        [
+          {
+            fileName: 'system-revisions-data.json',
+            data: [
+              { name: 'All files', revisions: 94, date: '2016-01-31' },
+              { name: 'All files', revisions: 70, date: '2016-02-28' }
+            ]
+          },
+          {
+            fileName: 'system-churn-data.json',
+            data: [
+              { name: 'All files', addedLines: 102945, deletedLines: 17207, totalLines: 85738, date: '2016-01-31' },
+              { name: 'All files', addedLines:  14127, deletedLines: 11954, totalLines:  2173, date: '2016-02-28' }
+            ]
+          }
+        ]
       );
     });
 
     describe('with a boundary parameter', function() {
       testAnalysis(
-        'publishes a revisions report and a coupling report for each architectural layer of the system',
+        'publishes a revisions report, a code churn report and a coupling report for each architectural layer of the system',
         { dateFrom: '2016-01-01', dateTo: '2016-02-28', frequency: 'monthly', boundary: 'test_boundary' },
-        revisionsAnalysisStreams.concat(couplingAnalysisStreams),
+        revisionsAnalysisStreams.concat(churnAnalysisStreams).concat(couplingAnalysisStreams),
         [
           { fileName: 'system-revisions-data.json', data: revisionsAnalysisResults },
+          { fileName: 'system-churn-data.json', data: churnAnalysisResults },
           { fileName: 'system-coupling-data.json', data: couplingAnalysisResults }
         ]
       );
