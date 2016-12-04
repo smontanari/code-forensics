@@ -33,14 +33,14 @@ describe('VCS Tasks', function() {
         taskFunctions[taskName]().then(function() {
           var logContent1 = fs.readFileSync(Path.join(tempDir, filenamePrefix + '_2016-01-01_2016-01-31.log'));
           var logContent2 = fs.readFileSync(Path.join(tempDir, filenamePrefix + '_2016-02-01_2016-02-28.log'));
-          expect(logContent1.toString()).toEqual("pre-existing content");
+          expect(logContent1.toString()).toEqual('pre-existing content');
           expect(logContent2.toString()).toEqual("log-line1\nlog-line2\nlog-line3\n");
           done();
         });
 
-        outStream.push('log-line1\n');
-        outStream.push('log-line2\n');
-        outStream.push('log-line3\n');
+        outStream.push("log-line1\n");
+        outStream.push("log-line2\n");
+        outStream.push("log-line3\n");
         outStream.end();
       });
     };
