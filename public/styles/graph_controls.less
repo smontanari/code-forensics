@@ -24,19 +24,29 @@
     }
   }
 
-  .filter-selectable {
-    border-top: 1px solid transparent;
-    border-bottom: 1px solid transparent;
+  .value-map {
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 5px;
 
-    &:hover {
-      cursor: default;
-      border-top: 1px dotted #000000;
-      border-bottom: 1px dotted #000000;
+    &.bordered {
+      border: 1px solid;
+      border-radius: 5px;
     }
 
-    &.opaque {
-      background-color: transparent;
-      opacity: 0.1;
+    .filter-selectable {
+      font-size: 12px;
+      opacity: 0.3;
+      padding: 3px 2px;
+
+      &:hover {
+        cursor: default;
+        background-color: #DDD;
+      }
+
+      &.highlighted {
+        opacity: 1;
+      }
     }
   }
 
@@ -53,7 +63,7 @@
     .color-box {
       margin: 5px 0 0 5px;
       padding: 5px;
-      border: 1px solid #ddd;
+      border: 1px solid #DDD;
       display: inline-block;
     }
 
@@ -63,6 +73,18 @@
       padding-left: 5px;
       bottom: 2px;
       position: relative;
+    }
+
+    .filter-selectable {
+      &:hover {
+        cursor: default;
+        background-color: #DDD;
+      }
+
+      &.opaque {
+        background-color: transparent;
+        opacity: 0.1;
+      }
     }
   }
 }

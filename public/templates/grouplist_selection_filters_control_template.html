@@ -1,0 +1,14 @@
+<script id="grouplist-selection-filters" type="text/html">
+  <div data-bind="foreach: diagram.filters.groupListSelection">
+    <div data-bind="if: hasData">
+      <p class="control-name" data-bind="text: $parent.filtersData('grouplist-selection-filters', 'labels[' + $index() + ']')"></p>
+      <div class="value-map bordered">
+        <div data-bind="foreach: listValues">
+          <div class="filter-selectable" data-bind="click: $parent.select.bind($parent), css: { highlighted: isSelected }">
+            <span class="list-value" data-bind="text: name"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</script>

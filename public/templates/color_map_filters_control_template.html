@@ -1,9 +1,9 @@
 <script id="color-map-filters" type="text/html">
-<p class="control-name" data-bind="text: templateData.filters['color-map-filters'].label"></p>
   <div data-bind="foreach: diagram.filters.colorRange">
+    <p class="control-name" data-bind="text: $parent.filtersData('color-map-filters', 'labels[' + $index() + ']')"></p>
     <div class="color-map">
       <div data-bind="foreach: colorMap">
-        <div class="filter-selectable" data-bind="click: $parent.select, css: { opaque: !isVisible() }">
+        <div class="filter-selectable" data-bind="click: $parent.select.bind($parent), css: { opaque: !isVisible() }">
           <div class="color-box" data-bind="style: { 'background-color': color }"></div>
           <span class="color-value" data-bind="text: name"></span>
         </div>
