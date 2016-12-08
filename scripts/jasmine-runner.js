@@ -11,12 +11,13 @@ var testRunner = new Jasmine();
 var command = new JasmineCommand(path.resolve());
 
 if (require('minimist')(argv).verbose) {
-  testRunner.configureDefaultReporter({print: function() {}});
+  testRunner.env.clearReporters();
   testRunner.addReporter(new SpecReporter({
     displayStacktrace: 'all',
     displayPendingSpec: true,
     displaySpecDuration: true
   }));
 }
+testRunner.loadConfigFile();
 
 command.run(testRunner, argv);
