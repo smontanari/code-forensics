@@ -66,6 +66,34 @@ describe('Coupling analysis tasks', function() {
       expect(report).toEqual(content);
     };
 
+    var couplingStreamsData = [
+      [
+        { path: 'test/a/file1', coupledPath: 'test/target_file', couplingDegree: 23, revisionsAvg: 12 },
+        { path: 'test/b/file2', coupledPath: 'test/a/file1', couplingDegree: 41, revisionsAvg: 22 },
+        { path: 'test/target_file', coupledPath: 'test/c/file3', couplingDegree: 30, revisionsAvg: 5 }
+      ],
+      [
+        { path: 'test/d/file4', coupledPath: 'test/target_file', couplingDegree: 33, revisionsAvg: 18 },
+        { path: 'test/c/file3', coupledPath: 'test/b/file2', couplingDegree: 52, revisionsAvg: 32 },
+        { path: 'test/target_file', coupledPath: 'test/a/file1', couplingDegree: 10, revisionsAvg: 30 }
+      ]
+    ];
+
+    var churnStreamsData = [
+      [
+        { path: 'test/a/file1', addedLines: 295, deletedLines: 209, commits: 20 },
+        { path: 'test/b/file2', addedLines:  40, deletedLines:  61, commits:  4 },
+        { path: 'test/target_file', addedLines: 150, deletedLines: 60, commits:  31 },
+        { path: 'test/c/file3', addedLines:  71, deletedLines:  37, commits: 12 }
+      ],
+      [
+        { path: 'test/target_file', addedLines: 50, deletedLines: 10, commits:  13 },
+        { path: 'test/d/file4', addedLines:  91, deletedLines: 38, commits: 7 },
+        { path: 'test/a/file1', addedLines: 147, deletedLines: 56, commits: 6 },
+        { path: 'test/b/file2', addedLines:  19, deletedLines:  6, commits: 3 }
+      ]
+    ];
+
     beforeEach(function() {
       taskFunctions = this.tasksSetup(couplingAnalysisTasks,
         null,
@@ -83,11 +111,25 @@ describe('Coupling analysis tasks', function() {
     });
 
     it('publishes as many reports as the given time periods with coupling information between each file and a target file', function(done) {
-      var couplingStream1 = new stream.PassThrough({ objectMode: true });
-      var couplingStream2 = new stream.PassThrough({ objectMode: true });
-      spyOn(codeMaat, 'analyser').and.returnValue(
-        { fileAnalysisStream: jasmine.createSpy().and.returnValues(couplingStream1, couplingStream2) }
-      );
+      var couplingStreams = [
+        new stream.PassThrough({ objectMode: true }),
+        new stream.PassThrough({ objectMode: true })
+      ];
+      var churnStreams = [
+        new stream.PassThrough({ objectMode: true }),
+        new stream.PassThrough({ objectMode: true })
+      ];
+
+      var couplingAnalysisIndex = 0,
+          churnAnalysisIndex = 0;
+      spyOn(codeMaat, 'analyser').and.callFake(function(analysis) {
+        if (analysis === 'coupling') {
+          return { fileAnalysisStream: jasmine.createSpy().and.returnValues(couplingStreams[couplingAnalysisIndex++]) };
+        }
+        if (analysis === 'entity-churn') {
+          return { fileAnalysisStream: jasmine.createSpy().and.returnValues(churnStreams[churnAnalysisIndex++]) };
+        }
+      });
 
       taskFunctions['temporal-coupling-analysis']().then(function() {
         assertTaskReport(
@@ -106,6 +148,8 @@ describe('Coupling analysis tasks', function() {
                         sloc: 33,
                         couplingDegree: 23,
                         revisionsAvg: 12,
+                        addedLines: 295,
+                        deletedLines: 209,
                         weight: 0.7666666666666667
                       }
                     ]
@@ -117,6 +161,8 @@ describe('Coupling analysis tasks', function() {
                         name: 'file2',
                         children: [],
                         sloc: 23,
+                        addedLines:  40,
+                        deletedLines:  61,
                         weight: 0
                       }
                     ]
@@ -130,6 +176,8 @@ describe('Coupling analysis tasks', function() {
                         sloc: 15,
                         revisionsAvg: 5,
                         couplingDegree: 30,
+                        addedLines:  71,
+                        deletedLines:  37,
                         weight: 1
                       }
                     ]
@@ -149,6 +197,8 @@ describe('Coupling analysis tasks', function() {
                     name: 'target_file',
                     children: [],
                     sloc: 55,
+                    addedLines: 150,
+                    deletedLines: 60,
                     weight: 0
                   }
                 ]
@@ -173,6 +223,8 @@ describe('Coupling analysis tasks', function() {
                         sloc: 33,
                         revisionsAvg: 30,
                         couplingDegree: 10,
+                        addedLines: 147,
+                        deletedLines: 56,
                         weight: 0.30303030303030304
                       }
                     ]
@@ -184,6 +236,8 @@ describe('Coupling analysis tasks', function() {
                         name: 'file2',
                         children: [],
                         sloc: 23,
+                        addedLines:  19,
+                        deletedLines:  6,
                         weight: 0
                       }
                     ]
@@ -208,6 +262,8 @@ describe('Coupling analysis tasks', function() {
                         sloc: 25,
                         revisionsAvg: 18,
                         couplingDegree: 33,
+                        addedLines:  91,
+                        deletedLines: 38,
                         weight: 1
                       }
                     ]
@@ -216,6 +272,8 @@ describe('Coupling analysis tasks', function() {
                     name: 'target_file',
                     children: [],
                     sloc: 55,
+                    addedLines: 50,
+                    deletedLines: 10,
                     weight: 0
                   }
                 ]
@@ -227,17 +285,14 @@ describe('Coupling analysis tasks', function() {
         done();
       });
 
-      expect(codeMaat.analyser).toHaveBeenCalledWith('coupling');
-
-      couplingStream1.push({ path: 'test/a/file1', coupledPath: 'test/target_file', couplingDegree: 23, revisionsAvg: 12 });
-      couplingStream1.push({ path: 'test/b/file2', coupledPath: 'test/a/file1', couplingDegree: 41, revisionsAvg: 22 });
-      couplingStream1.push({ path: 'test/target_file', coupledPath: 'test/c/file3', couplingDegree: 30, revisionsAvg: 5 });
-      couplingStream1.end();
-
-      couplingStream2.push({ path: 'test/d/file4', coupledPath: 'test/target_file', couplingDegree: 33, revisionsAvg: 18 });
-      couplingStream2.push({ path: 'test/c/file3', coupledPath: 'test/b/file2', couplingDegree: 52, revisionsAvg: 32 });
-      couplingStream2.push({ path: 'test/target_file', coupledPath: 'test/a/file1', couplingDegree: 10, revisionsAvg: 30 });
-      couplingStream2.end();
+      _.each(couplingStreams, function(s, index) {
+        _.each(couplingStreamsData[index], s.push.bind(s));
+        s.end();
+      });
+      _.each(churnStreams, function(s, index) {
+        _.each(churnStreamsData[index], s.push.bind(s));
+        s.end();
+      });
     });
   });
 });
