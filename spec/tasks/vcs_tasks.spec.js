@@ -114,7 +114,7 @@ describe('VCS Tasks', function() {
             '--02790fd--2016-10-31--Developer.3',
             '--5fbfb14--2016-10-28--Dev4',
             "0\t1\ttest_file3",
-            "6\t8\ttest_file4\n\n"
+            "6\t8\ttest_file4\n"
           ].join("\n"));
           expect(logContent4.toString()).toEqual([
             '--98b656f--2016-11-14--Developer 1',
@@ -124,7 +124,7 @@ describe('VCS Tasks', function() {
             '--5fbfb14--2016-11-24--Dev4',
             "7\t41\ttest_file3",
             "-\t-\ttest_file2",
-            "6\t8\ttest_file4\n\n"
+            "6\t8\ttest_file4\n"
           ].join("\n"));
           done();
         });
