@@ -1,5 +1,5 @@
 <script id="grouplist-selection-filters" type="text/html">
-  <div data-bind="foreach: diagram.filters.groupListSelection">
+  <div data-bind="foreach: diagram.controls.filters.groupListSelection">
     <div data-bind="if: hasData">
       <p class="control-name" data-bind="text: $parent.filtersData('grouplist-selection-filters', 'labels[' + $index() + ']')"></p>
       <div class="value-map bordered">

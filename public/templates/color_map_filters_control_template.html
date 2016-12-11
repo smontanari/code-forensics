@@ -1,5 +1,5 @@
 <script id="color-map-filters" type="text/html">
-  <div data-bind="foreach: diagram.filters.colorRange">
+  <div data-bind="foreach: diagram.controls.filters.colorRange">
     <p class="control-name" data-bind="text: $parent.filtersData('color-map-filters', 'labels[' + $index() + ']')"></p>
     <div class="color-map">
       <div data-bind="foreach: colorMap">

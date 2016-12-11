@@ -1,5 +1,5 @@
 <script id="text-filters" type="text/html">
-  <div data-bind="foreach: diagram.filters.text">
+  <div data-bind="foreach: diagram.controls.filters.text">
     <p class="control-name" data-bind="text: $parent.filtersData('text-filters', 'labels[' + $index() + ']')"></p>
     <div class="filter-parameter">
       <input type="text" data-bind="textInput: inputValue"/>

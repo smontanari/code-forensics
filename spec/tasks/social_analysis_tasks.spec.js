@@ -87,131 +87,213 @@ describe('Social analysis tasks', function() {
   });
 
   describe('developer-effort-analysis', function() {
-    beforeEach(function() {
-      taskFunctions = this.tasksSetup(socialAnalysisTasks,
-        {
-          teamsComposition: {
-            'Team 1': ['Dev1', 'Dev2'],
-            'Team 2': ['Dev3', ['Dev4', 'Alias dev 4'], 'Dev5']
-          }
-        },
-        { dateFrom: '2016-01-01' }
-      );
+    describe('when team information exists', function() {
+      beforeEach(function() {
+        taskFunctions = this.tasksSetup(socialAnalysisTasks,
+          {
+            teamsComposition: {
+              'Team 1': ['Dev1', 'Dev2'],
+              'Team 2': ['Dev3', ['Dev4', 'Alias dev 4'], 'Dev5']
+            }
+          },
+          { dateFrom: '2016-01-01' }
+        );
 
-      fs.writeFileSync(Path.join(this.tasksWorkingFolders.tempDir, 'effort-report.json'), JSON.stringify(
-        [
-          { path: "test/a/file1", author: 'Dev1', revisions: 5 },
-          { path: "test/a/file1", author: 'Dev2', revisions: 2 },
-          { path: "test/b/file2", author: 'Dev1', revisions: 8 },
-          { path: "test/b/file2", author: 'Dev3', revisions: 5 },
-          { path: "test/b/file2", author: 'Dev4', revisions: 2 },
-          { path: "test/c/file3", author: 'Dev5', revisions: 10 },
-          { path: "test/c/file3", author: 'Dev with no team', revisions: 7 }
-        ]
-      ));
+        fs.writeFileSync(Path.join(this.tasksWorkingFolders.tempDir, 'effort-report.json'), JSON.stringify(
+          [
+            { path: "test/a/file1", author: 'Dev1', revisions: 5 },
+            { path: "test/a/file1", author: 'Dev2', revisions: 2 },
+            { path: "test/b/file2", author: 'Dev1', revisions: 8 },
+            { path: "test/b/file2", author: 'Dev3', revisions: 5 },
+            { path: "test/b/file2", author: 'Dev4', revisions: 2 },
+            { path: "test/c/file3", author: 'Dev5', revisions: 10 },
+            { path: "test/c/file3", author: 'Dev with no team', revisions: 7 }
+          ]
+        ));
+      });
+
+      it('publishes reports on the revisions distribution between developers and between teams', function(done) {
+        taskFunctions['developer-effort-analysis']().then(function() {
+          assertTaskReport(
+            Path.join(outputDir, '003a77e0e1ae9594f143f49d2b211269308c4489', '2016-01-01_2016-10-22_developer-effort-data.json'),
+            {
+              children: [
+                {
+                  name: 'test',
+                  children: [
+                    {
+                      name: 'a',
+                      children: [
+                        {
+                          name: 'file1',
+                          children: [
+                            { name: 'Dev1', revisions: 5, ownership: 71 },
+                            { name: 'Dev2', revisions: 2, ownership: 29 }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      name: 'b',
+                      children: [
+                        {
+                          name: 'file2',
+                          children: [
+                            { name: 'Dev1', revisions: 8, ownership: 53 },
+                            { name: 'Dev3', revisions: 5, ownership: 33 },
+                            { name: 'Dev4', revisions: 2, ownership: 13 }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      name: 'c',
+                      children: [
+                        {
+                          name: 'file3',
+                          children: [
+                            { name: 'Dev5', revisions: 10, ownership: 59 },
+                            { name: 'Dev with no team', revisions: 7, ownership: 41 }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          );
+
+          assertTaskReport(
+            Path.join(outputDir, '003a77e0e1ae9594f143f49d2b211269308c4489', '2016-01-01_2016-10-22_team-effort-data.json'),
+            {
+              children: [
+                {
+                  name: 'test',
+                  children: [
+                    {
+                      name: 'a',
+                      children: [
+                        {
+                          name: 'file1',
+                          children: [
+                            { name: 'Team 1', revisions: 7, ownership: 100 }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      name: 'b',
+                      children: [
+                        {
+                          name: 'file2',
+                          children: [
+                            { name: 'Team 1', revisions: 8, ownership: 53 },
+                            { name: 'Team 2', revisions: 7, ownership: 47 }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      name: 'c',
+                      children: [
+                        {
+                          name: 'file3',
+                          children: [
+                            { name: 'Team 2', revisions: 10, ownership: 59 },
+                            { name: 'N/A (Dev with no team)', revisions: 7, ownership: 41 }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          );
+
+          done();
+        });
+      });
     });
 
-    it('publishes reports on the revisions distribution between developers and between teams', function(done) {
-      taskFunctions['developer-effort-analysis']().then(function() {
-        assertTaskReport(
-          Path.join(outputDir, '003a77e0e1ae9594f143f49d2b211269308c4489', '2016-01-01_2016-10-22_developer-effort-data.json'),
+    describe('when no team information exists', function() {
+      beforeEach(function() {
+        taskFunctions = this.tasksSetup(socialAnalysisTasks,
           {
-            children: [
-              {
-                name: 'test',
-                children: [
-                  {
-                    name: 'a',
-                    children: [
-                      {
-                        name: 'file1',
-                        children: [
-                          { name: 'Dev1', revisions: 5, ownership: 71 },
-                          { name: 'Dev2', revisions: 2, ownership: 29 }
-                        ]
-                      }
-                    ]
-                  },
-                  {
-                    name: 'b',
-                    children: [
-                      {
-                        name: 'file2',
-                        children: [
-                          { name: 'Dev1', revisions: 8, ownership: 53 },
-                          { name: 'Dev3', revisions: 5, ownership: 33 },
-                          { name: 'Dev4', revisions: 2, ownership: 13 }
-                        ]
-                      }
-                    ]
-                  },
-                  {
-                    name: 'c',
-                    children: [
-                      {
-                        name: 'file3',
-                        children: [
-                          { name: 'Dev5', revisions: 10, ownership: 59 },
-                          { name: 'Dev with no team', revisions: 7, ownership: 41 }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
+            teamsComposition: ['Dev1', 'Dev2', 'Dev3', ['Dev4', 'Alias dev 4'], 'Dev5']
+          },
+          { dateFrom: '2016-01-01' }
         );
 
-        assertTaskReport(
-          Path.join(outputDir, '003a77e0e1ae9594f143f49d2b211269308c4489', '2016-01-01_2016-10-22_team-effort-data.json'),
-          {
-            children: [
-              {
-                name: 'test',
-                children: [
-                  {
-                    name: 'a',
-                    children: [
-                      {
-                        name: 'file1',
-                        children: [
-                          { name: 'Team 1', revisions: 7, ownership: 100 }
-                        ]
-                      }
-                    ]
-                  },
-                  {
-                    name: 'b',
-                    children: [
-                      {
-                        name: 'file2',
-                        children: [
-                          { name: 'Team 1', revisions: 8, ownership: 53 },
-                          { name: 'Team 2', revisions: 7, ownership: 47 }
-                        ]
-                      }
-                    ]
-                  },
-                  {
-                    name: 'c',
-                    children: [
-                      {
-                        name: 'file3',
-                        children: [
-                          { name: 'Team 2', revisions: 10, ownership: 59 },
-                          { name: 'N/A (Dev with no team)', revisions: 7, ownership: 41 }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        );
+        fs.writeFileSync(Path.join(this.tasksWorkingFolders.tempDir, 'effort-report.json'), JSON.stringify(
+          [
+            { path: "test/a/file1", author: 'Dev1', revisions: 5 },
+            { path: "test/a/file1", author: 'Dev2', revisions: 2 },
+            { path: "test/b/file2", author: 'Dev1', revisions: 8 },
+            { path: "test/b/file2", author: 'Dev3', revisions: 5 },
+            { path: "test/b/file2", author: 'Dev4', revisions: 2 },
+            { path: "test/c/file3", author: 'Dev5', revisions: 10 },
+            { path: "test/c/file3", author: 'Dev with no team', revisions: 7 }
+          ]
+        ));
+      });
 
-        done();
+      it('publishes only a report on the revisions distribution between developers', function(done) {
+        taskFunctions['developer-effort-analysis']().then(function() {
+          assertTaskReport(
+            Path.join(outputDir, '003a77e0e1ae9594f143f49d2b211269308c4489', '2016-01-01_2016-10-22_developer-effort-data.json'),
+            {
+              children: [
+                {
+                  name: 'test',
+                  children: [
+                    {
+                      name: 'a',
+                      children: [
+                        {
+                          name: 'file1',
+                          children: [
+                            { name: 'Dev1', revisions: 5, ownership: 71 },
+                            { name: 'Dev2', revisions: 2, ownership: 29 }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      name: 'b',
+                      children: [
+                        {
+                          name: 'file2',
+                          children: [
+                            { name: 'Dev1', revisions: 8, ownership: 53 },
+                            { name: 'Dev3', revisions: 5, ownership: 33 },
+                            { name: 'Dev4', revisions: 2, ownership: 13 }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      name: 'c',
+                      children: [
+                        {
+                          name: 'file3',
+                          children: [
+                            { name: 'Dev5', revisions: 10, ownership: 59 },
+                            { name: 'Dev with no team', revisions: 7, ownership: 41 }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          );
+          var teamsReport = Path.join(outputDir, '003a77e0e1ae9594f143f49d2b211269308c4489', '2016-01-01_2016-10-22_team-effort-data.json');
+          expect(fs.existsSync(teamsReport)).toBeFalsy();
+          done();
+        });
       });
     });
   });

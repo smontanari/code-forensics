@@ -1,7 +1,9 @@
 <script id="element-info-1-tooltip" type="text/html">
   {{#data}}
-  <div class="element-property {{cssClass}}" style="{{cssStyle}}">
-    <span>{{value}}</span>
-  </div>
+  {{#value}}
+    <div class="element-property {{cssClass}}" style="{{cssStyle}}">
+      <span>{{value}}</span>
+    </div>
+  {{/value}}
   {{/data}}
 </script>

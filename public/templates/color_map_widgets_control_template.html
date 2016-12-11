@@ -1,0 +1,11 @@
+<script id="color-map-widgets" type="text/html">
+  <div data-bind="foreach: diagram.controls.widgets.colorMap">
+    <p class="control-name" data-bind="text: $parent.widgetsData('color-map-widgets', 'labels[' + $index() + ']')"></p>
+    <div data-bind="foreach: colorMap" class="color-map bordered">
+      <div>
+        <div class="color-box" data-bind="style: { 'background-color': color }"></div>
+        <span class="color-value" data-bind="text: name"></span>
+      </div>
+    </div>
+  </div>
+</script>

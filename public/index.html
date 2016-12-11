@@ -32,7 +32,7 @@
         </div>
         <div data-bind="foreach: graphModels">
           <div data-bind="if: isSelected">
-            <div data-bind="if: diagram.hasFilters">
+            <div data-bind="if: diagram.controls.hasFilters">
               <div data-bind="with: graphControlGroups.filters">
                 <div data-bind="if: hasTemplates()">
                   <h2>Filters</h2>
@@ -42,10 +42,12 @@
                 </div>
               </div>
             </div>
-            <div data-bind="with: graphControlGroups.widgets">
-              <div data-bind="if: hasTemplates()">
-                <div data-bind="foreach: templateIds">
-                  <div data-bind="template: {name: $data, data: $parents[1]}"></div>
+            <div data-bind="if: diagram.controls.hasWidgets">
+              <div data-bind="with: graphControlGroups.widgets">
+                <div data-bind="if: hasTemplates()">
+                  <div data-bind="foreach: templateIds">
+                    <div data-bind="template: {name: $data, data: $parents[1]}"></div>
+                  </div>
                 </div>
               </div>
             </div>
