@@ -1,13 +1,20 @@
 var moment = require('moment');
 
-var TimeSplitter = require_src('models/time_interval/time_splitter');
+var TimeSplitter      = require_src('models/time_interval/time_splitter'),
+    CFValidationError = require_src('models/validation_error');
 
 describe('TimeSplitter', function() {
   beforeEach(function() {
     this.subject = new TimeSplitter(moment('2015-01-01'), moment('2015-12-31'));
   });
 
-  it('does not split', function() {
+  it('throws an error if an invalid frequency is given', function() {
+    expect(function() {
+      new TimeSplitter(moment('2014-01-01'), moment('2016-01-01')).split('wrong-frequency');
+    }).toThrowError(CFValidationError,'Invalid frequency value: ' + 'wrong-frequency');
+  });
+
+  it('does not split if no frequency is given', function() {
     var subject = new TimeSplitter(moment('2014-01-01'), moment('2016-01-01'));
     expect(subject.split()).toEqual([{start: moment('2014-01-01'), end: moment('2016-01-01')}]);
   });

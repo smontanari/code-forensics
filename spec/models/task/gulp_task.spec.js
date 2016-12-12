@@ -1,4 +1,5 @@
-var Task = require_src('models/task/gulp_task');
+var Task            = require_src('models/task/gulp_task'),
+    CFValidationError = require_src('models/validation_error');
 
 describe('Task', function() {
   var assertTask = function(task, description, dependencies, fn, usage) {
@@ -86,13 +87,13 @@ describe('Task', function() {
     it('throws an error if any required parameter is undefined', function() {
       expect(
         this.task.validateParameters.bind(this.task, { param2: 456 })
-      ).toThrowError('Required parameter missing: param1');
+      ).toThrowError(CFValidationError, 'Required parameter missing: param1');
     });
 
     it('throws an error if any required parameter is null', function() {
       expect(
         this.task.validateParameters.bind(this.task, { param1: null, param2: 456 })
-      ).toThrowError('Required parameter missing: param1');
+      ).toThrowError(CFValidationError, 'Required parameter missing: param1');
     });
   });
 });

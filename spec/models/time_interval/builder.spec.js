@@ -1,4 +1,5 @@
-var TimePeriodBuilder = require_src('models/time_interval/builder');
+var TimePeriodBuilder = require_src('models/time_interval/builder'),
+    CFValidationError = require_src('models/validation_error');
 
 describe('TimePeriodBuilder', function() {
   beforeEach(function() {
@@ -8,6 +9,17 @@ describe('TimePeriodBuilder', function() {
 
   afterEach(function() {
     jasmine.clock().uninstall();
+  });
+
+  describe('validation', function() {
+    it('throws an error if the to date is before than the from date', function() {
+      expect(function() {
+        new TimePeriodBuilder('DD-MM-YYYY')
+        .from('15-04-2015')
+        .to('13-02-2014')
+        .build();
+      }).toThrowError(CFValidationError);
+    });
   });
 
   describe('with no start and end date given', function() {

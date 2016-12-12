@@ -1,4 +1,5 @@
-var DeveloperInfo = require_src('models/developer_info');
+var DeveloperInfo   = require_src('models/developer_info'),
+    CFValidationError = require_src('models/validation_error');
 
 describe('DeveloperInfo', function() {
   describe('with given team definitions', function() {
@@ -8,7 +9,7 @@ describe('DeveloperInfo', function() {
           'Team 1': ['Dev1', 'Dev2'],
           'Team 2': ['Dev3', ['Dev2', 'Alias dev 2']]
         });
-      }).toThrowError('Duplicate developer name: Dev2');
+      }).toThrowError(CFValidationError, 'Duplicate developer name: Dev2');
     });
 
     it('has team information', function() {
@@ -41,7 +42,7 @@ describe('DeveloperInfo', function() {
     it('raises an error when duplicate developer names exist', function() {
       expect(function() {
         new DeveloperInfo(['Dev1', 'Dev2', 'Dev3', ['Dev2', 'Alias dev 2']]);
-      }).toThrowError('Duplicate developer name: Dev2');
+      }).toThrowError(CFValidationError, 'Duplicate developer name: Dev2');
     });
 
     it('has no team information', function() {
