@@ -20,90 +20,106 @@ describe('TimeSplitter', function() {
   });
 
   it('splits by year', function() {
-    var subject = new TimeSplitter(moment('2014-01-01'), moment('2016-01-01'));
-    var periods = subject.split('yearly');
+    var assertPeriods = function(periods) {
+      expect(periods.length).toBe(2);
+      expect(periods[0].start.isSame(moment('2014-01-01'), 'day')).toBeTruthy();
+      expect(periods[0].end.isSame(moment('2014-12-31'), 'day')).toBeTruthy();
+      expect(periods[1].start.isSame(moment('2015-01-01'), 'day')).toBeTruthy();
+      expect(periods[1].end.isSame(moment('2015-12-31'), 'day')).toBeTruthy();
+    };
 
-    expect(periods.length).toBe(2);
-    expect(periods[0].start.isSame(moment('2014-01-01'), 'day')).toBeTruthy();
-    expect(periods[0].end.isSame(moment('2014-12-31'), 'day')).toBeTruthy();
-    expect(periods[1].start.isSame(moment('2015-01-01'), 'day')).toBeTruthy();
-    expect(periods[1].end.isSame(moment('2015-12-31'), 'day')).toBeTruthy();
+    assertPeriods(new TimeSplitter(moment('2014-01-01'), moment('2016-01-01')).split('yearly'));
+    assertPeriods(new TimeSplitter(moment('2014-01-01'), moment('2016-01-01')).split('1y'));
   });
 
   it('splits by semester', function() {
-    var subject = new TimeSplitter(moment('2014-01-01'), moment('2015-01-01'));
-    var periods = subject.split('semiannual');
+    var assertPeriods = function(periods) {
+      expect(periods.length).toBe(2);
+      expect(periods[0].start.isSame(moment('2014-01-01'), 'day')).toBeTruthy();
+      expect(periods[0].end.isSame(moment('2014-06-30'), 'day')).toBeTruthy();
+      expect(periods[1].start.isSame(moment('2014-07-01'), 'day')).toBeTruthy();
+      expect(periods[1].end.isSame(moment('2014-12-31'), 'day')).toBeTruthy();
+    };
 
-    expect(periods.length).toBe(2);
-    expect(periods[0].start.isSame(moment('2014-01-01'), 'day')).toBeTruthy();
-    expect(periods[0].end.isSame(moment('2014-06-30'), 'day')).toBeTruthy();
-    expect(periods[1].start.isSame(moment('2014-07-01'), 'day')).toBeTruthy();
-    expect(periods[1].end.isSame(moment('2014-12-31'), 'day')).toBeTruthy();
+    assertPeriods(new TimeSplitter(moment('2014-01-01'), moment('2015-01-01')).split('semiannual'));
+    assertPeriods(new TimeSplitter(moment('2014-01-01'), moment('2015-01-01')).split('6m'));
   });
 
   it('splits by quarter', function() {
-    var subject = new TimeSplitter(moment('2014-01-01'), moment('2015-01-01'));
-    var periods = subject.split('trimestrial');
+    var assertPeriods = function(periods) {
+      expect(periods.length).toBe(4);
+      expect(periods[0].start.isSame(moment('2014-01-01'), 'day')).toBeTruthy();
+      expect(periods[0].end.isSame(moment('2014-03-31'), 'day')).toBeTruthy();
+      expect(periods[3].start.isSame(moment('2014-10-01'), 'day')).toBeTruthy();
+      expect(periods[3].end.isSame(moment('2014-12-31'), 'day')).toBeTruthy();
+    };
 
-    expect(periods.length).toBe(4);
-    expect(periods[0].start.isSame(moment('2014-01-01'), 'day')).toBeTruthy();
-    expect(periods[0].end.isSame(moment('2014-03-31'), 'day')).toBeTruthy();
-    expect(periods[3].start.isSame(moment('2014-10-01'), 'day')).toBeTruthy();
-    expect(periods[3].end.isSame(moment('2014-12-31'), 'day')).toBeTruthy();
+    assertPeriods(new TimeSplitter(moment('2014-01-01'), moment('2015-01-01')).split('trimestrial'));
+    assertPeriods(new TimeSplitter(moment('2014-01-01'), moment('2015-01-01')).split('3m'));
   });
 
   it('splits every two months', function() {
-    var subject = new TimeSplitter(moment('2014-01-01'), moment('2014-07-01'));
-    var periods = subject.split('bimestrial');
+    var assertPeriods = function(periods) {
+      expect(periods.length).toBe(3);
+      expect(periods[0].start.isSame(moment('2014-01-01'), 'day')).toBeTruthy();
+      expect(periods[0].end.isSame(moment('2014-02-28'), 'day')).toBeTruthy();
+      expect(periods[2].start.isSame(moment('2014-05-01'), 'day')).toBeTruthy();
+      expect(periods[2].end.isSame(moment('2014-06-30'), 'day')).toBeTruthy();
+    };
 
-    expect(periods.length).toBe(3);
-    expect(periods[0].start.isSame(moment('2014-01-01'), 'day')).toBeTruthy();
-    expect(periods[0].end.isSame(moment('2014-02-28'), 'day')).toBeTruthy();
-    expect(periods[2].start.isSame(moment('2014-05-01'), 'day')).toBeTruthy();
-    expect(periods[2].end.isSame(moment('2014-06-30'), 'day')).toBeTruthy();
+    assertPeriods(new TimeSplitter(moment('2014-01-01'), moment('2014-07-01')).split('bimestrial'));
+    assertPeriods(new TimeSplitter(moment('2014-01-01'), moment('2014-07-01')).split('2m'));
   });
 
   it('splits by month', function() {
-    var subject = new TimeSplitter(moment('2014-01-01'), moment('2014-07-01'));
-    var periods = subject.split('monthly');
+    var assertPeriods = function(periods) {
+      expect(periods.length).toBe(6);
+      expect(periods[0].start.isSame(moment('2014-01-01'), 'day')).toBeTruthy();
+      expect(periods[0].end.isSame(moment('2014-01-31'), 'day')).toBeTruthy();
+      expect(periods[5].start.isSame(moment('2014-06-01'), 'day')).toBeTruthy();
+      expect(periods[5].end.isSame(moment('2014-06-30'), 'day')).toBeTruthy();
+    };
 
-    expect(periods.length).toBe(6);
-    expect(periods[0].start.isSame(moment('2014-01-01'), 'day')).toBeTruthy();
-    expect(periods[0].end.isSame(moment('2014-01-31'), 'day')).toBeTruthy();
-    expect(periods[5].start.isSame(moment('2014-06-01'), 'day')).toBeTruthy();
-    expect(periods[5].end.isSame(moment('2014-06-30'), 'day')).toBeTruthy();
+    assertPeriods(new TimeSplitter(moment('2014-01-01'), moment('2014-07-01')).split('monthly'));
+    assertPeriods(new TimeSplitter(moment('2014-01-01'), moment('2014-07-01')).split('1m'));
   });
 
   it('splits by fortnight', function() {
-    var subject = new TimeSplitter(moment('2014-01-01'), moment('2014-01-31'));
-    var periods = subject.split('fortnightly');
+    var assertPeriods = function(periods) {
+      expect(periods.length).toBe(3);
+      expect(periods[0].start.isSame(moment('2014-01-01'), 'day')).toBeTruthy();
+      expect(periods[0].end.isSame(moment('2014-01-11'), 'day')).toBeTruthy();
+      expect(periods[2].start.isSame(moment('2014-01-26'), 'day')).toBeTruthy();
+      expect(periods[2].end.isSame(moment('2014-01-31'), 'day')).toBeTruthy();
+    };
 
-    expect(periods.length).toBe(3);
-    expect(periods[0].start.isSame(moment('2014-01-01'), 'day')).toBeTruthy();
-    expect(periods[0].end.isSame(moment('2014-01-11'), 'day')).toBeTruthy();
-    expect(periods[2].start.isSame(moment('2014-01-26'), 'day')).toBeTruthy();
-    expect(periods[2].end.isSame(moment('2014-01-31'), 'day')).toBeTruthy();
+    assertPeriods(new TimeSplitter(moment('2014-01-01'), moment('2014-01-31')).split('fortnightly'));
+    assertPeriods(new TimeSplitter(moment('2014-01-01'), moment('2014-01-31')).split('2w'));
   });
 
   it('splits by week', function() {
-    var subject = new TimeSplitter(moment('2014-01-01'), moment('2014-01-31'));
-    var periods = subject.split('weekly');
+    var assertPeriods = function(periods) {
+      expect(periods.length).toBe(5);
+      expect(periods[0].start.isSame(moment('2014-01-01'), 'day')).toBeTruthy();
+      expect(periods[0].end.isSame(moment('2014-01-04'), 'day')).toBeTruthy();
+      expect(periods[4].start.isSame(moment('2014-01-26'), 'day')).toBeTruthy();
+      expect(periods[4].end.isSame(moment('2014-01-31'), 'day')).toBeTruthy();
+    };
 
-    expect(periods.length).toBe(5);
-    expect(periods[0].start.isSame(moment('2014-01-01'), 'day')).toBeTruthy();
-    expect(periods[0].end.isSame(moment('2014-01-04'), 'day')).toBeTruthy();
-    expect(periods[4].start.isSame(moment('2014-01-26'), 'day')).toBeTruthy();
-    expect(periods[4].end.isSame(moment('2014-01-31'), 'day')).toBeTruthy();
+    assertPeriods(new TimeSplitter(moment('2014-01-01'), moment('2014-01-31')).split('weekly'));
+    assertPeriods(new TimeSplitter(moment('2014-01-01'), moment('2014-01-31')).split('1w'));
   });
 
   it('splits by day', function() {
-    var subject = new TimeSplitter(moment('2014-01-01'), moment('2014-01-10'));
-    var periods = subject.split('daily');
+    var assertPeriods = function(periods) {
+      expect(periods.length).toBe(9);
+      expect(periods[0].start.isSame(moment('2014-01-01'), 'day')).toBeTruthy();
+      expect(periods[0].end.isSame(moment('2014-01-01'), 'day')).toBeTruthy();
+      expect(periods[8].start.isSame(moment('2014-01-09'), 'day')).toBeTruthy();
+      expect(periods[8].end.isSame(moment('2014-01-09'), 'day')).toBeTruthy();
+    };
 
-    expect(periods.length).toBe(9);
-    expect(periods[0].start.isSame(moment('2014-01-01'), 'day')).toBeTruthy();
-    expect(periods[0].end.isSame(moment('2014-01-01'), 'day')).toBeTruthy();
-    expect(periods[8].start.isSame(moment('2014-01-09'), 'day')).toBeTruthy();
-    expect(periods[8].end.isSame(moment('2014-01-09'), 'day')).toBeTruthy();
+    assertPeriods(new TimeSplitter(moment('2014-01-01'), moment('2014-01-10')).split('daily'));
+    assertPeriods(new TimeSplitter(moment('2014-01-01'), moment('2014-01-10')).split('1d'));
   });
 });
