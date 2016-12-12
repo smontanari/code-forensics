@@ -29,7 +29,7 @@ var options = {
 
 var webServer = httpServer.createServer(options);
 
-/*eslint-disable no-console*/
+/*eslint-disable no-console, no-process-exit*/
 
 webServer.listen(port, host, function () {
   console.log(chalk.yellow('Starting up http-server'));
@@ -46,7 +46,8 @@ webServer.listen(port, host, function () {
   process.on(event, function() {
     webServer.close();
     console.log(chalk.yellow('\nhttp-server stopped.'));
+    process.exit(0);
   });
 });
 
-/*eslint-disable no-console*/
+/*eslint-disable no-console, no-process-exit*/

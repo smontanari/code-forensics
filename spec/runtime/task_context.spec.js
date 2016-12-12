@@ -7,7 +7,6 @@ describe('TaskContext', function() {
   var mockPeriodBuilder;
 
   beforeEach(function() {
-    this.appConfigStub({ basedir: '/test' });
     mockPeriodBuilder = {};
     _.each(['from', 'to', 'split'], function(fn) {
       mockPeriodBuilder[fn] = jasmine.createSpy().and.returnValue(mockPeriodBuilder);
@@ -90,11 +89,10 @@ describe('TaskContext', function() {
     });
 
     it('initialises properties from default configuration', function() {
-
       var ctx = new TaskContext({}, { boundary: 'test-boundary-name', frequency: 'test-frequency' });
 
-      expect(ctx.tempDir).toEqual('/test/tmp');
-      expect(ctx.outputDir).toEqual('/test/output');
+      expect(ctx.tempDir).toMatch('/tmp');
+      expect(ctx.outputDir).toMatch('/output');
       expect(ctx.boundaries).toBeUndefined();
       expect(ctx.commitMessagesFilters).toBeUndefined();
       expect(ctx.languages).toEqual(['javascript']);
