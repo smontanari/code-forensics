@@ -1,5 +1,4 @@
-var _    = require('lodash'),
-    fs   = require('fs'),
+var fs   = require('fs'),
     glob = require("glob");
 
 var Repository      = require_src('models/repository'),
@@ -31,25 +30,49 @@ describe('Repository', function() {
     });
 
     describe('.allFiles()', function() {
-      beforeEach(function() {
-        spyOn(repositoryPath, 'normalise').and.callFake(function(root, paths) {
-          if (paths === 'some/paths') { return ['/root/path/file1', '/root/path/file2', '/root/path/file3', '/root/path/file4']; }
-          if (paths === 'some/other/paths') { return ['/root/path/file2', '/root/path/file4']; }
-        });
-        spyOn(glob, 'sync').and.callFake(_.identity);
+      describe('with no include and exclude paths', function() {
+        it('returns all the files under the root directory', function() {
+          spyOn(repositoryPath, 'expand').and.returnValues(
+            ['/root/path/file1', '/root/path/file3'],
+            []
+          );
 
-        this.subject = new Repository({
-          rootPath: '/root/path',
-          includePaths: 'some/paths',
-          excludePaths: 'some/other/paths'
+          this.subject = new Repository({ rootPath: '/root/path' });
+
+          expect(this.subject.allFiles()).toEqual([
+            { absolutePath: '/root/path/file1', relativePath: 'file1' },
+            { absolutePath: '/root/path/file3', relativePath: 'file3' }
+          ]);
+
+          expect(repositoryPath.expand).toHaveBeenCalledWith(['/root/path/**/*'], glob.sync);
+          expect(repositoryPath.expand).toHaveBeenCalledWith([], glob.sync);
         });
       });
 
-      it('returns the all the included files with absolute and relative paths', function() {
-        expect(this.subject.allFiles()).toEqual([
-          { absolutePath: '/root/path/file1', relativePath: 'file1' },
-          { absolutePath: '/root/path/file3', relativePath: 'file3' }
-        ]);
+      describe('with given include and exclude paths', function() {
+        beforeEach(function() {
+          spyOn(repositoryPath, 'normalise').and.returnValues('test/normalise/include', 'test/normalise/exclude');
+          spyOn(repositoryPath, 'expand').and.returnValues(
+            ['/root/path/file1', '/root/path/file2', '/root/path/file3', '/root/path/file4'],
+            ['/root/path/file2', '/root/path/file4']
+          );
+
+          this.subject = new Repository({
+            rootPath: '/root/path',
+            includePaths: 'some/paths',
+            excludePaths: 'some/other/paths'
+          });
+        });
+
+        it('returns all the included files with absolute and relative paths', function() {
+          expect(this.subject.allFiles()).toEqual([
+            { absolutePath: '/root/path/file1', relativePath: 'file1' },
+            { absolutePath: '/root/path/file3', relativePath: 'file3' }
+          ]);
+
+          expect(repositoryPath.expand).toHaveBeenCalledWith('test/normalise/include', glob.sync);
+          expect(repositoryPath.expand).toHaveBeenCalledWith('test/normalise/exclude', glob.sync);
+        });
       });
     });
 

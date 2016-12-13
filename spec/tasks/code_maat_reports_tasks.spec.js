@@ -28,6 +28,8 @@ describe('CodeMaat report tasks', function() {
             ]);
 
             done();
+          }).on('error', function(err) {
+            fail(err);
           });
 
         expect(codeMaat.analyser).toHaveBeenCalledWith(analysis);
@@ -41,9 +43,6 @@ describe('CodeMaat report tasks', function() {
   };
 
   beforeEach(function() {
-    taskFunctions = this.tasksSetup(codeMaatReportTasks, {
-      repository: { excludePaths: ['test_invalid_file'] }
-    });
     tempDir = this.tasksWorkingFolders.tempDir;
     repoDir = this.tasksWorkingFolders.repoDir;
 
@@ -51,6 +50,13 @@ describe('CodeMaat report tasks', function() {
       fs.writeFileSync(Path.join(repoDir, f), '');
     });
     spyOn(command.Command, 'ensure');
+    taskFunctions = this.tasksSetup(codeMaatReportTasks, {
+      repository: { excludePaths: ['test_invalid_file'] }
+    });
+  });
+
+  afterEach(function() {
+    this.tasksCleanup();
   });
 
   assertTaskReport('writes a report on the number of revisions for each valid file', 'revisions', 'revisions-report', 'revisions-report.json');

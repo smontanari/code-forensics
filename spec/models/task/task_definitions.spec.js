@@ -1,7 +1,8 @@
 var gulp = require('gulp');
 
-var TaskDefinitions = require_src('models/task/task_definitions'),
-    runners         = require_src('models/task/runners');
+var TaskDefinitions   = require_src('models/task/task_definitions'),
+    CFValidationError = require_src('models/validation_error'),
+    runners           = require_src('models/task/runners');
 
 describe('TaskDefinitions', function() {
   var gulpTask, gulpFunction, mockRunners;
@@ -158,7 +159,7 @@ describe('TaskDefinitions', function() {
     });
   });
 
-  describe('Existing tasks', function() {
+  describe('Retrieving tasks', function() {
     beforeEach(function() {
       this.subject = new TaskDefinitions({ parameters: { testParam: 123 } });
       this.subject.addTask('test-task1', {
@@ -181,11 +182,18 @@ describe('TaskDefinitions', function() {
       expect(tasks[1].name).toEqual('test-task1');
     });
 
-    it('returns the task', function() {
+    it('returns the existing task', function() {
       var task = this.subject.getTask('test-task1');
       expect(task.name).toEqual('test-task1');
       expect(task.description).toEqual('test task description');
       expect(task.usage).toEqual('gulp test-task1 --testParam <testParam>');
+    });
+
+    it('throws an error for a non existing task', function() {
+      var subject = this.subject;
+      expect(function() {
+        subject.getTask('not-a-task');
+      }).toThrowError(CFValidationError);
     });
 
     it('returns true for a defined task', function() {

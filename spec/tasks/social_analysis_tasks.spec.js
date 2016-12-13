@@ -21,6 +21,7 @@ describe('Social analysis tasks', function() {
 
   afterEach(function() {
     jasmine.clock().uninstall();
+    this.tasksCleanup();
   });
 
   var assertTaskReport = function(file, content) {
@@ -45,6 +46,9 @@ describe('Social analysis tasks', function() {
         'Third and very last'
       ].join("\n");
 
+      fs.writeFileSync(Path.join(this.tasksWorkingFolders.tempDir, 'vcs_commit_messages_2016-01-01_2016-01-31.log'), messages1);
+      fs.writeFileSync(Path.join(this.tasksWorkingFolders.tempDir, 'vcs_commit_messages_2016-02-01_2016-02-28.log'), messages2);
+
       taskFunctions = this.tasksSetup(socialAnalysisTasks,
         {
           commitMessagesFilters: [
@@ -56,9 +60,6 @@ describe('Social analysis tasks', function() {
         },
         { dateFrom: '2016-01-01', dateTo: '2016-02-28', frequency: 'monthly', minWordCount: 2 }
       );
-
-      fs.writeFileSync(Path.join(this.tasksWorkingFolders.tempDir, 'vcs_commit_messages_2016-01-01_2016-01-31.log'), messages1);
-      fs.writeFileSync(Path.join(this.tasksWorkingFolders.tempDir, 'vcs_commit_messages_2016-02-01_2016-02-28.log'), messages2);
     });
 
     it('publishes a report on the frequency of words in commit messages', function(done) {
@@ -82,6 +83,8 @@ describe('Social analysis tasks', function() {
           ]
         );
         done();
+      }).fail(function(err) {
+        fail(err);
       });
     });
   });
@@ -213,6 +216,8 @@ describe('Social analysis tasks', function() {
           );
 
           done();
+        }).fail(function(err) {
+          fail(err);
         });
       });
     });
@@ -293,6 +298,8 @@ describe('Social analysis tasks', function() {
           var teamsReport = Path.join(outputDir, '003a77e0e1ae9594f143f49d2b211269308c4489', '2016-01-01_2016-10-22_team-effort-data.json');
           expect(fs.existsSync(teamsReport)).toBeFalsy();
           done();
+        }).fail(function(err) {
+          fail(err);
         });
       });
     });
@@ -302,17 +309,6 @@ describe('Social analysis tasks', function() {
     var couplingStream, analysisStream;
 
     beforeEach(function() {
-      taskFunctions = this.tasksSetup(socialAnalysisTasks,
-        {
-          repository: { excludePaths: ['test_invalid_file'] },
-          teamsComposition: {
-            'Team 1': ['Dev1', 'Dev2'],
-            'Team 2': ['Dev3', ['Dev4', 'Alias dev 4'], 'Dev5']
-          }
-        },
-        { dateFrom: '2016-01-01', maxCoupledFiles: 2 }
-      );
-
       fs.writeFileSync(Path.join(this.tasksWorkingFolders.tempDir, 'authors-report.json'), JSON.stringify(
         [
           { path: "test_file1", authors: 4, revisions: 54 },
@@ -353,6 +349,17 @@ describe('Social analysis tasks', function() {
       spyOn(codeMaat, 'analyser').and.returnValues(
         { fileAnalysisStream: function() { return couplingStream; } },
         { fileAnalysisStream: function() { return analysisStream; } }
+      );
+
+      taskFunctions = this.tasksSetup(socialAnalysisTasks,
+        {
+          repository: { excludePaths: ['test_invalid_file'] },
+          teamsComposition: {
+            'Team 1': ['Dev1', 'Dev2'],
+            'Team 2': ['Dev3', ['Dev4', 'Alias dev 4'], 'Dev5']
+          }
+        },
+        { dateFrom: '2016-01-01', maxCoupledFiles: 2 }
       );
     });
 
@@ -424,6 +431,8 @@ describe('Social analysis tasks', function() {
           }
         );
         done();
+      }).fail(function(err) {
+        fail(err);
       });
 
       expect(codeMaat.analyser.calls.allArgs()).toEqual([['coupling'], ['communication']]);
@@ -450,6 +459,8 @@ describe('Social analysis tasks', function() {
           ]
         );
         done();
+      }).fail(function(err) {
+        fail(err);
       });
 
       analysisStream.push({ author: 'Dev1', coupledAuthor: 'Dev2', sharedCommits: 65, couplingStrength: 55 });
@@ -465,17 +476,6 @@ describe('Social analysis tasks', function() {
 
   describe('knowledge-map-analysis', function() {
     beforeEach(function() {
-      taskFunctions = this.tasksSetup(socialAnalysisTasks,
-        {
-          teamsComposition: {
-            'Team 1': ['Dev1', 'Dev2'],
-            'Team 2': ['Dev3', ['Dev4', 'Alias dev 4']],
-            'Ex team': ['Dev5']
-          }
-        },
-        { dateFrom: '2016-01-01' }
-      );
-
       fs.writeFileSync(Path.join(this.tasksWorkingFolders.tempDir, 'main-dev-report.json'), JSON.stringify(
         [
           { path: 'test/ruby/app/file1.rb', author: 'Dev1', addedLines: 10, ownership: 53 },
@@ -491,6 +491,17 @@ describe('Social analysis tasks', function() {
         { path: 'test/ruby/app/models/file3.rb', sloc: 15 },
         { path: 'test/web/js/file4.js', sloc: 25 }
       ]));
+
+      taskFunctions = this.tasksSetup(socialAnalysisTasks,
+        {
+          teamsComposition: {
+            'Team 1': ['Dev1', 'Dev2'],
+            'Team 2': ['Dev3', ['Dev4', 'Alias dev 4']],
+            'Ex team': ['Dev5']
+          }
+        },
+        { dateFrom: '2016-01-01' }
+      );
     });
 
     it('publishes a report on the main developer for each file ', function(done) {
@@ -574,6 +585,8 @@ describe('Social analysis tasks', function() {
           }
         );
         done();
+      }).fail(function(err) {
+        fail(err);
       });
     });
   });

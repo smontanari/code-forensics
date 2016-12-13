@@ -50,6 +50,8 @@ describe('ruby tasks', function() {
         });
 
         done();
+      }).on('error', function(err) {
+        fail(err);
       });
 
       analysisStream1.push(
@@ -133,6 +135,8 @@ describe('ruby tasks', function() {
         });
 
         done();
+      }).fail(function(err) {
+        fail(err);
       });
 
       revisionStream1.push("def abs(a,b)\n");

@@ -21,13 +21,15 @@ beforeEach(function() {
     repoDir: TEST_REPO_DIR
   };
 
+  this.tasksCleanup = function() {
+    del.sync([TEST_TMP_DIR + '/*', TEST_OUTPUT_DIR + '/*', TEST_REPO_DIR + '/*']);
+  };
+
   this.tasksSetup = function(tasksFn, contextConfig, parameters) {
     var taskFunctions = {};
     spyOn(gulp, 'task').and.callFake(function(taskName, deps, fn) {
       taskFunctions[taskName] = fn;
     });
-
-    del.sync([TEST_TMP_DIR + '/*', TEST_OUTPUT_DIR + '/*', TEST_REPO_DIR + '/*']);
 
     var config = _.merge({
         tempDir: TEST_TMP_DIR,

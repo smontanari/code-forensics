@@ -11,7 +11,7 @@ describe('TimeSplitter', function() {
   it('throws an error if an invalid frequency is given', function() {
     expect(function() {
       new TimeSplitter(moment('2014-01-01'), moment('2016-01-01')).split('wrong-frequency');
-    }).toThrowError(CFValidationError,'Invalid frequency value: ' + 'wrong-frequency');
+    }).toThrowError(CFValidationError, 'Invalid frequency value: wrong-frequency');
   });
 
   it('does not split if no frequency is given', function() {

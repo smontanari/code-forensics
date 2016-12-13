@@ -11,11 +11,11 @@ describe('Hotspot analysis tasks', function() {
 
   afterEach(function() {
     jasmine.clock().uninstall();
+    this.tasksCleanup();
   });
 
   describe('hotspot-analysis', function() {
     it('publishes an analysis report on code size, complexity and revisions for each file in the repository', function(done) {
-      var taskFunctions = this.tasksSetup(hotspotAnalysisTasks, { languages: ['ruby'] }, { dateFrom: '2015-03-01' });
       var outputDir = this.tasksWorkingFolders.outputDir;
 
       fs.writeFileSync(Path.join(this.tasksWorkingFolders.tempDir, 'sloc-report.json'), JSON.stringify([
@@ -38,6 +38,7 @@ describe('Hotspot analysis tasks', function() {
         { path: 'test/ruby/app/file6.rb', methodComplexity: [{ name: 'File6', complexity: 10.1 }], totalComplexity: 19.3, averageComplexity: 9.6 }
       ]));
 
+      var taskFunctions = this.tasksSetup(hotspotAnalysisTasks, { languages: ['ruby'] }, { dateFrom: '2015-03-01' });
       taskFunctions['hotspot-analysis']().then(function() {
         var reportContent = fs.readFileSync(Path.join(outputDir, '103d9a240cc5358f24927d51261fd9dcdb75b314', '2015-03-01_2015-10-22_revisions-hotspot-data.json'));
         var report = JSON.parse(reportContent.toString());
@@ -110,6 +111,8 @@ describe('Hotspot analysis tasks', function() {
           ]
         });
         done();
+      }).fail(function(err) {
+        fail(err);
       });
     });
   });

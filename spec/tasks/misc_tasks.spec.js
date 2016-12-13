@@ -24,6 +24,10 @@ describe('Misc Tasks', function() {
         { boundary: 'test_boundary' });
       });
 
+      afterEach(function() {
+        this.tasksCleanup();
+      });
+
       it('generates a code boundary file', function(done) {
         var tempDir = this.tasksWorkingFolders.tempDir;
         this.taskFunctions['generate-boundaries-file']().then(function() {
@@ -35,6 +39,8 @@ describe('Misc Tasks', function() {
           ].join("\n"));
 
           done();
+        }).fail(function(err) {
+          fail(err);
         });
       });
     });
@@ -49,6 +55,8 @@ describe('Misc Tasks', function() {
         this.taskFunctions['generate-boundaries-file']().then(function() {
           expect(fs.existsSync(Path.join(tempDir, 'code_boundaries.txt'))).toBeFalsy();
           done();
+        }).fail(function(err) {
+          fail(err);
         });
       });
     });

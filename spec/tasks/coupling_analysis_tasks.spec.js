@@ -19,19 +19,20 @@ describe('Coupling analysis tasks', function() {
 
   afterEach(function() {
     jasmine.clock().uninstall();
+    this.tasksCleanup();
   });
 
   describe('sum-of-coupling-analysis', function() {
     beforeEach(function() {
-      taskFunctions = this.tasksSetup(couplingAnalysisTasks,
-        { repository: { excludePaths: ['test_invalid_file'] } },
-        { dateFrom: '2015-03-01' }
-      );
-
       var repoDir = this.tasksWorkingFolders.repoDir;
       _.each(['test_file1', 'test_file2', 'test_invalid_file'], function(f) {
         fs.writeFileSync(Path.join(repoDir, f), '');
       });
+
+      taskFunctions = this.tasksSetup(couplingAnalysisTasks,
+        { repository: { excludePaths: ['test_invalid_file'] } },
+        { dateFrom: '2015-03-01' }
+      );
     });
 
     it('publishes a report on the sum of coupling for each file', function(done) {
@@ -49,6 +50,8 @@ describe('Coupling analysis tasks', function() {
         ]);
 
         done();
+      }).fail(function(err) {
+        fail(err);
       });
 
       expect(codeMaat.analyser).toHaveBeenCalledWith('soc');
@@ -95,11 +98,6 @@ describe('Coupling analysis tasks', function() {
     ];
 
     beforeEach(function() {
-      taskFunctions = this.tasksSetup(couplingAnalysisTasks,
-        null,
-        { dateFrom: '2016-01-01', dateTo: '2016-02-28', frequency: 'monthly', targetFile: 'test/target_file' }
-      );
-
       fs.writeFileSync(Path.join(this.tasksWorkingFolders.tempDir, 'sloc-report.json'), JSON.stringify([
         { path: 'test/a/file1', sloc: 33 },
         { path: 'test/b/file2', sloc: 23 },
@@ -108,6 +106,10 @@ describe('Coupling analysis tasks', function() {
         { path: 'test/target_file', sloc: 55 }
       ]));
 
+      taskFunctions = this.tasksSetup(couplingAnalysisTasks,
+        null,
+        { dateFrom: '2016-01-01', dateTo: '2016-02-28', frequency: 'monthly', targetFile: 'test/target_file' }
+      );
     });
 
     it('publishes as many reports as the given time periods with coupling information between each file and a target file', function(done) {

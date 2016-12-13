@@ -33,6 +33,8 @@ describe('javascript tasks', function() {
         ]);
 
         done();
+      }).on('error', function(err) {
+        fail(err);
       });
     });
   });
@@ -73,6 +75,8 @@ describe('javascript tasks', function() {
         ]);
 
         done();
+      }).fail(function(err) {
+        fail(err);
       });
 
       revisionStream1.push("var abs = function(a,b) {\n");
