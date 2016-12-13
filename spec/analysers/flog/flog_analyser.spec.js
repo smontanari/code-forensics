@@ -6,7 +6,7 @@ var FlogAnalyser = require_src('analysers/flog/flog_analyser'),
 describe('flog command definition', function() {
   beforeEach(function() {
     this.subject = command.Command.definitions.getDefinition('flog');
-    this.mockCheck = jasmine.createSpyObj('check', ['findExecutable', 'verifyPackage']);
+    this.mockCheck = jasmine.createSpyObj('check', ['verifyExecutable', 'verifyPackage']);
   });
 
   it('defines the "flog" command', function() {
@@ -16,7 +16,7 @@ describe('flog command definition', function() {
   it('checks the executable', function() {
     this.subject.installCheck.apply(this.mockCheck);
 
-    expect(this.mockCheck.findExecutable).toHaveBeenCalledWith('ruby', jasmine.any(String));
+    expect(this.mockCheck.verifyExecutable).toHaveBeenCalledWith('ruby', jasmine.any(String));
   });
 
   it('checks the flog gem', function() {

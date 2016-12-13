@@ -7,7 +7,7 @@ var GitAdapter = require_src('vcs_support/git/git_adapter'),
 describe('git command definition', function() {
   beforeEach(function() {
     this.subject = command.Command.definitions.getDefinition('git');
-    this.mockCheck = jasmine.createSpyObj('check', ['findExecutable', 'verifyPackage']);
+    this.mockCheck = jasmine.createSpyObj('check', ['verifyExecutable', 'verifyPackage']);
   });
 
   it('defines the "git" command', function() {
@@ -17,7 +17,7 @@ describe('git command definition', function() {
   it('checks the executable', function() {
     this.subject.installCheck.apply(this.mockCheck);
 
-    expect(this.mockCheck.findExecutable).toHaveBeenCalledWith('git', jasmine.any(String));
+    expect(this.mockCheck.verifyExecutable).toHaveBeenCalledWith('git', jasmine.any(String));
   });
 });
 

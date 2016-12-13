@@ -8,7 +8,7 @@ var CodeMaatAnalyser = require_src('analysers/code_maat/code_maat_analyser'),
 describe('codemaat command definition', function() {
   beforeEach(function() {
     this.subject = command.Command.definitions.getDefinition('codemaat');
-    this.mockCheck = jasmine.createSpyObj('check', ['findExecutable', 'verifyPackage']);
+    this.mockCheck = jasmine.createSpyObj('check', ['verifyExecutable', 'verifyPackage', 'verifyFile']);
   });
 
   it('defines the "codemaat" command', function() {
@@ -20,7 +20,8 @@ describe('codemaat command definition', function() {
   it('checks the java executable', function() {
     this.subject.installCheck.apply(this.mockCheck);
 
-    expect(this.mockCheck.findExecutable).toHaveBeenCalledWith('java', jasmine.any(String));
+    expect(this.mockCheck.verifyExecutable).toHaveBeenCalledWith('java', jasmine.any(String));
+    expect(this.mockCheck.verifyFile).toHaveBeenCalledWith(jasmine.stringMatching('code-maat-1.0-SNAPSHOT-standalone.jar'), jasmine.any(String));
   });
 });
 
@@ -58,7 +59,7 @@ describe('CodeMaatAnalyser', function() {
   };
 
   beforeEach(function() {
-    this.appConfigStub({ versionControlSystem: 'git', codeMaatOptions: { 'arg2': 'zxc', 'arg3': 'xxx' } });
+    this.appConfigStub({ versionControlSystem: 'git', codeMaat: { options: { 'arg2': 'zxc', 'arg3': 'xxx' } } });
     commandOutputStream = new stream.PassThrough();
     spyOn(command.Command, 'ensure');
     spyOn(command, 'stream').and.returnValue(commandOutputStream);
