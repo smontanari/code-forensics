@@ -3,7 +3,7 @@
   "version": "0.9.0",
   "homepage": "https://github.com/smontanari/code-forensics",
   "bugs": "https://github.com/smontanari/code-forensics/issues",
-  "license": "MIT",
+  "license": "GPL-3.0",
   "main": "lib/index.js",
   "repository": {
     "type": "git",
@@ -17,6 +17,10 @@
     "scripts"
   ],
   "bin": {},
+  "engines": {
+    "node": ">=0.10.0",
+    "npm": ">=3.0.0"
+  },
   "dependencies": {
     "JSONStream": "^1.1.4",
     "byline": "^4.2.2",
@@ -28,6 +32,7 @@
     "d3-tip": "^0.7.1",
     "del": "^2.2.2",
     "duplexer2": "^0.1.4",
+    "ecstatic": "^2.1.0",
     "escomplex": "escomplex/escomplex#fc78654e38d56d8d79c71ad8922950b8c34e6614",
     "fancy-log": "^1.2.0",
     "glob": "^7.0.6",
@@ -37,6 +42,7 @@
     "less": "^2.7.1",
     "lodash": "^4.15.0",
     "minimist": "^1.2.0",
+    "mkdirp": "^0.5.1",
     "moment": "^2.14.1",
     "multipipe": "^0.3.1",
     "multistream": "^2.1.0",
@@ -58,6 +64,7 @@
   },
   "devDependencies": {
     "eslint": "^3.4.0",
+    "gulp": "^3.9.1",
     "jasmine": "^2.5.2",
     "jasmine-spec-reporter": "^2.7.0"
   },

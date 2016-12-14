@@ -1,4 +1,5 @@
 node_modules/
-spec_files/
+test_fixtures/
 .DS_Store
 .node-version
+todo.txt
