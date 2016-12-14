@@ -13,9 +13,11 @@ This project is based on the excellent work of **Adam Tornhill** and its command
 **code-forensics** is distributed as an npm module that runs on top of [gulp](https://github.com/gulpjs/gulp). Gulp is declared as a peer dependency so recent versions of node and npm will require it to be installed separately.
 To install both packages through npm:
 
-`$ npm install [--global] gulp`
+`$ npm install code-forensics`
 
-`$ npm install [--global] code-forensics`
+`$ npm install gulp`
+
+**Note**: I strongly recommend against installing code-forensics as a global module. code-forensics requires certain packages to be at the top level of the node_modules folder in order to correctly run its internal http server and serve the pages to the browser for the visualisation part of the analysis. If code-forensics is installed as a global module such packages may conflict with already existing ones and that could cause all sorts of unpredictable issues.
 
 ## Usage
 This is a short description on how to get started with **code-forensics**.
@@ -39,7 +41,7 @@ require('code-forensics').configure(
 The only necessary configuration value is the file system path to the root directory of the version control repository to analyse.
 
 ### Run
-Depending on how the npm modules are installed (as global or local) there are different ways to execute the gulp command. Here, to simplify the examples, I will assume gulp is available on your command PATH.
+Depending on how the gulp module is installed (as global or local) there are different ways to execute the gulp command. Here, to simplify the examples, I will assume it is available on your command PATH.
 
 #### List all available tasks
 All available tasks can be printed, along with their description, by executing the following command:
