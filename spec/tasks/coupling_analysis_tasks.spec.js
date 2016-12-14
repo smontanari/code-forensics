@@ -1,3 +1,4 @@
+/*eslint-disable max-lines*/
 var _      = require('lodash'),
     Path   = require('path'),
     fs     = require('fs'),
@@ -19,7 +20,6 @@ describe('Coupling analysis tasks', function() {
 
   afterEach(function() {
     jasmine.clock().uninstall();
-    this.tasksCleanup();
   });
 
   describe('sum-of-coupling-analysis', function() {
@@ -33,6 +33,11 @@ describe('Coupling analysis tasks', function() {
         { repository: { excludePaths: ['test_invalid_file'] } },
         { dateFrom: '2015-03-01' }
       );
+    });
+
+    afterEach(function() {
+      this.clearRepo();
+      this.clearOutput();
     });
 
     it('publishes a report on the sum of coupling for each file', function(done) {
@@ -50,7 +55,7 @@ describe('Coupling analysis tasks', function() {
         ]);
 
         done();
-      }).fail(function(err) {
+      }).catch(function(err) {
         fail(err);
       });
 
@@ -110,6 +115,11 @@ describe('Coupling analysis tasks', function() {
         null,
         { dateFrom: '2016-01-01', dateTo: '2016-02-28', frequency: 'monthly', targetFile: 'test/target_file' }
       );
+    });
+
+    afterEach(function() {
+      this.clearTemp();
+      this.clearOutput();
     });
 
     it('publishes as many reports as the given time periods with coupling information between each file and a target file', function(done) {

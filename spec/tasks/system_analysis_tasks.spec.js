@@ -16,7 +16,7 @@ describe('System analysis tasks', function() {
 
   afterEach(function() {
     jasmine.clock().uninstall();
-    this.tasksCleanup();
+    this.clearOutput();
   });
 
   describe('system-evolution-analysis', function() {
@@ -141,7 +141,7 @@ describe('System analysis tasks', function() {
           });
 
           done();
-        }).fail(function(err) {
+        }).catch(function(err) {
           fail(err);
         });
 

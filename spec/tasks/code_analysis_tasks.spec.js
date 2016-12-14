@@ -4,11 +4,12 @@ var Path = require('path'),
 var codeAnalysisTasks = require_src('tasks/code_analysis_tasks');
 
 describe('Code analysis tasks', function() {
-  afterEach(function() {
-    this.tasksCleanup();
-  });
-
   describe('sloc-report', function() {
+    afterEach(function() {
+      this.clearTemp();
+      this.clearRepo();
+    });
+
     it('writes a report on the number of lines of code for each file in the repository', function(done) {
       var repoDir = this.tasksWorkingFolders.repoDir;
       var tempDir = this.tasksWorkingFolders.tempDir;

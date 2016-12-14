@@ -8,7 +8,7 @@ var rubyTasks  = require_src('tasks/complexity_analysis/ruby'),
     command    = require_src('command');
 
 describe('ruby tasks', function() {
-  var taskFunctions, repoDir, tempDir, outputDir;
+  var repoDir, tempDir, outputDir;
   beforeEach(function() {
     repoDir = this.tasksWorkingFolders.repoDir;
     tempDir = this.tasksWorkingFolders.tempDir;
@@ -17,8 +17,9 @@ describe('ruby tasks', function() {
   });
 
   describe('ruby-complexity-report', function() {
-    beforeEach(function() {
-      taskFunctions = this.tasksSetup(rubyTasks);
+    afterEach(function() {
+      this.clearRepo();
+      this.clearTemp();
     });
 
     it('writes a report on the complexity for each ruby file in the repository', function(done) {
@@ -30,6 +31,7 @@ describe('ruby tasks', function() {
         fs.writeFileSync(Path.join(repoDir, f), '');
       });
 
+      var taskFunctions = this.tasksSetup(rubyTasks);
       taskFunctions['ruby-complexity-report']()
       .on('close', function() {
         var reportContent = fs.readFileSync(Path.join(tempDir, 'ruby-complexity-report.json'));
@@ -82,12 +84,11 @@ describe('ruby tasks', function() {
       mockAdapter = jasmine.createSpyObj('vcsAdapter', ['revisions', 'showRevisionStream']);
 
       spyOn(vcsSupport, 'adapter').and.returnValue(mockAdapter);
-
-      taskFunctions = this.tasksSetup(rubyTasks, null, { dateFrom: '2015-03-01', targetFile: 'test_abs.rb' });
     });
 
     afterEach(function() {
       jasmine.clock().uninstall();
+      this.clearOutput();
     });
 
     it('publishes an analysis on the complexity trend for a given ruby file in the repository', function(done) {
@@ -108,6 +109,7 @@ describe('ruby tasks', function() {
         )
       });
 
+      var taskFunctions = this.tasksSetup(rubyTasks, null, { dateFrom: '2015-03-01', targetFile: 'test_abs.rb' });
       taskFunctions['ruby-complexity-trend-analysis']().then(function() {
         var reportContent = fs.readFileSync(Path.join(outputDir, 'd319335c98cc00b068ecd0927761ff3f3d693137', '2015-03-01_2015-10-22_complexity-trend-data.json'));
         var report = JSON.parse(reportContent.toString());
@@ -135,7 +137,7 @@ describe('ruby tasks', function() {
         });
 
         done();
-      }).fail(function(err) {
+      }).catch(function(err) {
         fail(err);
       });
 
@@ -156,6 +158,7 @@ describe('ruby tasks', function() {
         "\t18.6: main#none\n" +
         "\t 1.7: chain#linking_to          /absolute/path/test_abs.rb:8\n"
       );
+      complexityStream1.end();
 
       complexityStream2.push(
         "\t95.1: flog total\n" +
@@ -163,7 +166,6 @@ describe('ruby tasks', function() {
         "\n" +
         "\t26.2: Module::TestFile2#test_method /absolute/path/test_abs.rb:54"
       );
-      complexityStream1.end();
       complexityStream2.end();
     });
   });

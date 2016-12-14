@@ -56,7 +56,8 @@ describe('CodeMaat report tasks', function() {
   });
 
   afterEach(function() {
-    this.tasksCleanup();
+    this.clearRepo();
+    this.clearTemp();
   });
 
   assertTaskReport('writes a report on the number of revisions for each valid file', 'revisions', 'revisions-report', 'revisions-report.json');

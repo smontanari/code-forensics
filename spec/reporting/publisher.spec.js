@@ -1,5 +1,5 @@
-var fs = require('fs'),
-    Q  = require('q');
+var Q      = require('q'),
+    mkdirp = require('mkdirp');
 
 var Publisher  = require_src('reporting/publisher'),
     utils      = require_src('utils'),
@@ -9,7 +9,7 @@ describe('Publisher', function() {
   beforeEach(function() {
     jasmine.clock().install();
     jasmine.clock().mockDate(new Date('2013-10-22T13:00:00.000Z'));
-    spyOn(fs, 'mkdir');
+    spyOn(mkdirp, 'sync');
     this.context = {
       dateRange: new TimePeriod('start', 'finish'),
       outputDir: '/test/output',
@@ -31,7 +31,7 @@ describe('Publisher', function() {
 
       this.subject.addReportFile();
 
-      expect(fs.mkdir.calls.mostRecent().args[0]).toEqual('/test/output/c8c1dcae8f21797ee19a82d7958caf0aba7da1c6');
+      expect(mkdirp.sync.calls.mostRecent().args[0]).toEqual('/test/output/c8c1dcae8f21797ee19a82d7958caf0aba7da1c6');
     });
 
     describe('with no report file information', function() {

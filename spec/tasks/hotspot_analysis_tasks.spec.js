@@ -11,10 +11,14 @@ describe('Hotspot analysis tasks', function() {
 
   afterEach(function() {
     jasmine.clock().uninstall();
-    this.tasksCleanup();
   });
 
   describe('hotspot-analysis', function() {
+    afterEach(function() {
+      this.clearTemp();
+      this.clearOutput();
+    });
+
     it('publishes an analysis report on code size, complexity and revisions for each file in the repository', function(done) {
       var outputDir = this.tasksWorkingFolders.outputDir;
 
@@ -111,7 +115,7 @@ describe('Hotspot analysis tasks', function() {
           ]
         });
         done();
-      }).fail(function(err) {
+      }).catch(function(err) {
         fail(err);
       });
     });

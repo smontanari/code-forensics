@@ -15,15 +15,15 @@ describe('VCS Tasks', function() {
     spyOn(command.Command, 'ensure');
   });
 
-  afterEach(function() {
-    this.tasksCleanup();
-  });
-
   describe('when files already exist', function() {
     beforeEach(function() {
       taskFunctions = this.tasksSetup(gitTasks, null, {
         dateFrom: '2016-01-01', dateTo: '2016-02-28', frequency: 'monthly'
       });
+    });
+
+    afterEach(function() {
+      this.clearTemp();
     });
 
     var assertNoOverriding = function(adapterMethod, taskName, filenamePrefix) {
@@ -40,7 +40,7 @@ describe('VCS Tasks', function() {
           expect(logContent1.toString()).toEqual('pre-existing content');
           expect(logContent2.toString()).toEqual("log-line1\nlog-line2\nlog-line3\n");
           done();
-        }).fail(function(err) {
+        }).catch(function(err) {
           fail(err);
         });
 
@@ -69,6 +69,10 @@ describe('VCS Tasks', function() {
     });
 
     describe('vcs-log-dump', function() {
+      afterEach(function() {
+        this.clearRepo();
+      });
+
       it('writes the vcs log content for each period into the temp folder and creates a normalised copy', function(done) {
         var tempDir = this.tasksWorkingFolders.tempDir,
             repoDir = this.tasksWorkingFolders.repoDir;
@@ -133,7 +137,7 @@ describe('VCS Tasks', function() {
             "6\t8\ttest_file4\n"
           ].join("\n"));
           done();
-        }).fail(function(err) {
+        }).catch(function(err) {
           fail(err);
         });
 
@@ -183,7 +187,7 @@ describe('VCS Tasks', function() {
           expect(logContent1.toString()).toEqual("log-line1\nlog-line2\n");
           expect(logContent2.toString()).toEqual("log-line1\nlog-line2\nlog-line3\n");
           done();
-        }).fail(function(err) {
+        }).catch(function(err) {
           fail(err);
         });
 

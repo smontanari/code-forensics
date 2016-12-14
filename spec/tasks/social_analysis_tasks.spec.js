@@ -21,7 +21,6 @@ describe('Social analysis tasks', function() {
 
   afterEach(function() {
     jasmine.clock().uninstall();
-    this.tasksCleanup();
   });
 
   var assertTaskReport = function(file, content) {
@@ -62,6 +61,11 @@ describe('Social analysis tasks', function() {
       );
     });
 
+    afterEach(function() {
+      this.clearTemp();
+      this.clearOutput();
+    });
+
     it('publishes a report on the frequency of words in commit messages', function(done) {
       taskFunctions['commit-message-analysis']().then(function() {
         assertTaskReport(
@@ -83,13 +87,18 @@ describe('Social analysis tasks', function() {
           ]
         );
         done();
-      }).fail(function(err) {
+      }).catch(function(err) {
         fail(err);
       });
     });
   });
 
   describe('developer-effort-analysis', function() {
+    afterEach(function() {
+      this.clearTemp();
+      this.clearOutput();
+    });
+
     describe('when team information exists', function() {
       beforeEach(function() {
         taskFunctions = this.tasksSetup(socialAnalysisTasks,
@@ -216,7 +225,7 @@ describe('Social analysis tasks', function() {
           );
 
           done();
-        }).fail(function(err) {
+        }).catch(function(err) {
           fail(err);
         });
       });
@@ -298,7 +307,7 @@ describe('Social analysis tasks', function() {
           var teamsReport = Path.join(outputDir, '003a77e0e1ae9594f143f49d2b211269308c4489', '2016-01-01_2016-10-22_team-effort-data.json');
           expect(fs.existsSync(teamsReport)).toBeFalsy();
           done();
-        }).fail(function(err) {
+        }).catch(function(err) {
           fail(err);
         });
       });
@@ -361,6 +370,12 @@ describe('Social analysis tasks', function() {
         },
         { dateFrom: '2016-01-01', maxCoupledFiles: 2 }
       );
+    });
+
+    afterEach(function() {
+      this.clearTemp();
+      this.clearRepo();
+      this.clearOutput();
     });
 
     it('publishes a report on files with the most authors and the respective coupling between main developers', function(done) {
@@ -431,7 +446,7 @@ describe('Social analysis tasks', function() {
           }
         );
         done();
-      }).fail(function(err) {
+      }).catch(function(err) {
         fail(err);
       });
 
@@ -459,7 +474,7 @@ describe('Social analysis tasks', function() {
           ]
         );
         done();
-      }).fail(function(err) {
+      }).catch(function(err) {
         fail(err);
       });
 
@@ -502,6 +517,11 @@ describe('Social analysis tasks', function() {
         },
         { dateFrom: '2016-01-01' }
       );
+    });
+
+    afterEach(function() {
+      this.clearTemp();
+      this.clearOutput();
     });
 
     it('publishes a report on the main developer for each file ', function(done) {
@@ -585,7 +605,7 @@ describe('Social analysis tasks', function() {
           }
         );
         done();
-      }).fail(function(err) {
+      }).catch(function(err) {
         fail(err);
       });
     });

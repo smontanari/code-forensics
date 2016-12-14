@@ -5,12 +5,12 @@ var Path   = require('path'),
     _      = require('lodash');
 
 var TaskContext     = require_src('runtime/task_context'),
-    TaskDefinitions = require_src('./models/task/task_definitions'),
+    TaskDefinitions = require_src('models/task/task_definitions'),
     taskHelpers     = require_src('tasks/helpers');
 
-var TEST_TMP_DIR    = Path.resolve('./spec_files/tmp'),
-    TEST_OUTPUT_DIR = Path.resolve('./spec_files/output'),
-    TEST_REPO_DIR   = Path.resolve('./spec_files/repo_root');
+var TEST_TMP_DIR    = Path.resolve('test_fixtures/tmp'),
+    TEST_OUTPUT_DIR = Path.resolve('test_fixtures/output'),
+    TEST_REPO_DIR   = Path.resolve('test_fixtures/repo_root');
 
 process.env.NODE_ENV = 'integration-test';
 
@@ -21,8 +21,16 @@ beforeEach(function() {
     repoDir: TEST_REPO_DIR
   };
 
-  this.tasksCleanup = function() {
-    del.sync([TEST_TMP_DIR + '/*', TEST_OUTPUT_DIR + '/*', TEST_REPO_DIR + '/*']);
+  this.clearTemp = function() {
+    del.sync(TEST_TMP_DIR + '/*');
+  };
+
+  this.clearRepo = function() {
+    del.sync(TEST_REPO_DIR + '/*');
+  };
+
+  this.clearOutput = function() {
+    del.sync(TEST_OUTPUT_DIR + '/*');
   };
 
   this.tasksSetup = function(tasksFn, contextConfig, parameters) {
