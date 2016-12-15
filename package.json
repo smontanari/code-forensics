@@ -36,6 +36,7 @@
     "escomplex": "escomplex/escomplex#fc78654e38d56d8d79c71ad8922950b8c34e6614",
     "fancy-log": "^1.2.0",
     "glob": "^7.0.6",
+    "gulp": "^3.9.1",
     "http-server": "^0.9.0",
     "is-stream": "^1.0.1",
     "knockout": "^3.4.0",
@@ -59,12 +60,8 @@
     "through2-map": "^2.0.0",
     "through2-reduce": "^1.1.1"
   },
-  "peerDependencies": {
-    "gulp": "^3.9.1"
-  },
   "devDependencies": {
     "eslint": "^3.4.0",
-    "gulp": "^3.9.1",
     "jasmine": "^2.5.2",
     "jasmine-spec-reporter": "^2.7.0"
   },

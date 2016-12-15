@@ -10,14 +10,11 @@ This project is based on the excellent work of **Adam Tornhill** and its command
 * **java 8** - Required in order to run code-maat. See the [Code Maat](https://github.com/adamtornhill/code-maat) repository for more details.
 
 ## Install
-**code-forensics** is distributed as an npm module that runs on top of [gulp](https://github.com/gulpjs/gulp). Gulp is declared as a peer dependency so recent versions of node and npm will require it to be installed separately.
-To install both packages through npm:
+**code-forensics** is distributed as an nodejs module that runs on top of [gulp](https://github.com/gulpjs/gulp). It can be installed through npm:
 
 `$ npm install code-forensics`
 
-`$ npm install gulp`
-
-**Note**: I strongly recommend against installing code-forensics as a global module. code-forensics requires certain packages to be at the top level of the node_modules folder in order to correctly run its internal http server and serve the pages to the browser for the visualisation part of the analysis. If code-forensics is installed as a global module such packages may conflict with already existing ones and that could cause all sorts of unpredictable issues.
+**Note**: I strongly recommend against installing code-forensics as a global module, as it requires certain packages to be at the top level of the node_modules folder in order to correctly run its internal http server and serve the pages to the browser for the visualisation part of the analysis. If code-forensics is installed as a global module such packages may conflict with already existing ones and that could cause all sorts of unpredictable issues.
 
 ## Usage
 This is a short description on how to get started with **code-forensics**.
