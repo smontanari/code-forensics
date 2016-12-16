@@ -8,9 +8,9 @@ var logger    = require_src('log').Logger,
     appConfig = require_src('runtime/app_config');
 
 beforeEach(function() {
-  spyOn(logger, 'log');
-  spyOn(logger, 'info');
-  spyOn(logger, 'error');
+  _.each(['log', 'info', 'error', 'warn'], function(m) {
+    spyOn(logger, m);
+  });
 
   this.appConfigStub = function(config) {
     spyOn(appConfig, 'get').and.callFake(function(property) {

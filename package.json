@@ -9,7 +9,7 @@
     "type": "git",
     "url": "https://github.com/smontanari/code-forensics.git"
   },
-  "description": "A toolset for code forensics analysis",
+  "description": "A toolset for in depth code analysis",
   "author": "Silvio Montanari",
   "files": [
     "lib",

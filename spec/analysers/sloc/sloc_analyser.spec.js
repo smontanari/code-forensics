@@ -11,7 +11,7 @@ describe('SlocAnalyser', function() {
   describe('.fileAnalysis()', function() {
     beforeEach(function() {
       spyOn(fs, 'readFile').and.callFake(function(path, callback) {
-        callback(null, "line1\nline2");
+        callback(null, "line1\n#line2\n\nline3");
       });
     });
 
@@ -24,7 +24,7 @@ describe('SlocAnalyser', function() {
           report = output;
         })
         .on('end', function() {
-          expect(report).toEqual({ path: 'test/file.rb', sloc: 2 });
+          expect(report).toEqual({ path: 'test/file.rb', sourceLines: 2, totalLines: 4 });
           expect(fs.readFile).toHaveBeenCalledWith('test/file.rb', jasmine.any(Function));
           done();
         });
@@ -35,7 +35,8 @@ describe('SlocAnalyser', function() {
       it('returns a report modified by the callback', function(done) {
         var report;
 
-        this.subject.fileAnalysisStream('test/file.rb', function(report) { return { test: 'some value', result: report.sloc }; })
+        this.subject.fileAnalysisStream('test/file.rb',
+          function(report) { return { test: 'some value', result: report.sourceLines }; })
         .on('data', function(output) {
           report = output;
         })
@@ -72,11 +73,11 @@ describe('SlocAnalyser', function() {
           report = output;
         })
         .on('end', function() {
-          expect(report).toEqual({ path: 'test/file.rb', sloc: 2 });
+          expect(report).toEqual({ path: 'test/file.rb', sourceLines: 2, totalLines: 4 });
           done();
         });
 
-        inputStream.write("line1\nline2");
+        inputStream.write("line1\n#line2\n\nline3");
         inputStream.end();
       });
     });
@@ -86,8 +87,9 @@ describe('SlocAnalyser', function() {
         var inputStream = new stream.PassThrough();
         var report;
 
-        inputStream.pipe(this.subject.sourceAnalysisStream('test/file.rb', function(report) { return { test: 'some value', result: report.sloc }; }))
-        .on('data', function(output) {
+        inputStream.pipe(this.subject.sourceAnalysisStream('test/file.rb',
+          function(report) { return { test: 'some value', result: report.sourceLines }; })
+        ).on('data', function(output) {
           report = output;
         })
         .on('end', function() {
@@ -95,7 +97,7 @@ describe('SlocAnalyser', function() {
           done();
         });
 
-        inputStream.write("line1\nline2");
+        inputStream.write("line1\n#line2\n\nline3");
         inputStream.end();
       });
     });

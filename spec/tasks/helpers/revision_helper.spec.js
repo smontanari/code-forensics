@@ -19,7 +19,7 @@ describe('RevisionHelper', function() {
     });
   });
 
-  describe('.revisionComplexityStream()', function() {
+  describe('.revisionAnalysisStream()', function() {
     var analyser = {
       sourceAnalysisStream: function() {
         return map.obj(function(obj) {
@@ -40,7 +40,7 @@ describe('RevisionHelper', function() {
       it('throws an error', function() {
         var subject = this.subject;
         expect(function() {
-          subject.revisionComplexityStream(analyser);
+          subject.revisionAnalysisStream(analyser);
         }).toThrow('No revisions data found');
       });
     });
@@ -57,7 +57,7 @@ describe('RevisionHelper', function() {
         spyOn(utils.arrays, 'arrayToFnFactory').and.returnValue('revisions');
         this.mockStreamCollector.mergeAll.and.returnValue('final stream');
 
-        expect(this.subject.revisionComplexityStream(analyser)).toEqual('final stream');
+        expect(this.subject.revisionAnalysisStream(analyser)).toEqual('final stream');
 
         expect(this.mockVcs.revisions).toHaveBeenCalledWith('/test/file', 'date-range');
         expect(utils.arrays.arrayToFnFactory).toHaveBeenCalledWith(['revision1', 'revision2'], jasmine.any(Function));
@@ -73,7 +73,7 @@ describe('RevisionHelper', function() {
         var revisionStream = new stream.PassThrough({ objectMode: true });
         this.mockVcs.showRevisionStream.and.returnValue(revisionStream);
 
-        this.subject.revisionComplexityStream(analyser);
+        this.subject.revisionAnalysisStream(analyser);
         streamAnalysisFn({ revisionId: '123', date: '2014-01-31' })
           .on('data', function(obj) {
             expect(obj.revision).toEqual('123');

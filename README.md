@@ -57,6 +57,7 @@ $ gulp list-analysis-tasks
 Currently the following analysis are implemented:
 * **javascript-complexity-trend-analysis** (when javascript is enabled)
 * **ruby-complexity-trend-analysis** (when ruby is enabled)
+* **sloc-trend-analysis**
 * **hotspot-analysis**
 * **sum-of-coupling-analysis**
 * **temporal-coupling-analysis**

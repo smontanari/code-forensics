@@ -104,11 +104,11 @@ describe('Coupling analysis tasks', function() {
 
     beforeEach(function() {
       fs.writeFileSync(Path.join(this.tasksWorkingFolders.tempDir, 'sloc-report.json'), JSON.stringify([
-        { path: 'test/a/file1', sloc: 33 },
-        { path: 'test/b/file2', sloc: 23 },
-        { path: 'test/c/file3', sloc: 15 },
-        { path: 'test/d/file4', sloc: 25 },
-        { path: 'test/target_file', sloc: 55 }
+        { path: 'test/a/file1', sourceLines: 33, totalLines: 35 },
+        { path: 'test/b/file2', sourceLines: 23, totalLines: 28 },
+        { path: 'test/c/file3', sourceLines: 15, totalLines: 21 },
+        { path: 'test/d/file4', sourceLines: 25, totalLines: 35 },
+        { path: 'test/target_file', sourceLines: 55, totalLines: 62 }
       ]));
 
       taskFunctions = this.tasksSetup(couplingAnalysisTasks,
@@ -157,7 +157,8 @@ describe('Coupling analysis tasks', function() {
                       {
                         name: 'file1',
                         children: [],
-                        sloc: 33,
+                        sourceLines: 33,
+                        totalLines: 35,
                         couplingDegree: 23,
                         revisionsAvg: 12,
                         addedLines: 295,
@@ -172,7 +173,8 @@ describe('Coupling analysis tasks', function() {
                       {
                         name: 'file2',
                         children: [],
-                        sloc: 23,
+                        sourceLines: 23,
+                        totalLines: 28,
                         addedLines:  40,
                         deletedLines:  61,
                         weight: 0
@@ -185,7 +187,8 @@ describe('Coupling analysis tasks', function() {
                       {
                         name: 'file3',
                         children: [],
-                        sloc: 15,
+                        sourceLines: 15,
+                        totalLines: 21,
                         revisionsAvg: 5,
                         couplingDegree: 30,
                         addedLines:  71,
@@ -200,7 +203,8 @@ describe('Coupling analysis tasks', function() {
                       {
                         name: 'file4',
                         children: [],
-                        sloc: 25,
+                        sourceLines: 25,
+                        totalLines: 35,
                         weight: 0
                       }
                     ]
@@ -208,7 +212,8 @@ describe('Coupling analysis tasks', function() {
                   {
                     name: 'target_file',
                     children: [],
-                    sloc: 55,
+                    sourceLines: 55,
+                    totalLines: 62,
                     addedLines: 150,
                     deletedLines: 60,
                     weight: 0
@@ -232,7 +237,8 @@ describe('Coupling analysis tasks', function() {
                       {
                         name: 'file1',
                         children: [],
-                        sloc: 33,
+                        sourceLines: 33,
+                        totalLines: 35,
                         revisionsAvg: 30,
                         couplingDegree: 10,
                         addedLines: 147,
@@ -247,7 +253,8 @@ describe('Coupling analysis tasks', function() {
                       {
                         name: 'file2',
                         children: [],
-                        sloc: 23,
+                        sourceLines: 23,
+                        totalLines: 28,
                         addedLines:  19,
                         deletedLines:  6,
                         weight: 0
@@ -260,7 +267,8 @@ describe('Coupling analysis tasks', function() {
                       {
                         name: 'file3',
                         children: [],
-                        sloc: 15,
+                        sourceLines: 15,
+                        totalLines: 21,
                         weight: 0
                       }
                     ]
@@ -271,7 +279,8 @@ describe('Coupling analysis tasks', function() {
                       {
                         name: 'file4',
                         children: [],
-                        sloc: 25,
+                        sourceLines: 25,
+                        totalLines: 35,
                         revisionsAvg: 18,
                         couplingDegree: 33,
                         addedLines:  91,
@@ -283,7 +292,8 @@ describe('Coupling analysis tasks', function() {
                   {
                     name: 'target_file',
                     children: [],
-                    sloc: 55,
+                    sourceLines: 55,
+                    totalLines: 62,
                     addedLines: 50,
                     deletedLines: 10,
                     weight: 0

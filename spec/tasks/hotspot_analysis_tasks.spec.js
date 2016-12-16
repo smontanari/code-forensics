@@ -23,10 +23,10 @@ describe('Hotspot analysis tasks', function() {
       var outputDir = this.tasksWorkingFolders.outputDir;
 
       fs.writeFileSync(Path.join(this.tasksWorkingFolders.tempDir, 'sloc-report.json'), JSON.stringify([
-        { path: 'test/ruby/app/file1.rb', sloc: 33 },
-        { path: 'test/web/styles/file2.css', sloc: 23 },
-        { path: 'test/ruby/app/models/file3.rb', sloc: 15 },
-        { path: 'test/web/js/file4.js', sloc: 25 }
+        { path: 'test/ruby/app/file1.rb', sourceLines: 33, totalLines: 45 },
+        { path: 'test/web/styles/file2.css', sourceLines: 23, totalLines: 31 },
+        { path: 'test/ruby/app/models/file3.rb', sourceLines: 15, totalLines: 21 },
+        { path: 'test/web/js/file4.js', sourceLines: 25, totalLines: 35 }
       ]));
 
       fs.writeFileSync(Path.join(this.tasksWorkingFolders.tempDir, 'revisions-report.json'), JSON.stringify([
@@ -60,7 +60,8 @@ describe('Hotspot analysis tasks', function() {
                         {
                           name: 'file1.rb',
                           children: [],
-                          sloc: 33,
+                          sourceLines: 33,
+                          totalLines: 45,
                           revisions: 29,
                           totalComplexity: 12.9,
                           weight: 1
@@ -71,7 +72,8 @@ describe('Hotspot analysis tasks', function() {
                             {
                               name: 'file3.rb',
                               children: [],
-                              sloc: 15,
+                              sourceLines: 15,
+                              totalLines: 21,
                               revisions: 11,
                               totalComplexity: 18.4,
                               weight: 0.3793103448275862
@@ -91,7 +93,8 @@ describe('Hotspot analysis tasks', function() {
                         {
                           name: 'file2.css',
                           children: [],
-                          sloc: 23,
+                          sourceLines: 23,
+                          totalLines: 31,
                           revisions: 15,
                           weight: 0.5172413793103449
                         }
@@ -103,7 +106,8 @@ describe('Hotspot analysis tasks', function() {
                         {
                           name: 'file4.js',
                           children: [],
-                          sloc: 25,
+                          sourceLines: 25,
+                          totalLines: 35,
                           weight: 0
                         }
                       ]
