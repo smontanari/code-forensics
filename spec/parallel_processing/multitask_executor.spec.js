@@ -12,12 +12,27 @@ describe('MultiTaskExecutor', function() {
   });
 
   describe('when processing simple functions or simple values', function() {
-    it('completes on the values or function returned values', function(done) {
+    it('completes successfully and returns the values of every job', function(done) {
       this.subject.processAll([
         function() { return function() { return 123; }; },
         function() { return 'abc'; }
       ]).then(function(data) {
+        expect(data[0].state).toEqual('fulfilled');
+        expect(data[1].state).toEqual('fulfilled');
         expect(data[0].value).toEqual(123);
+        expect(data[1].value).toEqual('abc');
+        done();
+      });
+    });
+
+    it('completes with a job failure when a function fails', function(done) {
+      this.subject.processAll([
+        function() { return function() { throw 'something is wrong'; }; },
+        function() { return 'abc'; }
+      ]).then(function(data) {
+        expect(data[0].state).toEqual('rejected');
+        expect(data[1].state).toEqual('fulfilled');
+        expect(data[0].reason).toEqual('something is wrong');
         expect(data[1].value).toEqual('abc');
         done();
       });
@@ -25,12 +40,27 @@ describe('MultiTaskExecutor', function() {
   });
 
   describe('when processing promises or functions returning promises', function() {
-    it('completes on the fulfilled values', function(done) {
+    it('completes successfully and returns the values of every job', function(done) {
       this.subject.processAll([
         function() { return function() { return Q(123); }; },
         function() { return Q('abc'); }
       ]).then(function(data) {
+        expect(data[0].state).toEqual('fulfilled');
+        expect(data[1].state).toEqual('fulfilled');
         expect(data[0].value).toEqual(123);
+        expect(data[1].value).toEqual('abc');
+        done();
+      });
+    });
+
+    it('completes with a job failure when the factory function fails', function(done) {
+      this.subject.processAll([
+        function() { throw 'cannot return a value'; },
+        function() { return 'abc'; }
+      ]).then(function(data) {
+        expect(data[0].state).toEqual('rejected');
+        expect(data[1].state).toEqual('fulfilled');
+        expect(data[0].reason).toEqual('cannot return a value');
         expect(data[1].value).toEqual('abc');
         done();
       });
@@ -38,14 +68,34 @@ describe('MultiTaskExecutor', function() {
   });
 
   describe('when processing streams', function() {
-    it('completes on the promise created from the stream', function(done) {
-      spyOn(utils.stream, 'streamToPromise').and.returnValue(Q('test-stream'));
-      var s = new stream.Readable();
+    it('completes successfully and returns the values of every job', function(done) {
+      spyOn(utils.stream, 'streamToPromise').and.returnValues(Q('test-stream1'), Q('test-stream2'));
+      var s1 = new stream.Readable();
+      var s2 = new stream.Readable();
       this.subject.processAll([
-        function() { return s; }
+        function() { return s1; },
+        function() { return s2; }
       ]).then(function(data) {
-        expect(utils.stream.streamToPromise).toHaveBeenCalledWith(s);
-        expect(data[0].value).toEqual('test-stream');
+        expect(data[0].state).toEqual('fulfilled');
+        expect(data[1].state).toEqual('fulfilled');
+        expect(data[0].value).toEqual('test-stream1');
+        expect(data[1].value).toEqual('test-stream2');
+        done();
+      });
+    });
+
+    it('completes with a job failure when a stream fails', function(done) {
+      spyOn(utils.stream, 'streamToPromise').and.returnValues(Q('test-stream1'), Q.reject('test stream2 error'));
+      var s1 = new stream.Readable();
+      var s2 = new stream.Readable();
+      this.subject.processAll([
+        function() { return s1; },
+        function() { return s2; }
+      ]).then(function(data) {
+        expect(data[0].state).toEqual('fulfilled');
+        expect(data[1].state).toEqual('rejected');
+        expect(data[0].value).toEqual('test-stream1');
+        expect(data[1].reason).toEqual('test stream2 error');
         done();
       });
     });

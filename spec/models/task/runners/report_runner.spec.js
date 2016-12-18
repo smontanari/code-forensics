@@ -1,4 +1,5 @@
-var stream = require('stream');
+var stream = require('stream'),
+    Q      = require('q');
 
 var ReportRunner = require_src('models/task/runners/report_runner'),
     reporting    = require_src('reporting');
@@ -20,7 +21,7 @@ describe('ReportRunner', function() {
   });
 
   describe('when the output of the task function is a stream', function() {
-    it('returns a promise fulfilled after the stream is ended', function(done) {
+    it('creates the manifest after the stream is ended', function(done) {
       var output = new stream.PassThrough();
 
       new ReportRunner({
@@ -30,17 +31,37 @@ describe('ReportRunner', function() {
         done();
       });
 
-      output.push('123');
+      output.push('123'); //TODO: mock utils.streamToPromise
       output.end();
     });
   });
 
-  describe('when the output of the task function is not a stream', function() {
-    it('returns a promise fulfilled after the task function is completed', function(done) {
+  describe('when the output of the task function is a simple value', function() {
+    it('creates the manifest after the task function is completed', function(done) {
       new ReportRunner({
         taskFunction: function() { return 123; }
       }).run('test_param1', 'test_param2').then(function() {
         expect(mockPublisher.createManifest).toHaveBeenCalled();
+        done();
+      });
+    });
+  });
+
+  describe('when the output of the task function is a promise', function() {
+    it('creates the manifest after the task promise is fulfilled', function(done) {
+      new ReportRunner({
+        taskFunction: function() { return Q(123); }
+      }).run('test_param1', 'test_param2').then(function() {
+        expect(mockPublisher.createManifest).toHaveBeenCalled();
+        done();
+      });
+    });
+
+    it('does not create the manifest if the task promise is rejected', function(done) {
+      new ReportRunner({
+        taskFunction: function() { return Q.reject(); }
+      }).run('test_param1', 'test_param2').then(function() {
+        expect(mockPublisher.createManifest).not.toHaveBeenCalled();
         done();
       });
     });

@@ -52,6 +52,37 @@ describe('CodeMaatAnalyser', function() {
     commandOutputStream.end();
   };
 
+  var verifyHandleCodeMaatError = function(analysis) {
+    it('returns an empty stream when there is no output from codemaat', function(done) {
+      this.subject.on('data', function(data) {
+        expect(data).toEqual([]);
+        assertCommand(analysis);
+      })
+      .on('end', done);
+
+      stubCodeMaatReport([
+        'Invalid argument: Internal error - please report it',
+        '',
+        'This is Code Maat, a program used to collect statistics from a VCS.'
+      ]);
+    });
+  };
+
+  var verifyNoData = function(analysis, headers) {
+    it('returns an empty stream when there is no data', function(done) {
+      this.subject.on('data', function(data) {
+        expect(data).toEqual([]);
+        assertCommand(analysis);
+      })
+      .on('end', done);
+
+      stubCodeMaatReport([
+        headers,
+        ''
+      ]);
+    });
+  };
+
   var assertCommand = function(revision) {
     expect(command.stream).toHaveBeenCalledWith('codemaat', [
       { '-c': 'git2', '-l': 'test/file', '-a': revision }, { 'arg1' : 'qwe', 'arg2': 'zxc', 'arg3': 'xxx' }
@@ -68,6 +99,8 @@ describe('CodeMaatAnalyser', function() {
   describe('revisions analysis', function() {
     prepareAnalyserStream('revisions');
     verifyInstallCheck();
+    verifyHandleCodeMaatError('revisions');
+    verifyNoData('revisions', 'entity,n-revs');
 
     it('returns a stream of the revision data for each repository file', function(done) {
       this.subject.on('data', function(data) {
@@ -94,6 +127,8 @@ describe('CodeMaatAnalyser', function() {
   describe('soc analysis', function() {
     prepareAnalyserStream('soc');
     verifyInstallCheck();
+    verifyNoData('soc', 'entity,soc');
+    verifyHandleCodeMaatError('soc');
 
     it('returns a stream of the sum coupling data for each repository file', function(done) {
       this.subject.on('data', function(data) {
@@ -120,6 +155,8 @@ describe('CodeMaatAnalyser', function() {
   describe('coupling analysis', function() {
     prepareAnalyserStream('coupling');
     verifyInstallCheck();
+    verifyNoData('coupling', 'entity,coupled,degree,average-revs');
+    verifyHandleCodeMaatError('coupling');
 
     it('returns a stream of the temporal coupling data for each repository file', function(done) {
       this.subject.on('data', function(data) {
@@ -146,6 +183,8 @@ describe('CodeMaatAnalyser', function() {
   describe('authors analysis', function() {
     prepareAnalyserStream('authors');
     verifyInstallCheck();
+    verifyNoData('authors', 'entity,n-authors,n-revs');
+    verifyHandleCodeMaatError('authors');
 
     it('returns a stream of the authors data for each repository file', function(done) {
       this.subject.on('data', function(data) {
@@ -172,6 +211,8 @@ describe('CodeMaatAnalyser', function() {
   describe('entity-effort analysis', function() {
     prepareAnalyserStream('entity-effort');
     verifyInstallCheck();
+    verifyNoData('entity-effort', 'entity,author,author-revs,total-revs');
+    verifyHandleCodeMaatError('entity-effort');
 
     it('returns a stream of the entity-effort data for each repository file', function(done) {
       this.subject.on('data', function(data) {
@@ -206,6 +247,8 @@ describe('CodeMaatAnalyser', function() {
   describe('main-dev analysis', function() {
     prepareAnalyserStream('main-dev');
     verifyInstallCheck();
+    verifyNoData('main-dev', 'entity,main-dev,added,total-added,ownership');
+    verifyHandleCodeMaatError('main-dev');
 
     it('returns a stream of the main-dev data for each repository file', function(done) {
       this.subject.on('data', function(data) {
@@ -232,6 +275,8 @@ describe('CodeMaatAnalyser', function() {
   describe('entity-ownership analysis', function() {
     prepareAnalyserStream('entity-ownership');
     verifyInstallCheck();
+    verifyNoData('entity-ownership', 'entity,author,added,deleted');
+    verifyHandleCodeMaatError('entity-ownership');
 
     it('returns a stream of the entity-ownership data for each repository file', function(done) {
       this.subject.on('data', function(data) {
@@ -265,6 +310,8 @@ describe('CodeMaatAnalyser', function() {
   describe('communication analysis', function() {
     prepareAnalyserStream('communication');
     verifyInstallCheck();
+    verifyNoData('communication', 'author,peer,shared,average,strength');
+    verifyHandleCodeMaatError('communication');
 
     it('returns a stream of the communication coupling for each authors pair', function(done) {
       this.subject.on('data', function(data) {
@@ -294,6 +341,8 @@ describe('CodeMaatAnalyser', function() {
   describe('absolute churn analysis', function() {
     prepareAnalyserStream('absolute-churn');
     verifyInstallCheck();
+    verifyNoData('absolute-churn', 'date,added,deleted,commits');
+    verifyHandleCodeMaatError('absolute-churn');
 
     it('returns a stream of the absolute churn analysis', function(done) {
       this.subject.on('data', function(data) {
@@ -321,6 +370,8 @@ describe('CodeMaatAnalyser', function() {
   describe('entity churn analysis', function() {
     prepareAnalyserStream('entity-churn');
     verifyInstallCheck();
+    verifyNoData('entity-churn', 'entity,added,deleted,commits');
+    verifyHandleCodeMaatError('entity-churn');
 
     it('returns a stream of the entity churn analysis', function(done) {
       this.subject.on('data', function(data) {
