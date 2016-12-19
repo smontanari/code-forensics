@@ -107,7 +107,7 @@ The output of the command would be something similar to this:
 The analysis results can then be displayed in a word cloud diagram at the url given above.
 
 ## Compatibility
-This software is not meant to be a commercial tool, and I haven't run it in operating systems other than Mac OSX. Similarly the web pages and the diagrams may not display perfectly in every browser as I mostly perform my tests on Chrome.
+This software is not meant to be a commercial tool, hence support for various operating systems and different browsers is not a priority. In particular I can't guarantee this module would run seamlessly on Windows and for the visualisation part the D3 diagrams and the UI may not display correctly in every browser.
 
 ## License
 Copyright &copy; 2016 Silvio Montanari.
