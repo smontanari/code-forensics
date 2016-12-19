@@ -116,7 +116,7 @@ describe('GitAdapter', function() {
       ]);
 
       expect(command.run).toHaveBeenCalledWith('git',
-        ['log', '--date=iso', '--pretty=format:%h,%ad', '--after=xxx', '--before=yyy', 'test/file'], {cwd: '/root/dir'});
+        ['log', '--date=iso-strict', '--pretty=format:%h,%ad', '--after=xxx', '--before=yyy', 'test/file'], {cwd: '/root/dir'});
     });
 
     it('returns an empty list if the command output is empty', function() {
