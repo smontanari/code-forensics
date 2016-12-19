@@ -18,7 +18,6 @@ This project is based on the excellent work of **Adam Tornhill** and its command
 
 ## Usage
 This is a short description on how to get started with **code-forensics**.
-
 **Please refer to the [WIKI PAGES](https://github.com/smontanari/code-forensics/wiki) for a comprehensive documentation, advanced settings and more**.
 
 ### Minimal configuration
@@ -37,7 +36,7 @@ require('code-forensics').configure(
 ```
 The only necessary configuration value is the file system path to the root directory of the version control repository to analyse.
 
-### Run
+### Execute the analysis
 Depending on how the gulp module is installed (as global or local) there are different ways to execute the gulp command. Here, to simplify the examples, I will assume it is available on your command PATH.
 
 #### List all available tasks
@@ -76,7 +75,17 @@ $ gulp help --taskName <task-name>
 ##### Time period of analysis
 For most tasks it's possible to specify a time period for which the analysis is performed by passing the parameters *dateFrom* and *dateTo*. This is particularly useful to understand the evolution of the code in time and analyse negative or positive trends of particular metrics.
 
-### Example: perform a commit message analysis and visualise the results
+### Visualise the reports
+The results of each analysis can be displayed in the form of D3 diagrams.
+
+Start up the local http server:
+```bash
+$ gulp webserver
+```
+
+Open the browser at `http://localhost:3000/index.html` to see a list of the available reports.
+
+### Example: perform a commit message analysis
 Say we want to investigate the commit messages in our repository during the first six months of 2016. The commit-message-analysis task produces a report on the most frequently used words in the commit messages:
 ```bash
 $ gulp commit-message-analysis --dateFrom 2016-01-01 --dateTo 2016-06-30
@@ -95,12 +104,10 @@ The output of the command would be something similar to this:
 [00:13:07] Finished 'commit-message-analysis' after 62 ms
 ```
 
-Start up the local http server:
-```bash
-$ gulp webserver
-```
-
 The analysis results can then be displayed in a word cloud diagram at the url given above.
+
+## Compatibility
+This software is not meant to be a commercial tool, and I haven't run it in operating systems other than Mac OSX. Similarly the web pages and the diagrams may not display perfectly in every browser as I mostly perform my tests on Chrome.
 
 ## License
 Copyright &copy; 2016 Silvio Montanari.
