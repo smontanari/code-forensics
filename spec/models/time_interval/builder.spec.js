@@ -12,6 +12,24 @@ describe('TimePeriodBuilder', function() {
   });
 
   describe('validation', function() {
+    it('throws an error if the from date is invalid', function() {
+      expect(function() {
+        new TimePeriodBuilder('DD-MM-YYYY')
+        .from('15-14-2015')
+        .to('13-02-2014')
+        .build();
+      }).toThrowError(CFValidationError);
+    });
+
+    it('throws an error if the to date is invalid', function() {
+      expect(function() {
+        new TimePeriodBuilder('DD-MM-YYYY')
+        .from('15-04-2015')
+        .to('32-05-2014')
+        .build();
+      }).toThrowError(CFValidationError);
+    });
+
     it('throws an error if the to date is before than the from date', function() {
       expect(function() {
         new TimePeriodBuilder('DD-MM-YYYY')

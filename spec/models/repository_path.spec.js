@@ -38,6 +38,7 @@ describe('repositoryPath', function() {
 
   describe('.expand()', function() {
     it('return the expanded list of paths', function() {
+      fs.existsSync.and.returnValue(true);
       fs.statSync.and.callFake(function(name) {
         var isDir = (/folder$/).test(name);
         return { isFile: function() { return !isDir; } };
