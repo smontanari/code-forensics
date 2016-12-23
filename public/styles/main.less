@@ -9,14 +9,6 @@ body {
   font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
 }
 
-.fixed {
-  position: absolute;
-}
-
-.horizontal-wrapper {
-  overflow-x: auto;
-}
-
 .vertical-wrapper {
   overflow-y: auto;
 }
@@ -27,7 +19,8 @@ body {
 
 #container {
   margin: 0 auto;
-  width: 1180px;
+  max-width: 90%;
+  max-height: 90%;
 
   .report-info {
     margin-left: 210px;
@@ -92,6 +85,8 @@ body {
     .graph-container {
       margin-top: 10px;
       position: absolute;
+      width: 100%;
+      height: 100%;
       opacity: 0;
       z-index: -10;
       display: flex;
