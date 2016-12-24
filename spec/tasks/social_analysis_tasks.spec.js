@@ -50,7 +50,7 @@ describe('Social analysis tasks', function() {
 
       taskFunctions = this.tasksSetup(socialAnalysisTasks,
         {
-          commitMessagesFilters: [
+          commitMessageFilters: [
             /^\d+$/,
             function(w) { return w.length <= 2; },
             'and', 'after', 'before', 'very',
@@ -103,7 +103,7 @@ describe('Social analysis tasks', function() {
       beforeEach(function() {
         taskFunctions = this.tasksSetup(socialAnalysisTasks,
           {
-            teamsComposition: {
+            contributors: {
               'Team 1': ['Dev1', 'Dev2'],
               'Team 2': ['Dev3', ['Dev4', 'Alias dev 4'], 'Dev5']
             }
@@ -235,7 +235,7 @@ describe('Social analysis tasks', function() {
       beforeEach(function() {
         taskFunctions = this.tasksSetup(socialAnalysisTasks,
           {
-            teamsComposition: ['Dev1', 'Dev2', 'Dev3', ['Dev4', 'Alias dev 4'], 'Dev5']
+            contributors: ['Dev1', 'Dev2', 'Dev3', ['Dev4', 'Alias dev 4'], 'Dev5']
           },
           { dateFrom: '2016-01-01' }
         );
@@ -363,7 +363,7 @@ describe('Social analysis tasks', function() {
       taskFunctions = this.tasksSetup(socialAnalysisTasks,
         {
           repository: { excludePaths: ['test_invalid_file'] },
-          teamsComposition: {
+          contributors: {
             'Team 1': ['Dev1', 'Dev2'],
             'Team 2': ['Dev3', ['Dev4', 'Alias dev 4'], 'Dev5']
           }
@@ -509,7 +509,7 @@ describe('Social analysis tasks', function() {
 
       taskFunctions = this.tasksSetup(socialAnalysisTasks,
         {
-          teamsComposition: {
+          contributors: {
             'Team 1': ['Dev1', 'Dev2'],
             'Team 2': ['Dev3', ['Dev4', 'Alias dev 4']],
             'Ex team': ['Dev5']

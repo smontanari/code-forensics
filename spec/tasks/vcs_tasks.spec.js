@@ -59,7 +59,7 @@ describe('VCS Tasks', function() {
     beforeEach(function() {
       taskFunctions = this.tasksSetup(gitTasks, {
         repository: { excludePaths: ['test_invalid_file'] },
-        teamsComposition: {
+        contributors: {
           'Team 1': ['Developer 1', 'Developer_2'],
           'Team 2': ['Developer.3', ['Dev4', 'Alias developer 4']]
         }

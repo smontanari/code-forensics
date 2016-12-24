@@ -29,7 +29,7 @@ describe('TaskContext', function() {
   });
 
   it('initialises the developer information', function() {
-    var ctx = new TaskContext({teamsComposition: 'team-config'});
+    var ctx = new TaskContext({ contributors: 'team-config' });
 
     expect(models.DeveloperInfo).toHaveBeenCalledWith('team-config');
     expect(ctx.developerInfo).toEqual({ obj: 'test-devInfo' });
@@ -77,14 +77,14 @@ describe('TaskContext', function() {
         tempDir: '/test-temp-dir',
         outputDir: '/test-out-dir',
         architecturalBoundaries: {'test-boundary-name': 'test-boundaries'},
-        commitMessagesFilters: [/filter1/, 'filter2'],
+        commitMessageFilters: [/filter1/, 'filter2'],
         languages: ['ruby']
       }, { boundary: 'test-boundary-name', taskName: 'test-task', frequency: 'test-frequency' });
 
       expect(ctx.tempDir).toEqual('/test-temp-dir');
       expect(ctx.outputDir).toEqual('/test-out-dir');
       expect(ctx.boundaries).toEqual('test-boundaries');
-      expect(ctx.commitMessagesFilters).toEqual([/filter1/, 'filter2']);
+      expect(ctx.commitMessageFilters).toEqual([/filter1/, 'filter2']);
       expect(ctx.languages).toEqual(['ruby']);
     });
 
@@ -94,7 +94,7 @@ describe('TaskContext', function() {
       expect(ctx.tempDir).toMatch('/tmp');
       expect(ctx.outputDir).toMatch('/output');
       expect(ctx.boundaries).toBeUndefined();
-      expect(ctx.commitMessagesFilters).toBeUndefined();
+      expect(ctx.commitMessageFilters).toBeUndefined();
       expect(ctx.languages).toEqual(['javascript']);
     });
   });

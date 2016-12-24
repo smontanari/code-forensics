@@ -54,7 +54,7 @@ describe('TimeSplitter', function() {
       expect(periods[3].end.isSame(moment('2014-12-31'), 'day')).toBeTruthy();
     };
 
-    assertPeriods(new TimeSplitter(moment('2014-01-01'), moment('2015-01-01')).split('trimestrial'));
+    assertPeriods(new TimeSplitter(moment('2014-01-01'), moment('2015-01-01')).split('quarterly'));
     assertPeriods(new TimeSplitter(moment('2014-01-01'), moment('2015-01-01')).split('3m'));
   });
 
