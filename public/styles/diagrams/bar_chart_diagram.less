@@ -1,42 +1,16 @@
 .bar-chart-diagram {
+  .chart-legend-mixin;
+  .chart-axis-mixin;
+
   background-color: #F3F9FF;
 
   &#sum-of-coupling {
     padding: 0;
   }
 
-  .axis {
-    path {
-      fill: none;
-      stroke: #000000;
-      shape-rendering: crispEdges;
-    }
-
-    .tick {
-      text {
-        font-size: 10px;
-        fill: #0044ff;
-      }
-    }
-  }
-
   .bars {
     text {
       font-size: 14px;
-    }
-  }
-
-  .label {
-    fill: #0044ff;
-    font-size: large;
-    text-anchor: end;
-  }
-
-  .legend {
-    text {
-      font-size: 12px;
-      text-shadow: 0 1px 0 #FFF, 1px 0 0 #FFF, -1px 0 0 #FFF, 0 -1px 0 #FFF;
-      text-anchor: end;
     }
   }
 }

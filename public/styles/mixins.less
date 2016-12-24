@@ -1,6 +1,6 @@
 .tooltip-element-mixin(@value-color; @value-text-align: right; @label-padding: 2px; @label-font-weight: normal;) {
   .element-property {
-    color: #000;
+    color: #000000;
     display: table-row;
     .property-label {
       font-weight: @label-font-weight;
@@ -15,10 +15,10 @@
   }
 }
 
-@tooltip-border: 1px solid #000;
+@tooltip-border: 1px solid #000000;
 
-.title-element-info-tooltip(@title-color: #FFF; @title-bg-color: #4682B4; @element-value-color: #4682B4) {
-  background-color: #FFF;
+.title-element-info-tooltip(@title-color: #FFFFFF; @title-bg-color: #4682B4; @element-value-color: #4682B4) {
+  background-color: #FFFFFF;
   border-radius: 0 0 5px 5px;
   box-shadow: 4px 4px 12px rgba(0,0,0,.5);
   border-left: @tooltip-border;
@@ -49,4 +49,35 @@
   overflow: auto;
   white-space: nowrap;
   padding: 5px;
+}
+
+.chart-legend-mixin() {
+  .legend {
+    text {
+      font-size: 12px;
+      text-shadow: 0 1px 0 #FFFFFF, 1px 0 0 #FFFFFF, -1px 0 0 #FFFFFF, 0 -1px 0 #FFFFFF;
+      text-anchor: end;
+    }
+  }
+}
+
+.chart-axis-mixin() {
+  .axis {
+    path {
+      shape-rendering: crispEdges;
+    }
+
+    .tick {
+      text {
+        font-size: 10px;
+        fill: #0044FF;
+      }
+    }
+
+    .label {
+      fill: #0044FF;
+      font-size: 18px;
+      text-anchor: end;
+    }
+  }
 }

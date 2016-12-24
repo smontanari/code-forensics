@@ -1,52 +1,23 @@
+.line-mixin() {
+  .line {
+    fill: none;
+    stroke-width: 2px;
+  }
+}
+
 .line-chart-diagram {
-  background-color: #FaFaFa;
-
-  .axis-mixin() {
-    .axis {
-      path {
-        shape-rendering: crispEdges;
-      }
-      .tick {
-        text {
-          fill: #0044ff;
-        }
-      }
-
-      .label {
-        fill: #0044ff;
-        font-size: large;
-        text-anchor: end;
-      }
-    }
-  }
-
-  .line-mixin() {
-    .line {
-      fill: none;
-      stroke-width: 2px;
-    }
-  }
-
-  .legend-mixin() {
-    .legend {
-      text {
-        font-size: 12px;
-        text-shadow: 0 1px 0 #FFF, 1px 0 0 #FFF, -1px 0 0 #FFF, 0 -1px 0 #FFF;
-        text-anchor: end;
-      }
-    }
-  }
+  background-color: #FAFAFA;
 
   &#system-evolution-revisions, &#system-evolution-churn {
-    .axis-mixin;
+    .chart-axis-mixin;
     .line-mixin;
-    .legend-mixin;
+    .chart-legend-mixin;
   }
 
   &#cx-complexity, &#cx-mean, &#cx-deviation, &#cx-sloc {
-    .axis-mixin;
+    .chart-axis-mixin;
     .line-mixin;
-    .legend-mixin;
+    .chart-legend-mixin;
 
     .brush rect {
       fill-opacity: 0.1;
@@ -66,9 +37,9 @@
 
 .d3-tip {
   &.line-chart-diagram {
-    background-color: #FFF;
+    background-color: #FFFFFF;
     padding: 0px 5px 5px 5px;
-    border: 1px solid #ddd;
+    border: 1px solid #DDDDDD;
 
     transition: opacity 300ms linear;
     border-radius: 10px;
@@ -80,6 +51,6 @@
       text-align: center;
     }
 
-    .tooltip-element-mixin(#000; left; 2px 5px 2px 0; bold);
+    .tooltip-element-mixin(#000000; left; 2px 5px 2px 0; bold);
   }
 }
