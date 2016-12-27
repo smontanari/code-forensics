@@ -67,7 +67,7 @@ describe('TimeSplitter', function() {
       expect(periods[2].end.isSame(moment('2014-06-30'), 'day')).toBeTruthy();
     };
 
-    assertPeriods(new TimeSplitter(moment('2014-01-01'), moment('2014-07-01')).split('bimestrial'));
+    assertPeriods(new TimeSplitter(moment('2014-01-01'), moment('2014-07-01')).split('bimonthly'));
     assertPeriods(new TimeSplitter(moment('2014-01-01'), moment('2014-07-01')).split('2m'));
   });
 
