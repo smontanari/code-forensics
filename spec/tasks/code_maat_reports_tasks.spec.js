@@ -19,7 +19,7 @@ describe('CodeMaat report tasks', function() {
         );
 
         taskFunctions[taskName]()
-          .on('close', function() {
+          .then(function() {
             var reportContent = fs.readFileSync(Path.join(tempDir, reportFilename));
             var report = JSON.parse(reportContent.toString());
             expect(report).toEqual([
@@ -28,7 +28,8 @@ describe('CodeMaat report tasks', function() {
             ]);
 
             done();
-          }).on('error', function(err) {
+          })
+          .catch(function(err) {
             fail(err);
           });
 

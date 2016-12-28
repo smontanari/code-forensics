@@ -1,10 +1,20 @@
-var stream = require('stream'),
+var _      = require('lodash'),
+    stream = require('stream'),
     Q      = require('q');
 
 var utils             = require_src('utils'),
     MultiTaskExecutor = require_src('parallel_processing/multitask_executor');
 
 describe('MultiTaskExecutor', function() {
+  var assertSettledPromises = function(data, expectedPromises) {
+    expect(data.length).toEqual(expectedPromises.length);
+    _.each(expectedPromises, function(promise, index) {
+      expect(data[index].state).toEqual(promise.state);
+      expect(data[index].value).toEqual(promise.value);
+      expect(data[index].reason).toEqual(promise.reason);
+    });
+  };
+
   beforeEach(function() {
     this.subject = new MultiTaskExecutor({
       addJob: function(fn) { setTimeout(fn, 100); }
@@ -17,10 +27,10 @@ describe('MultiTaskExecutor', function() {
         function() { return function() { return 123; }; },
         function() { return 'abc'; }
       ]).then(function(data) {
-        expect(data[0].state).toEqual('fulfilled');
-        expect(data[1].state).toEqual('fulfilled');
-        expect(data[0].value).toEqual(123);
-        expect(data[1].value).toEqual('abc');
+        assertSettledPromises(data, [
+          { state: 'fulfilled', value: 123 },
+          { state: 'fulfilled', value: 'abc' }
+        ]);
         done();
       });
     });
@@ -30,10 +40,10 @@ describe('MultiTaskExecutor', function() {
         function() { return function() { throw 'something is wrong'; }; },
         function() { return 'abc'; }
       ]).then(function(data) {
-        expect(data[0].state).toEqual('rejected');
-        expect(data[1].state).toEqual('fulfilled');
-        expect(data[0].reason).toEqual('something is wrong');
-        expect(data[1].value).toEqual('abc');
+        assertSettledPromises(data, [
+          { state: 'rejected', reason: 'something is wrong' },
+          { state: 'fulfilled', value: 'abc' }
+        ]);
         done();
       });
     });
@@ -45,10 +55,10 @@ describe('MultiTaskExecutor', function() {
         function() { return function() { return Q(123); }; },
         function() { return Q('abc'); }
       ]).then(function(data) {
-        expect(data[0].state).toEqual('fulfilled');
-        expect(data[1].state).toEqual('fulfilled');
-        expect(data[0].value).toEqual(123);
-        expect(data[1].value).toEqual('abc');
+        assertSettledPromises(data, [
+          { state: 'fulfilled', value: 123 },
+          { state: 'fulfilled', value: 'abc' }
+        ]);
         done();
       });
     });
@@ -58,10 +68,10 @@ describe('MultiTaskExecutor', function() {
         function() { throw 'cannot return a value'; },
         function() { return 'abc'; }
       ]).then(function(data) {
-        expect(data[0].state).toEqual('rejected');
-        expect(data[1].state).toEqual('fulfilled');
-        expect(data[0].reason).toEqual('cannot return a value');
-        expect(data[1].value).toEqual('abc');
+        assertSettledPromises(data, [
+          { state: 'rejected', reason: 'cannot return a value' },
+          { state: 'fulfilled', value: 'abc' }
+        ]);
         done();
       });
     });
@@ -76,10 +86,10 @@ describe('MultiTaskExecutor', function() {
         function() { return s1; },
         function() { return s2; }
       ]).then(function(data) {
-        expect(data[0].state).toEqual('fulfilled');
-        expect(data[1].state).toEqual('fulfilled');
-        expect(data[0].value).toEqual('test-stream1');
-        expect(data[1].value).toEqual('test-stream2');
+        assertSettledPromises(data, [
+          { state: 'fulfilled', value: 'test-stream1' },
+          { state: 'fulfilled', value: 'test-stream2' }
+        ]);
         done();
       });
     });
@@ -92,10 +102,10 @@ describe('MultiTaskExecutor', function() {
         function() { return s1; },
         function() { return s2; }
       ]).then(function(data) {
-        expect(data[0].state).toEqual('fulfilled');
-        expect(data[1].state).toEqual('rejected');
-        expect(data[0].value).toEqual('test-stream1');
-        expect(data[1].reason).toEqual('test stream2 error');
+        assertSettledPromises(data, [
+          { state: 'fulfilled', value: 'test-stream1' },
+          { state: 'rejected', reason: 'test stream2 error' }
+        ]);
         done();
       });
     });
