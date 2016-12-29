@@ -33,7 +33,7 @@ describe('Task', function() {
         parameters: [{ name: 'param1', required: true }, { name: 'param2' }, { name: 'param3' }]
       }, ['test-dep1', 'test-dep2'], 'testFunction');
 
-      assertTask(task, 'test task description', ['test-dep1', 'test-dep2'], 'testFunction', 'gulp test-task --param1 <param1> [--param2 <param2>] [--param3 <param3>]');
+      assertTask(task, 'test task description', ['test-dep1', 'test-dep2'], 'testFunction', 'gulp test-task --param1=<param1> [--param2=<param2>] [--param3=<param3>]');
     });
   });
 
@@ -43,7 +43,7 @@ describe('Task', function() {
         parameters: [{ name: 'param1', required: true }, { name: 'param2' }, { name: 'param3' }]
       }, ['test-dep1', 'test-dep2'], 'testFunction');
 
-      assertTask(task, 'No description available', ['test-dep1', 'test-dep2'], 'testFunction', 'gulp test-task --param1 <param1> [--param2 <param2>] [--param3 <param3>]');
+      assertTask(task, 'No description available', ['test-dep1', 'test-dep2'], 'testFunction', 'gulp test-task --param1=<param1> [--param2=<param2>] [--param3=<param3>]');
     });
   });
 
