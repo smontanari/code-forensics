@@ -1,4 +1,4 @@
-var DeveloperInfo   = require_src('models/developer_info'),
+var DeveloperInfo     = require_src('models/developer_info'),
     CFValidationError = require_src('models/validation_error');
 
 describe('DeveloperInfo', function() {

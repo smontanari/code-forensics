@@ -1,9 +1,9 @@
 var fs   = require('fs'),
     glob = require("glob");
 
-var Repository      = require_src('models/repository'),
-    repositoryPath  = require_src('models/repository_path'),
-    languages       = require_src('models/language_definitions'),
+var Repository        = require_src('models/repository'),
+    repositoryPath    = require_src('models/repository_path'),
+    languages         = require_src('models/language_definitions'),
     CFValidationError = require_src('models/validation_error');
 
 describe('Repository', function() {

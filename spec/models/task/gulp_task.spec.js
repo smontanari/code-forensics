@@ -1,4 +1,4 @@
-var Task            = require_src('models/task/gulp_task'),
+var Task              = require_src('models/task/gulp_task'),
     CFValidationError = require_src('models/validation_error');
 
 describe('Task', function() {

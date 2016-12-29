@@ -4,7 +4,7 @@ var httpServer = require('http-server/lib/http-server'),
     chalk      = require('chalk'),
     Path       = require('path');
 
-var args = require('minimist')(process.argv.slice(2));
+var args   = require('minimist')(process.argv.slice(2));
 var server = require(Path.resolve(__dirname, '../lib/server'));
 
 var host = '127.0.0.1';
