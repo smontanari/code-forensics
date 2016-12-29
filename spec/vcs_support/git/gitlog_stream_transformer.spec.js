@@ -29,6 +29,7 @@ describe('GitLogNormaliser', function() {
         .on('end', function() {
           expect(result).toEqual([
             '--98b656f--2016-10-31--Developer 1',
+            '--f7633f6--2016-10-31--Developer 3',
             '10  0 test/file1.yml.erb',
             '',
             '--6ff89bc--2016-10-31--Developer_2',
@@ -45,6 +46,7 @@ describe('GitLogNormaliser', function() {
 
       var logLines = [
         '--98b656f--2016-10-31--Developer 1',
+        '--f7633f6--2016-10-31--Developer 3',
         '10  0 test/file1.yml.erb',
         '',
         '--6ff89bc--2016-10-31--Developer_2',
@@ -86,6 +88,8 @@ describe('GitLogNormaliser', function() {
         .on('end', function() {
           expect(result).toEqual([
             '--98b656f--2016-10-31--Developer 1',
+            "1\t17\ttest/some/file123.rb",
+            "42\t0\ttest/another/file456.rb",
             "10\t0\ttest/file1.yml.erb",
             '',
             '--6ff89bc--2016-10-31--Developer_2',
@@ -100,6 +104,8 @@ describe('GitLogNormaliser', function() {
 
       var logLines = [
         '--98b656f--2016-10-31--Developer 1',
+        "1\t17\ttest/some/file123.rb",
+        "42\t0\ttest/another/file456.rb",
         "10\t0\ttest/file1.yml.erb",
         '',
         '--6ff89bc--2016-10-31--Developer_2',

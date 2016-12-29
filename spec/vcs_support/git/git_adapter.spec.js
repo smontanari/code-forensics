@@ -60,7 +60,7 @@ describe('GitAdapter', function() {
         });
 
       expect(command.stream).toHaveBeenCalledWith('git',
-          ['log', '--all', '-M', '-C', '--numstat', '--date=short', '--no-renames', '--pretty=format:--%h--%ad--%an', '--after=xxx', '--before=yyy'], {cwd: '/root/dir'});
+          ['log', '--all', '--numstat', '--date=short', '--no-renames', '--pretty=format:--%h--%ad--%an', '--after=xxx', '--before=yyy'], {cwd: '/root/dir'});
 
       var logLines = [
         '--98b656f--2016-10-31--Developer 1',

@@ -162,11 +162,11 @@ describe('utils.stream', function() {
     });
   });
 
-  describe('.streamToArray()', function() {
+  describe('.objectStreamToArray()', function() {
     it('collects all stream chunks into an array', function(done) {
       var readable = new stream.PassThrough();
 
-      streamUtils.streamToArray(readable).then(function(data) {
+      streamUtils.objectStreamToArray(readable).then(function(data) {
         expect(data.join(' ')).toEqual('not many things');
         done();
       });
@@ -180,7 +180,7 @@ describe('utils.stream', function() {
     it('fails if the stream emits an error', function(done) {
       var readable = new stream.PassThrough();
 
-      streamUtils.streamToArray(readable).catch(function(err) {
+      streamUtils.objectStreamToArray(readable).catch(function(err) {
         expect(err.message).toEqual('Something went wrong');
         done();
       });
