@@ -1,4 +1,5 @@
-var _ = require('lodash');
+var _      = require('lodash'),
+    moment = require('moment');
 
 var TaskContext = require_src('runtime/task_context'),
     models      = require_src('models');
@@ -12,8 +13,8 @@ describe('TaskContext', function() {
       mockPeriodBuilder[fn] = jasmine.createSpy().and.returnValue(mockPeriodBuilder);
     });
     mockPeriodBuilder.build = jasmine.createSpy().and.returnValue([
-      {startDate: 'date1', endDate: 'date2'},
-      {startDate: 'date3', endDate: 'date4'}
+      new models.TimePeriod({ start: moment('2014-03-01'), end: moment('2014-07-31') }, 'YYYY-MM'),
+      new models.TimePeriod({ start: moment('2014-08-01'), end: moment('2014-12-31') }, 'YYYY-MM')
     ]);
 
     spyOn(models, 'TimeIntervalBuilder').and.returnValue(mockPeriodBuilder);
@@ -37,29 +38,28 @@ describe('TaskContext', function() {
 
   describe('time periods configuration', function() {
     it('creates the time periods and a date range with a given date format', function() {
-      var ctx = new TaskContext({ dateFormat: 'YYYY' }, { dateFrom: 'test-date1', dateTo: 'test-date2', frequency: 'test-frequency' });
+      var ctx = new TaskContext({ dateFormat: 'YYYY-MM' }, { dateFrom: 'test-date1', dateTo: 'test-date2', timeSplit: 'test-timeSplit' });
 
-      expect(ctx.timePeriods).toEqual([
-        {startDate: 'date1', endDate: 'date2'},
-        {startDate: 'date3', endDate: 'date4'}
-      ]);
+      expect(ctx.timePeriods.length).toEqual(2);
+      expect(ctx.timePeriods[0].toString()).toEqual('2014-03_2014-07');
+      expect(ctx.timePeriods[1].toString()).toEqual('2014-08_2014-12');
 
-      expect(ctx.dateRange.toString()).toEqual('date1_date4');
+      expect(ctx.dateRange.toString()).toEqual('2014-03_2014-12');
 
-      expect(models.TimeIntervalBuilder).toHaveBeenCalledWith('YYYY');
+      expect(models.TimeIntervalBuilder).toHaveBeenCalledWith('YYYY-MM');
       expect(mockPeriodBuilder.from).toHaveBeenCalledWith('test-date1');
       expect(mockPeriodBuilder.to).toHaveBeenCalledWith('test-date2');
-      expect(mockPeriodBuilder.split).toHaveBeenCalledWith('test-frequency');
+      expect(mockPeriodBuilder.split).toHaveBeenCalledWith('test-timeSplit');
     });
+
     it('creates the time periods and a date range with the default date format', function() {
-      var ctx = new TaskContext(undefined, { dateFrom: 'test-date1', dateTo: 'test-date2', frequency: 'test-frequency' });
+      var ctx = new TaskContext(undefined, { dateFrom: 'test-date1', dateTo: 'test-date2', timeSplit: 'test-timeSplit' });
 
-      expect(ctx.timePeriods).toEqual([
-        {startDate: 'date1', endDate: 'date2'},
-        {startDate: 'date3', endDate: 'date4'}
-      ]);
+      expect(ctx.timePeriods.length).toEqual(2);
+      expect(ctx.timePeriods[0].toString()).toEqual('2014-03_2014-07');
+      expect(ctx.timePeriods[1].toString()).toEqual('2014-08_2014-12');
 
-      expect(ctx.dateRange.toString()).toEqual('date1_date4');
+      expect(ctx.dateRange.toString()).toEqual('2014-03-01_2014-12-31');
 
       expect(models.TimeIntervalBuilder).toHaveBeenCalledWith('YYYY-MM-DD');
     });
@@ -79,7 +79,7 @@ describe('TaskContext', function() {
         architecturalBoundaries: {'test-boundary-name': 'test-boundaries'},
         commitMessageFilters: [/filter1/, 'filter2'],
         languages: ['ruby']
-      }, { boundary: 'test-boundary-name', taskName: 'test-task', frequency: 'test-frequency' });
+      }, { boundary: 'test-boundary-name', taskName: 'test-task', timeSplit: 'test-timeSplit' });
 
       expect(ctx.tempDir).toEqual('/test-temp-dir');
       expect(ctx.outputDir).toEqual('/test-out-dir');
@@ -89,7 +89,7 @@ describe('TaskContext', function() {
     });
 
     it('initialises properties from default configuration', function() {
-      var ctx = new TaskContext({}, { boundary: 'test-boundary-name', frequency: 'test-frequency' });
+      var ctx = new TaskContext({}, { boundary: 'test-boundary-name', timeSplit: 'test-timeSplit' });
 
       expect(ctx.tempDir).toMatch('/tmp');
       expect(ctx.outputDir).toMatch('/output');

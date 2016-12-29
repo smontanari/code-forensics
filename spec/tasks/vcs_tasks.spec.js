@@ -18,7 +18,7 @@ describe('VCS Tasks', function() {
   describe('when files already exist', function() {
     beforeEach(function() {
       taskFunctions = this.tasksSetup(gitTasks, null, {
-        dateFrom: '2016-01-01', dateTo: '2016-02-28', frequency: 'monthly'
+        dateFrom: '2016-01-01', dateTo: '2016-02-28', timeSplit: 'eom'
       });
     });
 
@@ -64,7 +64,7 @@ describe('VCS Tasks', function() {
           'Team 2': ['Developer.3', ['Dev4', 'Alias developer 4']]
         }
       }, {
-        dateFrom: '2016-03-01', dateTo: '2016-04-30', frequency: 'monthly'
+        dateFrom: '2016-03-01', dateTo: '2016-04-30', timeSplit: 'eom'
       });
     });
 

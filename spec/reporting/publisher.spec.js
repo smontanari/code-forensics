@@ -1,4 +1,5 @@
 var Q      = require('q'),
+    moment = require('moment'),
     mkdirp = require('mkdirp');
 
 var Publisher  = require_src('reporting/publisher'),
@@ -11,7 +12,7 @@ describe('Publisher', function() {
     jasmine.clock().mockDate(new Date('2013-10-22T13:00:00.000Z'));
     spyOn(mkdirp, 'sync');
     this.context = {
-      dateRange: new TimePeriod('start', 'finish'),
+      dateRange: new TimePeriod({ start: moment('2012-03-01'), end: moment('2012-07-31') }, 'YYYY-MM'),
       outputDir: '/test/output',
       parameters: {
         param1: 'test_param1',
@@ -54,15 +55,15 @@ describe('Publisher', function() {
         it('returns the full path to the file corresponding to the date range', function() {
           var filepath = this.subject.addReportFile();
 
-          expect(filepath).toEqual('/test/output/c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/start_finish_test-file.json');
+          expect(filepath).toEqual('/test/output/c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/2012-03_2012-07_test-file.json');
         });
       });
 
       describe('with a given time period', function() {
         it('returns the full path to the file corresponding to the time period', function() {
-          var filepath = this.subject.addReportFile(new TimePeriod('begin', 'end'));
+          var filepath = this.subject.addReportFile(new TimePeriod({ start: moment('2012-05-01'), end: moment('2012-05-31') }, 'YYYY-MM'));
 
-          expect(filepath).toEqual('/test/output/c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/begin_end_test-file.json');
+          expect(filepath).toEqual('/test/output/c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/2012-05_2012-05_test-file.json');
         });
       });
 
@@ -88,15 +89,15 @@ describe('Publisher', function() {
         it('returns the full path to the file corresponding to the date range', function() {
           var filepath = this.subject.addReportFileForType('report-type1');
 
-          expect(filepath).toEqual('/test/output/c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/start_finish_test-file1.json');
+          expect(filepath).toEqual('/test/output/c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/2012-03_2012-07_test-file1.json');
         });
       });
 
       describe('with a given time period', function() {
         it('returns the full path to the file corresponding to the time period', function() {
-          var filepath = this.subject.addReportFileForType('report-type2', new TimePeriod('begin', 'end'));
+          var filepath = this.subject.addReportFileForType('report-type2', new TimePeriod({ start: moment('2012-03-01'), end: moment('2012-05-31') }, 'YYYY-MM'));
 
-          expect(filepath).toEqual('/test/output/c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/begin_end_test-file2.json');
+          expect(filepath).toEqual('/test/output/c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/2012-03_2012-05_test-file2.json');
         });
       });
 
@@ -117,7 +118,7 @@ describe('Publisher', function() {
           reportName: 'test-report',
           reportFile: 'test-file.json'
         }, this.context);
-        this.subject.addReportFile(new TimePeriod('p1Start', 'p1End'));
+        this.subject.addReportFile(new TimePeriod({ start: moment('2012-04-01'), end: moment('2012-05-31') }, 'YYYY-MM'));
       });
 
       it('creates a manifest file', function(done) {
@@ -127,9 +128,9 @@ describe('Publisher', function() {
           expect(manifest.reportName).toEqual('test-report');
           expect(manifest.taskName).toEqual('test-task');
           expect(manifest.time).toEqual('2013-10-22T13:00:00.000Z');
-          expect(manifest.dateRange).toEqual('start_finish');
+          expect(manifest.dateRange).toEqual('2012-03_2012-07');
           expect(manifest.dataFiles).toEqual([
-            { fileType: undefined, timePeriod: 'p1Start_p1End', fileUrl: 'c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/p1Start_p1End_test-file.json'},
+            { fileType: undefined, timePeriod: '2012-04_2012-05', fileUrl: 'c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/2012-04_2012-05_test-file.json'},
           ]);
 
           done();
@@ -144,7 +145,7 @@ describe('Publisher', function() {
           name: 'test-task',
           reportFile: 'test-file.json'
         }, this.context);
-        this.subject.addReportFile(new TimePeriod('p1Start', 'p1End'));
+        this.subject.addReportFile(new TimePeriod({ start: moment('2012-04-01'), end: moment('2012-05-31') }, 'YYYY-MM'));
       });
 
       it('creates a manifest file', function(done) {
@@ -154,9 +155,9 @@ describe('Publisher', function() {
           expect(manifest.reportName).toEqual('test-task');
           expect(manifest.taskName).toEqual('test-task');
           expect(manifest.time).toEqual('2013-10-22T13:00:00.000Z');
-          expect(manifest.dateRange).toEqual('start_finish');
+          expect(manifest.dateRange).toEqual('2012-03_2012-07');
           expect(manifest.dataFiles).toEqual([
-            { fileType: undefined, timePeriod: 'p1Start_p1End', fileUrl: 'c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/p1Start_p1End_test-file.json'},
+            { fileType: undefined, timePeriod: '2012-04_2012-05', fileUrl: 'c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/2012-04_2012-05_test-file.json'},
           ]);
 
           done();
@@ -171,8 +172,8 @@ describe('Publisher', function() {
           name: 'test-task',
           reportFile: 'test-file.json'
         }, this.context);
-        this.subject.addReportFile(new TimePeriod('p2Start', 'p2End'));
-        this.subject.addReportFile(new TimePeriod('p1Start', 'p1End'));
+        this.subject.addReportFile(new TimePeriod({ start: moment('2012-06-01'), end: moment('2012-07-31') }, 'YYYY-MM'));
+        this.subject.addReportFile(new TimePeriod({ start: moment('2012-04-01'), end: moment('2012-05-31') }, 'YYYY-MM'));
       });
 
       it('creates a manifest file', function(done) {
@@ -181,10 +182,10 @@ describe('Publisher', function() {
           expect(manifest.id).toEqual('c8c1dcae8f21797ee19a82d7958caf0aba7da1c6');
           expect(manifest.taskName).toEqual('test-task');
           expect(manifest.time).toEqual('2013-10-22T13:00:00.000Z');
-          expect(manifest.dateRange).toEqual('start_finish');
+          expect(manifest.dateRange).toEqual('2012-03_2012-07');
           expect(manifest.dataFiles).toEqual([
-            { fileType: undefined, timePeriod: 'p1Start_p1End', fileUrl: 'c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/p1Start_p1End_test-file.json'},
-            { fileType: undefined, timePeriod: 'p2Start_p2End', fileUrl: 'c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/p2Start_p2End_test-file.json'}
+            { fileType: undefined, timePeriod: '2012-04_2012-05', fileUrl: 'c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/2012-04_2012-05_test-file.json'},
+            { fileType: undefined, timePeriod: '2012-06_2012-07', fileUrl: 'c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/2012-06_2012-07_test-file.json'}
           ]);
 
           done();
@@ -202,8 +203,8 @@ describe('Publisher', function() {
             'report-type2': 'test-file2.json'
           }
         }, this.context);
-        this.subject.addReportFileForType('report-type2', new TimePeriod('p2Start', 'p2End'));
-        this.subject.addReportFileForType('report-type1', new TimePeriod('p1Start', 'p1End'));
+        this.subject.addReportFileForType('report-type2', new TimePeriod({ start: moment('2012-06-01'), end: moment('2012-07-31') }, 'YYYY-MM'));
+        this.subject.addReportFileForType('report-type1', new TimePeriod({ start: moment('2012-04-01'), end: moment('2012-05-31') }, 'YYYY-MM'));
       });
 
       it('creates a manifest file', function(done) {
@@ -212,10 +213,10 @@ describe('Publisher', function() {
           expect(manifest.id).toEqual('c8c1dcae8f21797ee19a82d7958caf0aba7da1c6');
           expect(manifest.taskName).toEqual('test-task');
           expect(manifest.time).toEqual('2013-10-22T13:00:00.000Z');
-          expect(manifest.dateRange).toEqual('start_finish');
+          expect(manifest.dateRange).toEqual('2012-03_2012-07');
           expect(manifest.dataFiles).toEqual([
-            { fileType: 'report-type1', timePeriod: 'p1Start_p1End', fileUrl: 'c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/p1Start_p1End_test-file1.json'},
-            { fileType: 'report-type2', timePeriod: 'p2Start_p2End', fileUrl: 'c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/p2Start_p2End_test-file2.json'}
+            { fileType: 'report-type1', timePeriod: '2012-04_2012-05', fileUrl: 'c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/2012-04_2012-05_test-file1.json'},
+            { fileType: 'report-type2', timePeriod: '2012-06_2012-07', fileUrl: 'c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/2012-06_2012-07_test-file2.json'}
           ]);
 
           done();

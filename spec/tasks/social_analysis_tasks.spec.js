@@ -57,7 +57,7 @@ describe('Social analysis tasks', function() {
             /^xxx-/
           ]
         },
-        { dateFrom: '2016-01-01', dateTo: '2016-02-28', frequency: 'monthly', minWordCount: 2 }
+        { dateFrom: '2016-01-01', dateTo: '2016-02-28', timeSplit: 'eom', minWordCount: 2 }
       );
     });
 

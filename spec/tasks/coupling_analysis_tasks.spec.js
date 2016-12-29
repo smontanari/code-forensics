@@ -113,7 +113,7 @@ describe('Coupling analysis tasks', function() {
 
       taskFunctions = this.tasksSetup(couplingAnalysisTasks,
         null,
-        { dateFrom: '2016-01-01', dateTo: '2016-02-28', frequency: 'monthly', targetFile: 'test/target_file' }
+        { dateFrom: '2016-01-01', dateTo: '2016-02-28', timeSplit: 'eom', targetFile: 'test/target_file' }
       );
     });
 

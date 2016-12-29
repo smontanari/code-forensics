@@ -159,7 +159,7 @@ describe('System analysis tasks', function() {
     describe('with no boundary parameter', function() {
       testAnalysis(
         'publishes a revisions report and a churn report with data aggregated for all files',
-        { dateFrom: '2016-01-01', dateTo: '2016-02-28', frequency: 'monthly' },
+        { dateFrom: '2016-01-01', dateTo: '2016-02-28', timeSplit: 'eom' },
         revisionsAnalysisStreams.concat(churnAnalysisStreams),
         [
           {
@@ -183,7 +183,7 @@ describe('System analysis tasks', function() {
     describe('with a boundary parameter', function() {
       testAnalysis(
         'publishes a revisions report, a code churn report and a coupling report for each architectural layer of the system',
-        { dateFrom: '2016-01-01', dateTo: '2016-02-28', frequency: 'monthly', boundary: 'test_boundary' },
+        { dateFrom: '2016-01-01', dateTo: '2016-02-28', timeSplit: 'eom', boundary: 'test_boundary' },
         revisionsAnalysisStreams.concat(churnAnalysisStreams).concat(couplingAnalysisStreams),
         [
           { fileName: 'system-revisions-data.json', data: revisionsAnalysisResults },

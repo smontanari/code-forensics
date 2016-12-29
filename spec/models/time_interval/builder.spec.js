@@ -41,12 +41,15 @@ describe('TimePeriodBuilder', function() {
   });
 
   describe('with no start and end date given', function() {
-    it('returns an empty array of time periods', function() {
+    it('returns an array of one time period of one day', function() {
       var periods = new TimePeriodBuilder('DD-MM-YYYY')
-        .split('monthly')
+        .split('eom')
         .build();
 
-      expect(periods.length).toEqual(0);
+      expect(periods.length).toEqual(1);
+      expect(periods[0].startDate.toISOString()).toEqual('2015-09-22T14:00:00.000Z');
+      expect(periods[0].endDate.toISOString()).toEqual('2015-09-23T13:59:59.999Z');
+      expect(periods[0].toString()).toEqual('23-09-2015_23-09-2015');
     });
   });
 
@@ -54,7 +57,7 @@ describe('TimePeriodBuilder', function() {
     it('returns an array of time periods ending with the current date', function() {
       var periods = new TimePeriodBuilder('DD-MM-YYYY')
         .from('15-04-2015')
-        .split('monthly')
+        .split('eom')
         .build();
 
       expect(periods.length).toEqual(6);
@@ -67,7 +70,7 @@ describe('TimePeriodBuilder', function() {
     });
   });
 
-  describe('with no split frequency given', function() {
+  describe('with no time split given', function() {
     it('returns an array of one time period', function() {
       var periods = new TimePeriodBuilder('DD-MM-YYYY')
         .from('15-04-2015')
@@ -75,6 +78,8 @@ describe('TimePeriodBuilder', function() {
         .build();
 
       expect(periods.length).toEqual(1);
+      expect(periods[0].startDate.toISOString()).toEqual('2015-04-14T14:00:00.000Z');
+      expect(periods[0].endDate.toISOString()).toEqual('2015-05-19T13:59:59.999Z');
       expect(periods[0].toString()).toEqual('15-04-2015_19-05-2015');
     });
   });
@@ -83,17 +88,16 @@ describe('TimePeriodBuilder', function() {
     it('returns an array of time periods', function() {
       var periods = new TimePeriodBuilder('DD-MM-YYYY')
         .from('15-04-2015')
-        .to('19-05-2015')
-        .split('weekly')
+        .to('18-05-2015')
+        .split('2w')
         .build();
 
-      expect(periods.length).toEqual(6);
-      expect(periods[0].toString()).toEqual('15-04-2015_18-04-2015');
-      expect(periods[1].toString()).toEqual('19-04-2015_25-04-2015');
-      expect(periods[2].toString()).toEqual('26-04-2015_02-05-2015');
-      expect(periods[3].toString()).toEqual('03-05-2015_09-05-2015');
-      expect(periods[4].toString()).toEqual('10-05-2015_16-05-2015');
-      expect(periods[5].toString()).toEqual('17-05-2015_19-05-2015');
+      expect(periods.length).toEqual(3);
+      expect(periods[0].startDate.toISOString()).toEqual('2015-04-14T14:00:00.000Z');
+      expect(periods[0].toString()).toEqual('15-04-2015_28-04-2015');
+      expect(periods[1].toString()).toEqual('29-04-2015_12-05-2015');
+      expect(periods[2].toString()).toEqual('13-05-2015_18-05-2015');
+      expect(periods[2].endDate.toISOString()).toEqual('2015-05-18T13:59:59.999Z');
     });
   });
 });

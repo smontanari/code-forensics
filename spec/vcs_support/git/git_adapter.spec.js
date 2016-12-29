@@ -1,7 +1,9 @@
 var _      = require('lodash'),
+    moment = require('moment'),
     stream = require('stream');
 
 var GitAdapter = require_src('vcs_support/git/git_adapter'),
+    TimePeriod = require_src('models/time_interval/time_period'),
     command    = require_src('command');
 
 describe('git command definition', function() {
@@ -26,6 +28,9 @@ describe('GitAdapter', function() {
     spyOn(command.Command, 'ensure');
 
     this.subject = new GitAdapter({ rootPath: '/root/dir' });
+    this.timePeriod = new TimePeriod({
+      start: moment('2015-08-22T14:51:42.123Z'), end: moment('2015-10-12T11:10:06.456Z')
+    });
   });
 
   it('ensures the git command is installed', function() {
@@ -38,7 +43,7 @@ describe('GitAdapter', function() {
       spyOn(command, 'stream').and.returnValue(logStream);
 
       var result = '';
-      this.subject.logStream({ startDate: 'xxx', endDate: 'yyy' })
+      this.subject.logStream(this.timePeriod)
         .on('data', function(chunk) {
           result += chunk.toString();
         })
@@ -60,7 +65,7 @@ describe('GitAdapter', function() {
         });
 
       expect(command.stream).toHaveBeenCalledWith('git',
-          ['log', '--all', '--numstat', '--date=short', '--no-renames', '--pretty=format:--%h--%ad--%an', '--after=xxx', '--before=yyy'], {cwd: '/root/dir'});
+          ['log', '--all', '--numstat', '--date=short', '--no-renames', '--pretty=format:--%h--%ad--%an', '--after=2015-08-22T14:51:42.123Z', '--before=2015-10-12T11:10:06.456Z'], {cwd: '/root/dir'});
 
       var logLines = [
         '--98b656f--2016-10-31--Developer 1',
@@ -84,11 +89,11 @@ describe('GitAdapter', function() {
   describe('.commitMessagesStream()', function() {
     it('returns the git commit messages as a stream', function() {
       spyOn(command, 'stream').and.returnValue('output-stream');
-      var output = this.subject.commitMessagesStream({ startDate: 'xxx', endDate: 'yyy' });
+      var output = this.subject.commitMessagesStream(this.timePeriod);
 
       expect(output).toEqual('output-stream');
       expect(command.stream).toHaveBeenCalledWith('git',
-        ['log', '--date=short', '--pretty=format:%s', '--after=xxx', '--before=yyy'], {cwd: '/root/dir'});
+        ['log', '--date=short', '--pretty=format:%s', '--after=2015-08-22T14:51:42.123Z', '--before=2015-10-12T11:10:06.456Z'], {cwd: '/root/dir'});
     });
   });
 
@@ -107,7 +112,7 @@ describe('GitAdapter', function() {
       spyOn(command, 'run').and.returnValue(new Buffer(
         '123,test-date1\n456,test-date2\n789,test-date3\n'
       ));
-      var revisions = this.subject.revisions('test/file', { startDate: 'xxx', endDate: 'yyy' });
+      var revisions = this.subject.revisions('test/file', this.timePeriod);
 
       expect(revisions).toEqual([
         { revisionId: '123', date: 'test-date1' },
@@ -116,12 +121,12 @@ describe('GitAdapter', function() {
       ]);
 
       expect(command.run).toHaveBeenCalledWith('git',
-        ['log', '--date=iso-strict', '--pretty=format:%h,%ad', '--after=xxx', '--before=yyy', 'test/file'], {cwd: '/root/dir'});
+        ['log', '--date=iso-strict', '--pretty=format:%h,%ad', '--after=2015-08-22T14:51:42.123Z', '--before=2015-10-12T11:10:06.456Z', 'test/file'], {cwd: '/root/dir'});
     });
 
     it('returns an empty list if the command output is empty', function() {
       spyOn(command, 'run').and.returnValue(new Buffer("\n"));
-      var revisions = this.subject.revisions('test/file', { startDate: 'xxx', endDate: 'yyy' });
+      var revisions = this.subject.revisions('test/file', this.timePeriod);
 
       expect(revisions).toEqual([]);
     });
