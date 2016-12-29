@@ -18,7 +18,8 @@ This project is based on the excellent work of **Adam Tornhill** and his command
 
 ## Usage
 This is a short description on how to get started with **code-forensics**.
-**Please refer to the [WIKI PAGES](https://github.com/smontanari/code-forensics/wiki) for a comprehensive documentation, advanced settings and more**.
+
+PLEASE REFER TO THE [WIKI PAGES](https://github.com/smontanari/code-forensics/wiki) FOR A MORE COMPREHENSIVE DOCUMENTATION.
 
 ### Minimal configuration
 code-forensics runs as a set of gulp tasks, therefore it requires a `gulpfile.js` to bootstrap gulp, however there is no need to know the task declaration syntax, as all the necessary tasks are defined inside code-forensics.
@@ -69,7 +70,7 @@ Currently the following analysis are implemented:
 #### Task parameters
 Each task may require additional or optional parameters in order to produce a particular output. To learn which parameters can be passed to a task type the following command:
 ```
-$ gulp help --taskName <task-name>
+$ gulp help --taskName=<task-name>
 ```
 
 ##### Time period of analysis
@@ -88,7 +89,7 @@ Open the browser at `http://localhost:3000/index.html` to see a list of the avai
 ### Example: perform a commit message analysis
 Say we want to investigate the commit messages in our repository during the first six months of 2016. The commit-message-analysis task produces a report on the most frequently used words in the commit messages:
 ```bash
-$ gulp commit-message-analysis --dateFrom 2016-01-01 --dateTo 2016-06-30
+$ gulp commit-message-analysis --dateFrom=2016-01-01 --dateTo=2016-06-30
 ```
 
 The output of the command would be something similar to this:
@@ -107,9 +108,12 @@ The output of the command would be something similar to this:
 The analysis results can then be displayed in a word cloud diagram at the url given above.
 
 ## Compatibility
-This software is not meant to be a commercial tool, hence support for various operating systems and different browsers is not a priority. In particular I can't guarantee this module would run seamlessly on Windows and for the visualisation part the D3 diagrams and the UI may not display correctly in every browser.
+This software is not meant to be a commercial tool, hence support for various operating systems and different browsers is not a priority. In particular I can't guarantee this module would run seamlessly on Windows and, for the visualisation part, the D3 diagrams and the UI controls may not display properly in every browser.
 
 ## License
-Copyright &copy; 2016 Silvio Montanari.
+Copyright &copy; 2016 Silvio Montanari
 
-Distributed under the [GNU General Public License v3.0](http://www.gnu.org/licenses/gpl.html).
+**code-forensics** is free software; you can redistribute it and/or modify it under the terms of the [GNU General Public License v3.0](http://www.gnu.org/licenses/gpl.html).
+
+### Acknowledgements
+**code-forensics** makes use of [Code Maat](https://github.com/adamtornhill/code-maat), Copyright &copy; by Adam Tornhill
