@@ -111,7 +111,7 @@ The analysis results can then be displayed in a word cloud diagram at the url gi
 This software is not meant to be a commercial tool, hence support for various operating systems and different browsers is not a priority. In particular I can't guarantee this module would run seamlessly on Windows and, for the visualisation part, the D3 diagrams and the UI controls may not display properly in every browser.
 
 ## License
-Copyright &copy; 2016 Silvio Montanari
+Copyright &copy; 2016-2017 Silvio Montanari
 
 **code-forensics** is free software; you can redistribute it and/or modify it under the terms of the [GNU General Public License v3.0 or any later version](http://www.gnu.org/licenses/gpl.html).
 
