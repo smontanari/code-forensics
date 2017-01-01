@@ -110,21 +110,21 @@ The analysis results can then be displayed in a word cloud diagram at the url gi
 ### Sample diagrams gallery
 <table>
   <tbody>
-    <tr style="background-color: #FFFFFF;">
-      <td>Hotspot</td><td><a href="wiki/images/hotspot1.jpg"><img src="wiki/images/hotspot1.jpg"></a></td>
-      <td>Complexity trend</td><td><a href="wiki/images/cx-trend2.jpg"><img src="wiki/images/cx-trend2.jpg"></a></td>
+    <tr>
+      <td>Hotspot</td><td><a href="https://raw.githubusercontent.com/wiki/smontanari/code-forensics/images/hotspot1.jpg"><img src="https://raw.githubusercontent.com/wiki/smontanari/code-forensics/images/hotspot1.jpg"></a></td>
+      <td>Complexity trend</td><td><a href="https://raw.githubusercontent.com/wiki/smontanari/code-forensics/images/cx-trend2.jpg"><img src="https://raw.githubusercontent.com/wiki/smontanari/code-forensics/images/cx-trend2.jpg"></a></td>
     </tr>
-    <tr style="background-color: #FFFFFF;">
-      <td>System evolution</td><td><a href="wiki/images/sea2.jpg"><img src="wiki/images/sea2.jpg"></a></td>
-      <td>Commit messages</td><td><a href="wiki/images/cma1.jpg"><img src="wiki/images/cma1.jpg"></a></td>
+    <tr>
+      <td>System evolution</td><td><a href="https://raw.githubusercontent.com/wiki/smontanari/code-forensics/images/sea2.jpg"><img src="https://raw.githubusercontent.com/wiki/smontanari/code-forensics/images/sea2.jpg"></a></td>
+      <td>Commit messages</td><td><a href="https://raw.githubusercontent.com/wiki/smontanari/code-forensics/images/cma1.jpg"><img src="https://raw.githubusercontent.com/wiki/smontanari/code-forensics/images/cma1.jpg"></a></td>
     </tr>
-    <tr style="background-color: #FFFFFF;">
-      <td>Developer coupling</td><td><a href="wiki/images/dc2.jpg"><img src="wiki/images/dc2.jpg"></a></td>
-      <td>Developer network</td><td><a href="wiki/images/dc5.jpg"><img src="wiki/images/dc5.jpg"></a></td>
+    <tr>
+      <td>Developer coupling</td><td><a href="https://raw.githubusercontent.com/wiki/smontanari/code-forensics/images/dc2.jpg"><img src="https://raw.githubusercontent.com/wiki/smontanari/code-forensics/images/dc2.jpg"></a></td>
+      <td>Developer network</td><td><a href="https://raw.githubusercontent.com/wiki/smontanari/code-forensics/images/dc5.jpg"><img src="https://raw.githubusercontent.com/wiki/smontanari/code-forensics/images/dc5.jpg"></a></td>
     </tr>
-    <tr style="background-color: #FFFFFF;">
-      <td>Developer effort</td><td><a href="wiki/images/de2.jpg"><img src="wiki/images/de2.jpg"></a></td>
-      <td>Knowledge map</td><td><a href="wiki/images/km2.jpg"><img src="wiki/images/km2.jpg"></a></td>
+    <tr>
+      <td>Developer effort</td><td><a href="https://raw.githubusercontent.com/wiki/smontanari/code-forensics/images/de2.jpg"><img src="https://raw.githubusercontent.com/wiki/smontanari/code-forensics/images/de2.jpg"></a></td>
+      <td>Knowledge map</td><td><a href="https://raw.githubusercontent.com/wiki/smontanari/code-forensics/images/km2.jpg"><img src="https://raw.githubusercontent.com/wiki/smontanari/code-forensics/images/km2.jpg"></a></td>
     </tr>
   </tbody>
 </table>
