@@ -18,7 +18,7 @@ describe('utils.arrays', function() {
       });
     });
 
-    it('discards the last element when the array lenght is odd', function() {
+    it('discards the last element when the array length is odd', function() {
       expect(arraysUtils.arrayPairsToObject(['a', 123, 'b', 456, 'c'])).toEqual({
         a: 123, b: 456
       });

@@ -1,11 +1,10 @@
-var fs = require('fs');
-
-var repositoryPath = require_src('models/repository_path');
+var repositoryPath = require_src('models/repository_path'),
+    utils          = require_src('utils');
 
 describe('repositoryPath', function() {
   beforeEach(function() {
-    spyOn(fs, 'statSync');
-    spyOn(fs, 'existsSync');
+    spyOn(utils.fileSystem, 'isDirectory');
+    spyOn(utils.fileSystem, 'isFile');
   });
 
   describe('.makeGlob()', function() {
@@ -17,31 +16,25 @@ describe('repositoryPath', function() {
 
     describe('for a file path', function() {
       it('returns the path itself', function() {
-        fs.existsSync.and.returnValue(true);
-        fs.statSync.and.returnValue({ isDirectory: function() { return false; }});
+        utils.fileSystem.isFile.and.returnValue(true);
 
         expect(repositoryPath.makeGlob('/some/file.path')).toEqual('/some/file.path');
-        expect(fs.statSync).toHaveBeenCalledWith('/some/file.path');
       });
     });
 
     describe('for a directory path', function() {
       it('returns glob for all files in the directory', function() {
-        fs.existsSync.and.returnValue(true);
-        fs.statSync.and.returnValue({ isDirectory: function() { return true; }});
+        utils.fileSystem.isDirectory.and.returnValue(true);
 
         expect(repositoryPath.makeGlob('/some/dir/path')).toEqual('/some/dir/path/**/*');
-        expect(fs.statSync).toHaveBeenCalledWith('/some/dir/path');
       });
     });
   });
 
   describe('.expand()', function() {
     it('return the expanded list of paths', function() {
-      fs.existsSync.and.returnValue(true);
-      fs.statSync.and.callFake(function(name) {
-        var isDir = (/folder$/).test(name);
-        return { isFile: function() { return !isDir; } };
+      utils.fileSystem.isFile.and.callFake(function(name) {
+        return !(/folder$/).test(name);
       });
 
       var expander = function(pathExpr) {
@@ -63,8 +56,7 @@ describe('repositoryPath', function() {
 
   describe('.normalise()', function() {
     it('returns the normalised paths', function() {
-      fs.existsSync.and.returnValue(true);
-      fs.statSync.and.returnValue({ isDirectory: function() { return true; }});
+      utils.fileSystem.isDirectory.and.returnValue(true);
 
       expect(repositoryPath.normalise('/test/root', ['some/path/*', 'another/path/'])).toEqual([
         '/test/root/some/path/*',

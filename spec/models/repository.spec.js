@@ -1,10 +1,10 @@
-var fs   = require('fs'),
-    glob = require("glob");
+var glob = require("glob");
 
 var Repository        = require_src('models/repository'),
     repositoryPath    = require_src('models/repository_path'),
     languages         = require_src('models/language_definitions'),
-    CFValidationError = require_src('models/validation_error');
+    CFValidationError = require_src('models/validation_error'),
+    utils             = require_src('utils');
 
 describe('Repository', function() {
   describe('with invalid configuration', function() {
@@ -15,18 +15,18 @@ describe('Repository', function() {
     });
 
     it('throws an error if the root path does not exist', function() {
-      spyOn(fs, 'existsSync').and.returnValue(false);
+      spyOn(utils.fileSystem, 'isDirectory').and.returnValue(false);
 
       expect(function() {
         new Repository({ rootPath: '/wrong/path' });
-      }).toThrowError('Repository rootPath does not exist: /wrong/path');
-      expect(fs.existsSync).toHaveBeenCalledWith('/wrong/path');
+      }).toThrowError('Repository root directory does not exist: /wrong/path');
+      expect(utils.fileSystem.isDirectory).toHaveBeenCalledWith('/wrong/path');
     });
   });
 
   describe('with valid configuration', function() {
     beforeEach(function() {
-      spyOn(fs, 'existsSync').and.returnValue(true);
+      spyOn(utils.fileSystem, 'isDirectory').and.returnValue(true);
     });
 
     describe('.allFiles()', function() {
@@ -78,7 +78,7 @@ describe('Repository', function() {
 
     describe('.isValidPath()', function() {
       beforeEach(function() {
-        this.subject = new Repository({rootPath: '/some/path'});
+        this.subject = new Repository({ rootPath: '/some/path' });
 
         spyOn(this.subject, 'allFiles').and.returnValue([
           { relativePath: 'test/valid-path/file1' },
@@ -96,7 +96,7 @@ describe('Repository', function() {
     describe('.sourceFiles()', function() {
       beforeEach(function() {
         spyOn(languages, 'getDefinition').and.returnValue(['py']);
-        this.subject = new Repository({rootPath: '/some/path'});
+        this.subject = new Repository({ rootPath: '/some/path' });
         spyOn(this.subject, 'allFiles').and.returnValue([
           { absolutePath: '/root/test/file1.js', relativePath: 'test/file1.js' },
           { absolutePath: '/root/test/file3.py', relativePath: 'test/file3.py' },

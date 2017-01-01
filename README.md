@@ -113,7 +113,7 @@ This software is not meant to be a commercial tool, hence support for various op
 ## License
 Copyright &copy; 2016 Silvio Montanari
 
-**code-forensics** is free software; you can redistribute it and/or modify it under the terms of the [GNU General Public License v3.0](http://www.gnu.org/licenses/gpl.html).
+**code-forensics** is free software; you can redistribute it and/or modify it under the terms of the [GNU General Public License v3.0 or any later version](http://www.gnu.org/licenses/gpl.html).
 
 ### Acknowledgements
-**code-forensics** makes use of [Code Maat](https://github.com/adamtornhill/code-maat), Copyright &copy; by Adam Tornhill
+**code-forensics** makes use of [Code Maat](https://github.com/adamtornhill/code-maat) - Copyright &copy; Adam Tornhill
