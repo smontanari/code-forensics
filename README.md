@@ -55,8 +55,8 @@ $ gulp list-analysis-tasks
 ```
 
 Currently the following analysis are implemented:
-* **javascript-complexity-trend-analysis** (when javascript is enabled)
-* **ruby-complexity-trend-analysis** (when ruby is enabled)
+* **javascript-complexity-trend-analysis** (when JavaScript is enabled)
+* **ruby-complexity-trend-analysis** (when Ruby is enabled)
 * **sloc-trend-analysis**
 * **hotspot-analysis**
 * **sum-of-coupling-analysis**
@@ -74,7 +74,7 @@ $ gulp help --taskName=<task-name>
 ```
 
 ##### Time period of analysis
-For most tasks it's possible to specify a time period for which the analysis is performed by passing the parameters *dateFrom* and *dateTo*. This is particularly useful to understand the evolution of the code in time and analyse negative or positive trends of particular metrics.
+For most tasks it's possible to specify a time period for which the analysis is performed by passing the parameters _dateFrom_ and _dateTo_. This is particularly useful to understand the evolution of the code in time and analyse negative or positive trends of particular metrics.
 
 ### Visualise the reports
 The results of each analysis can be displayed in the form of D3 diagrams.
@@ -107,8 +107,30 @@ The output of the command would be something similar to this:
 
 The analysis results can then be displayed in a word cloud diagram at the url given above.
 
+### Sample diagrams gallery
+<table>
+  <tbody>
+    <tr style="background-color: #FFFFFF;">
+      <td>Hotspot</td><td><a href="wiki/images/hotspot1.jpg"><img src="wiki/images/hotspot1.jpg"></a></td>
+      <td>Complexity trend</td><td><a href="wiki/images/cx-trend2.jpg"><img src="wiki/images/cx-trend2.jpg"></a></td>
+    </tr>
+    <tr style="background-color: #FFFFFF;">
+      <td>System evolution</td><td><a href="wiki/images/sea2.jpg"><img src="wiki/images/sea2.jpg"></a></td>
+      <td>Commit messages</td><td><a href="wiki/images/cma1.jpg"><img src="wiki/images/cma1.jpg"></a></td>
+    </tr>
+    <tr style="background-color: #FFFFFF;">
+      <td>Developer coupling</td><td><a href="wiki/images/dc2.jpg"><img src="wiki/images/dc2.jpg"></a></td>
+      <td>Developer network</td><td><a href="wiki/images/dc5.jpg"><img src="wiki/images/dc5.jpg"></a></td>
+    </tr>
+    <tr style="background-color: #FFFFFF;">
+      <td>Developer effort</td><td><a href="wiki/images/de2.jpg"><img src="wiki/images/de2.jpg"></a></td>
+      <td>Knowledge map</td><td><a href="wiki/images/km2.jpg"><img src="wiki/images/km2.jpg"></a></td>
+    </tr>
+  </tbody>
+</table>
+
 ## Compatibility
-This software is not meant to be a commercial tool, hence support for various operating systems and different browsers is not a priority. In particular I can't guarantee this module would run seamlessly on Windows and, for the visualisation part, the D3 diagrams and the UI controls may not display properly in every browser.
+This software is not meant to be a commercial tool, hence support for various operating systems and different browsers is not a priority. I've tested **code-forensics** on a Mac OS X with different versions of Node.js, and primarily with Chrome as a browser.
 
 ## License
 Copyright &copy; 2016-2017 Silvio Montanari
