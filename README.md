@@ -25,7 +25,7 @@ PLEASE REFER TO THE [WIKI PAGES](https://github.com/smontanari/code-forensics/wi
 code-forensics runs as a set of gulp tasks, therefore it requires a `gulpfile.js` to bootstrap gulp, however there is no need to know the task declaration syntax, as all the necessary tasks are defined inside code-forensics.
 The `gulpfile.js` must define the configuration options and parameters necessary to run code-forensics tasks.
 
-A minimal configuration javascript file would look like the following:
+A minimal configuration `gulpfile.js` would look like the following:
 ```javascript
 require('code-forensics').configure(
   {
@@ -73,7 +73,7 @@ Each task may require additional or optional parameters in order to produce a pa
 $ gulp help --taskName=<task-name>
 ```
 
-##### Time period of analysis
+##### Temporal period of analysis
 For most tasks it's possible to specify a time period for which the analysis is performed by passing the parameters _dateFrom_ and _dateTo_. This is particularly useful to understand the evolution of the code in time and analyse negative or positive trends of particular metrics.
 
 ### Visualise the reports
