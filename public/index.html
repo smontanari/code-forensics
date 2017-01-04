@@ -13,9 +13,13 @@
 <div id="container" class="hidden" data-bind="css: { hidden: false }">
   <div data-bind="if: reportModel">
     <div data-bind="with: reportModel">
+      <div class="left-column"><a href="/index.html">All reports</a></div>
       <div class="report-info">
-        <span class="title" data-bind="text: metadata.title"></span><span class="title" data-bind="if: metadata.description"> &ndash; </span>
-        <span class="description" data-bind="text: metadata.description"></span>
+        <p>
+          <span class="title" data-bind="text: metadata.title"></span>
+          <span class="title" data-bind="if: metadata.description"> &ndash; </span>
+          <span class="description" data-bind="text: metadata.description"></span>
+        </p>
         <p class="time-period" data-bind="visible: metadata.dateRange, with: metadata.dateRange">
           Date range: <span data-bind="text: from"></span> to <span data-bind="text: to"></span>
         </p>

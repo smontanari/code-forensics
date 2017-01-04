@@ -1,5 +1,5 @@
 # code-forensics
-**code-forensics** is a toolset for analysing codebases stored in popular version control system. It leverages the repository logs, or version history data, to perform deep analysis with regards to complexity, software coupling, authors coupling and to inspect the evolution in time of some various metrics like code churn and number of revisions of different parts of a software system, degree of ownership and dependencies between developers and/or teams of developers.
+**code-forensics** is a toolset for analysing codebases stored in popular version control system. It leverages the repository logs, or version history data, to perform deep analyses with regards to complexity, logical coupling, authors coupling and to inspect the evolution in time of different parts of a software system with respect to metrics like code churn and number of revisions.
 
 ## Credits
 This project is based on the excellent work of **Adam Tornhill** and his command line tool [Code Maat](https://github.com/adamtornhill/code-maat). The majority of the analysis that **code-forensics** performs are actually described in Adam's book [Your Code as a Crime Scene](https://pragprog.com/book/atcrime/your-code-as-a-crime-scene).
