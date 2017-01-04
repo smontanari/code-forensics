@@ -1,5 +1,5 @@
 # code-forensics
-**code-forensics** is a toolset for analysing codebases stored in popular version control system. It leverages the repository logs, or version history data, to perform deep analyses with regards to complexity, logical coupling, authors coupling and to inspect the evolution in time of different parts of a software system with respect to metrics like code churn and number of revisions.
+**code-forensics** is a toolset for analysing codebases stored in a version control system. It leverages the repository logs, or version history data, to perform deep analyses with regards to complexity, logical coupling, authors coupling and to inspect the evolution in time of different parts of a software system with respect to metrics like code churn and number of revisions.
 
 ## Credits
 This project is based on the excellent work of **Adam Tornhill** and his command line tool [Code Maat](https://github.com/adamtornhill/code-maat). The majority of the analysis that **code-forensics** performs are actually described in Adam's book [Your Code as a Crime Scene](https://pragprog.com/book/atcrime/your-code-as-a-crime-scene).
@@ -128,6 +128,9 @@ The analysis results can then be displayed in a word cloud diagram at the url gi
     </tr>
   </tbody>
 </table>
+
+## VCS support
+At the moment code-forensics only works with git based repositories, however support for other version control systems could be easily implemented, also given already the ability of Code Maat to use log data from the most popular ones.
 
 ## Compatibility
 This software is not meant to be a commercial tool, hence support for various operating systems and different browsers is not a priority. I've tested **code-forensics** on a Mac OS X with different versions of Node.js, and primarily with Chrome as a browser.
