@@ -37,24 +37,20 @@ require('code-forensics').configure(
 ```
 The only necessary configuration value is the file system path to the root directory of the version control repository to analyse.
 
-### Execute the analysis
-Depending on how the gulp module is installed (as global or local) there are different ways to execute the gulp command. Here, to simplify the examples, I will assume it is available on your command PATH.
+### Running analyses
+Analyses are executed as a gulp task. Depending on how the gulp module is installed (as global or local) there are different ways to invoke the gulp command. Here, to simplify the examples, I will assume it is available on your command PATH. 
 
-#### List all available tasks
-All available tasks can be printed, along with their description, by executing the following command:
+Each analysis may require or accept optional parameters.
 ```
-$ gulp help
+$ gulp <analysis-task-name> [parameters]
 ```
 
-Alternatively it's always possible to print all the tasks names with or without their dependencies using gulp cli options, e.g. `gulp -T` or `gulp --tasks-simple`.
-
-#### Analysis tasks
+#### List analysis tasks
 To print the list of all the top level analysis tasks:
 ```
 $ gulp list-analysis-tasks
 ```
-
-Currently the following analysis are implemented:
+Currently the following analyses are implemented:
 * **javascript-complexity-trend-analysis** (when JavaScript is enabled)
 * **ruby-complexity-trend-analysis** (when Ruby is enabled)
 * **sloc-trend-analysis**
@@ -67,14 +63,22 @@ Currently the following analysis are implemented:
 * **knowledge-map-analysis**
 * **commit-message-analysis**
 
-#### Task parameters
-Each task may require additional or optional parameters in order to produce a particular output. To learn which parameters can be passed to a task type the following command:
+#### List all available tasks
+All available tasks can be printed, along with their description, by executing the following command:
+```
+$ gulp help
+```
+
+Alternatively it's always possible to print all the tasks names with or without their dependencies using gulp cli options, e.g. `gulp -T` or `gulp --tasks-simple`.
+
+#### Task usage information
+In order to learn which parameters can be passed to a task you can type the following command:
 ```
 $ gulp help --taskName=<task-name>
 ```
 
 ##### Temporal period of analysis
-For most tasks it's possible to specify a time period for which the analysis is performed by passing the parameters _dateFrom_ and _dateTo_. This is particularly useful to understand the evolution of the code in time and analyse negative or positive trends of particular metrics.
+For most tasks it's possible to specify a time period for which the analysis is performed by passing the parameters _dateFrom_ and _dateTo_. This is particularly useful to understand the evolution of the code in time and analyse negative or positive trends of particular metrics (see the [wiki pages](https://github.com/smontanari/code-forensics/wiki) for more detailed documentation).
 
 ### Visualise the reports
 The results of each analysis can be displayed in the form of D3 diagrams.
@@ -105,7 +109,7 @@ The output of the command would be something similar to this:
 [00:13:07] Finished 'commit-message-analysis' after 62 ms
 ```
 
-The analysis results can then be displayed in a word cloud diagram at the url given above.
+The results can then be displayed in a word cloud diagram at the url given above.
 
 ### Sample diagrams gallery
 <table>
