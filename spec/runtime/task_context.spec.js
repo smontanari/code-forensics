@@ -76,24 +76,24 @@ describe('TaskContext', function() {
       var ctx = new TaskContext({
         tempDir: '/test-temp-dir',
         outputDir: '/test-out-dir',
-        architecturalBoundaries: {'test-boundary-name': 'test-boundaries'},
+        layerGroups: {'test-grouping-name': { 'test-layers': [] }},
         commitMessageFilters: [/filter1/, 'filter2'],
         languages: ['ruby']
-      }, { boundary: 'test-boundary-name', taskName: 'test-task', timeSplit: 'test-timeSplit' });
+      }, { layerGroup: 'test-grouping-name', taskName: 'test-task', timeSplit: 'test-timeSplit' });
 
       expect(ctx.tempDir).toEqual('/test-temp-dir');
       expect(ctx.outputDir).toEqual('/test-out-dir');
-      expect(ctx.boundaries).toEqual('test-boundaries');
+      expect(ctx.layerGrouping.isEmpty()).toBe(false);
       expect(ctx.commitMessageFilters).toEqual([/filter1/, 'filter2']);
       expect(ctx.languages).toEqual(['ruby']);
     });
 
     it('initialises properties from default configuration', function() {
-      var ctx = new TaskContext({}, { boundary: 'test-boundary-name', timeSplit: 'test-timeSplit' });
+      var ctx = new TaskContext({}, { layerGroup: 'test-grouping-name', timeSplit: 'test-timeSplit' });
 
       expect(ctx.tempDir).toMatch('/tmp');
       expect(ctx.outputDir).toMatch('/output');
-      expect(ctx.boundaries).toBeUndefined();
+      expect(ctx.layerGrouping.isEmpty()).toBe(true);
       expect(ctx.commitMessageFilters).toBeUndefined();
       expect(ctx.languages).toEqual(['javascript']);
     });

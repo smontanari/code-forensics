@@ -38,7 +38,7 @@ require('code-forensics').configure(
 The only necessary configuration value is the file system path to the root directory of the version control repository to analyse.
 
 ### Running analyses
-Analyses are executed as a gulp task. Depending on how the gulp module is installed (as global or local) there are different ways to invoke the gulp command. Here, to simplify the examples, I will assume it is available on your command PATH. 
+Analyses are executed as a gulp task. Depending on how the gulp module is installed (as global or local) there are different ways to invoke the gulp command. Here, to simplify the examples, I will assume it is available on your command PATH.
 
 Each analysis may require or accept optional parameters.
 ```

@@ -121,7 +121,7 @@ describe('System analysis tasks', function() {
 
         var taskFunctions = this.tasksSetup(systemAnalysisTasks,
           {
-            architecturalBoundaries: {
+            layerGroups: {
               'test_boundary': [
                 { name: 'Test Layer1', paths: ['test/path1', 'test_path2'] },
                 { name: 'Test Layer2', paths: ['test_path3'] }
@@ -156,7 +156,7 @@ describe('System analysis tasks', function() {
       });
     };
 
-    describe('with no boundary parameter', function() {
+    describe('with no layer group parameter', function() {
       testAnalysis(
         'publishes a revisions report and a churn report with data aggregated for all files',
         { dateFrom: '2016-01-01', dateTo: '2016-02-28', timeSplit: 'eom' },
@@ -180,10 +180,10 @@ describe('System analysis tasks', function() {
       );
     });
 
-    describe('with a boundary parameter', function() {
+    describe('with a layer group parameter', function() {
       testAnalysis(
         'publishes a revisions report, a code churn report and a coupling report for each architectural layer of the system',
-        { dateFrom: '2016-01-01', dateTo: '2016-02-28', timeSplit: 'eom', boundary: 'test_boundary' },
+        { dateFrom: '2016-01-01', dateTo: '2016-02-28', timeSplit: 'eom', layerGroup: 'test_boundary' },
         revisionsAnalysisStreams.concat(churnAnalysisStreams).concat(couplingAnalysisStreams),
         [
           { fileName: 'system-revisions-data.json', data: revisionsAnalysisResults },

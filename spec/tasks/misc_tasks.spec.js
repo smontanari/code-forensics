@@ -4,12 +4,12 @@ var Path = require('path'),
 var miscTasks = require_src('tasks/misc_tasks');
 
 describe('Misc Tasks', function() {
-  describe('generate-boundaries-file', function() {
+  describe('generate-layer-grouping-file', function() {
     var contextConfig = {
-      architecturalBoundaries: {
-        'test_boundary': [
-          { name: 'Test Layer1', paths: ['test/path1', 'test_path2'] },
-          { name: 'Test Layer2', paths: ['test_path3'] }
+      layerGroups: {
+        'test_group': [
+          { name: 'Test Layer1', paths: ['test/path1', /test\/path2\/((?!.*--abc\.)).*\/files/] },
+          { name: 'Test Layer2', paths: ['test_path3', /^test\/path4\/.*\.cf$/] }
         ]
       }
     };
@@ -18,17 +18,18 @@ describe('Misc Tasks', function() {
       this.clearTemp();
     });
 
-    describe('with the boundary parameter', function() {
-      it('generates a code boundary file', function(done) {
+    describe('with the layer group parameter', function() {
+      it('generates a layer grouping file', function(done) {
         var tempDir = this.tasksWorkingFolders.tempDir;
 
-        var taskFunctions = this.tasksSetup(miscTasks, contextConfig, { boundary: 'test_boundary' });
-        taskFunctions['generate-boundaries-file']().then(function() {
-          var fileContent = fs.readFileSync(Path.join(tempDir, 'code_boundaries.txt'));
+        var taskFunctions = this.tasksSetup(miscTasks, contextConfig, { layerGroup: 'test_group' });
+        taskFunctions['generate-layer-grouping-file']().then(function() {
+          var fileContent = fs.readFileSync(Path.join(tempDir, 'layer-grouping.txt'));
           expect(fileContent.toString()).toEqual([
             'test/path1 => Test Layer1',
-            'test_path2 => Test Layer1',
-            'test_path3 => Test Layer2'
+            '^test\\/path2\\/((?!.*--abc\\.)).*\\/files$ => Test Layer1',
+            'test_path3 => Test Layer2',
+            '^test\\/path4\\/.*\\.cf$ => Test Layer2'
           ].join("\n"));
 
           done();
@@ -38,13 +39,13 @@ describe('Misc Tasks', function() {
       });
     });
 
-    describe('with no boundary parameter', function() {
-      it('does not generate a code boundary file', function(done) {
+    describe('with no layer group parameter', function() {
+      it('does not generate a layer grouping file', function(done) {
         var tempDir = this.tasksWorkingFolders.tempDir;
 
         var taskFunctions = this.tasksSetup(miscTasks, contextConfig);
-        taskFunctions['generate-boundaries-file']().then(function() {
-          expect(fs.existsSync(Path.join(tempDir, 'code_boundaries.txt'))).toBeFalsy();
+        taskFunctions['generate-layer-grouping-file']().then(function() {
+          expect(fs.existsSync(Path.join(tempDir, 'layer-grouping.txt'))).toBeFalsy();
           done();
         }).catch(function(err) {
           fail(err);

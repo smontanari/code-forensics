@@ -12,8 +12,6 @@ var TEST_TMP_DIR    = Path.resolve('test_fixtures/tmp'),
     TEST_OUTPUT_DIR = Path.resolve('test_fixtures/output'),
     TEST_REPO_DIR   = Path.resolve('test_fixtures/repo_root');
 
-process.env.NODE_ENV = 'integration-test';
-
 beforeEach(function() {
   this.tasksWorkingFolders = {
     tempDir: TEST_TMP_DIR,
