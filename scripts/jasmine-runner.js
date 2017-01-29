@@ -3,7 +3,7 @@
 var path           = require('path'),
     Jasmine        = require('jasmine'),
     JasmineCommand = require('jasmine/lib/command'),
-    SpecReporter   = require('jasmine-spec-reporter');
+    SpecReporter   = require('jasmine-spec-reporter').SpecReporter;
 
 var argv = process.argv.slice(2);
 
