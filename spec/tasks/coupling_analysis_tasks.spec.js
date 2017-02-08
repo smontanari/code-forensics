@@ -81,6 +81,10 @@ describe('Coupling analysis tasks', function() {
         { path: 'test/target_file', coupledPath: 'test/c/file3', couplingDegree: 30, revisionsAvg: 5 }
       ],
       [
+        { path: 'test/b/file2', coupledPath: 'test/a/file1', couplingDegree: 21, revisionsAvg: 12 },
+        { path: 'test/a/file1', coupledPath: 'test/c/file3', couplingDegree: 10, revisionsAvg: 5 }
+      ],
+      [
         { path: 'test/d/file4', coupledPath: 'test/target_file', couplingDegree: 33, revisionsAvg: 18 },
         { path: 'test/c/file3', coupledPath: 'test/b/file2', couplingDegree: 52, revisionsAvg: 32 },
         { path: 'test/target_file', coupledPath: 'test/a/file1', couplingDegree: 10, revisionsAvg: 30 }
@@ -93,6 +97,11 @@ describe('Coupling analysis tasks', function() {
         { path: 'test/b/file2', addedLines:  40, deletedLines:  61, commits:  4 },
         { path: 'test/target_file', addedLines: 150, deletedLines: 60, commits:  31 },
         { path: 'test/c/file3', addedLines:  71, deletedLines:  37, commits: 12 }
+      ],
+      [
+        { path: 'test/c/file3', addedLines:  91, deletedLines: 38, commits: 7 },
+        { path: 'test/a/file1', addedLines: 147, deletedLines: 56, commits: 6 },
+        { path: 'test/b/file2', addedLines:  19, deletedLines:  6, commits: 3 }
       ],
       [
         { path: 'test/target_file', addedLines: 50, deletedLines: 10, commits:  13 },
@@ -113,7 +122,7 @@ describe('Coupling analysis tasks', function() {
 
       taskFunctions = this.tasksSetup(couplingAnalysisTasks,
         null,
-        { dateFrom: '2016-01-01', dateTo: '2016-02-28', timeSplit: 'eom', targetFile: 'test/target_file' }
+        { dateFrom: '2016-01-01', dateTo: '2016-03-31', timeSplit: 'eom', targetFile: 'test/target_file' }
       );
     });
 
@@ -125,9 +134,11 @@ describe('Coupling analysis tasks', function() {
     it('publishes as many reports as the given time periods with coupling information between each file and a target file', function(done) {
       var couplingStreams = [
         new stream.PassThrough({ objectMode: true }),
+        new stream.PassThrough({ objectMode: true }),
         new stream.PassThrough({ objectMode: true })
       ];
       var churnStreams = [
+        new stream.PassThrough({ objectMode: true }),
         new stream.PassThrough({ objectMode: true }),
         new stream.PassThrough({ objectMode: true })
       ];
@@ -225,7 +236,7 @@ describe('Coupling analysis tasks', function() {
         );
 
         assertTaskReport(
-          Path.join(outputDir, '7a25dcda038c13953d38dcf1969cf09fadf23ad0', '2016-02-01_2016-02-28_temporal-coupling-data.json'),
+          Path.join(outputDir, '7a25dcda038c13953d38dcf1969cf09fadf23ad0', '2016-03-01_2016-03-31_temporal-coupling-data.json'),
           {
             children: [
               {
@@ -303,6 +314,9 @@ describe('Coupling analysis tasks', function() {
             ]
           }
         );
+
+        var missingReportFile = Path.join(outputDir, '7a25dcda038c13953d38dcf1969cf09fadf23ad0', '2016-02-01_2016-02-29_temporal-coupling-data.json');
+        expect(fs.existsSync(missingReportFile)).toBe(false);
 
         done();
       });
