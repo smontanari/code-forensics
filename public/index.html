@@ -35,7 +35,7 @@
           </div>
         </div>
         <div data-bind="foreach: graphModels">
-          <div data-bind="if: isSelected">
+          <div data-bind="visible: isSelected">
             <div data-bind="if: diagram.controls.hasFilters">
               <div data-bind="with: graphControlGroups.filters">
                 <div data-bind="if: hasTemplates()">
