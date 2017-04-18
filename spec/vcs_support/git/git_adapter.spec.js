@@ -43,45 +43,20 @@ describe('GitAdapter', function() {
       spyOn(command, 'stream').and.returnValue(logStream);
 
       var result = '';
+
       this.subject.logStream(this.timePeriod)
         .on('data', function(chunk) {
           result += chunk.toString();
         })
         .on('end', function() {
-          expect(result).toEqual([
-            '--98b656f--2016-10-31--Developer 1',
-            '10  0 test/file1.yml.erb',
-            '',
-            '--6ff89bc--2016-10-31--Developer_2',
-            '1 1 test/file2.rb',
-            '',
-            '--02790fd--2016-10-31--Developer.3',
-            '--5fbfb14--2016-10-28--Alias developer 2',
-            '0 1 test/file3.rb',
-            '0 20  test/file4.html.erb',
-            '6 8 test/file5.js'
-          ].join("\n"));
+          expect(result).toEqual('test-output1');
           done();
         });
 
       expect(command.stream).toHaveBeenCalledWith('git',
           ['log', '--all', '--numstat', '--date=short', '--no-renames', '--pretty=format:--%h--%ad--%an', '--after=2015-08-22T14:51:42.123Z', '--before=2015-10-12T11:10:06.456Z'], {cwd: '/root/dir'});
 
-      var logLines = [
-        '--98b656f--2016-10-31--Developer 1',
-        '10  0 test/file1.yml.erb',
-        '',
-        '--6ff89bc--2016-10-31--Developer_2',
-        '1 1 test/file2.rb',
-        '',
-        '--02790fd--2016-10-31--Developer.3',
-        '--5fbfb14--2016-10-28--Alias developer 2',
-        '0 1 test/file3.rb',
-        '0 20  test/file4.html.erb',
-        '6 8 test/file5.js'
-      ].join("\n");
-
-      _.each(logLines, logStream.push.bind(logStream));
+      logStream.push('test-output1');
       logStream.end();
     });
   });
