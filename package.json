@@ -58,7 +58,8 @@
     "through2": "^2.0.3",
     "through2-filter": "^2.0.0",
     "through2-map": "^3.0.0",
-    "through2-reduce": "^1.1.1"
+    "through2-reduce": "^1.1.1",
+    "xml-reader": "^2.4.3"
   },
   "devDependencies": {
     "eslint": "^3.14.1",
