@@ -1,6 +1,8 @@
 var factory           = require_src('vcs_support/vcs_factory'),
     GitAdapter        = require_src('vcs_support/git/git_adapter'),
-    GitLogTransformer = require_src('vcs_support/git/gitlog_stream_transformer');
+    SvnAdapter        = require_src('vcs_support/svn/svn_adapter'),
+    GitLogTransformer = require_src('vcs_support/git/gitlog_stream_transformer'),
+    SvnLogTransformer = require_src('vcs_support/svn/svnlog_stream_transformer');
 
 describe('vcs factory', function() {
   describe('when configured to use Git', function() {
@@ -17,6 +19,24 @@ describe('vcs factory', function() {
     describe('./logStreamTransformer()', function() {
       it('returns a Git log transformer', function() {
         expect(factory.logStreamTransformer().constructor).toEqual(GitLogTransformer.prototype.constructor);
+      });
+    });
+  });
+
+  describe('when configured to use Svn', function() {
+    beforeEach(function() {
+      this.appConfigStub({ versionControlSystem: 'svn' });
+    });
+
+    describe('.adapter()', function() {
+      it('returns a Svn adapter', function() {
+        expect(factory.adapter({ rootPath: 'test/root' }).constructor).toEqual(SvnAdapter.prototype.constructor);
+      });
+    });
+
+    describe('./logStreamTransformer()', function() {
+      it('returns a Svn log transformer', function() {
+        expect(factory.logStreamTransformer().constructor).toEqual(SvnLogTransformer.prototype.constructor);
       });
     });
   });
