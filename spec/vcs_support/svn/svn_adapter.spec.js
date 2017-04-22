@@ -35,7 +35,7 @@ describe('SvnAdapter', function() {
     '<path',
     '   action="M"',
     '   prop-mods="false"'
-  ].join("\n");
+  ];
   var GENERIC_LOG_OUTPUT = [
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<log>',
@@ -84,7 +84,7 @@ describe('SvnAdapter', function() {
     '<msg>test message 789</msg>',
     '</logentry>',
     '</log>'
-  ].join("\n");
+  ];
 
   var SINGLE_FILE_OUTPUT = [
     '<?xml version="1.0" encoding="UTF-8"?>',
@@ -146,7 +146,7 @@ describe('SvnAdapter', function() {
 
   describe('.logStream()', function() {
     it('returns the svn log as a stream', function(done) {
-      buildLogStream(GENERIC_LOG_OUTPUT);
+      buildLogStream('LOG_OUTPUT');
       var result = '';
 
       this.subject.logStream(this.timePeriod)
@@ -154,7 +154,7 @@ describe('SvnAdapter', function() {
           result += chunk.toString();
         })
         .on('end', function() {
-          expect(result).toEqual(GENERIC_LOG_OUTPUT);
+          expect(result).toEqual('LOG_OUTPUT');
           done();
         });
 
