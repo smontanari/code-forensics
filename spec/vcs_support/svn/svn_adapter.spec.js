@@ -223,4 +223,15 @@ describe('SvnAdapter', function() {
       expect(revisions).toEqual([]);
     });
   });
+
+  describe('vcsRelativePath()', function() {
+    it('returns the relative file path based on the repository url', function() {
+      spyOn(command, 'run').and.returnValue(new Buffer('^/local/project/path'));
+
+      var result = this.subject.vcsRelativePath();
+
+      expect(result).toEqual('^/local/project/path');
+      expect(command.run).toHaveBeenCalledWith('svn', ['info', '--show-item', 'relative-url'], {cwd: '/root/dir'});
+    });
+  });
 });

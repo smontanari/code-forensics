@@ -2,9 +2,15 @@ var factory           = require_src('vcs_support/vcs_factory'),
     GitAdapter        = require_src('vcs_support/git/git_adapter'),
     SvnAdapter        = require_src('vcs_support/svn/svn_adapter'),
     GitLogTransformer = require_src('vcs_support/git/gitlog_stream_transformer'),
-    SvnLogTransformer = require_src('vcs_support/svn/svnlog_stream_transformer');
+    SvnLogTransformer = require_src('vcs_support/svn/svnlog_stream_transformer'),
+    command           = require_src('command');
 
 describe('vcs factory', function() {
+  beforeEach(function() {
+    this.stubRepo = { rootPath: 'test/root' };
+    this.stubDevInfo = { find: jasmine.createSpy() };
+  });
+
   describe('when configured to use Git', function() {
     beforeEach(function() {
       this.appConfigStub({ versionControlSystem: 'git' });
@@ -12,31 +18,33 @@ describe('vcs factory', function() {
 
     describe('.adapter()', function() {
       it('returns a Git adapter', function() {
-        expect(factory.adapter({ rootPath: 'test/root' }).constructor).toEqual(GitAdapter.prototype.constructor);
+        expect(factory.adapter(this.stubRepo).constructor).toEqual(GitAdapter.prototype.constructor);
       });
     });
 
-    describe('./logStreamTransformer()', function() {
+    describe('.logStreamTransformer()', function() {
       it('returns a Git log transformer', function() {
-        expect(factory.logStreamTransformer().constructor).toEqual(GitLogTransformer.prototype.constructor);
+        expect(factory.logStreamTransformer(this.stubRepo, this.stubDevInfo).constructor).toEqual(GitLogTransformer.prototype.constructor);
       });
     });
   });
 
   describe('when configured to use Svn', function() {
     beforeEach(function() {
-      this.appConfigStub({ versionControlSystem: 'svn' });
+      this.appConfigStub({ versionControlSystem: 'subversion' });
     });
 
     describe('.adapter()', function() {
       it('returns a Svn adapter', function() {
-        expect(factory.adapter({ rootPath: 'test/root' }).constructor).toEqual(SvnAdapter.prototype.constructor);
+        expect(factory.adapter(this.stubRepo).constructor).toEqual(SvnAdapter.prototype.constructor);
       });
     });
 
-    describe('./logStreamTransformer()', function() {
+    describe('.logStreamTransformer()', function() {
       it('returns a Svn log transformer', function() {
-        expect(factory.logStreamTransformer().constructor).toEqual(SvnLogTransformer.prototype.constructor);
+        // this is necessary to stub out the call to adapter.vcsRelativePath()
+        spyOn(command, 'run').and.returnValue(new Buffer('/test'));
+        expect(factory.logStreamTransformer(this.stubRepo, this.stubDevInfo).constructor).toEqual(SvnLogTransformer.prototype.constructor);
       });
     });
   });
@@ -49,7 +57,7 @@ describe('vcs factory', function() {
     describe('.adapter()', function() {
       it('throws an error', function() {
         expect(function() {
-          factory.adapter({ rootPath: 'test/root' });
+          factory.adapter(this.stubRepo);
         }).toThrow('Cannot find vcs support files for: cvs');
       });
     });
@@ -57,7 +65,7 @@ describe('vcs factory', function() {
     describe('.logStreamTransformer()', function() {
       it('throws an error', function() {
         expect(function() {
-          factory.logStreamTransformer();
+          factory.logStreamTransformer(this.stubRepo, this.stubDevInfo);
         }).toThrow('Cannot find vcs support files for: cvs');
       });
     });

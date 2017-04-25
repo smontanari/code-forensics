@@ -2,8 +2,8 @@ var _         = require('lodash'),
     stream    = require('stream'),
     XmlReader = require('xml-reader');
 
-var XmlUtils = require_src('utils/xml_utils');
-var LogStreamTransformer = require_src('vcs_support/svn/svnlog_stream_transformer.js');
+var LogStreamTransformer = require_src('vcs_support/svn/svnlog_stream_transformer.js'),
+    XmlUtils             = require_src('utils/xml_utils');
 
 describe('SvnLogStreamTransformer', function() {
   var LOG_OUTPUT = [
@@ -18,7 +18,12 @@ describe('SvnLogStreamTransformer', function() {
     '   action="M"',
     '   prop-mods="false"',
     '   text-mods="true"',
-    '   kind="file">/test/file1.yml.erb</path>',
+    '   kind="file">/test/path/src/file1.yml.erb</path>',
+    '<path',
+    '   action="M"',
+    '   prop-mods="false"',
+    '   text-mods="true"',
+    '   kind="file">/another/path/src/file2.java</path>',
     '</paths>',
     '<msg>test message 123</msg>',
     '</logentry>',
@@ -31,7 +36,7 @@ describe('SvnLogStreamTransformer', function() {
     '   prop-mods="false"',
     '   text-mods="true"',
     '   kind="file"',
-    '   action="M">/test/invalid_file.rb</path>',
+    '   action="M">/test/path/src/invalid_file.rb</path>',
     '</paths>',
     '<msg>test message 456</msg>',
     '</logentry>',
@@ -44,12 +49,12 @@ describe('SvnLogStreamTransformer', function() {
     '   action="M"',
     '   prop-mods="false"',
     '   text-mods="true"',
-    '   kind="file">/test/file4.html.erb</path>',
+    '   kind="file">/test/path/src/file4.html.erb</path>',
     '<path',
     '   text-mods="true"',
     '   kind="file"',
     '   action="M"',
-    '   prop-mods="false">/test/invalid_file.rb</path>',
+    '   prop-mods="false">/test/path/src/invalid_file.rb</path>',
     '</paths>',
     '<msg>test message 789</msg>',
     '</logentry>',
@@ -67,7 +72,10 @@ describe('SvnLogStreamTransformer', function() {
       var stubRepository = {
         isValidPath: function() { return true; }
       };
-      this.subject = new LogStreamTransformer(stubRepository, stubDeveloperInfo);
+      var stubAdapter = {
+        vcsRelativePath: function() { return '^/test/path'; }
+      };
+      this.subject = new LogStreamTransformer(stubRepository, stubDeveloperInfo, stubAdapter);
     });
 
     it('streams log entries with author name changed according to the developer info', function(done) {
@@ -100,14 +108,15 @@ describe('SvnLogStreamTransformer', function() {
         find: function(name) { return { name: name }; }
       };
       var stubRepository = {
-        isValidPath: function(path) {
-          return path !== '/test/invalid_file.rb';
-        }
+        isValidPath: function(path) { return path && path !== 'src/invalid_file.rb'; }
       };
-      this.subject = new LogStreamTransformer(stubRepository, stubDeveloperInfo);
+      var stubAdapter = {
+        vcsRelativePath: function() { return "^/test/path\n"; }
+      };
+      this.subject = new LogStreamTransformer(stubRepository, stubDeveloperInfo, stubAdapter);
     });
 
-    it('streams log entries filtering out the invalid paths', function(done) {
+    it('streams log entries normalising the valid paths and filtering out the invalid ones', function(done) {
       var logStream = new stream.PassThrough();
 
       var result = '';
@@ -124,7 +133,7 @@ describe('SvnLogStreamTransformer', function() {
             return pathsElement.children.map(XmlUtils.nodeText);
           });
           expect(revisions).toEqual(['344333', '344885']);
-          expect(paths).toEqual(['/test/file1.yml.erb', '/test/file4.html.erb']);
+          expect(paths).toEqual(['src/file1.yml.erb', 'src/file4.html.erb']);
           done();
         });
 
