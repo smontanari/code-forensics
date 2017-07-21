@@ -95,7 +95,7 @@ describe('TaskContext', function() {
       expect(ctx.outputDir).toMatch('/output');
       expect(ctx.layerGrouping.isEmpty()).toBe(true);
       expect(ctx.commitMessageFilters).toBeUndefined();
-      expect(ctx.languages).toEqual(['javascript']);
+      expect(ctx.languages).toEqual([]);
     });
   });
 

@@ -53,7 +53,7 @@ webServer.listen(port, host, function () {
 ['SIGINT', 'SIGTERM'].forEach(function(event) {
   process.on(event, function() {
     webServer.close();
-    console.log(chalk.yellow('\nhttp-server stopped.'));
+    console.log(chalk.yellow("\nhttp-server stopped."));
     process.exit(0);
   });
 });
