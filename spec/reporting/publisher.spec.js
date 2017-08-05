@@ -119,6 +119,8 @@ describe('Publisher', function() {
           reportFile: 'test-file.json'
         }, this.context);
         this.subject.addReportFile(new TimePeriod({ start: moment('2012-04-01'), end: moment('2012-05-31') }, 'YYYY-MM'));
+        this.subject.enableDiagram('test-diagram1');
+        this.subject.enableDiagram('test-diagram2');
       });
 
       it('creates a manifest file', function(done) {
@@ -129,6 +131,7 @@ describe('Publisher', function() {
           expect(manifest.taskName).toEqual('test-task');
           expect(manifest.time).toEqual('2013-10-22T13:00:00.000Z');
           expect(manifest.dateRange).toEqual('2012-03_2012-07');
+          expect(manifest.enabledDiagrams).toEqual(['test-diagram1', 'test-diagram2']);
           expect(manifest.dataFiles).toEqual([
             { fileType: undefined, timePeriod: '2012-04_2012-05', fileUrl: 'c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/2012-04_2012-05_test-file.json'},
           ]);
