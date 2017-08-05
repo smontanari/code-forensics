@@ -44,8 +44,8 @@ describe('Hotspot analysis tasks', function() {
 
       var taskFunctions = this.tasksSetup(hotspotAnalysisTasks, { languages: ['ruby'] }, { dateFrom: '2015-03-01' });
       taskFunctions['hotspot-analysis']().then(function() {
-        var reportContent = fs.readFileSync(Path.join(outputDir, '103d9a240cc5358f24927d51261fd9dcdb75b314', '2015-03-01_2015-10-22_revisions-hotspot-data.json'));
-        var report = JSON.parse(reportContent.toString());
+        var report = JSON.parse(fs.readFileSync(Path.join(outputDir, '103d9a240cc5358f24927d51261fd9dcdb75b314', '2015-03-01_2015-10-22_revisions-hotspot-data.json')));
+        var manifest = JSON.parse(fs.readFileSync(Path.join(outputDir, '103d9a240cc5358f24927d51261fd9dcdb75b314', 'manifest.json')));
         expect(report).toEqual({
           children: [
             {
@@ -118,6 +118,105 @@ describe('Hotspot analysis tasks', function() {
             }
           ]
         });
+        expect(manifest.enabledDiagrams).toEqual(['sloc', 'complexity']);
+        done();
+      }).catch(function(err) {
+        fail(err);
+      });
+    });
+
+    it('publishes an analysis report on code size and revisions for each file in the repository', function(done) {
+      var outputDir = this.tasksWorkingFolders.outputDir;
+
+      fs.writeFileSync(Path.join(this.tasksWorkingFolders.tempDir, 'sloc-report.json'), JSON.stringify([
+        { path: 'test/java/app/file1.java', sourceLines: 33, totalLines: 45 },
+        { path: 'test/web/styles/file2.css', sourceLines: 23, totalLines: 31 },
+        { path: 'test/java/app/models/file3.java', sourceLines: 15, totalLines: 21 },
+        { path: 'test/web/jsp/file4.jsp', sourceLines: 25, totalLines: 35 }
+      ]));
+
+      fs.writeFileSync(Path.join(this.tasksWorkingFolders.tempDir, 'revisions-report.json'), JSON.stringify([
+        { path: 'test/java/app/file1.java', revisions: 29 },
+        { path: 'test/web/styles/file2.css', revisions: 15 },
+        { path: 'test/java/app/models/file3.java', revisions: 11 },
+        { path: 'test/web/pages/file5.html', revisions: 11 }
+      ]));
+
+      var taskFunctions = this.tasksSetup(hotspotAnalysisTasks, { /*languages: ['java']*/ }, { dateFrom: '2015-03-01' });
+      taskFunctions['hotspot-analysis']().then(function() {
+        var report = JSON.parse(fs.readFileSync(Path.join(outputDir, '103d9a240cc5358f24927d51261fd9dcdb75b314', '2015-03-01_2015-10-22_revisions-hotspot-data.json')));
+        var manifest = JSON.parse(fs.readFileSync(Path.join(outputDir, '103d9a240cc5358f24927d51261fd9dcdb75b314', 'manifest.json')));
+        expect(report).toEqual({
+          children: [
+            {
+              name: 'test',
+              children: [
+                {
+                  name: 'java',
+                  children: [
+                    {
+                      name: 'app',
+                      children: [
+                        {
+                          name: 'file1.java',
+                          children: [],
+                          sourceLines: 33,
+                          totalLines: 45,
+                          revisions: 29,
+                          weight: 1
+                        },
+                        {
+                          name: 'models',
+                          children: [
+                            {
+                              name: 'file3.java',
+                              children: [],
+                              sourceLines: 15,
+                              totalLines: 21,
+                              revisions: 11,
+                              weight: 0.3793103448275862
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  name: 'web',
+                  children: [
+                    {
+                      name: 'styles',
+                      children: [
+                        {
+                          name: 'file2.css',
+                          children: [],
+                          sourceLines: 23,
+                          totalLines: 31,
+                          revisions: 15,
+                          weight: 0.5172413793103449
+                        }
+                      ]
+                    },
+                    {
+                      name: 'jsp',
+                      children: [
+                        {
+                          name: 'file4.jsp',
+                          children: [],
+                          sourceLines: 25,
+                          totalLines: 35,
+                          weight: 0
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        });
+        expect(manifest.enabledDiagrams).toEqual(['sloc']);
         done();
       }).catch(function(err) {
         fail(err);

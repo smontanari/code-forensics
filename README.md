@@ -134,7 +134,7 @@ The results can then be displayed in a word cloud diagram at the url given above
 </table>
 
 ## VCS support
-At the moment code-forensics only works with git based repositories, however support for other version control systems could be easily implemented, also given already the ability of Code Maat to use log data from the most popular ones.
+At the moment code-forensics can work with **git** and **svn** based repositories, however other version control systems could be supported in the future, given the ability of Code Maat to parse log data from the most popular ones.
 
 ## Compatibility
 This software is not meant to be a commercial tool, hence support for various operating systems and different browsers is not a priority. I've tested **code-forensics** on a Mac OS X with different versions of Node.js, and primarily with Chrome as a browser.
