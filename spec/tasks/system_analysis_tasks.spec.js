@@ -20,12 +20,6 @@ describe('System analysis tasks', function() {
   });
 
   describe('system-evolution-analysis', function() {
-    var assertTaskReport = function(file, content) {
-      var reportContent = fs.readFileSync(file);
-      var report = JSON.parse(reportContent.toString());
-      expect(report).toEqual(content);
-    };
-
     var revisionsAnalysisStreams = [
       { analysisName: 'revisions', data:
         [
@@ -119,7 +113,7 @@ describe('System analysis tasks', function() {
           return { fileAnalysisStream: jasmine.createSpy().and.returnValue(s.stream) };
         }));
 
-        var taskFunctions = this.tasksSetup(systemAnalysisTasks,
+        var runtime = this.runtimeSetup(systemAnalysisTasks,
           {
             layerGroups: {
               'test_boundary': [
@@ -130,19 +124,14 @@ describe('System analysis tasks', function() {
           },
           taskParameters
         );
-        var outputDir = this.tasksWorkingFolders.outputDir;
 
-        taskFunctions['system-evolution-analysis']().then(function() {
-          _.each(expectedResults, function(r) {
-            assertTaskReport(
-              Path.join(outputDir, '376716484935bc38610b095a36fabbe9c01527ad', '2016-01-01_2016-02-28_' + r.fileName),
-              r.data
-            );
+        runtime.executePromiseTask('system-evolution-analysis').then(function(taskOutput) {
+          _.each(expectedResults.reports, function(r) {
+            taskOutput.assertOutputReport(('2016-01-01_2016-02-28_' + r.fileName), r.data);
           });
+          taskOutput.assertManifest(expectedResults.manifest);
 
           done();
-        }).catch(function(err) {
-          fail(err);
         });
 
         var expectedArgs = _.map(streams, function(s) { return [s.analysisName]; });
@@ -161,22 +150,30 @@ describe('System analysis tasks', function() {
         'publishes a revisions report and a churn report with data aggregated for all files',
         { dateFrom: '2016-01-01', dateTo: '2016-02-28', timeSplit: 'eom' },
         revisionsAnalysisStreams.concat(churnAnalysisStreams),
-        [
-          {
-            fileName: 'system-revisions-data.json',
-            data: [
-              { name: 'All files', revisions: 94, date: '2016-01-31' },
-              { name: 'All files', revisions: 70, date: '2016-02-28' }
-            ]
-          },
-          {
-            fileName: 'system-churn-data.json',
-            data: [
-              { name: 'All files', addedLines: 102945, deletedLines: 17207, totalLines: 85738, date: '2016-01-31' },
-              { name: 'All files', addedLines:  14127, deletedLines: 11954, totalLines:  2173, date: '2016-02-28' }
-            ]
+        {
+          reports: [
+            {
+              fileName: 'system-revisions-data.json',
+              data: [
+                { name: 'All files', revisions: 94, date: '2016-01-31' },
+                { name: 'All files', revisions: 70, date: '2016-02-28' }
+              ]
+            },
+            {
+              fileName: 'system-churn-data.json',
+              data: [
+                { name: 'All files', addedLines: 102945, deletedLines: 17207, totalLines: 85738, date: '2016-01-31' },
+                { name: 'All files', addedLines:  14127, deletedLines: 11954, totalLines:  2173, date: '2016-02-28' }
+              ]
+            }
+          ],
+          manifest: {
+            reportName: 'system-evolution',
+            parameters: { timeSplit: 'eom' },
+            dateRange: '2016-01-01_2016-02-28',
+            enabledDiagrams: ['revisions-trend', 'churn-trend']
           }
-        ]
+        }
       );
     });
 
@@ -185,11 +182,19 @@ describe('System analysis tasks', function() {
         'publishes a revisions report, a code churn report and a coupling report for each architectural layer of the system',
         { dateFrom: '2016-01-01', dateTo: '2016-02-28', timeSplit: 'eom', layerGroup: 'test_boundary' },
         revisionsAnalysisStreams.concat(churnAnalysisStreams).concat(couplingAnalysisStreams),
-        [
-          { fileName: 'system-revisions-data.json', data: revisionsAnalysisResults },
-          { fileName: 'system-churn-data.json', data: churnAnalysisResults },
-          { fileName: 'system-coupling-data.json', data: couplingAnalysisResults }
-        ]
+        {
+          reports: [
+            { fileName: 'system-revisions-data.json', data: revisionsAnalysisResults },
+            { fileName: 'system-churn-data.json', data: churnAnalysisResults },
+            { fileName: 'system-coupling-data.json', data: couplingAnalysisResults }
+          ],
+          manifest: {
+            reportName: 'system-evolution',
+            parameters: { timeSplit: 'eom', layerGroup: 'test_boundary' },
+            dateRange: '2016-01-01_2016-02-28',
+            enabledDiagrams: ['revisions-trend', 'churn-trend', 'coupling-trend']
+          }
+        }
       );
     });
   });

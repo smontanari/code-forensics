@@ -8,11 +8,7 @@ var rubyTasks  = require_src('tasks/complexity_analysis/ruby'),
     command    = require_src('command');
 
 describe('ruby tasks', function() {
-  var repoDir, tempDir, outputDir;
   beforeEach(function() {
-    repoDir = this.tasksWorkingFolders.repoDir;
-    tempDir = this.tasksWorkingFolders.tempDir;
-    outputDir = this.tasksWorkingFolders.outputDir;
     spyOn(command.Command, 'ensure');
   });
 
@@ -27,33 +23,28 @@ describe('ruby tasks', function() {
       var analysisStream2 = new stream.PassThrough();
       spyOn(command, 'stream').and.returnValues(analysisStream1, analysisStream2);
 
+      var runtime = this.runtimeSetup(rubyTasks);
       _.each(['test_file1.rb', 'test_file2.js', 'test_file3.rb'], function(f) {
-        fs.writeFileSync(Path.join(repoDir, f), '');
+        runtime.prepareRepositoryFile(f, '');
       });
 
-      var taskFunctions = this.tasksSetup(rubyTasks);
-      taskFunctions['ruby-complexity-report']()
-      .on('close', function() {
-        var reportContent = fs.readFileSync(Path.join(tempDir, 'ruby-complexity-report.json'));
-        var report = JSON.parse(reportContent.toString());
-        expect(report.length).toEqual(2);
-        expect(report).toContain({
-          path: "test_file1.rb", totalComplexity: 22, averageComplexity: 7.3,
-          methodComplexity: [
-            { name: 'main#none', complexity: 18.6 },
-            { name: 'chain#linking_to          /absolute/path/test_file1.rb:8', complexity: 1.7 }
-          ]
-        });
-        expect(report).toContain({
-          path: "test_file3.rb", totalComplexity: 95.1, averageComplexity: 8.6,
-          methodComplexity: [
-            { name: 'Module::TestFile2#test_method /absolute/path/test_file3.rb:54', complexity: 26.2 }
-          ]
-        });
-
+      runtime.executeStreamTask('ruby-complexity-report').then(function(taskOutput) {
+        taskOutput.assertTempReport('ruby-complexity-report.json', [
+          {
+            path: "test_file1.rb", totalComplexity: 22, averageComplexity: 7.3,
+            methodComplexity: [
+              { name: 'main#none', complexity: 18.6 },
+              { name: 'chain#linking_to          /absolute/path/test_file1.rb:8', complexity: 1.7 }
+            ]
+          },
+          {
+            path: "test_file3.rb", totalComplexity: 95.1, averageComplexity: 8.6,
+            methodComplexity: [
+              { name: 'Module::TestFile2#test_method /absolute/path/test_file3.rb:54', complexity: 26.2 }
+            ]
+          }
+        ])
         done();
-      }).on('error', function(err) {
-        fail(err);
       });
 
       analysisStream1.push(
@@ -109,36 +100,39 @@ describe('ruby tasks', function() {
         )
       });
 
-      var taskFunctions = this.tasksSetup(rubyTasks, null, { dateFrom: '2015-03-01', targetFile: 'test_abs.rb' });
-      taskFunctions['ruby-complexity-trend-analysis']().then(function() {
-        var reportContent = fs.readFileSync(Path.join(outputDir, 'd319335c98cc00b068ecd0927761ff3f3d693137', '2015-03-01_2015-10-22_complexity-trend-data.json'));
-        var report = JSON.parse(reportContent.toString());
-        expect(report.length).toEqual(2);
-        expect(report).toContain({
-          revision: 123,
-          date: '2015-04-29T23:00:00.000Z',
-          path: 'test_abs.rb',
-          totalComplexity: 22.0,
-          averageComplexity: 7.3,
-          methodComplexity: [
-            { name: 'main#none', complexity: 18.6 },
-            { name: 'chain#linking_to          /absolute/path/test_abs.rb:8', complexity: 1.7 }
-          ]
-        });
-        expect(report).toContain({
-          revision: 456,
-          date: '2015-05-04T23:00:00.000Z',
-          path: 'test_abs.rb',
-          totalComplexity: 95.1,
-          averageComplexity: 8.6,
-          methodComplexity: [
-            { name: 'Module::TestFile2#test_method /absolute/path/test_abs.rb:54', complexity: 26.2 }
-          ]
-        });
+      var runtime = this.runtimeSetup(rubyTasks, null, { dateFrom: '2015-03-01', targetFile: 'test_abs.rb' });
+      runtime.executePromiseTask('ruby-complexity-trend-analysis').then(function(taskOutput) {
+        taskOutput.assertOutputReport('2015-03-01_2015-10-22_complexity-trend-data.json', [
+          {
+            revision: 123,
+            date: '2015-04-29T23:00:00.000Z',
+            path: 'test_abs.rb',
+            totalComplexity: 22.0,
+            averageComplexity: 7.3,
+            methodComplexity: [
+              { name: 'main#none', complexity: 18.6 },
+              { name: 'chain#linking_to          /absolute/path/test_abs.rb:8', complexity: 1.7 }
+            ]
+          },
+          {
+            revision: 456,
+            date: '2015-05-04T23:00:00.000Z',
+            path: 'test_abs.rb',
+            totalComplexity: 95.1,
+            averageComplexity: 8.6,
+            methodComplexity: [
+              { name: 'Module::TestFile2#test_method /absolute/path/test_abs.rb:54', complexity: 26.2 }
+            ]
+          }
+        ]);
 
+        taskOutput.assertManifest({
+          reportName: 'complexity-trend',
+          parameters: { targetFile: 'test_abs.rb' },
+          dateRange: '2015-03-01_2015-10-22',
+          enabledDiagrams: ['total', 'method-mean', 'method-sd']
+        });
         done();
-      }).catch(function(err) {
-        fail(err);
       });
 
       revisionStream1.push("def abs(a,b)\n");

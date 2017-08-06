@@ -8,7 +8,7 @@ var codeMaatReportTasks = require_src('tasks/code_maat_reports_tasks'),
     command             = require_src('command');
 
 describe('CodeMaat report tasks', function() {
-  var taskFunctions, tempDir, repoDir;
+  var runtime;
 
   var assertTaskReport = function(exampleDescription, analysis, taskName, reportFilename) {
     describe(taskName, function() {
@@ -18,20 +18,13 @@ describe('CodeMaat report tasks', function() {
           { fileAnalysisStream: function() { return analysisStream; } }
         );
 
-        taskFunctions[taskName]()
-          .then(function() {
-            var reportContent = fs.readFileSync(Path.join(tempDir, reportFilename));
-            var report = JSON.parse(reportContent.toString());
-            expect(report).toEqual([
-              { path: 'test_file1', testData: 123 },
-              { path: 'test_file2', testData: 456 }
-            ]);
-
-            done();
-          })
-          .catch(function(err) {
-            fail(err);
-          });
+        runtime.executePromiseTask(taskName).then(function(taskOutput) {
+          taskOutput.assertTempReport(reportFilename, [
+            { path: 'test_file1', testData: 123 },
+            { path: 'test_file2', testData: 456 }
+          ]);
+          done();
+        });
 
         expect(codeMaat.analyser).toHaveBeenCalledWith(analysis);
 
@@ -44,15 +37,12 @@ describe('CodeMaat report tasks', function() {
   };
 
   beforeEach(function() {
-    tempDir = this.tasksWorkingFolders.tempDir;
-    repoDir = this.tasksWorkingFolders.repoDir;
-
-    _.each(['test_file1', 'test_file2', 'test_invalid_file'], function(f) {
-      fs.writeFileSync(Path.join(repoDir, f), '');
-    });
     spyOn(command.Command, 'ensure');
-    taskFunctions = this.tasksSetup(codeMaatReportTasks, {
+    runtime = this.runtimeSetup(codeMaatReportTasks, {
       repository: { excludePaths: ['test_invalid_file'] }
+    });
+    _.each(['test_file1', 'test_file2', 'test_invalid_file'], function(f) {
+      runtime.prepareRepositoryFile(f, '');
     });
   });
 

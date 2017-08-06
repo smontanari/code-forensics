@@ -9,12 +9,9 @@ var couplingAnalysisTasks = require_src('tasks/coupling_analysis_tasks'),
     command               = require_src('command');
 
 describe('Coupling analysis tasks', function() {
-  var taskFunctions, outputDir;
-
   beforeEach(function() {
     jasmine.clock().install();
     jasmine.clock().mockDate(new Date('2015-10-22T10:00:00.000Z'));
-    outputDir = this.tasksWorkingFolders.outputDir;
     spyOn(command.Command, 'ensure');
   });
 
@@ -24,15 +21,13 @@ describe('Coupling analysis tasks', function() {
 
   describe('sum-of-coupling-analysis', function() {
     beforeEach(function() {
-      var repoDir = this.tasksWorkingFolders.repoDir;
-      _.each(['test_file1', 'test_file2', 'test_invalid_file'], function(f) {
-        fs.writeFileSync(Path.join(repoDir, f), '');
-      });
-
-      taskFunctions = this.tasksSetup(couplingAnalysisTasks,
+      var runtime = this.runtime = this.runtimeSetup(couplingAnalysisTasks,
         { repository: { excludePaths: ['test_invalid_file'] } },
         { dateFrom: '2015-03-01' }
       );
+      _.each(['test_file1', 'test_file2', 'test_invalid_file'], function(f) {
+        runtime.prepareRepositoryFile(f, '');
+      });
     });
 
     afterEach(function() {
@@ -46,17 +41,18 @@ describe('Coupling analysis tasks', function() {
         { fileAnalysisStream: function() { return analysisStream; } }
       );
 
-      taskFunctions['sum-of-coupling-analysis']().then(function() {
-        var reportContent = fs.readFileSync(Path.join(outputDir, 'cccbd27e6e715fa48728f9f6363785835b73ba58', '2015-03-01_2015-10-22_sum-of-coupling-data.json'));
-        var report = JSON.parse(reportContent.toString());
-        expect(report).toEqual([
+      this.runtime.executePromiseTask('sum-of-coupling-analysis').then(function(taskOutput) {
+        taskOutput.assertOutputReport('2015-03-01_2015-10-22_sum-of-coupling-data.json', [
           { path: 'test_file1', soc: 34 },
           { path: 'test_file2', soc: 62 }
         ]);
 
+        taskOutput.assertManifest({
+          reportName: 'sum-of-coupling',
+          dateRange: '2015-03-01_2015-10-22',
+          enabledDiagrams: ['sum-of-coupling']
+        });
         done();
-      }).catch(function(err) {
-        fail(err);
       });
 
       expect(codeMaat.analyser).toHaveBeenCalledWith('soc');
@@ -112,18 +108,18 @@ describe('Coupling analysis tasks', function() {
     ];
 
     beforeEach(function() {
-      fs.writeFileSync(Path.join(this.tasksWorkingFolders.tempDir, 'sloc-report.json'), JSON.stringify([
+      this.runtime = this.runtimeSetup(couplingAnalysisTasks,
+        {},
+        { dateFrom: '2016-01-01', dateTo: '2016-03-31', timeSplit: 'eom', targetFile: 'test/target_file' }
+      );
+
+      this.runtime.prepareTempReport('sloc-report.json', [
         { path: 'test/a/file1', sourceLines: 33, totalLines: 35 },
         { path: 'test/b/file2', sourceLines: 23, totalLines: 28 },
         { path: 'test/c/file3', sourceLines: 15, totalLines: 21 },
         { path: 'test/d/file4', sourceLines: 25, totalLines: 35 },
         { path: 'test/target_file', sourceLines: 55, totalLines: 62 }
-      ]));
-
-      taskFunctions = this.tasksSetup(couplingAnalysisTasks,
-        null,
-        { dateFrom: '2016-01-01', dateTo: '2016-03-31', timeSplit: 'eom', targetFile: 'test/target_file' }
-      );
+      ]);
     });
 
     afterEach(function() {
@@ -144,7 +140,8 @@ describe('Coupling analysis tasks', function() {
       ];
 
       var couplingAnalysisIndex = 0,
-          churnAnalysisIndex = 0;
+          churnAnalysisIndex    = 0;
+
       spyOn(codeMaat, 'analyser').and.callFake(function(analysis) {
         if (analysis === 'coupling') {
           return { fileAnalysisStream: jasmine.createSpy().and.returnValues(couplingStreams[couplingAnalysisIndex++]) };
@@ -154,9 +151,8 @@ describe('Coupling analysis tasks', function() {
         }
       });
 
-      taskFunctions['temporal-coupling-analysis']().then(function() {
-        assertTaskReport(
-          Path.join(outputDir, '7a25dcda038c13953d38dcf1969cf09fadf23ad0', '2016-01-01_2016-01-31_temporal-coupling-data.json'),
+      this.runtime.executePromiseTask('temporal-coupling-analysis').then(function(taskOutput) {
+        taskOutput.assertOutputReport('2016-01-01_2016-01-31_temporal-coupling-data.json',
           {
             children: [
               {
@@ -235,8 +231,7 @@ describe('Coupling analysis tasks', function() {
           }
         );
 
-        assertTaskReport(
-          Path.join(outputDir, '7a25dcda038c13953d38dcf1969cf09fadf23ad0', '2016-03-01_2016-03-31_temporal-coupling-data.json'),
+        taskOutput.assertOutputReport('2016-03-01_2016-03-31_temporal-coupling-data.json',
           {
             children: [
               {
@@ -315,9 +310,13 @@ describe('Coupling analysis tasks', function() {
           }
         );
 
-        var missingReportFile = Path.join(outputDir, '7a25dcda038c13953d38dcf1969cf09fadf23ad0', '2016-02-01_2016-02-29_temporal-coupling-data.json');
-        expect(fs.existsSync(missingReportFile)).toBe(false);
+        taskOutput.assertMissingOutputReport('2016-02-01_2016-02-29_temporal-coupling-data.json');
 
+        taskOutput.assertManifest({
+          reportName: 'temporal-coupling',
+          dateRange: '2016-01-01_2016-03-31',
+          enabledDiagrams: ['temporal-coupling']
+        });
         done();
       });
 

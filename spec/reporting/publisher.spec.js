@@ -237,12 +237,31 @@ describe('Publisher', function() {
         }, this.context);
       });
 
-      it('exposes the relevane context parameters for the analysis report', function(done) {
+      it('exposes the relevant context parameters for the analysis report', function(done) {
         this.subject.addReportFile();
 
         this.subject.createManifest().then(function() {
           var manifest = utils.json.objectToFile.calls.mostRecent().args[1];
           expect(manifest.parameters).toEqual({ param1: 'test_param1' });
+          done();
+        });
+      });
+    });
+
+    describe('callback arguments', function() {
+      beforeEach(function() {
+        spyOn(utils.json, 'objectToFile').and.returnValue(Q());
+        this.subject = new Publisher({
+          name: 'test-task',
+          reportFile: 'test-file.json'
+        }, this.context);
+      });
+
+      it('exposes the reportId value', function(done) {
+        this.subject.addReportFile();
+
+        this.subject.createManifest().then(function(reportId) {
+          expect(reportId).toEqual('c8c1dcae8f21797ee19a82d7958caf0aba7da1c6');
           done();
         });
       });
