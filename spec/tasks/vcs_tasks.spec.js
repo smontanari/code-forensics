@@ -8,7 +8,7 @@ var gitTasks   = require_src('tasks/vcs_tasks'),
     command    = require_src('command');
 
 describe('VCS Tasks', function() {
-  var taskFunctions, mockAdapter;
+  var runtime, mockAdapter;
   beforeEach(function() {
     mockAdapter = jasmine.createSpyObj('vcsAdapter', ['logStream', 'commitMessagesStream']);
     spyOn(vcsSupport, 'adapter').and.returnValue(mockAdapter);
@@ -17,7 +17,7 @@ describe('VCS Tasks', function() {
 
   describe('when files already exist', function() {
     beforeEach(function() {
-      taskFunctions = this.tasksSetup(gitTasks, null, {
+      runtime = this.runtimeSetup(gitTasks, null, {
         dateFrom: '2016-01-01', dateTo: '2016-02-28', timeSplit: 'eom'
       });
     });
@@ -28,20 +28,15 @@ describe('VCS Tasks', function() {
 
     var assertNoOverriding = function(adapterMethod, taskName, filenamePrefix) {
       it('does not overwrite an existing file', function(done) {
-        var tempDir = this.tasksWorkingFolders.tempDir;
-        fs.writeFileSync(Path.join(tempDir, filenamePrefix + '_2016-01-01_2016-01-31.log'), 'pre-existing content');
+        runtime.prepareTempFile(filenamePrefix + '_2016-01-01_2016-01-31.log', 'pre-existing content');
 
         var outStream = new stream.PassThrough();
         mockAdapter[adapterMethod].and.returnValues(outStream);
 
-        taskFunctions[taskName]().then(function() {
-          var logContent1 = fs.readFileSync(Path.join(tempDir, filenamePrefix + '_2016-01-01_2016-01-31.log'));
-          var logContent2 = fs.readFileSync(Path.join(tempDir, filenamePrefix + '_2016-02-01_2016-02-28.log'));
-          expect(logContent1.toString()).toEqual('pre-existing content');
-          expect(logContent2.toString()).toEqual("log-line1\nlog-line2\nlog-line3\n");
+        runtime.executePromiseTask(taskName).then(function(taskOutput) {
+          taskOutput.assertTempFile(filenamePrefix + '_2016-01-01_2016-01-31.log', 'pre-existing content');
+          taskOutput.assertTempFile(filenamePrefix + '_2016-02-01_2016-02-28.log', "log-line1\nlog-line2\nlog-line3\n");
           done();
-        }).catch(function(err) {
-          fail(err);
         });
 
         outStream.push("log-line1\n");
@@ -57,7 +52,7 @@ describe('VCS Tasks', function() {
 
   describe('when no vcs files exist', function() {
     beforeEach(function() {
-      taskFunctions = this.tasksSetup(gitTasks, {
+      runtime = this.runtimeSetup(gitTasks, {
         repository: { excludePaths: ['test_invalid_file'] },
         contributors: {
           'Team 1': ['Developer 1', 'Developer_2'],
@@ -74,23 +69,16 @@ describe('VCS Tasks', function() {
       });
 
       it('writes the vcs log content for each period into the temp folder and creates a normalised copy', function(done) {
-        var tempDir = this.tasksWorkingFolders.tempDir,
-            repoDir = this.tasksWorkingFolders.repoDir;
-
         _.each(['test_file1', 'test_file2', 'test_file3', 'test_file4', 'test_invalid_file'], function(f) {
-          fs.writeFileSync(Path.join(repoDir, f), '');
+          runtime.prepareRepositoryFile(f, '');
         });
 
         var outStream1 = new stream.PassThrough();
         var outStream2 = new stream.PassThrough();
         mockAdapter.logStream.and.returnValues(outStream1, outStream2);
 
-        taskFunctions['vcs-log-dump']().then(function() {
-          var logContent1 = fs.readFileSync(Path.join(tempDir, 'vcslog_2016-03-01_2016-03-31.log'));
-          var logContent2 = fs.readFileSync(Path.join(tempDir, 'vcslog_2016-04-01_2016-04-30.log'));
-          var logContent3 = fs.readFileSync(Path.join(tempDir, 'vcslog_normalised_2016-03-01_2016-03-31.log'));
-          var logContent4 = fs.readFileSync(Path.join(tempDir, 'vcslog_normalised_2016-04-01_2016-04-30.log'));
-          expect(logContent1.toString()).toEqual([
+        runtime.executePromiseTask('vcs-log-dump').then(function(taskOutput) {
+          taskOutput.assertTempFile('vcslog_2016-03-01_2016-03-31.log', [
             '--98b656f--2016-10-31--Developer 1',
             "10\t0\ttest_file1",
             '',
@@ -104,7 +92,7 @@ describe('VCS Tasks', function() {
             "6\t8\ttest_file4\n"
           ].join("\n"));
 
-          expect(logContent2.toString()).toEqual([
+          taskOutput.assertTempFile('vcslog_2016-04-01_2016-04-30.log', [
             '--98b656f--2016-11-14--Developer 1',
             "31\t12\ttest_file2",
             "1\t1\ttest_invalid_file",
@@ -115,7 +103,8 @@ describe('VCS Tasks', function() {
             "-\t-\ttest_file2",
             "6\t8\ttest_file4\n"
           ].join("\n"));
-          expect(logContent3.toString()).toEqual([
+
+          taskOutput.assertTempFile('vcslog_normalised_2016-03-01_2016-03-31.log',[
             '--98b656f--2016-10-31--Developer 1',
             "10\t0\ttest_file1",
             '',
@@ -126,7 +115,8 @@ describe('VCS Tasks', function() {
             "0\t1\ttest_file3",
             "6\t8\ttest_file4\n"
           ].join("\n"));
-          expect(logContent4.toString()).toEqual([
+
+          taskOutput.assertTempFile('vcslog_normalised_2016-04-01_2016-04-30.log', [
             '--98b656f--2016-11-14--Developer 1',
             "31\t12\ttest_file2",
             '',
@@ -137,8 +127,6 @@ describe('VCS Tasks', function() {
             "6\t8\ttest_file4\n"
           ].join("\n"));
           done();
-        }).catch(function(err) {
-          fail(err);
         });
 
         var logLines1 = [
@@ -176,19 +164,14 @@ describe('VCS Tasks', function() {
 
     describe('vcs-commit-messages', function() {
       it('writes the vcs commit messages for each period into the temp folder', function(done) {
-        var tempDir = this.tasksWorkingFolders.tempDir;
         var outStream1 = new stream.PassThrough();
         var outStream2 = new stream.PassThrough();
         mockAdapter.commitMessagesStream.and.returnValues(outStream1, outStream2);
 
-        taskFunctions['vcs-commit-messages']().then(function() {
-          var logContent1 = fs.readFileSync(Path.join(tempDir, 'vcs_commit_messages_2016-03-01_2016-03-31.log'));
-          var logContent2 = fs.readFileSync(Path.join(tempDir, 'vcs_commit_messages_2016-04-01_2016-04-30.log'));
-          expect(logContent1.toString()).toEqual("log-line1\nlog-line2\n");
-          expect(logContent2.toString()).toEqual("log-line1\nlog-line2\nlog-line3\n");
+        runtime.executePromiseTask('vcs-commit-messages').then(function(taskOutput) {
+          taskOutput.assertTempFile('vcs_commit_messages_2016-03-01_2016-03-31.log', "log-line1\nlog-line2\n");
+          taskOutput.assertTempFile('vcs_commit_messages_2016-04-01_2016-04-30.log', "log-line1\nlog-line2\nlog-line3\n");
           done();
-        }).catch(function(err) {
-          fail(err);
         });
 
         outStream1.push('log-line1\n');

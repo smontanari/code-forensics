@@ -14,24 +14,17 @@ describe('Code analysis tasks', function() {
     });
 
     it('writes a report on the number of lines of code for each file in the repository', function(done) {
-      var repoDir = this.tasksWorkingFolders.repoDir;
-      var tempDir = this.tasksWorkingFolders.tempDir;
-      fs.writeFileSync(Path.join(repoDir, 'test_file1.js'), "line1\nline2");
-      fs.writeFileSync(Path.join(repoDir, 'test_file2.rb'), "line1\nline2\nline3\n");
+      var runtime = this.runtimeSetup(codeAnalysisTasks);
 
-      var taskFunctions = this.tasksSetup(codeAnalysisTasks);
-      taskFunctions['sloc-report']()
-      .on('close', function() {
-        var reportContent = fs.readFileSync(Path.join(tempDir, 'sloc-report.json'));
-        var report = JSON.parse(reportContent.toString());
-        expect(report).toEqual([
+      runtime.prepareRepositoryFile('test_file1.js', "line1\nline2");
+      runtime.prepareRepositoryFile('test_file2.rb', "line1\nline2\nline3\n");
+
+      runtime.executeStreamTask('sloc-report').then(function(taskOutput) {
+        taskOutput.assertTempReport('sloc-report.json', [
           { path: 'test_file1.js', sourceLines: 2, totalLines: 2 },
           { path: 'test_file2.rb', sourceLines: 3, totalLines: 3 }
         ]);
-
         done();
-      }).on('error', function(err) {
-        fail(err);
       });
     });
   });
@@ -55,7 +48,6 @@ describe('Code analysis tasks', function() {
     it('publishes an analysis on the sloc trend for a given file in the repository', function(done) {
       var revisionStream1 = new stream.PassThrough();
       var revisionStream2 = new stream.PassThrough();
-      var outputDir = this.tasksWorkingFolders.outputDir;
 
       mockAdapter.revisions.and.returnValue([
         { revisionId: 123, date: '2015-04-29T23:00:00.000Z' },
@@ -63,18 +55,19 @@ describe('Code analysis tasks', function() {
       ]);
       mockAdapter.showRevisionStream.and.returnValues(revisionStream1, revisionStream2);
 
-      var taskFunctions = this.tasksSetup(codeAnalysisTasks, null, { dateFrom: '2015-03-01', targetFile: 'test_abs.rb' });
-      taskFunctions['sloc-trend-analysis']().then(function() {
-        var reportContent = fs.readFileSync(Path.join(outputDir, 'dbe9f7623278c6f5b3acbd89c20b4b5d70661491', '2015-03-01_2015-10-22_sloc-trend-data.json'));
-        var report = JSON.parse(reportContent.toString());
-        expect(report).toEqual([
+      var runtime = this.runtimeSetup(codeAnalysisTasks, null, { dateFrom: '2015-03-01', targetFile: 'test_abs.rb' });
+      runtime.executePromiseTask('sloc-trend-analysis').then(function(taskOutput) {
+        taskOutput.assertOutputReport('2015-03-01_2015-10-22_sloc-trend-data.json', [
           { revision: 123, date: '2015-04-29T23:00:00.000Z', path: 'test_abs.rb', sourceLines: 3, totalLines: 3 },
           { revision: 456, date: '2015-05-04T23:00:00.000Z', path: 'test_abs.rb', sourceLines: 5, totalLines: 5 }
         ]);
-
+        taskOutput.assertManifest({
+          reportName: 'sloc-trend',
+          parameters: { targetFile: 'test_abs.rb' },
+          dateRange: '2015-03-01_2015-10-22',
+          enabledDiagrams: ['sloc-trend']
+        });
         done();
-      }).catch(function(err) {
-        fail(err);
       });
 
       _.times(3, function(n) {

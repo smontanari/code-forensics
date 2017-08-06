@@ -20,35 +20,25 @@ describe('Misc Tasks', function() {
 
     describe('with the layer group parameter', function() {
       it('generates a layer grouping file', function(done) {
-        var tempDir = this.tasksWorkingFolders.tempDir;
-
-        var taskFunctions = this.tasksSetup(miscTasks, contextConfig, { layerGroup: 'test_group' });
-        taskFunctions['generate-layer-grouping-file']().then(function() {
-          var fileContent = fs.readFileSync(Path.join(tempDir, 'layer-grouping.txt'));
-          expect(fileContent.toString()).toEqual([
+        var runtime = this.runtimeSetup(miscTasks, contextConfig, { layerGroup: 'test_group' });
+        runtime.executePromiseTask('generate-layer-grouping-file').then(function(taskOutput) {
+          taskOutput.assertTempFile('layer-grouping.txt', [
             'test/path1 => Test Layer1',
             '^test\\/path2\\/((?!.*--abc\\.)).*\\/files$ => Test Layer1',
             'test_path3 => Test Layer2',
             '^test\\/path4\\/.*\\.cf$ => Test Layer2'
           ].join("\n"));
-
           done();
-        }).catch(function(err) {
-          fail(err);
         });
       });
     });
 
     describe('with no layer group parameter', function() {
       it('does not generate a layer grouping file', function(done) {
-        var tempDir = this.tasksWorkingFolders.tempDir;
-
-        var taskFunctions = this.tasksSetup(miscTasks, contextConfig);
-        taskFunctions['generate-layer-grouping-file']().then(function() {
-          expect(fs.existsSync(Path.join(tempDir, 'layer-grouping.txt'))).toBeFalsy();
+        var runtime = this.runtimeSetup(miscTasks, contextConfig);
+        runtime.executePromiseTask('generate-layer-grouping-file').then(function(taskOutput) {
+          taskOutput.assertMissingTempReport('layer-grouping.txt');
           done();
-        }).catch(function(err) {
-          fail(err);
         });
       });
     });
