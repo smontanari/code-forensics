@@ -310,8 +310,6 @@ describe('Social analysis tasks', function() {
   });
 
   describe('developer-coupling-analysis', function() {
-    var couplingStream, analysisStream;
-
     beforeEach(function() {
       var runtime = this.runtime = this.runtimeSetup(socialAnalysisTasks,
         {
@@ -324,166 +322,199 @@ describe('Social analysis tasks', function() {
         { dateFrom: '2016-01-01', maxCoupledFiles: 2 }
       );
 
-      this.runtime.prepareTempReport('authors-report.json', [
-        { path: "test_file1", authors: 4, revisions: 54 },
-        { path: "test_file2", authors: 2, revisions: 68 },
-        { path: "test_file3", authors: 3, revisions: 24 },
-        { path: "test_file4", authors: 5, revisions: 52 },
-        { path: "test_file5", authors: 6, revisions: 91 },
-        { path: "test_file6", authors: 1, revisions: 42 }
-      ]);
-
-      this.runtime.prepareTempReport('code-ownership-report.json', [
-        { path: "test_file1", author: 'Dev1', addedLines: 12, deletedLines: 4 },
-        { path: "test_file1", author: 'Dev2', addedLines: 5, deletedLines: 0 },
-        { path: "test_file1", author: 'Dev3', addedLines: 6, deletedLines: 1 },
-        { path: "test_file2", author: 'Dev2', addedLines: 15, deletedLines: 5 },
-        { path: "test_file2", author: 'Dev5', addedLines: 3, deletedLines: 2 },
-        { path: "test_file3", author: 'Dev3', addedLines: 7, deletedLines: 3 },
-        { path: "test_file3", author: 'Dev2', addedLines: 4, deletedLines: 1 },
-        { path: "test_file4", author: 'Dev5', addedLines: 9, deletedLines: 0 },
-        { path: "test_file4", author: 'Dev1', addedLines: 3, deletedLines: 0 },
-        { path: "test_file5", author: 'Dev4', addedLines: 5, deletedLines: 0 },
-        { path: "test_file5", author: 'Dev4', addedLines: 5, deletedLines: 0 },
-        { path: "test_file6", author: 'Dev5', addedLines: 14, deletedLines: 0 }
-      ]);
-
       _.each([
         'test_file1', 'test_file2', 'test_file3', 'test_file4', 'test_file5', 'test_file6', 'test_invalid_file'
         ], function(f) {
         runtime.prepareRepositoryFile(f, '');
       });
-
-      couplingStream = new stream.PassThrough({ objectMode: true });
-      analysisStream = new stream.PassThrough({ objectMode: true });
-
-      spyOn(codeMaat, 'analyser').and.returnValues(
-        { fileAnalysisStream: function() { return couplingStream; } },
-        { fileAnalysisStream: function() { return analysisStream; } }
-      );
     });
 
-    afterEach(function() {
-      this.clearTemp();
-      this.clearRepo();
-      this.clearOutput();
-    });
+    describe('when the VCS type is supported by all analyses', function() {
+      var couplingStream, commAnalysisStream;
 
-    it('publishes a report on files with the most authors and the respective coupling between main developers', function(done) {
-      this.runtime.executePromiseTask('developer-coupling-analysis').then(function(taskOutput) {
-        taskOutput.assertOutputReport('2016-01-01_2016-10-22_main-dev-coupling-data.json',
-          {
-            children: [
-              {
-                path: 'test_file1',
-                authors: 4,
-                revisions: 54,
-                mainDev: 'Dev1',
-                ownership: 52,
-                weight: 0.5934065934065934,
-                coupledEntries: [
-                  { path: 'test_file4', couplingDegree: 41, revisionsAvg: 22 },
-                  { path: 'test_file3', couplingDegree: 23, revisionsAvg: 12 }
-                ]
-              },
-              {
-                path: 'test_file2',
-                authors: 2,
-                revisions: 68,
-                mainDev: 'Dev2',
-                ownership: 83,
-                weight: 0.7472527472527473,
-                coupledEntries: [
-                  { path: 'test_file5', couplingDegree: 66, revisionsAvg: 31 }
-                ]
-              },
-              {
-                path: 'test_file3',
-                authors: 3,
-                revisions: 24,
-                mainDev: 'Dev3',
-                ownership: 64,
-                weight: 0.26373626373626374,
-                coupledEntries: [
-                  { path: 'test_file5', couplingDegree: 49, revisionsAvg: 29 },
-                  { path: 'test_file1', couplingDegree: 23, revisionsAvg: 12 }
-                ]
-              },
-              {
-                path: 'test_file4',
-                authors: 5,
-                revisions: 52,
-                mainDev: 'Dev5',
-                ownership: 75,
-                weight: 0.5714285714285714,
-                coupledEntries: [
-                  { path: 'test_file1', couplingDegree: 41, revisionsAvg: 22 }
-                ]
-              },
-              {
-                path: 'test_file5',
-                authors: 6,
-                revisions: 91,
-                mainDev: 'Dev4',
-                ownership: 100,
-                weight: 1,
-                coupledEntries: [
-                  { path: 'test_file2', couplingDegree: 66, revisionsAvg: 31 },
-                  { path: 'test_file3', couplingDegree: 49, revisionsAvg: 29 }
-                ]
-              }
-            ]
-          }
-        );
-
-        taskOutput.assertManifest({
-          reportName: 'developer-coupling',
-          parameters: { maxCoupledFiles: 2 },
-          dateRange: '2016-01-01_2016-10-22',
-          enabledDiagrams: ['main-developer-coupling', 'communication-network']
-        });
-        done();
-      });
-
-      expect(codeMaat.analyser.calls.allArgs()).toEqual([['coupling'], ['communication']]);
-
-      couplingStream.push({ path: 'test_invalid_file', coupledPath: 'test_file2', couplingDegree: 74, revisionsAvg: 68 });
-      couplingStream.push({ path: 'test_file2', coupledPath: 'test_file5', couplingDegree: 66, revisionsAvg: 31 });
-      couplingStream.push({ path: 'test_file5', coupledPath: 'test_file3', couplingDegree: 49, revisionsAvg: 29 });
-      couplingStream.push({ path: 'test_file4', coupledPath: 'test_file1', couplingDegree: 41, revisionsAvg: 22 });
-      couplingStream.push({ path: 'test_file1', coupledPath: 'test_file3', couplingDegree: 23, revisionsAvg: 12 });
-      couplingStream.push({ path: 'test_file6', coupledPath: 'test_invalid_file', couplingDegree: 37, revisionsAvg: 18 });
-      couplingStream.push({ path: 'test_file1', coupledPath: 'test_file5', couplingDegree: 30, revisionsAvg: 5 });
-      couplingStream.end();
-      analysisStream.end();
-    });
-
-    it('publishes a report on the coupling between each pair of authors', function(done) {
-      this.runtime.executePromiseTask('developer-coupling-analysis').then(function(taskOutput) {
-        taskOutput.assertOutputReport('2016-01-01_2016-10-22_communication-network-data.json', [
-          { developer: { name: 'Dev1', team: 'Team 1' }, coupledDeveloper: { name: 'Dev2', team: 'Team 1' }, sharedCommits: 65, couplingStrength: 55 },
-          { developer: { name: 'Dev3', team: 'Team 2' }, coupledDeveloper: { name: 'Dev1', team: 'Team 1' }, sharedCommits: 194, couplingStrength: 51 },
-          { developer: { name: 'Dev4', team: 'Team 2' }, coupledDeveloper: { name: 'Dev5', team: 'Team 2' }, sharedCommits: 62, couplingStrength: 48 }
+      beforeEach(function() {
+        this.runtime.prepareTempReport('authors-report.json', [
+          { path: "test_file1", authors: 4, revisions: 54 },
+          { path: "test_file2", authors: 2, revisions: 68 },
+          { path: "test_file3", authors: 3, revisions: 24 },
+          { path: "test_file4", authors: 5, revisions: 52 },
+          { path: "test_file5", authors: 6, revisions: 91 },
+          { path: "test_file6", authors: 1, revisions: 42 }
         ]);
 
-        taskOutput.assertManifest({
-          reportName: 'developer-coupling',
-          parameters: { maxCoupledFiles: 2 },
-          dateRange: '2016-01-01_2016-10-22',
-          enabledDiagrams: ['main-developer-coupling', 'communication-network']
-        });
+        this.runtime.prepareTempReport('code-ownership-report.json', [
+          { path: "test_file1", author: 'Dev1', addedLines: 12, deletedLines: 4 },
+          { path: "test_file1", author: 'Dev2', addedLines: 5, deletedLines: 0 },
+          { path: "test_file1", author: 'Dev3', addedLines: 6, deletedLines: 1 },
+          { path: "test_file2", author: 'Dev2', addedLines: 15, deletedLines: 5 },
+          { path: "test_file2", author: 'Dev5', addedLines: 3, deletedLines: 2 },
+          { path: "test_file3", author: 'Dev3', addedLines: 7, deletedLines: 3 },
+          { path: "test_file3", author: 'Dev2', addedLines: 4, deletedLines: 1 },
+          { path: "test_file4", author: 'Dev5', addedLines: 9, deletedLines: 0 },
+          { path: "test_file4", author: 'Dev1', addedLines: 3, deletedLines: 0 },
+          { path: "test_file5", author: 'Dev4', addedLines: 5, deletedLines: 0 },
+          { path: "test_file5", author: 'Dev4', addedLines: 5, deletedLines: 0 },
+          { path: "test_file6", author: 'Dev5', addedLines: 14, deletedLines: 0 }
+        ]);
 
-        done();
+        couplingStream = new stream.PassThrough({ objectMode: true });
+        commAnalysisStream = new stream.PassThrough({ objectMode: true });
+
+        spyOn(codeMaat, 'analyser').and.callFake(function(instruction) {
+          return {
+            'entity-ownership': { isSupported: _.stubTrue },
+            coupling: { isSupported: _.stubTrue, fileAnalysisStream: function() { return couplingStream; } },
+            communication: { isSupported: _.stubTrue, fileAnalysisStream: function() { return commAnalysisStream; } }
+          }[instruction];
+        });
       });
 
-      analysisStream.push({ author: 'Dev1', coupledAuthor: 'Dev2', sharedCommits: 65, couplingStrength: 55 });
-      analysisStream.push({ author: 'Dev2', coupledAuthor: 'Dev1', sharedCommits: 65, couplingStrength: 55 });
-      analysisStream.push({ author: 'Dev3', coupledAuthor: 'Dev1', sharedCommits: 194, couplingStrength: 51 });
-      analysisStream.push({ author: 'Dev1', coupledAuthor: 'Dev3', sharedCommits: 194, couplingStrength: 51 });
-      analysisStream.push({ author: 'Dev4', coupledAuthor: 'Dev5', sharedCommits: 62, couplingStrength: 48 });
-      analysisStream.push({ author: 'Dev5', coupledAuthor: 'Dev4', sharedCommits: 62, couplingStrength: 48 });
-      analysisStream.end();
-      couplingStream.end();
+      afterEach(function() {
+        this.clearTemp();
+        this.clearRepo();
+        this.clearOutput();
+      });
+
+      it('publishes a report on ownership and communication coupling between main developers', function(done) {
+        this.runtime.executePromiseTask('developer-coupling-analysis').then(function(taskOutput) {
+          taskOutput.assertOutputReport('2016-01-01_2016-10-22_main-dev-coupling-data.json',
+            {
+              children: [
+                {
+                  path: 'test_file1',
+                  authors: 4,
+                  revisions: 54,
+                  mainDev: 'Dev1',
+                  ownership: 52,
+                  weight: 0.5934065934065934,
+                  coupledEntries: [
+                    { path: 'test_file4', couplingDegree: 41, revisionsAvg: 22 },
+                    { path: 'test_file3', couplingDegree: 23, revisionsAvg: 12 }
+                  ]
+                },
+                {
+                  path: 'test_file2',
+                  authors: 2,
+                  revisions: 68,
+                  mainDev: 'Dev2',
+                  ownership: 83,
+                  weight: 0.7472527472527473,
+                  coupledEntries: [
+                    { path: 'test_file5', couplingDegree: 66, revisionsAvg: 31 }
+                  ]
+                },
+                {
+                  path: 'test_file3',
+                  authors: 3,
+                  revisions: 24,
+                  mainDev: 'Dev3',
+                  ownership: 64,
+                  weight: 0.26373626373626374,
+                  coupledEntries: [
+                    { path: 'test_file5', couplingDegree: 49, revisionsAvg: 29 },
+                    { path: 'test_file1', couplingDegree: 23, revisionsAvg: 12 }
+                  ]
+                },
+                {
+                  path: 'test_file4',
+                  authors: 5,
+                  revisions: 52,
+                  mainDev: 'Dev5',
+                  ownership: 75,
+                  weight: 0.5714285714285714,
+                  coupledEntries: [
+                    { path: 'test_file1', couplingDegree: 41, revisionsAvg: 22 }
+                  ]
+                },
+                {
+                  path: 'test_file5',
+                  authors: 6,
+                  revisions: 91,
+                  mainDev: 'Dev4',
+                  ownership: 100,
+                  weight: 1,
+                  coupledEntries: [
+                    { path: 'test_file2', couplingDegree: 66, revisionsAvg: 31 },
+                    { path: 'test_file3', couplingDegree: 49, revisionsAvg: 29 }
+                  ]
+                }
+              ]
+            }
+          );
+
+          taskOutput.assertOutputReport('2016-01-01_2016-10-22_communication-network-data.json', [
+            { developer: { name: 'Dev1', team: 'Team 1' }, coupledDeveloper: { name: 'Dev2', team: 'Team 1' }, sharedCommits: 65, couplingStrength: 55 },
+            { developer: { name: 'Dev3', team: 'Team 2' }, coupledDeveloper: { name: 'Dev1', team: 'Team 1' }, sharedCommits: 194, couplingStrength: 51 },
+            { developer: { name: 'Dev4', team: 'Team 2' }, coupledDeveloper: { name: 'Dev5', team: 'Team 2' }, sharedCommits: 62, couplingStrength: 48 }
+          ]);
+
+          taskOutput.assertManifest({
+            reportName: 'developer-coupling',
+            parameters: { maxCoupledFiles: 2 },
+            dateRange: '2016-01-01_2016-10-22',
+            enabledDiagrams: ['main-developer-coupling', 'communication-network']
+          });
+          done();
+        });
+
+        couplingStream.push({ path: 'test_invalid_file', coupledPath: 'test_file2', couplingDegree: 74, revisionsAvg: 68 });
+        couplingStream.push({ path: 'test_file2', coupledPath: 'test_file5', couplingDegree: 66, revisionsAvg: 31 });
+        couplingStream.push({ path: 'test_file5', coupledPath: 'test_file3', couplingDegree: 49, revisionsAvg: 29 });
+        couplingStream.push({ path: 'test_file4', coupledPath: 'test_file1', couplingDegree: 41, revisionsAvg: 22 });
+        couplingStream.push({ path: 'test_file1', coupledPath: 'test_file3', couplingDegree: 23, revisionsAvg: 12 });
+        couplingStream.push({ path: 'test_file6', coupledPath: 'test_invalid_file', couplingDegree: 37, revisionsAvg: 18 });
+        couplingStream.push({ path: 'test_file1', coupledPath: 'test_file5', couplingDegree: 30, revisionsAvg: 5 });
+        couplingStream.end();
+        commAnalysisStream.push({ author: 'Dev1', coupledAuthor: 'Dev2', sharedCommits: 65, couplingStrength: 55 });
+        commAnalysisStream.push({ author: 'Dev2', coupledAuthor: 'Dev1', sharedCommits: 65, couplingStrength: 55 });
+        commAnalysisStream.push({ author: 'Dev3', coupledAuthor: 'Dev1', sharedCommits: 194, couplingStrength: 51 });
+        commAnalysisStream.push({ author: 'Dev1', coupledAuthor: 'Dev3', sharedCommits: 194, couplingStrength: 51 });
+        commAnalysisStream.push({ author: 'Dev4', coupledAuthor: 'Dev5', sharedCommits: 62, couplingStrength: 48 });
+        commAnalysisStream.push({ author: 'Dev5', coupledAuthor: 'Dev4', sharedCommits: 62, couplingStrength: 48 });
+        commAnalysisStream.end();
+      });
+    });
+
+    describe('when the coupling analysis does not support the vcs type', function() {
+      var commAnalysisStream;
+      beforeEach(function() {
+        commAnalysisStream = new stream.PassThrough({ objectMode: true });
+
+        spyOn(codeMaat, 'analyser').and.callFake(function(instruction) {
+          return {
+            'entity-ownership': { isSupported: _.stubFalse },
+            coupling: { isSupported: _.stubTrue },
+            communication: { isSupported: _.stubTrue, fileAnalysisStream: function() { return commAnalysisStream; } }
+          }[instruction];
+        });
+      });
+
+      it('publishes a report on communication coupling only', function(done) {
+        this.runtime.executePromiseTask('developer-coupling-analysis').then(function(taskOutput) {
+          taskOutput.assertMissingOutputReport('2016-01-01_2016-10-22_main-dev-coupling-data.json');
+          taskOutput.assertOutputReport('2016-01-01_2016-10-22_communication-network-data.json', [
+            { developer: { name: 'Dev1', team: 'Team 1' }, coupledDeveloper: { name: 'Dev2', team: 'Team 1' }, sharedCommits: 65, couplingStrength: 55 },
+            { developer: { name: 'Dev3', team: 'Team 2' }, coupledDeveloper: { name: 'Dev1', team: 'Team 1' }, sharedCommits: 194, couplingStrength: 51 },
+            { developer: { name: 'Dev4', team: 'Team 2' }, coupledDeveloper: { name: 'Dev5', team: 'Team 2' }, sharedCommits: 62, couplingStrength: 48 }
+          ]);
+
+          taskOutput.assertManifest({
+            reportName: 'developer-coupling',
+            parameters: { maxCoupledFiles: 2 },
+            dateRange: '2016-01-01_2016-10-22',
+            enabledDiagrams: ['communication-network']
+          });
+          done();
+        });
+
+        commAnalysisStream.push({ author: 'Dev1', coupledAuthor: 'Dev2', sharedCommits: 65, couplingStrength: 55 });
+        commAnalysisStream.push({ author: 'Dev2', coupledAuthor: 'Dev1', sharedCommits: 65, couplingStrength: 55 });
+        commAnalysisStream.push({ author: 'Dev3', coupledAuthor: 'Dev1', sharedCommits: 194, couplingStrength: 51 });
+        commAnalysisStream.push({ author: 'Dev1', coupledAuthor: 'Dev3', sharedCommits: 194, couplingStrength: 51 });
+        commAnalysisStream.push({ author: 'Dev4', coupledAuthor: 'Dev5', sharedCommits: 62, couplingStrength: 48 });
+        commAnalysisStream.push({ author: 'Dev5', coupledAuthor: 'Dev4', sharedCommits: 62, couplingStrength: 48 });
+        commAnalysisStream.end();
+      });
     });
   });
 
