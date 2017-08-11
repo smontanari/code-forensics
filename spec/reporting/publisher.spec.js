@@ -238,8 +238,6 @@ describe('Publisher', function() {
       });
 
       it('exposes the relevant context parameters for the analysis report', function(done) {
-        this.subject.addReportFile();
-
         this.subject.createManifest().then(function() {
           var manifest = utils.json.objectToFile.calls.mostRecent().args[1];
           expect(manifest.parameters).toEqual({ param1: 'test_param1' });
@@ -258,8 +256,6 @@ describe('Publisher', function() {
       });
 
       it('exposes the reportId value', function(done) {
-        this.subject.addReportFile();
-
         this.subject.createManifest().then(function(reportId) {
           expect(reportId).toEqual('c8c1dcae8f21797ee19a82d7958caf0aba7da1c6');
           done();
