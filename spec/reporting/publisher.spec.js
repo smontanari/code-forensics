@@ -149,6 +149,7 @@ describe('Publisher', function() {
           reportFile: 'test-file.json'
         }, this.context);
         this.subject.addReportFile(new TimePeriod({ start: moment('2012-04-01'), end: moment('2012-05-31') }, 'YYYY-MM'));
+        this.subject.enableDiagram('test-diagram');
       });
 
       it('creates a manifest file', function(done) {
@@ -177,6 +178,7 @@ describe('Publisher', function() {
         }, this.context);
         this.subject.addReportFile(new TimePeriod({ start: moment('2012-06-01'), end: moment('2012-07-31') }, 'YYYY-MM'));
         this.subject.addReportFile(new TimePeriod({ start: moment('2012-04-01'), end: moment('2012-05-31') }, 'YYYY-MM'));
+        this.subject.enableDiagram('test-diagram');
       });
 
       it('creates a manifest file', function(done) {
@@ -208,6 +210,7 @@ describe('Publisher', function() {
         }, this.context);
         this.subject.addReportFileForType('report-type2', new TimePeriod({ start: moment('2012-06-01'), end: moment('2012-07-31') }, 'YYYY-MM'));
         this.subject.addReportFileForType('report-type1', new TimePeriod({ start: moment('2012-04-01'), end: moment('2012-05-31') }, 'YYYY-MM'));
+        this.subject.enableDiagram('test-diagram');
       });
 
       it('creates a manifest file', function(done) {
@@ -227,6 +230,33 @@ describe('Publisher', function() {
       });
     });
 
+    describe('Failure on manifest creation', function() {
+      beforeEach(function() {
+        this.subject = new Publisher({
+          name: 'test-task',
+          reportFile: 'test-file.json'
+        }, this.context);
+      });
+
+      describe('when no report files are added', function() {
+        it('returns a rejected promise upon creation', function(done) {
+          this.subject.createManifest()
+            .then(fail)
+            .catch(done);
+          expect(mkdirp.sync).not.toHaveBeenCalled();
+        });
+      });
+
+      describe('when no diagrams are enabled', function() {
+        it('returns a rejected promise upon creation', function(done) {
+          this.subject.addReportFile(new TimePeriod({ start: moment('2012-04-01'), end: moment('2012-05-31') }, 'YYYY-MM'));
+          this.subject.createManifest()
+            .then(fail)
+            .catch(done);
+        });
+      });
+    });
+
     describe('manifest parameters', function() {
       beforeEach(function() {
         spyOn(utils.json, 'objectToFile').and.returnValue(Q());
@@ -235,6 +265,8 @@ describe('Publisher', function() {
           parameters: [{ name: 'param1' }, { name: 'param2' }],
           reportFile: 'test-file.json'
         }, this.context);
+        this.subject.addReportFile(new TimePeriod({ start: moment('2012-04-01'), end: moment('2012-05-31') }, 'YYYY-MM'));
+        this.subject.enableDiagram('test-diagram');
       });
 
       it('exposes the relevant context parameters for the analysis report', function(done) {
@@ -246,13 +278,15 @@ describe('Publisher', function() {
       });
     });
 
-    describe('callback arguments', function() {
+    describe('promise arguments', function() {
       beforeEach(function() {
         spyOn(utils.json, 'objectToFile').and.returnValue(Q());
         this.subject = new Publisher({
           name: 'test-task',
           reportFile: 'test-file.json'
         }, this.context);
+        this.subject.addReportFile(new TimePeriod({ start: moment('2012-04-01'), end: moment('2012-05-31') }, 'YYYY-MM'));
+        this.subject.enableDiagram('test-diagram');
       });
 
       it('exposes the reportId value', function(done) {

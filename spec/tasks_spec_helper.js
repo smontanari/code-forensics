@@ -44,6 +44,10 @@ var TaskOutput = function(reportId) {
       expect(manifest[key]).toEqual(expectedValue);
     });
   };
+
+  this.assertMissingReportId = function() {
+    expect(reportId).toBeUndefined();
+  };
 };
 
 var Runtime = function(taskFunctions) {
