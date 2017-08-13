@@ -656,18 +656,9 @@ describe('Social analysis tasks', function() {
         spyOn(codeMaat, 'analyser').and.returnValue({ isSupported: _.stubFalse });
       });
 
-      it('publishes an empty report ', function(done) {
+      it('fails to publish the report ', function(done) {
         this.runtime.executePromiseTask('knowledge-map-analysis').then(function(taskOutput) {
-          taskOutput.assertMissingOutputReport('2016-01-01_2016-10-22_knowledge-map-data.json');
-
-          taskOutput.assertManifest({
-            reportName: 'knowledge-map',
-            parameters: {},
-            dateRange: '2016-01-01_2016-10-22',
-            enabledDiagrams: [],
-            dataFiles: []
-          });
-
+          taskOutput.assertMissingReportId();
           done();
         });
       });
