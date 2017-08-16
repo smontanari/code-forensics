@@ -65,7 +65,7 @@ describe('Code analysis tasks', function() {
           reportName: 'sloc-trend',
           parameters: { targetFile: 'test_abs.rb' },
           dateRange: '2015-03-01_2015-10-22',
-          enabledDiagrams: ['sloc-trend']
+          enabledDiagrams: ['sloc']
         });
         done();
       });

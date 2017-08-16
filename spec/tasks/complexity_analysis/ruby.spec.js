@@ -130,7 +130,7 @@ describe('ruby tasks', function() {
           reportName: 'complexity-trend',
           parameters: { targetFile: 'test_abs.rb' },
           dateRange: '2015-03-01_2015-10-22',
-          enabledDiagrams: ['total', 'method-mean', 'method-sd']
+          enabledDiagrams: ['total', 'func-mean', 'func-sd']
         });
         done();
       });
