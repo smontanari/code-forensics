@@ -6,7 +6,7 @@ var LogStreamTransformer = require_src('vcs_support/git/gitlog_stream_transforme
 describe('GitLogStreamTransformer', function() {
   describe('Author name normalisation', function() {
     beforeEach(function() {
-      var stubDeveloperInfo = {
+      var stubDevelopersInfo = {
         find: function(name) {
           if (name === 'Alias developer 2') { return { name: 'Developer_2' }; }
           return { name: name };
@@ -15,7 +15,7 @@ describe('GitLogStreamTransformer', function() {
       var stubRepository = {
         isValidPath: function() { return true; }
       };
-      this.subject = new LogStreamTransformer(stubRepository, stubDeveloperInfo);
+      this.subject = new LogStreamTransformer(stubRepository, stubDevelopersInfo);
     });
 
     it('streams log lines with author name changed according to the developer info', function(done) {
@@ -66,7 +66,7 @@ describe('GitLogStreamTransformer', function() {
 
   describe('File path filtering', function() {
     beforeEach(function() {
-      var stubDeveloperInfo = {
+      var stubDevelopersInfo = {
         find: function(name) { return { name: name }; }
       };
       var stubRepository = {
@@ -74,7 +74,7 @@ describe('GitLogStreamTransformer', function() {
           return path !== 'test/invalid_file.rb';
         }
       };
-      this.subject = new LogStreamTransformer(stubRepository, stubDeveloperInfo);
+      this.subject = new LogStreamTransformer(stubRepository, stubDevelopersInfo);
     });
 
     it('streams log lines filtering out commits with invalid file paths', function(done) {

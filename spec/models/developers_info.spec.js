@@ -1,11 +1,11 @@
-var DeveloperInfo     = require_src('models/developer_info'),
+var DevelopersInfo     = require_src('models/developers_info'),
     CFValidationError = require_src('models/validation_error');
 
-describe('DeveloperInfo', function() {
+describe('DevelopersInfo', function() {
   describe('with given team definitions', function() {
     it('raises an error when duplicate developer names exist', function() {
       expect(function() {
-        new DeveloperInfo({
+        new DevelopersInfo({
           'Team 1': ['Dev1', 'Dev2'],
           'Team 2': ['Dev3', ['Dev2', 'Alias dev 2']]
         });
@@ -13,12 +13,12 @@ describe('DeveloperInfo', function() {
     });
 
     it('has team information', function() {
-      expect(new DeveloperInfo({ 'Team 1': ['Dev1', 'Dev2', 'Dev3'] }).hasTeamInfo).toBeTruthy();
+      expect(new DevelopersInfo({ 'Team 1': ['Dev1', 'Dev2', 'Dev3'] }).hasTeamInfo).toBeTruthy();
     });
 
     describe('.find()', function() {
       beforeEach(function() {
-        this.subject = new DeveloperInfo({
+        this.subject = new DevelopersInfo({
           'Team 1': ['Dev1', 'Dev2', 'Dev3'],
           'Team 2': ['Dev4', ['Dev5', 'Alias dev 5']]
         });
@@ -41,21 +41,21 @@ describe('DeveloperInfo', function() {
   describe('with only developer definitions', function() {
     it('raises an error when duplicate developer names exist', function() {
       expect(function() {
-        new DeveloperInfo(['Dev1', 'Dev2', 'Dev3', ['Dev2', 'Alias dev 2']]);
+        new DevelopersInfo(['Dev1', 'Dev2', 'Dev3', ['Dev2', 'Alias dev 2']]);
       }).toThrowError(CFValidationError, 'Duplicate developer name: Dev2');
     });
 
     it('has no team information', function() {
-      expect(new DeveloperInfo(['Dev1', 'Dev2', 'Dev3']).hasTeamInfo).toBeFalsy();
+      expect(new DevelopersInfo(['Dev1', 'Dev2', 'Dev3']).hasTeamInfo).toBeFalsy();
     });
 
     describe('.find()', function() {
       beforeEach(function() {
-        this.subject = new DeveloperInfo(['Dev1', ['Dev2', 'Alias dev 2'], 'Dev3']);
+        this.subject = new DevelopersInfo(['Dev1', ['Dev2', 'Alias dev 2'], 'Dev3']);
       });
 
       it('returns an object with name and no team', function() {
-        expect(new DeveloperInfo().find('Dev1')).toEqual({ name: 'Dev1' });
+        expect(new DevelopersInfo().find('Dev1')).toEqual({ name: 'Dev1' });
       });
 
       it('returns an object with the first available name and related team for an existing developer', function() {
@@ -71,15 +71,15 @@ describe('DeveloperInfo', function() {
   describe('with no or empty definitions', function() {
     describe('.find()', function() {
       it('returns an object with name and no team', function() {
-        expect(new DeveloperInfo().find('a developer')).toEqual({ name: 'a developer' });
-        expect(new DeveloperInfo([]).find('a developer')).toEqual({ name: 'a developer' });
-        expect(new DeveloperInfo({}).find('a developer')).toEqual({ name: 'a developer' });
+        expect(new DevelopersInfo().find('a developer')).toEqual({ name: 'a developer' });
+        expect(new DevelopersInfo([]).find('a developer')).toEqual({ name: 'a developer' });
+        expect(new DevelopersInfo({}).find('a developer')).toEqual({ name: 'a developer' });
       });
 
       it('has no team information', function() {
-        expect(new DeveloperInfo().hasTeamInfo).toBeFalsy();
-        expect(new DeveloperInfo([]).hasTeamInfo).toBeFalsy();
-        expect(new DeveloperInfo({}).hasTeamInfo).toBeFalsy();
+        expect(new DevelopersInfo().hasTeamInfo).toBeFalsy();
+        expect(new DevelopersInfo([]).hasTeamInfo).toBeFalsy();
+        expect(new DevelopersInfo({}).hasTeamInfo).toBeFalsy();
       });
     });
   });

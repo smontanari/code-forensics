@@ -519,140 +519,255 @@ describe('Social analysis tasks', function() {
   });
 
   describe('knowledge-map-analysis', function() {
-    beforeEach(function() {
-      this.runtime = this.runtimeSetup(socialAnalysisTasks,
-        {
-          contributors: {
-            'Team 1': ['Dev1', 'Dev2'],
-            'Team 2': ['Dev3', ['Dev4', 'Alias dev 4']],
-            'Ex team': ['Dev5']
-          }
-        },
-        { dateFrom: '2016-01-01' }
-      );
+    afterEach(function() {
+      this.clearTemp();
+      this.clearOutput();
     });
 
     describe('for a supported vcs type', function() {
-      beforeEach(function() {
-        this.runtime.prepareTempReport('main-dev-report.json', [
+      var prepareReports = function(runtime) {
+        runtime.prepareTempReport('main-dev-report.json', [
           { path: 'test/ruby/app/file1.rb', author: 'Dev1', addedLines: 10, ownership: 53 },
           { path: 'test/web/styles/file2.css', author: 'Dev2', addedLines: 23, ownership: 26 },
           { path: 'test/ruby/app/models/file3.rb', author: 'Dev5', addedLines: 9, ownership: 44 },
           { path: 'test/web/js/file4.js', author: 'Dev4', addedLines: 16, ownership: 29 }
         ]);
 
-        this.runtime.prepareTempReport('sloc-report.json', [
+        runtime.prepareTempReport('sloc-report.json', [
           { path: 'test/ruby/app/file1.rb', sourceLines: 33, totalLines: 45 },
           { path: 'test/web/styles/file2.css', sourceLines: 23, totalLines: 31 },
           { path: 'test/ruby/app/models/file3.rb', sourceLines: 15, totalLines: 21 },
           { path: 'test/web/js/file4.js', sourceLines: 25, totalLines: 35 }
         ]);
+      };
 
+      beforeEach(function() {
         spyOn(codeMaat, 'analyser').and.returnValue({ isSupported: _.stubTrue });
       });
-      afterEach(function() {
-        this.clearTemp();
-        this.clearOutput();
+
+      describe('when team information exists', function() {
+        beforeEach(function() {
+          this.runtime = this.runtimeSetup(socialAnalysisTasks,
+            {
+              contributors: {
+                'Team 1': ['Dev1', 'Dev2'],
+                'Team 2': ['Dev3', ['Dev4', 'Alias dev 4']],
+                'Ex team': ['Dev5']
+              }
+            },
+            { dateFrom: '2016-01-01' }
+          );
+          prepareReports(this.runtime);
+        });
+
+        it('publishes a report on the main developer for each file ', function(done) {
+          this.runtime.executePromiseTask('knowledge-map-analysis').then(function(taskOutput) {
+            taskOutput.assertOutputReport('2016-01-01_2016-10-22_knowledge-map-data.json',
+              {
+                children: [
+                  {
+                    name: 'test',
+                    children: [
+                      {
+                        name: 'ruby',
+                        children: [
+                          {
+                            name: 'app',
+                            children: [
+                              {
+                                name: 'file1.rb',
+                                children: [],
+                                sourceLines: 33,
+                                totalLines: 45,
+                                mainDev: 'Dev1',
+                                team: 'Team 1',
+                                addedLines: 10,
+                                ownership: 53
+                              },
+                              {
+                                name: 'models',
+                                children: [
+                                  {
+                                    name: 'file3.rb',
+                                    children: [],
+                                    sourceLines: 15,
+                                    totalLines: 21,
+                                    mainDev: 'Dev5',
+                                    team: 'Ex team',
+                                    addedLines: 9,
+                                    ownership: 44
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        name: 'web',
+                        children: [
+                          {
+                            name: 'styles',
+                            children: [
+                              {
+                                name: 'file2.css',
+                                children: [],
+                                sourceLines: 23,
+                                totalLines: 31,
+                                mainDev: 'Dev2',
+                                team: 'Team 1',
+                                addedLines: 23,
+                                ownership: 26
+                              }
+                            ]
+                          },
+                          {
+                            name: 'js',
+                            children: [
+                              {
+                                name: 'file4.js',
+                                children: [],
+                                sourceLines: 25,
+                                totalLines: 35,
+                                mainDev: 'Dev4',
+                                team: 'Team 2',
+                                addedLines: 16,
+                                ownership: 29
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            );
+
+            taskOutput.assertManifest({
+              reportName: 'knowledge-map',
+              parameters: {},
+              dateRange: '2016-01-01_2016-10-22',
+              enabledDiagrams: ['individual-knowledge-map', 'team-knowledge-map'],
+            });
+
+            done();
+          });
+        });
       });
 
-      it('publishes a report on the main developer for each file ', function(done) {
-        this.runtime.executePromiseTask('knowledge-map-analysis').then(function(taskOutput) {
-          taskOutput.assertOutputReport('2016-01-01_2016-10-22_knowledge-map-data.json',
+      describe('when no team information exists', function() {
+        beforeEach(function() {
+          this.runtime = this.runtimeSetup(socialAnalysisTasks,
             {
-              children: [
-                {
-                  name: 'test',
-                  children: [
-                    {
-                      name: 'ruby',
-                      children: [
-                        {
-                          name: 'app',
-                          children: [
-                            {
-                              name: 'file1.rb',
-                              children: [],
-                              sourceLines: 33,
-                              totalLines: 45,
-                              mainDev: 'Dev1',
-                              team: 'Team 1',
-                              addedLines: 10,
-                              ownership: 53
-                            },
-                            {
-                              name: 'models',
-                              children: [
-                                {
-                                  name: 'file3.rb',
-                                  children: [],
-                                  sourceLines: 15,
-                                  totalLines: 21,
-                                  mainDev: 'Dev5',
-                                  team: 'Ex team',
-                                  addedLines: 9,
-                                  ownership: 44
-                                }
-                              ]
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      name: 'web',
-                      children: [
-                        {
-                          name: 'styles',
-                          children: [
-                            {
-                              name: 'file2.css',
-                              children: [],
-                              sourceLines: 23,
-                              totalLines: 31,
-                              mainDev: 'Dev2',
-                              team: 'Team 1',
-                              addedLines: 23,
-                              ownership: 26
-                            }
-                          ]
-                        },
-                        {
-                          name: 'js',
-                          children: [
-                            {
-                              name: 'file4.js',
-                              children: [],
-                              sourceLines: 25,
-                              totalLines: 35,
-                              mainDev: 'Dev4',
-                              team: 'Team 2',
-                              addedLines: 16,
-                              ownership: 29
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }
+              contributors: ['Dev1', 'Dev2', 'Dev3', ['Dev4', 'Alias dev 4'], 'Dev5']
+            },
+            { dateFrom: '2016-01-01' }
           );
+          prepareReports(this.runtime);
+        });
 
-          taskOutput.assertManifest({
-            reportName: 'knowledge-map',
-            parameters: {},
-            dateRange: '2016-01-01_2016-10-22',
-            enabledDiagrams: ['knowledge-map'],
+        it('publishes a report on the main developer for each file ', function(done) {
+          this.runtime.executePromiseTask('knowledge-map-analysis').then(function(taskOutput) {
+            taskOutput.assertOutputReport('2016-01-01_2016-10-22_knowledge-map-data.json',
+              {
+                children: [
+                  {
+                    name: 'test',
+                    children: [
+                      {
+                        name: 'ruby',
+                        children: [
+                          {
+                            name: 'app',
+                            children: [
+                              {
+                                name: 'file1.rb',
+                                children: [],
+                                sourceLines: 33,
+                                totalLines: 45,
+                                mainDev: 'Dev1',
+                                addedLines: 10,
+                                ownership: 53
+                              },
+                              {
+                                name: 'models',
+                                children: [
+                                  {
+                                    name: 'file3.rb',
+                                    children: [],
+                                    sourceLines: 15,
+                                    totalLines: 21,
+                                    mainDev: 'Dev5',
+                                    addedLines: 9,
+                                    ownership: 44
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        name: 'web',
+                        children: [
+                          {
+                            name: 'styles',
+                            children: [
+                              {
+                                name: 'file2.css',
+                                children: [],
+                                sourceLines: 23,
+                                totalLines: 31,
+                                mainDev: 'Dev2',
+                                addedLines: 23,
+                                ownership: 26
+                              }
+                            ]
+                          },
+                          {
+                            name: 'js',
+                            children: [
+                              {
+                                name: 'file4.js',
+                                children: [],
+                                sourceLines: 25,
+                                totalLines: 35,
+                                mainDev: 'Dev4',
+                                addedLines: 16,
+                                ownership: 29
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            );
+
+            taskOutput.assertManifest({
+              reportName: 'knowledge-map',
+              parameters: {},
+              dateRange: '2016-01-01_2016-10-22',
+              enabledDiagrams: ['individual-knowledge-map'],
+            });
+
+            done();
           });
-
-          done();
         });
       });
     });
 
     describe('for an unsupported vcs type', function() {
       beforeEach(function() {
+        this.runtime = this.runtimeSetup(socialAnalysisTasks,
+          {
+            contributors: ['Dev1', 'Dev2', 'Dev3', ['Dev4', 'Alias dev 4'], 'Dev5']
+          },
+          { dateFrom: '2016-01-01' }
+        );
         spyOn(codeMaat, 'analyser').and.returnValue({ isSupported: _.stubFalse });
       });
 
