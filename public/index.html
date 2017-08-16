@@ -25,12 +25,17 @@
         </p>
       </div>
       <div class="report-controls">
-        <div data-bind="visible: hasMultipleGraphs">
+        <div data-bind="visible: hasGraphs">
           <h2 data-bind="text: metadata.diagramSelectionTitle"></h2>
-          <div class="diagram-selection" data-bind="foreach: graphModels">
-            <div>
-              <input type="radio" data-bind="attr: {name: id, checked: isSelected}">
-              <label data-bind="text: label, attr: {for: id}, click: $root.reportController.selectGraph"></label>
+          <div data-bind="ifnot: hasMultipleGraphs">
+            <label class="diagram-label" data-bind="text: graphModels[0].label"></label>
+          </div>
+          <div data-bind="if: hasMultipleGraphs">
+            <div class="diagram-selection" data-bind="foreach: graphModels">
+              <div>
+                <input type="radio" data-bind="attr: {name: id, checked: isSelected}">
+                <label class="diagram-label" data-bind="text: label, attr: {for: id}, click: $root.reportController.selectGraph"></label>
+              </div>
             </div>
           </div>
         </div>

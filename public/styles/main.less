@@ -60,11 +60,17 @@ body {
     float: left;
     min-width: 200px;
 
+    .diagram-label {
+      font-size: 1.4em;
+      display: block;
+    }
+
     .diagram-selection {
       border: 1px solid;
       border-radius: 5px;
       max-height: 210px;
       overflow-y: auto;
+
       input {
         visibility: hidden;
         position: absolute;
@@ -76,17 +82,15 @@ body {
         }
       }
 
-      label {
-        background-color: #F9F9F9;
-        border-radius: .25em;
-        color: #000000;
+      .diagram-label {
         cursor: pointer;
-        display: block;
         font-size: 1.2em;
         line-height: 24px;
-        border:1px solid #FFFFFF;
-        padding: 0 5px;
+        background-color: #F9F9F9;
         text-align: center;
+        border:1px solid #FFFFFF;
+        border-radius: .25em;
+        padding: 0 5px;
         &:hover {
           background-color: #DDDDDD;
           color: #666666;
