@@ -63,7 +63,7 @@ describe('SvnLogStreamTransformer', function() {
 
   describe('Author name normalisation', function() {
     beforeEach(function() {
-      var stubDeveloperInfo = {
+      var stubDevelopersInfo = {
         find: function(name) {
           if (name === 'Alias developer 2') { return { name: 'Developer_2' }; }
           return { name: name };
@@ -75,7 +75,7 @@ describe('SvnLogStreamTransformer', function() {
       var stubAdapter = {
         vcsRelativePath: function() { return '^/test/path'; }
       };
-      this.subject = new LogStreamTransformer(stubRepository, stubDeveloperInfo, stubAdapter);
+      this.subject = new LogStreamTransformer(stubRepository, stubDevelopersInfo, stubAdapter);
     });
 
     it('streams log entries with author name changed according to the developer info', function(done) {
@@ -104,7 +104,7 @@ describe('SvnLogStreamTransformer', function() {
 
   describe('File path filtering', function() {
     beforeEach(function() {
-      var stubDeveloperInfo = {
+      var stubDevelopersInfo = {
         find: function(name) { return { name: name }; }
       };
       var stubRepository = {
@@ -113,7 +113,7 @@ describe('SvnLogStreamTransformer', function() {
       var stubAdapter = {
         vcsRelativePath: function() { return "^/test/path\n"; }
       };
-      this.subject = new LogStreamTransformer(stubRepository, stubDeveloperInfo, stubAdapter);
+      this.subject = new LogStreamTransformer(stubRepository, stubDevelopersInfo, stubAdapter);
     });
 
     it('streams log entries normalising the valid paths and filtering out the invalid ones', function(done) {

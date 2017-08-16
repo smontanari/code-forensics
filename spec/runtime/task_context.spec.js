@@ -19,7 +19,7 @@ describe('TaskContext', function() {
 
     spyOn(models, 'TimeIntervalBuilder').and.returnValue(mockPeriodBuilder);
     spyOn(models, 'Repository').and.returnValue({ obj: 'test-repo' });
-    spyOn(models, 'DeveloperInfo').and.returnValue({ obj: 'test-devInfo' });
+    spyOn(models, 'DevelopersInfo').and.returnValue({ obj: 'test-devInfo' });
   });
 
   it('initialises the repository configuration', function() {
@@ -32,8 +32,8 @@ describe('TaskContext', function() {
   it('initialises the developer information', function() {
     var ctx = new TaskContext({ contributors: 'team-config' });
 
-    expect(models.DeveloperInfo).toHaveBeenCalledWith('team-config');
-    expect(ctx.developerInfo).toEqual({ obj: 'test-devInfo' });
+    expect(models.DevelopersInfo).toHaveBeenCalledWith('team-config');
+    expect(ctx.developersInfo).toEqual({ obj: 'test-devInfo' });
   });
 
   describe('time periods configuration', function() {

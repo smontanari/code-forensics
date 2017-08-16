@@ -1,11 +1,11 @@
 var DeveloperDataHelper = require_src('tasks/helpers/developer_data_helper'),
-    DeveloperInfo       = require_src('models/developer_info');
+    DevelopersInfo       = require_src('models/developers_info');
 
 describe('DeveloperDataHelper', function() {
   describe('when team information exists', function() {
     beforeEach(function() {
       this.subject = new DeveloperDataHelper({
-        developerInfo: new DeveloperInfo({
+        developersInfo: new DevelopersInfo({
           'Team 1': [['Dev1', 'Alias Dev1'], 'Dev2'],
           'Team 2': ['Dev3', 'Dev4']
         })
@@ -137,7 +137,7 @@ describe('DeveloperDataHelper', function() {
   describe('when no team information exists', function() {
     beforeEach(function() {
       this.subject = new DeveloperDataHelper({
-        developerInfo: new DeveloperInfo([['Dev1', 'Alias Dev1'], 'Dev2', 'Dev3', 'Dev4'])
+        developersInfo: new DevelopersInfo([['Dev1', 'Alias Dev1'], 'Dev2', 'Dev3', 'Dev4'])
       });
     });
 
