@@ -65,10 +65,10 @@ describe('TaskContext', function() {
     });
   });
 
-  it('throws an error for a non supported configuration language', function() {
-    expect(function() {
-      new TaskContext({ languages: ['javascript', 'ruby', 'some-weird-language'] });
-    }).toThrowError(models.CFValidationError, 'Language "some-weird-language" is not supported');
+  it('removes any unsupported configuration language', function() {
+      var ctx = new TaskContext({ languages: ['javascript', 'ruby', 'some-weird-language'] });
+
+      expect(ctx.languages).toEqual(['javascript', 'ruby']);
   });
 
   describe('exposed configuration values', function() {
