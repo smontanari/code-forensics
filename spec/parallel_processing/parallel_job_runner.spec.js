@@ -22,6 +22,7 @@ describe('ParallelJobRunner', function() {
       _.each([job1, job2, job3], function(jobFn) {
         runner.addJob(jobFn);
       });
+
       expect(job1).toHaveBeenCalled();
       expect(job2).toHaveBeenCalled();
       expect(job3).not.toHaveBeenCalled();

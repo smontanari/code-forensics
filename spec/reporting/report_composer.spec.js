@@ -33,6 +33,7 @@ describe('ReportComposer', function() {
           { a: 123, b: "zxc" },
           { a: 456, b: "vbn" }
         ]);
+
         expect(utils.fileSystem.isFile).toHaveBeenCalledWith('test/file.json');
         expect(utils.json.fileToObject).toHaveBeenCalledWith('test/file.json');
         done();
@@ -101,6 +102,7 @@ describe('ReportComposer', function() {
             { a: 123, b: "zxc", c: 'XXX', d: { d1: 111, d2: 222 } },
             { a: 999, b: "asd" }
           ]);
+
           expect(utils.fileSystem.isFile).toHaveBeenCalledWith('test/file.json');
           expect(utils.json.fileToObject).toHaveBeenCalledWith('test/file.json');
           done();
@@ -134,6 +136,7 @@ describe('ReportComposer', function() {
             { a: 123, b: "zxc", c: 'XXX', d: { d1: 111, d2: 222 } },
             { a: 999, b: "asd" }
           ]);
+
           expect(utils.fileSystem.isFile).toHaveBeenCalledWith('test/file.json');
           expect(utils.json.fileToObject).toHaveBeenCalledWith('test/file.json');
           done();

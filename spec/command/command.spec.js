@@ -56,7 +56,7 @@ describe('command', function() {
       this.cmdOutput = command.run('test-command', ['arg1', 'arg2'], {opt1: 789, opt2: 'abc'});
     });
 
-    it('spawns the process with the expected parameters', function() {
+    it('spawns a sync process with the expected parameters', function() {
       expect(childProcess.spawnSync).toHaveBeenCalledWith('path/to/executable', [
         '--param1', '--param2', '-a', 123, '-b', 456, 'arg1', 'arg2'
       ], { opt1: 789, opt2: 'abc' });
@@ -104,6 +104,7 @@ describe('command', function() {
       spyOn(childProcess, 'spawnSync').and.returnValue('sync process');
 
       var proc = command.create('test-command', ['arg1', 'arg2'], {opt1: 789, opt2: 'abc'}).syncProcess();
+
       expect(proc).toEqual('sync process');
       expect(childProcess.spawnSync).toHaveBeenCalledWith('path/to/executable', [
         '--param1', '--param2', '-a', 123, '-b', 456, 'arg1', 'arg2'
@@ -114,6 +115,7 @@ describe('command', function() {
       spyOn(childProcess, 'spawn').and.returnValue('async process');
 
       var proc = command.create('test-command', ['arg1', 'arg2'], {opt1: 789, opt2: 'abc'}).asyncProcess();
+
       expect(proc).toEqual('async process');
       expect(childProcess.spawn).toHaveBeenCalledWith('path/to/executable', [
         '--param1', '--param2', '-a', 123, '-b', 456, 'arg1', 'arg2'

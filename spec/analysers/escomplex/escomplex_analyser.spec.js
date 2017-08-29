@@ -48,6 +48,7 @@ describe('ESComplexAnalyser', function() {
               { name: 'fn2', complexity: 789 }
             ]
           });
+
           expect(escomplex.analyse).toHaveBeenCalledWith('test content', jasmine.any(Object), 'TestParser');
           expect(fs.readFile).toHaveBeenCalledWith('test/file.js', jasmine.any(Function));
           done();
@@ -67,6 +68,7 @@ describe('ESComplexAnalyser', function() {
             test: 'some value',
             result: 123
           });
+
           expect(escomplex.analyse).toHaveBeenCalledWith('test content', jasmine.any(Object), 'TestParser');
           expect(fs.readFile).toHaveBeenCalledWith('test/file.js', jasmine.any(Function));
           done();
@@ -95,6 +97,7 @@ describe('ESComplexAnalyser', function() {
               { name: 'fn2', complexity: 789 }
             ]
           });
+
           expect(escomplex.analyse).toHaveBeenCalledWith('test content', jasmine.any(Object), 'TestParser');
           done();
         });
@@ -118,6 +121,7 @@ describe('ESComplexAnalyser', function() {
             test: 'some value',
             result: 123
           });
+
           expect(escomplex.analyse).toHaveBeenCalledWith('test content', jasmine.any(Object), 'TestParser');
           done();
         });

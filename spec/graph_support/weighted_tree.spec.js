@@ -3,6 +3,7 @@ var WeightedTree = require_src('graph_support/weighted_tree');
 describe('WeightedTree', function() {
   it('returns a one node tree with no weight', function() {
     var node = new WeightedTree('test/root', 'branch', {weightedProperty: 'value'}).rootNode();
+
     expect(node.name).toBeUndefined();
     expect(node.children).toEqual([]);
   });
@@ -20,6 +21,7 @@ describe('WeightedTree', function() {
       ].forEach(this.subject.withItem.bind(this.subject));
 
       var node = this.subject.rootNode();
+
       expect(node.getChildNode('b1/item1').weight).toBeCloseTo(0.286, 3);
       expect(node.getChildNode('b1/item2').weight).toBeCloseTo(0.714, 3);
       expect(node.getChildNode('b2/item3').weight).toBeCloseTo(1.0, 3);
@@ -39,6 +41,7 @@ describe('WeightedTree', function() {
       ].forEach(this.subject.withItem.bind(this.subject));
 
       var node = this.subject.rootNode();
+
       expect(node.getChildNode('b1/item1').load).toEqual(3);
       expect(node.getChildNode('b1/item2').load).toEqual(6);
       expect(node.getChildNode('b2/item3').load).toEqual(8);

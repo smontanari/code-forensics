@@ -93,6 +93,7 @@ describe('SvnLogStreamTransformer', function() {
             var authorElement = _.find(entry.children, XmlUtils.nodeWithName('author'));
             return XmlUtils.nodeText(authorElement);
           });
+
           expect(authors).toEqual(['Developer_1', 'Developer_2', 'Developer_2']);
           done();
         });
@@ -132,6 +133,7 @@ describe('SvnLogStreamTransformer', function() {
             var pathsElement = _.find(entry.children, XmlUtils.nodeWithName('paths'));
             return pathsElement.children.map(XmlUtils.nodeText);
           });
+
           expect(revisions).toEqual(['344333', '344885']);
           expect(paths).toEqual(['src/file1.yml.erb', 'src/file4.html.erb']);
           done();

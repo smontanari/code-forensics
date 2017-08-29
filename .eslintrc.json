@@ -2,9 +2,14 @@
     "env": {
         "browser": true,
         "commonjs": true,
-        "node": true
+        "node": true,
+        "jasmine": true
     },
-    "extends": "eslint:recommended",
+    "plugins": ["jasmine"],
+    "extends": [
+        "eslint:recommended",
+        "plugin:jasmine/recommended"
+    ],
     "rules": {
         "accessor-pairs": "error",
         "array-bracket-spacing": [

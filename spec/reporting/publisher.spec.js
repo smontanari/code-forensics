@@ -127,6 +127,7 @@ describe('Publisher', function() {
       it('creates a manifest file', function(done) {
         this.subject.createManifest().then(function() {
           var manifest = utils.json.objectToFile.calls.mostRecent().args[1];
+
           expect(manifest.id).toEqual('c8c1dcae8f21797ee19a82d7958caf0aba7da1c6');
           expect(manifest.reportName).toEqual('test-report');
           expect(manifest.taskName).toEqual('test-task');
@@ -156,6 +157,7 @@ describe('Publisher', function() {
       it('creates a manifest file', function(done) {
         this.subject.createManifest().then(function() {
           var manifest = utils.json.objectToFile.calls.mostRecent().args[1];
+
           expect(manifest.id).toEqual('c8c1dcae8f21797ee19a82d7958caf0aba7da1c6');
           expect(manifest.reportName).toEqual('test-task');
           expect(manifest.taskName).toEqual('test-task');
@@ -185,6 +187,7 @@ describe('Publisher', function() {
       it('creates a manifest file', function(done) {
         this.subject.createManifest().then(function() {
           var manifest = utils.json.objectToFile.calls.mostRecent().args[1];
+
           expect(manifest.id).toEqual('c8c1dcae8f21797ee19a82d7958caf0aba7da1c6');
           expect(manifest.taskName).toEqual('test-task');
           expect(manifest.time).toEqual('2013-10-22T13:00:00.000Z');
@@ -217,6 +220,7 @@ describe('Publisher', function() {
       it('creates a manifest file', function(done) {
         this.subject.createManifest().then(function() {
           var manifest = utils.json.objectToFile.calls.mostRecent().args[1];
+
           expect(manifest.id).toEqual('c8c1dcae8f21797ee19a82d7958caf0aba7da1c6');
           expect(manifest.taskName).toEqual('test-task');
           expect(manifest.time).toEqual('2013-10-22T13:00:00.000Z');
@@ -244,6 +248,7 @@ describe('Publisher', function() {
           this.subject.createManifest()
             .then(fail)
             .catch(done);
+
           expect(mkdirp.sync).not.toHaveBeenCalled();
         });
       });
@@ -273,6 +278,7 @@ describe('Publisher', function() {
       it('exposes the relevant context parameters for the analysis report', function(done) {
         this.subject.createManifest().then(function() {
           var manifest = utils.json.objectToFile.calls.mostRecent().args[1];
+
           expect(manifest.parameters).toEqual({ param1: 'test_param1' });
           done();
         });

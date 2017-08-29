@@ -20,6 +20,7 @@ describe('Repository', function() {
       expect(function() {
         new Repository({ rootPath: '/wrong/path' });
       }).toThrowError('Repository root directory does not exist: /wrong/path');
+
       expect(utils.fileSystem.isDirectory).toHaveBeenCalledWith('/wrong/path');
     });
   });
@@ -111,6 +112,7 @@ describe('Repository', function() {
           { absolutePath: '/root/test/file3.py', relativePath: 'test/file3.py' },
           { absolutePath: '/root/test/file5.py', relativePath: 'test/file5.py' }
         ]);
+
         expect(languages.getDefinition).toHaveBeenCalledWith('python');
       });
     });

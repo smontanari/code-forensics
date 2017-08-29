@@ -20,6 +20,7 @@ describe('TimeSplitter', function() {
 
     it('does not split if no timeSplit is given', function() {
       var intervals = new TimeSplitter(moment('2015-01-01'), moment('2015-12-31')).split();
+
       expect(intervals.length).toEqual(1);
 
       assertTimePeriod(intervals[0],

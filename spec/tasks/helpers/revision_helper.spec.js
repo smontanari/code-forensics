@@ -39,6 +39,7 @@ describe('RevisionHelper', function() {
 
       it('throws an error', function() {
         var subject = this.subject;
+
         expect(function() {
           subject.revisionAnalysisStream(analyser);
         }).toThrow('No revisions data found');

@@ -76,6 +76,7 @@ describe('WeightedCollection', function() {
         var wcoll = new WeightedCollection('wrongProperty');
         _.each(collection, wcoll.addItem.bind(wcoll));
         wcoll.assignWeights();
+
         expect(_.every(collection, { 'weight': 0 })).toBe(true);
       });
     });

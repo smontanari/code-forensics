@@ -82,15 +82,19 @@ describe('TaskDefinitions', function() {
 
       it('throws an error', function() {
         var dup = function() { this.subject.addTask('test-task', ['task-dependencies']); };
+
         expect(dup.bind(this)).toThrowError('Task name test-task already defined');
 
         dup = function() { this.subject.addTask('test-analysis-task', ['task-dependencies']); };
+
         expect(dup.bind(this)).toThrowError('Task name test-analysis-task already defined');
 
         dup = function() { this.subject.addTask('test-analysis-task', ['task-dependencies']); };
+
         expect(dup.bind(this)).toThrowError('Task name test-analysis-task already defined');
 
         dup = function() { this.subject.addAnalysisTask('test-task', ['task-dependencies']); };
+
         expect(dup.bind(this)).toThrowError('Task name test-task already defined');
       });
     });
@@ -100,6 +104,7 @@ describe('TaskDefinitions', function() {
     var assertTaskExecution = function(runner) {
       it('it invokes the task function when all required parameters are present', function() {
         gulpFunction();
+
         expect(mockRunners[runner].run).toHaveBeenCalled();
       });
     };
@@ -171,12 +176,14 @@ describe('TaskDefinitions', function() {
 
     it('returns all the analysis tasks', function() {
       var tasks = this.subject.analysisTasks();
+
       expect(tasks.length).toEqual(1);
       expect(tasks[0].name).toEqual('test-task2');
     });
 
     it('returns all the tasks', function() {
       var tasks = this.subject.allTasks();
+
       expect(tasks.length).toEqual(2);
       expect(tasks[0].name).toEqual('test-task2');
       expect(tasks[1].name).toEqual('test-task1');
@@ -184,6 +191,7 @@ describe('TaskDefinitions', function() {
 
     it('returns the existing task', function() {
       var task = this.subject.getTask('test-task1');
+
       expect(task.name).toEqual('test-task1');
       expect(task.description).toEqual('test task description');
       expect(task.usage).toEqual('gulp test-task1 --testParam=<testParam>');
@@ -191,6 +199,7 @@ describe('TaskDefinitions', function() {
 
     it('throws an error for a non existing task', function() {
       var subject = this.subject;
+
       expect(function() {
         subject.getTask('not-a-task');
       }).toThrowError(CFValidationError);

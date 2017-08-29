@@ -64,6 +64,7 @@
   },
   "devDependencies": {
     "eslint": "^3.19",
+    "eslint-plugin-jasmine": "^2.8.4",
     "jasmine": "^2.5.3",
     "jasmine-spec-reporter": "^3.2.0"
   },
