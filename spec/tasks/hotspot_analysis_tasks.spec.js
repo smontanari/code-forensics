@@ -1,6 +1,3 @@
-var Path = require('path'),
-    fs   = require('fs');
-
 var hotspotAnalysisTasks = require_src('tasks/hotspot_analysis_tasks');
 
 describe('Hotspot analysis tasks', function() {

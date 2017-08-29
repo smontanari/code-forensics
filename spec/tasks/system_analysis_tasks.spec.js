@@ -1,6 +1,4 @@
-var Path   = require('path'),
-    fs     = require('fs'),
-    stream = require('stream'),
+var stream = require('stream'),
     _      = require('lodash');
 
 var systemAnalysisTasks = require_src('tasks/system_analysis_tasks'),
@@ -173,10 +171,8 @@ describe('System analysis tasks', function() {
               }
             ],
             missingReports: [
-              {
-                fileName: '2016-01-01_2016-02-28_system-coupling-data.json',
-                fileName: '2016-01-01_2016-02-28_system-churn-data.json'
-              }
+              { fileName: '2016-01-01_2016-02-28_system-coupling-data.json' },
+              { fileName: '2016-01-01_2016-02-28_system-churn-data.json' }
             ],
             manifest: {
               reportName: 'system-evolution',

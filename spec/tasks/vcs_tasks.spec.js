@@ -1,6 +1,4 @@
 var _      = require('lodash'),
-    Path   = require('path'),
-    fs     = require('fs'),
     stream = require('stream');
 
 var gitTasks   = require_src('tasks/vcs_tasks'),
@@ -104,7 +102,7 @@ describe('VCS Tasks', function() {
             "6\t8\ttest_file4\n"
           ].join("\n"));
 
-          taskOutput.assertTempFile('vcslog_normalised_2016-03-01_2016-03-31.log',[
+          taskOutput.assertTempFile('vcslog_normalised_2016-03-01_2016-03-31.log', [
             '--98b656f--2016-10-31--Developer 1',
             "10\t0\ttest_file1",
             '',

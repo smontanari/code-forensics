@@ -1,5 +1,4 @@
-var _      = require('lodash'),
-    moment = require('moment'),
+var moment = require('moment'),
     stream = require('stream');
 
 var GitAdapter = require_src('vcs_support/git/git_adapter'),

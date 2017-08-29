@@ -17,7 +17,7 @@ describe('XmlUtils', function() {
           { type: 'attribute', value: 'test_attribute' },
           { type: 'text', value: 'test_text' }
         ]
-      }
+      };
 
       expect(XmlUtils.nodeText(node)).toEqual('test_text');
     });

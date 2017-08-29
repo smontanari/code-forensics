@@ -1,6 +1,4 @@
-var Path   = require('path'),
-    _      = require('lodash'),
-    fs     = require('fs'),
+var _      = require('lodash'),
     stream = require('stream');
 
 var rubyTasks  = require_src('tasks/complexity_analysis/ruby'),
@@ -43,7 +41,7 @@ describe('ruby tasks', function() {
               { name: 'Module::TestFile2#test_method /absolute/path/test_file3.rb:54', complexity: 26.2 }
             ]
           }
-        ])
+        ]);
         done();
       });
 

@@ -42,7 +42,7 @@ describe('vcs factory', function() {
 
     describe('.logStreamTransformer()', function() {
       it('returns a Svn log transformer', function() {
-        // this is necessary to stub out the call to adapter.vcsRelativePath()
+        //this is necessary to stub out the call to adapter.vcsRelativePath()
         spyOn(command, 'run').and.returnValue(new Buffer('/test'));
         expect(factory.logStreamTransformer(this.stubRepo, this.stubDevInfo).constructor).toEqual(SvnLogTransformer.prototype.constructor);
       });

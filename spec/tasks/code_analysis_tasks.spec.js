@@ -1,6 +1,4 @@
-var Path   = require('path'),
-    _      = require('lodash'),
-    fs     = require('fs'),
+var _      = require('lodash'),
     stream = require('stream');
 
 var codeAnalysisTasks = require_src('tasks/code_analysis_tasks'),

@@ -1,7 +1,5 @@
 /*eslint-disable max-lines*/
 var _      = require('lodash'),
-    Path   = require('path'),
-    fs     = require('fs'),
     stream = require('stream');
 
 var couplingAnalysisTasks = require_src('tasks/coupling_analysis_tasks'),
@@ -64,12 +62,6 @@ describe('Coupling analysis tasks', function() {
   });
 
   describe('temporal-coupling-analysis', function() {
-    var assertTaskReport = function(file, content) {
-      var reportContent = fs.readFileSync(file);
-      var report = JSON.parse(reportContent.toString());
-      expect(report).toEqual(content);
-    };
-
     var couplingStreamsData = [
       [
         { path: 'test/a/file1', coupledPath: 'test/target_file', couplingDegree: 23, revisionsAvg: 12 },

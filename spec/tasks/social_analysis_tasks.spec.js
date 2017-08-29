@@ -1,7 +1,5 @@
 /*eslint-disable max-lines*/
 var _      = require('lodash'),
-    Path   = require('path'),
-    fs     = require('fs'),
     stream = require('stream');
 
 var socialAnalysisTasks = require_src('tasks/social_analysis_tasks'),

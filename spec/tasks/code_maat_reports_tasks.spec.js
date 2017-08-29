@@ -1,6 +1,4 @@
 var _      = require('lodash'),
-    Path   = require('path'),
-    fs     = require('fs'),
     stream = require('stream');
 
 var codeMaatReportTasks = require_src('tasks/code_maat_reports_tasks'),

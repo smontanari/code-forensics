@@ -1,3 +1,4 @@
+/*eslint-disable max-lines*/
 var Q      = require('q'),
     moment = require('moment'),
     mkdirp = require('mkdirp');

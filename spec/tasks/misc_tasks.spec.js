@@ -1,6 +1,3 @@
-var Path = require('path'),
-    fs   = require('fs');
-
 var miscTasks = require_src('tasks/misc_tasks');
 
 describe('Misc Tasks', function() {
