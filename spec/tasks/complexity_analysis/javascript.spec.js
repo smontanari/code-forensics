@@ -15,12 +15,12 @@ describe('javascript tasks', function() {
 
       runtime.prepareRepositoryFile('test_file1.js', "function sum(a,b) { return a+b; };");
       runtime.prepareRepositoryFile('test_file2.rb', "line1\nline2\nline3\n");
-      runtime.prepareRepositoryFile('test_file3.js', "function Calculator() { this.division = function(a,b) { if (b > 0) { return a/b; } }; };");
+      runtime.prepareRepositoryFile('test_file3.js', "class Calculator { division(a,b) { if (b > 0) { return a/b; } }; };");
 
       runtime.executeStreamTask('javascript-complexity-report').then(function(taskOutput) {
         taskOutput.assertTempReport('javascript-complexity-report.json', [
           { path: "test_file1.js", totalComplexity: 1, averageComplexity: 1, methodComplexity: [{ name: 'sum', complexity: 1 }] },
-          { path: "test_file3.js", totalComplexity: 2, averageComplexity: 1.5, methodComplexity: [{ name: 'Calculator', complexity: 1 }, { name: '<anonymous>.division', complexity: 2 }] }
+          { path: "test_file3.js", totalComplexity: 2, averageComplexity: 2, methodComplexity: [{ name: 'Calculator.division', complexity: 2 }] }
         ]);
 
         done();
@@ -71,11 +71,11 @@ describe('javascript tasks', function() {
         done();
       });
 
-      revisionStream1.push("var abs = function(a,b) {\n");
+      revisionStream1.push("function abs(a,b) {\n");
       revisionStream1.push("return a - b;\n};");
       revisionStream1.end();
 
-      revisionStream2.push("var abs = function(a,b) {\n");
+      revisionStream2.push("function abs(a,b) {\n");
       revisionStream2.push("if (a < b) {\n;");
       revisionStream2.push("return b - a;\n};\n");
       revisionStream2.push("return a - b;\n");

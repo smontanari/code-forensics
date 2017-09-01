@@ -1,33 +1,55 @@
 var stream    = require('stream'),
     fs        = require('fs'),
-    escomplex = require('escomplex');
+    escomplex = require('typhonjs-escomplex');
 
-var ESComplexAnalyser = require_src('analysers/escomplex/escomplex_analyser'),
-    Parser            = require_src('analysers/escomplex/parser');
+var ESComplexAnalyser = require_src('analysers/escomplex/escomplex_analyser');
 
 describe('ESComplexAnalyser', function() {
+  var escomplexReport = {
+    methodAggregate: { cyclomatic: 11 },
+    classes: [
+      {
+        methodAggregate: { cyclomatic: 5 },
+        methods: [
+          { cyclomatic: 1, name: 'ma1' },
+          { cyclomatic: 6, name: 'ma2' }
+        ],
+        methodAverage: { cyclomatic: 3.5 },
+        name: 'A'
+      },
+      {
+        methodAggregate: { cyclomatic: 3 },
+        methods: [
+          { cyclomatic: 2, name: 'mb1' },
+          { cyclomatic: 3, name: 'mb2' },
+          { cyclomatic: 4, name: 'mb3' }
+        ],
+        methodAverage: { cyclomatic: 3 },
+        name: 'B'
+      },
+    ],
+    methods: [
+      { cyclomatic: 3, name: 'fn1' },
+      { cyclomatic: 5, name: 'fn2' }
+    ],
+    methodAverage: { cyclomatic: 3.429 }
+  };
+
   beforeEach(function() {
     this.appConfigStub({
       javascriptParser: {
-        module: 'testParser', options: { a: 123, b: 456 }
+        options: { a: 'optionA', b: 'optionB' }
       }
     });
 
-    spyOn(Parser, 'create').and.returnValue('TestParser');
-    spyOn(escomplex, 'analyse').and.returnValue({
-      aggregate: { cyclomatic: 123 },
-      functions: [
-        { name: 'fn1', cyclomatic: 456 },
-        { name: 'fn2', cyclomatic: 789 }
-      ]
-    });
+    spyOn(escomplex, 'analyzeModule').and.returnValue(escomplexReport);
     this.subject = new ESComplexAnalyser();
   });
 
   describe('.fileAnalysisStream()', function() {
     beforeEach(function() {
       spyOn(fs, 'readFile').and.callFake(function(path, callback) {
-        callback(null, "test content");
+        callback(null, 'test content');
       });
     });
 
@@ -41,15 +63,20 @@ describe('ESComplexAnalyser', function() {
         .on('end', function(){
           expect(report).toEqual({
             path: 'test/file.js',
-            totalComplexity: 123,
-            averageComplexity: 622.5,
+            totalComplexity: 11,
+            averageComplexity: 3.429,
             methodComplexity: [
-              { name: 'fn1', complexity: 456 },
-              { name: 'fn2', complexity: 789 }
+              { name: 'fn1', complexity: 3 },
+              { name: 'fn2', complexity: 5 },
+              { name: 'A.ma1', complexity: 1 },
+              { name: 'A.ma2', complexity: 6 },
+              { name: 'B.mb1', complexity: 2 },
+              { name: 'B.mb2', complexity: 3 },
+              { name: 'B.mb3', complexity: 4 }
             ]
           });
 
-          expect(escomplex.analyse).toHaveBeenCalledWith('test content', jasmine.any(Object), 'TestParser');
+          expect(escomplex.analyzeModule).toHaveBeenCalledWith('test content', { a: 'optionA', b: 'optionB' });
           expect(fs.readFile).toHaveBeenCalledWith('test/file.js', jasmine.any(Function));
           done();
         });
@@ -59,17 +86,19 @@ describe('ESComplexAnalyser', function() {
     describe('with a transform callback function', function() {
       it('returns the complexity report of the file content modified by the transform callback', function(done) {
         var report;
-        this.subject.fileAnalysisStream('test/file.js', function(report) { return { test: 'some value', result: report.totalComplexity }; })
+        this.subject.fileAnalysisStream('test/file.js', function(report) {
+          return { test: 'some value', result: report.totalComplexity };
+        })
         .on('data', function(output) {
           report = output;
         })
         .on('end', function(){
           expect(report).toEqual({
             test: 'some value',
-            result: 123
+            result: 11
           });
 
-          expect(escomplex.analyse).toHaveBeenCalledWith('test content', jasmine.any(Object), 'TestParser');
+          expect(escomplex.analyzeModule).toHaveBeenCalledWith('test content', { a: 'optionA', b: 'optionB' });
           expect(fs.readFile).toHaveBeenCalledWith('test/file.js', jasmine.any(Function));
           done();
         });
@@ -90,15 +119,20 @@ describe('ESComplexAnalyser', function() {
         .on('end', function() {
           expect(report).toEqual({
             path: 'test/file.js',
-            totalComplexity: 123,
-            averageComplexity: 622.5,
+            totalComplexity: 11,
+            averageComplexity: 3.429,
             methodComplexity: [
-              { name: 'fn1', complexity: 456 },
-              { name: 'fn2', complexity: 789 }
+              { name: 'fn1', complexity: 3 },
+              { name: 'fn2', complexity: 5 },
+              { name: 'A.ma1', complexity: 1 },
+              { name: 'A.ma2', complexity: 6 },
+              { name: 'B.mb1', complexity: 2 },
+              { name: 'B.mb2', complexity: 3 },
+              { name: 'B.mb3', complexity: 4 }
             ]
           });
 
-          expect(escomplex.analyse).toHaveBeenCalledWith('test content', jasmine.any(Object), 'TestParser');
+          expect(escomplex.analyzeModule).toHaveBeenCalledWith('test content', { a: 'optionA', b: 'optionB' });
           done();
         });
 
@@ -112,17 +146,19 @@ describe('ESComplexAnalyser', function() {
         var report;
         var inputStream = new stream.PassThrough();
 
-        inputStream.pipe(this.subject.sourceAnalysisStream('test/file.js', function(report) { return { test: 'some value', result: report.totalComplexity }; }))
+        inputStream.pipe(this.subject.sourceAnalysisStream('test/file.js', function(report) {
+          return { test: 'some value', result: report.totalComplexity };
+        }))
         .on('data', function(output) {
           report = output;
         })
         .on('end', function() {
           expect(report).toEqual({
             test: 'some value',
-            result: 123
+            result: 11
           });
 
-          expect(escomplex.analyse).toHaveBeenCalledWith('test content', jasmine.any(Object), 'TestParser');
+          expect(escomplex.analyzeModule).toHaveBeenCalledWith('test content', { a: 'optionA', b: 'optionB' });
           done();
         });
 
