@@ -11,6 +11,7 @@ var testRunner = new Jasmine();
 var command = new JasmineCommand(path.resolve());
 
 if (require('minimist')(argv).verbose) {
+  argv.shift();
   testRunner.env.clearReporters();
   testRunner.addReporter(new SpecReporter({
     displayStacktrace: 'all',
