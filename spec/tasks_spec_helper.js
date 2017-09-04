@@ -1,10 +1,10 @@
-var Path   = require('path'),
-    fs     = require('fs'),
-    del    = require('del'),
-    mkdirp = require('mkdirp'),
-    gulp   = require('gulp'),
-    Q      = require('q'),
-    _      = require('lodash');
+var Path     = require('path'),
+    fs       = require('fs'),
+    del      = require('del'),
+    mkdirp   = require('mkdirp'),
+    gulp     = require('gulp'),
+    Bluebird = require('bluebird'),
+    _        = require('lodash');
 
 var TaskContext     = require_src('runtime/task_context'),
     TaskDefinitions = require_src('models/task/task_definitions'),
@@ -52,11 +52,11 @@ var TaskOutput = function(reportId) {
 
 var Runtime = function(taskFunctions) {
   this.executeStreamTask = function(name) {
-    var deferred = Q.defer();
-    taskFunctions[name].call()
-      .on('close', function() { deferred.resolve(new TaskOutput()); })
-      .on('error', function(err) { fail(err); });
-    return deferred.promise;
+    return new Bluebird(function(resolve) {
+      taskFunctions[name].call()
+        .on('close', resolve.bind(null, new TaskOutput()))
+        .on('error', function(err) { fail(err); });
+    });
   };
 
   this.executePromiseTask = function(name) {

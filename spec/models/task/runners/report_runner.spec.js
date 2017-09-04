@@ -1,5 +1,5 @@
-var stream = require('stream'),
-    Q      = require('q');
+var stream   = require('stream'),
+    Bluebird = require('bluebird');
 
 var ReportRunner = require_src('models/task/runners/report_runner'),
     reporting    = require_src('reporting');
@@ -27,7 +27,7 @@ describe('ReportRunner', function() {
       new ReportRunner({
         taskFunction: function() { return output; }
       }).run('test_param1', 'test_param2').then(function() {
-        expect(mockPublisher.createManifest).toHaveBeenCalled();
+        expect(mockPublisher.createManifest).toHaveBeenCalledWith(undefined);
         done();
       });
 
@@ -41,7 +41,7 @@ describe('ReportRunner', function() {
       new ReportRunner({
         taskFunction: function() { return 123; }
       }).run('test_param1', 'test_param2').then(function() {
-        expect(mockPublisher.createManifest).toHaveBeenCalled();
+        expect(mockPublisher.createManifest).toHaveBeenCalledWith(123);
         done();
       });
     });
@@ -50,18 +50,18 @@ describe('ReportRunner', function() {
   describe('when the output of the task function is a promise', function() {
     it('creates the manifest after the task promise is fulfilled', function(done) {
       new ReportRunner({
-        taskFunction: function() { return Q(123); }
+        taskFunction: function() { return Bluebird.resolve(123); }
       }).run('test_param1', 'test_param2').then(function() {
-        expect(mockPublisher.createManifest).toHaveBeenCalled();
+        expect(mockPublisher.createManifest).toHaveBeenCalledWith(123);
         done();
       });
     });
 
     it('does not create the manifest if the task promise is rejected', function(done) {
       new ReportRunner({
-        taskFunction: function() { return Q.reject(); }
+        taskFunction: function() { return Bluebird.reject(new Error()); }
       }).run('test_param1', 'test_param2').then(function() {
-        expect(mockPublisher.createManifest).not.toHaveBeenCalled();
+        expect(mockPublisher.createManifest).not.toHaveBeenCalledWith();
         done();
       });
     });
@@ -72,18 +72,18 @@ describe('ReportRunner', function() {
       var output = new ReportRunner({}).run('test_param1', 'test_param2');
 
       expect(output).toBeUndefined();
-      expect(mockPublisher.createManifest).not.toHaveBeenCalled();
+      expect(mockPublisher.createManifest).not.toHaveBeenCalledWith();
     });
   });
 
   describe('when the task function throws an error', function() {
     it('returns without creating a manifest', function() {
       var output = new ReportRunner({
-        taskFunction: function() { throw 'something is wrong'; }
+        taskFunction: function() { throw new Error('something is wrong'); }
       }).run('test_param1', 'test_param2');
 
       expect(output).toBeUndefined();
-      expect(mockPublisher.createManifest).not.toHaveBeenCalled();
+      expect(mockPublisher.createManifest).not.toHaveBeenCalledWith();
     });
   });
 });

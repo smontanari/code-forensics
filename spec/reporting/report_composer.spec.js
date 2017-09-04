@@ -1,5 +1,5 @@
-var Q      = require('q'),
-    stream = require('stream');
+var Bluebird = require('bluebird'),
+    stream   = require('stream');
 
 var ReportComposer  = require_src('reporting/report_composer'),
     MergeStrategies = require_src('reporting/merge_strategies'),
@@ -25,7 +25,7 @@ describe('ReportComposer', function() {
     it('builds a report from the file data', function(done) {
       spyOn(utils.fileSystem, 'isFile').and.returnValue(true);
       spyOn(utils.json, 'fileToObject').and.returnValue(
-        Q([{ a: 123, b: "zxc" }, { a: 456, b: "vbn" }])
+        Bluebird.resolve([{ a: 123, b: "zxc" }, { a: 456, b: "vbn" }])
       );
 
       new ReportComposer('test/file.json').buildReport().then(function(reportData) {
@@ -82,7 +82,7 @@ describe('ReportComposer', function() {
         var matchFn = function(d1, d2) { return d1.a === d2.a; };
         spyOn(utils.fileSystem, 'isFile').and.returnValue(true);
         spyOn(utils.json, 'fileToObject').and.returnValue(
-          Q([{ a: 123, c: "XXX" }, { a: 456, c: "YYY" }, { a: 789, c: 'ZZZ' }])
+          Bluebird.resolve([{ a: 123, c: "XXX" }, { a: 456, c: "YYY" }, { a: 789, c: 'ZZZ' }])
         );
         var inputStream = new stream.PassThrough({ objectMode: true });
 
@@ -122,7 +122,7 @@ describe('ReportComposer', function() {
         var matchFn = function(d1, d2) { return d1.a === d2.a; };
         spyOn(utils.fileSystem, 'isFile').and.returnValue(true);
         spyOn(utils.json, 'fileToObject').and.returnValue(
-          Q([{ a: 123, c: "XXX" }, { a: 456, c: "YYY" }, { a: 789, c: 'ZZZ' }])
+          Bluebird.resolve([{ a: 123, c: "XXX" }, { a: 456, c: "YYY" }, { a: 789, c: 'ZZZ' }])
         );
         var inputStream = new stream.PassThrough({ objectMode: true });
 

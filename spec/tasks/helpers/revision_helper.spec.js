@@ -42,7 +42,7 @@ describe('RevisionHelper', function() {
 
         expect(function() {
           subject.revisionAnalysisStream(analyser);
-        }).toThrow('No revisions data found');
+        }).toThrowError('No revisions data found');
       });
     });
 

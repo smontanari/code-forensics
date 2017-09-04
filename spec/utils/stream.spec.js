@@ -153,7 +153,7 @@ describe('utils.stream', function() {
     });
 
     describe('with an invalid stream', function() {
-      it('returns a promise that fails', function() {
+      it('returns a promise that fails', function(done) {
         streamUtils.streamToPromise('not really a stream').catch(function(err) {
           expect(err.message).toEqual('Not a stream');
           done();

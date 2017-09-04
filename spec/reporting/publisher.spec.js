@@ -1,7 +1,7 @@
 /*eslint-disable max-lines*/
-var Q      = require('q'),
-    moment = require('moment'),
-    mkdirp = require('mkdirp');
+var moment   = require('moment'),
+    mkdirp   = require('mkdirp'),
+    Bluebird = require('bluebird');
 
 var Publisher  = require_src('reporting/publisher'),
     utils      = require_src('utils'),
@@ -113,7 +113,7 @@ describe('Publisher', function() {
   describe('.createManifest()', function() {
     describe('with a report name', function() {
       beforeEach(function() {
-        spyOn(utils.json, 'objectToFile').and.returnValue(Q());
+        spyOn(utils.json, 'objectToFile').and.returnValue(Bluebird.resolve());
         this.subject = new Publisher({
           name: 'test-task',
           reportName: 'test-report',
@@ -145,7 +145,7 @@ describe('Publisher', function() {
 
     describe('without a report name', function() {
       beforeEach(function() {
-        spyOn(utils.json, 'objectToFile').and.returnValue(Q());
+        spyOn(utils.json, 'objectToFile').and.returnValue(Bluebird.resolve());
         this.subject = new Publisher({
           name: 'test-task',
           reportFile: 'test-file.json'
@@ -174,7 +174,7 @@ describe('Publisher', function() {
 
     describe('with one report file type', function() {
       beforeEach(function() {
-        spyOn(utils.json, 'objectToFile').and.returnValue(Q());
+        spyOn(utils.json, 'objectToFile').and.returnValue(Bluebird.resolve());
         this.subject = new Publisher({
           name: 'test-task',
           reportFile: 'test-file.json'
@@ -204,7 +204,7 @@ describe('Publisher', function() {
 
     describe('with many report file types', function() {
       beforeEach(function() {
-        spyOn(utils.json, 'objectToFile').and.returnValue(Q());
+        spyOn(utils.json, 'objectToFile').and.returnValue(Bluebird.resolve());
         this.subject = new Publisher({
           name: 'test-task',
           reportFiles: {
@@ -247,7 +247,10 @@ describe('Publisher', function() {
         it('returns a rejected promise upon creation', function(done) {
           this.subject.createManifest()
             .then(fail)
-            .catch(done);
+            .catch(function(error) {
+              expect(error.message).toEqual('Failed to create report: no available data files');
+              done();
+            });
 
           expect(mkdirp.sync).not.toHaveBeenCalled();
         });
@@ -258,14 +261,17 @@ describe('Publisher', function() {
           this.subject.addReportFile(new TimePeriod({ start: moment('2012-04-01'), end: moment('2012-05-31') }, 'YYYY-MM'));
           this.subject.createManifest()
             .then(fail)
-            .catch(done);
+            .catch(function(error) {
+              expect(error.message).toEqual('Failed to create report: no diagrams enabled');
+              done();
+            });
         });
       });
     });
 
     describe('manifest parameters', function() {
       beforeEach(function() {
-        spyOn(utils.json, 'objectToFile').and.returnValue(Q());
+        spyOn(utils.json, 'objectToFile').and.returnValue(Bluebird.resolve());
         this.subject = new Publisher({
           name: 'test-task',
           parameters: [{ name: 'param1' }, { name: 'param2' }],
@@ -287,7 +293,7 @@ describe('Publisher', function() {
 
     describe('promise arguments', function() {
       beforeEach(function() {
-        spyOn(utils.json, 'objectToFile').and.returnValue(Q());
+        spyOn(utils.json, 'objectToFile').and.returnValue(Bluebird.resolve());
         this.subject = new Publisher({
           name: 'test-task',
           reportFile: 'test-file.json'

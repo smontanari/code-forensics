@@ -59,7 +59,7 @@ describe('vcs factory', function() {
       it('throws an error', function() {
         expect(function() {
           factory.adapter(this.stubRepo);
-        }).toThrow('Cannot find vcs support files for: cvs');
+        }).toThrowError('Cannot find vcs support files for: cvs');
       });
     });
 
@@ -67,7 +67,7 @@ describe('vcs factory', function() {
       it('throws an error', function() {
         expect(function() {
           factory.logStreamTransformer(this.stubRepo, this.stubDevInfo);
-        }).toThrow('Cannot find vcs support files for: cvs');
+        }).toThrowError('Cannot find vcs support files for: cvs');
       });
     });
   });
