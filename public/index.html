@@ -76,7 +76,7 @@
   </div>
   <div data-bind="if: reportsListModel">
     <div class="reports-list" data-bind="with: reportsListModel">
-      <p class="title">Available reports</p>
+      <div class="title">Available reports</div>
       <table>
         <thead>
           <tr>
@@ -91,9 +91,12 @@
               <a data-bind="text: reportName, attr: { href: reportUrl }"/>
             </td>
             <td><span data-bind="text: time"></span></td>
-            <td data-bind="foreach: parameters">
-              <div class="report-parameter">
-                <span class="label" data-bind="text: name"></span><span data-bind="text: value"></span>
+            <td>
+              <div class="parameters-list" data-bind="foreach: parameters">
+                <div class="report-parameter">
+                  <span class="param-label" data-bind="text: name"></span>
+                  <span class="param-value" data-bind="text: value"></span>
+                </div>
               </div>
             </td>
           </tr>

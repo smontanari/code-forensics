@@ -5,20 +5,21 @@
  * see http://www.gnu.org/licenses/gpl.html
  */
 
-@table_width: 800px;
-@table_body_height: 400px;
-@column_one_width: 200px;
-@column_two_width: 150px;
-@column_three_width: 450px;
+@table_width: 80vw;
+@table_body_height: 80vh;
+@column_one_width: 15vw;
+@column_two_width: 15vw;
+@column_three_width: 50vw;
 
 .reports-list {
   .title {
     text-align: center;
-    font-size: 24px;
+    font-size: 1.5em;
+    margin: 5px 0;
   }
 
   table {
-    font-size: 14px;
+    font-size: 0.9em;
     width: @table_width;
     margin: 0 auto;
 
@@ -61,16 +62,25 @@
           padding: 5px;
           text-align: left;
 
-          .report-parameter {
-            display: table-row;
+          .parameters-list {
+            max-width: @column_three_width;
+            overflow-x: auto;
+            &::-webkit-scrollbar {
+              height: 0px;
+            }
 
-            span {
-              display: table-cell;
-              &:nth-child(2) {
-                padding-left: 5px;
-              }
-              &.label {
-                font-weight: bold;
+            .report-parameter {
+              display: table-row;
+
+              * {
+                display: table-cell;
+                &.param-label {
+                  font-weight: bold;
+                }
+                &.param-value {
+                  white-space: nowrap;
+                  padding-left: 5px;
+                }
               }
             }
           }
