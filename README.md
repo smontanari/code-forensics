@@ -14,16 +14,25 @@ This project is based on the excellent work of **Adam Tornhill** and his command
 
 `$ npm install code-forensics`
 
-**Note**: I strongly recommend against installing code-forensics as a global module, as it requires certain packages to be at the top level of the node_modules folder in order to correctly run its internal http server and serve the pages to the browser for the visualisation part of the analysis. If code-forensics is installed as a global module such packages may conflict with already existing ones and that could cause all sorts of unpredictable issues.
+**Note**: I strongly recommend against installing **code-forensics** as a global module, as it requires certain packages to be at the top level of the node_modules folder in order to correctly run its internal http server and serve the pages to the browser for the visualisation part of the analysis. If **code-forensics** is installed as a global module such packages may conflict with already existing ones and that could cause all sorts of unpredictable issues.
+
+## VCS support
+At the moment **code-forensics** can work with **git** and **svn** based repositories, however other version control systems could be supported in the future, given the ability of Code Maat to parse log data from the most popular ones.
+
+## Programming languages
+Most of **code-forensics** analyses are agnostic of the programming language used in the repository, however some tasks can report metrics on the language complexity and currently only *Ruby* and *JavaScript* are supported. Complexity analysis for other languages can be added, possibly with your help.
+
+## Compatibility
+This software is not meant to be a commercial tool, hence support for various operating systems and different browsers is not a priority. I've tested **code-forensics** on a Mac OS X with different versions of Node.js, and primarily with Chrome as a browser. While I expect (and I'm willing to support) **code-forensics** to work in linux/unix environments, I can't guarantee it would on a Windows OS.
 
 ## Usage
-This is a short description on how to get started with **code-forensics**.
+This is only a short description on how to get started with **code-forensics**.
 
 PLEASE REFER TO THE [WIKI PAGES](https://github.com/smontanari/code-forensics/wiki) FOR A MORE COMPREHENSIVE DOCUMENTATION.
 
 ### Minimal configuration
-code-forensics runs as a set of gulp tasks, therefore it requires a `gulpfile.js` to bootstrap gulp, however there is no need to know the task declaration syntax, as all the necessary tasks are defined inside code-forensics.
-The `gulpfile.js` must define the configuration options and parameters necessary to run code-forensics tasks.
+**code-forensics** runs as a set of gulp tasks, therefore it requires a `gulpfile.js` to bootstrap gulp, however there is no need to know the task declaration syntax, as all the necessary tasks are defined inside **code-forensics**.
+The `gulpfile.js` must define the configuration options and parameters necessary to run **code-forensics** tasks.
 
 A minimal configuration `gulpfile.js` would look like the following:
 ```javascript
@@ -35,7 +44,7 @@ require('code-forensics').configure(
   }
 );
 ```
-The only necessary configuration value is the file system path to the root directory of the version control repository to analyse.
+The only required configuration value is the file system path to the root directory of the version control repository to analyse. However I would recommend you learn about and configure other parameters to more effectively target the analyses you intend to run.
 
 ### Running analyses
 Analyses are executed as a gulp task. Depending on how the gulp module is installed (as global or local) there are different ways to invoke the gulp command. Here, to simplify the examples, I will assume it is available on your command PATH.
@@ -44,6 +53,9 @@ Each analysis may require or accept optional parameters.
 ```
 $ gulp <analysis-task-name> [parameters]
 ```
+See [below](#task-usage-information) how to learn about any available task parameter.
+
+**Note: it is highly recommended to specify a time interval for any analysis**. If not, **code-forensics** will attempt to analyse the git commits for the current date only, most likely resulting in empty or near empty reports. You can specify a time interval via command line parameters or through the configuration file. Please refer to the [provided documentation](https://github.com/smontanari/code-forensics/wiki).
 
 #### List analysis tasks
 To print the list of all the top level analysis tasks:
@@ -132,12 +144,6 @@ The results can then be displayed in a word cloud diagram at the url given above
     </tr>
   </tbody>
 </table>
-
-## VCS support
-At the moment code-forensics can work with **git** and **svn** based repositories, however other version control systems could be supported in the future, given the ability of Code Maat to parse log data from the most popular ones.
-
-## Compatibility
-This software is not meant to be a commercial tool, hence support for various operating systems and different browsers is not a priority. I've tested **code-forensics** on a Mac OS X with different versions of Node.js, and primarily with Chrome as a browser.
 
 ## License
 Copyright &copy; 2016-2017 Silvio Montanari
