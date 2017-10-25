@@ -15,7 +15,7 @@ var httpServer = require('http-server/lib/http-server'),
 var args   = require('minimist')(process.argv.slice(2));
 var server = require(Path.resolve(__dirname, '../lib/server'));
 
-var host = '127.0.0.1';
+var host = '0.0.0.0';
 var port = args.p || 3000;
 var webPath = Path.resolve(__dirname, '../public');
 var jsPath = Path.resolve(__dirname, '../lib/web');
@@ -41,7 +41,7 @@ var webServer = httpServer.createServer(options);
 
 webServer.listen(port, host, function () {
   console.log(chalk.yellow('Starting up http-server'));
-  console.log(chalk.cyan('listening on ' + port));
+  console.log(chalk.cyan('listening on ' + host + ':' + port));
   console.log(chalk.cyan('serving "/"     files from ' + webPath));
   console.log(chalk.cyan('serving "/js"   files from ' + jsPath));
   console.log(chalk.cyan('serving "/lib"  files from ' + libPath));
