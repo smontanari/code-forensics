@@ -1,5 +1,6 @@
 /*eslint-disable max-lines*/
 var stream = require('stream'),
+    fs     = require('fs'),
     reduce = require('through2-reduce');
 
 var CodeMaatAnalyser = require_src('analysers/code_maat/code_maat_analyser'),
@@ -36,8 +37,9 @@ describe('CodeMaatAnalyser', function() {
     });
   };
 
-  var prepareAnalyserStream = function() {
+  var prepareAnalyserStream = function(logFileSize) {
     beforeEach(function() {
+      spyOn(fs, 'statSync').and.returnValue({ size: logFileSize });
       this.outputStream = this.subject
         .fileAnalysisStream('test/file', { 'arg1' : 'qwe', 'arg2': 'asd' })
         .pipe(reduce.obj(function(data, obj) {
@@ -122,13 +124,27 @@ describe('CodeMaatAnalyser', function() {
     spyOn(command, 'stream').and.returnValue(commandOutputStream);
   });
 
+  describe('Analysis not run for empty log file', function() {
+    subject('revisions', 'git');
+    prepareAnalyserStream(0);
+
+    it('returns an empty stream when the analysis is not executed', function(done) {
+      this.outputStream.on('data', function(data) {
+        expect(data).toEqual([]);
+      })
+      .on('end', done);
+
+      expect(command.stream).not.toHaveBeenCalledWith('codemaat', jasmine.any(Array));
+    });
+  });
+
   describe('revisions analysis', function() {
     ['git', 'subversion'].forEach(function(vcsType) {
       describe('Supported VCS', function() {
         subject('revisions', vcsType);
         verifyInstallCheck();
 
-        prepareAnalyserStream();
+        prepareAnalyserStream(100);
         verifySupportedAnalysis();
         verifyHandleCodeMaatError('revisions');
         verifyNoData('revisions', 'entity,n-revs');
@@ -162,7 +178,7 @@ describe('CodeMaatAnalyser', function() {
       describe('Supported VCS', function() {
         subject('soc', vcsType);
         verifyInstallCheck();
-        prepareAnalyserStream();
+        prepareAnalyserStream(100);
         verifySupportedAnalysis();
         verifyNoData('soc', 'entity,soc');
         verifyHandleCodeMaatError('soc');
@@ -196,7 +212,7 @@ describe('CodeMaatAnalyser', function() {
       describe('Supported VCS', function() {
         subject('coupling', vcsType);
         verifyInstallCheck();
-        prepareAnalyserStream();
+        prepareAnalyserStream(100);
         verifySupportedAnalysis();
         verifyNoData('coupling', 'entity,coupled,degree,average-revs');
         verifyHandleCodeMaatError('coupling');
@@ -230,7 +246,7 @@ describe('CodeMaatAnalyser', function() {
       describe('Supported VCS', function() {
         subject('authors', vcsType);
         verifyInstallCheck();
-        prepareAnalyserStream();
+        prepareAnalyserStream(100);
         verifySupportedAnalysis();
         verifyNoData('authors', 'entity,n-authors,n-revs');
         verifyHandleCodeMaatError('authors');
@@ -264,7 +280,7 @@ describe('CodeMaatAnalyser', function() {
       describe('Supported VCS', function() {
         subject('entity-effort', vcsType);
         verifyInstallCheck();
-        prepareAnalyserStream();
+        prepareAnalyserStream(100);
         verifySupportedAnalysis();
         verifyNoData('entity-effort', 'entity,author,author-revs,total-revs');
         verifyHandleCodeMaatError('entity-effort');
@@ -305,14 +321,14 @@ describe('CodeMaatAnalyser', function() {
     describe('Unsupported VCS', function() {
       subject('main-dev', 'subversion');
       verifyInstallCheck();
-      prepareAnalyserStream();
+      prepareAnalyserStream(100);
       verifyNotSupportedAnalysis();
     });
 
     describe('Supported VCS', function() {
       subject('main-dev', 'git');
       verifyInstallCheck();
-      prepareAnalyserStream();
+      prepareAnalyserStream(100);
       verifySupportedAnalysis();
       verifyNoData('main-dev', 'entity,main-dev,added,total-added,ownership');
       verifyHandleCodeMaatError('main-dev');
@@ -344,14 +360,14 @@ describe('CodeMaatAnalyser', function() {
     describe('Unsupported VCS', function() {
       subject('entity-ownership', 'subversion');
       verifyInstallCheck();
-      prepareAnalyserStream();
+      prepareAnalyserStream(100);
       verifyNotSupportedAnalysis();
     });
 
     describe('Supported VCS', function() {
       subject('entity-ownership', 'git');
       verifyInstallCheck();
-      prepareAnalyserStream();
+      prepareAnalyserStream(100);
       verifySupportedAnalysis();
       verifyNoData('entity-ownership', 'entity,author,added,deleted');
       verifyHandleCodeMaatError('entity-ownership');
@@ -391,7 +407,7 @@ describe('CodeMaatAnalyser', function() {
       describe('Supported VCS', function() {
         subject('communication', vcsType);
         verifyInstallCheck();
-        prepareAnalyserStream();
+        prepareAnalyserStream(100);
         verifySupportedAnalysis();
         verifyNoData('communication', 'author,peer,shared,average,strength');
         verifyHandleCodeMaatError('communication');
@@ -427,14 +443,14 @@ describe('CodeMaatAnalyser', function() {
     describe('Unsupported VCS', function() {
       subject('absolute-churn', 'subversion');
       verifyInstallCheck();
-      prepareAnalyserStream();
+      prepareAnalyserStream(100);
       verifyNotSupportedAnalysis();
     });
 
     describe('Supported VCS', function() {
       subject('absolute-churn', 'git');
       verifyInstallCheck();
-      prepareAnalyserStream();
+      prepareAnalyserStream(100);
       verifySupportedAnalysis();
       verifyNoData('absolute-churn', 'date,added,deleted,commits');
       verifyHandleCodeMaatError('absolute-churn');
@@ -467,14 +483,14 @@ describe('CodeMaatAnalyser', function() {
     describe('Unsupported VCS', function() {
       subject('entity-churn', 'subversion');
       verifyInstallCheck();
-      prepareAnalyserStream();
+      prepareAnalyserStream(100);
       verifyNotSupportedAnalysis();
     });
 
     describe('Supported VCS', function() {
       subject('entity-churn', 'git');
       verifyInstallCheck();
-      prepareAnalyserStream();
+      prepareAnalyserStream(100);
       verifySupportedAnalysis();
       verifyNoData('entity-churn', 'entity,added,deleted,commits');
       verifyHandleCodeMaatError('entity-churn');
