@@ -8,6 +8,7 @@
  */
 
 var httpServer = require('http-server/lib/http-server'),
+    findup     = require('findup-sync'),
     ecstatic   = require('ecstatic'),
     chalk      = require('chalk'),
     Path       = require('path');
@@ -19,7 +20,7 @@ var host = '0.0.0.0';
 var port = args.p || 3000;
 var webPath = Path.resolve(__dirname, '../public');
 var jsPath = Path.resolve(__dirname, '../lib/web');
-var libPath = Path.resolve('node_modules');
+var libPath = findup('node_modules');
 var dataPath = args.d || Path.resolve(__dirname, '../output');
 
 var options = {
