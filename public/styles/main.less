@@ -129,12 +129,11 @@ body {
       height: 100%;
       opacity: 0;
       z-index: -10;
-      visibility: hidden;
-      display: flex;
+      display: none;
       &.showing {
+        display: flex;
         opacity: 1;
         z-index: 10;
-        visibility: visible;
       }
     }
   }
