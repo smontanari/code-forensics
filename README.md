@@ -1,4 +1,6 @@
-# code-forensics
+code-forensics
+--------------
+
 **code-forensics** is a toolset for analysing codebases stored in a version control system. It leverages the repository logs, or version history data, to perform deep analyses with regards to complexity, logical coupling, authors coupling and to inspect the evolution in time of different parts of a software system with respect to metrics like code churn and number of revisions.
 
 ## Credits
@@ -30,6 +32,8 @@ This is only a short description on how to get started with **code-forensics**.
 
 PLEASE REFER TO THE [WIKI PAGES](https://github.com/smontanari/code-forensics/wiki) FOR A MORE COMPREHENSIVE DOCUMENTATION.
 
+Before posting a new issue please make sure you check out the **[Troubleshooting guide](https://github.com/smontanari/code-forensics/wiki/Troubleshooting)** and the **[Frequently Asked Questions](https://github.com/smontanari/code-forensics/wiki/Faq)** wiki pages.
+
 ### Minimal configuration
 **code-forensics** runs as a set of gulp tasks, therefore it requires a `gulpfile.js` to bootstrap gulp, however there is no need to know the task declaration syntax, as all the necessary tasks are defined inside **code-forensics**.
 The `gulpfile.js` must define the configuration options and parameters necessary to run **code-forensics** tasks.
@@ -44,7 +48,7 @@ require('code-forensics').configure(
   }
 );
 ```
-The only required configuration value is the file system path to the root directory of the version control repository to analyse. However I would recommend you learn about and configure other parameters to more effectively target the analyses you intend to run.
+The only required configuration value is the file system path to the root directory of the version control repository to analyse, however this example is not practical and I would recommend you learn about and configure other parameters to more effectively target the analyses you intend to run.
 
 ### Running analyses
 Analyses are executed as a gulp task. Depending on how the gulp module is installed (as global or local) there are different ways to invoke the gulp command. Here, to simplify the examples, I will assume it is available on your command PATH.
