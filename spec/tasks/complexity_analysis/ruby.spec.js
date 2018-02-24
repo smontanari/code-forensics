@@ -1,9 +1,9 @@
 var _      = require('lodash'),
     stream = require('stream');
 
-var rubyTasks  = require_src('tasks/complexity_analysis/ruby'),
-    vcsSupport = require_src('vcs_support'),
-    command    = require_src('command');
+var rubyTasks = require_src('tasks/complexity_analysis/ruby'),
+    vcs       = require_src('vcs'),
+    command   = require_src('command');
 
 describe('ruby tasks', function() {
   beforeEach(function() {
@@ -65,14 +65,13 @@ describe('ruby tasks', function() {
   });
 
   describe('ruby-complexity-trend-analysis', function() {
-    var mockAdapter;
+    var mockVcs;
 
     beforeEach(function() {
       jasmine.clock().install();
       jasmine.clock().mockDate(new Date('2015-10-22T10:00:00.000Z'));
-      mockAdapter = jasmine.createSpyObj('vcsAdapter', ['revisions', 'showRevisionStream']);
-
-      spyOn(vcsSupport, 'adapter').and.returnValue(mockAdapter);
+      mockVcs = jasmine.createSpyObj('vcsClient', ['revisions', 'showRevisionStream']);
+      spyOn(vcs, 'client').and.returnValue(mockVcs);
     });
 
     afterEach(function() {
@@ -86,11 +85,11 @@ describe('ruby tasks', function() {
       var complexityStream1 = new stream.PassThrough();
       var complexityStream2 = new stream.PassThrough();
 
-      mockAdapter.revisions.and.returnValue([
+      mockVcs.revisions.and.returnValue([
         { revisionId: 123, date: '2015-04-29T23:00:00.000Z' },
         { revisionId: 456, date: '2015-05-04T23:00:00.000Z' }
       ]);
-      mockAdapter.showRevisionStream.and.returnValues(revisionStream1, revisionStream2);
+      mockVcs.showRevisionStream.and.returnValues(revisionStream1, revisionStream2);
       spyOn(command, 'create').and.returnValue({
         asyncProcess: jasmine.createSpy().and.returnValues(
           { stdin: new stream.PassThrough(), stdout: complexityStream1 },

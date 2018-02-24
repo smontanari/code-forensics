@@ -1,7 +1,7 @@
 var moment = require('moment'),
     stream = require('stream');
 
-var GitAdapter = require_src('vcs_support/git/git_adapter'),
+var GitAdapter = require_src('vcs/git/git_adapter'),
     TimePeriod = require_src('models/time_interval/time_period'),
     command    = require_src('command');
 

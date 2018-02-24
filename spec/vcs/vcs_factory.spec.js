@@ -1,8 +1,8 @@
-var factory           = require_src('vcs_support/vcs_factory'),
-    GitAdapter        = require_src('vcs_support/git/git_adapter'),
-    SvnAdapter        = require_src('vcs_support/svn/svn_adapter'),
-    GitLogTransformer = require_src('vcs_support/git/gitlog_stream_transformer'),
-    SvnLogTransformer = require_src('vcs_support/svn/svnlog_stream_transformer'),
+var factory           = require_src('vcs/vcs_factory'),
+    GitAdapter        = require_src('vcs/git/git_adapter'),
+    SvnAdapter        = require_src('vcs/svn/svn_adapter'),
+    GitLogTransformer = require_src('vcs/git/gitlog_stream_transformer'),
+    SvnLogTransformer = require_src('vcs/svn/svnlog_stream_transformer'),
     command           = require_src('command');
 
 describe('vcs factory', function() {

@@ -71,6 +71,7 @@
   },
   "scripts": {
     "test": "./scripts/jasmine-runner.js",
+    "test-verbose": "./scripts/jasmine-runner.js --verbose",
     "lint": "./node_modules/.bin/eslint lib spec scripts --quiet",
     "preversion": "npm run test && npm run lint",
     "postversion": "git push && git push --tags"

@@ -2,7 +2,7 @@ var _         = require('lodash'),
     stream    = require('stream'),
     XmlReader = require('xml-reader');
 
-var LogStreamTransformer = require_src('vcs_support/svn/svnlog_stream_transformer.js'),
+var LogStreamTransformer = require_src('vcs/svn/svnlog_stream_transformer.js'),
     XmlUtils             = require_src('utils/xml_utils');
 
 describe('SvnLogStreamTransformer', function() {

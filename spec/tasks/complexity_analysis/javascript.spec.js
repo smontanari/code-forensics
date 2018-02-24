@@ -1,7 +1,7 @@
 var stream = require('stream');
 
 var javascriptTasks = require_src('tasks/complexity_analysis/javascript'),
-    vcsSupport      = require_src('vcs_support');
+    vcs             = require_src('vcs');
 
 describe('javascript tasks', function() {
   describe('javascript-complexity-report', function() {
@@ -29,14 +29,13 @@ describe('javascript tasks', function() {
   });
 
   describe('javascript-complexity-trend-analysis', function() {
-    var mockAdapter;
+    var mockVcs;
 
     beforeEach(function() {
       jasmine.clock().install();
       jasmine.clock().mockDate(new Date('2015-10-22T10:00:00.000Z'));
-      mockAdapter = jasmine.createSpyObj('vcsAdapter', ['revisions', 'showRevisionStream']);
-
-      spyOn(vcsSupport, 'adapter').and.returnValue(mockAdapter);
+      mockVcs = jasmine.createSpyObj('vcsClient', ['revisions', 'showRevisionStream']);
+      spyOn(vcs, 'client').and.returnValue(mockVcs);
     });
 
     afterEach(function() {
@@ -48,11 +47,11 @@ describe('javascript tasks', function() {
       var revisionStream1 = new stream.PassThrough();
       var revisionStream2 = new stream.PassThrough();
 
-      mockAdapter.revisions.and.returnValue([
+      mockVcs.revisions.and.returnValue([
         { revisionId: 123, date: '2015-04-29T23:00:00.000Z' },
         { revisionId: 456, date: '2015-05-04T23:00:00.000Z' }
       ]);
-      mockAdapter.showRevisionStream.and.returnValues(revisionStream1, revisionStream2);
+      mockVcs.showRevisionStream.and.returnValues(revisionStream1, revisionStream2);
 
       var runtime = this.runtimeSetup(javascriptTasks, null, { dateFrom: '2015-03-01', targetFile: 'test_abs.js' });
       runtime.executePromiseTask('javascript-complexity-trend-analysis').then(function(taskOutput) {

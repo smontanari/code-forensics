@@ -1,15 +1,15 @@
 var _      = require('lodash'),
     stream = require('stream');
 
-var gitTasks   = require_src('tasks/vcs_tasks'),
-    vcsSupport = require_src('vcs_support'),
-    command    = require_src('command');
+var gitTasks = require_src('tasks/vcs_tasks'),
+    vcs      = require_src('vcs'),
+    command  = require_src('command');
 
 describe('VCS Tasks', function() {
-  var runtime, mockAdapter;
+  var runtime, mockVcs;
   beforeEach(function() {
-    mockAdapter = jasmine.createSpyObj('vcsAdapter', ['logStream', 'commitMessagesStream']);
-    spyOn(vcsSupport, 'adapter').and.returnValue(mockAdapter);
+    mockVcs = jasmine.createSpyObj('vcsClient', ['logStream', 'commitMessagesStream']);
+    spyOn(vcs, 'client').and.returnValue(mockVcs);
     spyOn(command.Command, 'ensure');
   });
 
@@ -29,7 +29,7 @@ describe('VCS Tasks', function() {
         runtime.prepareTempFile(filenamePrefix + '_2016-01-01_2016-01-31.log', 'pre-existing content');
 
         var outStream = new stream.PassThrough();
-        mockAdapter[adapterMethod].and.returnValues(outStream);
+        mockVcs[adapterMethod].and.returnValues(outStream);
 
         runtime.executePromiseTask(taskName).then(function(taskOutput) {
           taskOutput.assertTempFile(filenamePrefix + '_2016-01-01_2016-01-31.log', 'pre-existing content');
@@ -73,7 +73,7 @@ describe('VCS Tasks', function() {
 
         var outStream1 = new stream.PassThrough();
         var outStream2 = new stream.PassThrough();
-        mockAdapter.logStream.and.returnValues(outStream1, outStream2);
+        mockVcs.logStream.and.returnValues(outStream1, outStream2);
 
         runtime.executePromiseTask('vcs-log-dump').then(function(taskOutput) {
           taskOutput.assertTempFile('vcslog_2016-03-01_2016-03-31.log', [
@@ -164,7 +164,7 @@ describe('VCS Tasks', function() {
       it('writes the vcs commit messages for each period into the temp folder', function(done) {
         var outStream1 = new stream.PassThrough();
         var outStream2 = new stream.PassThrough();
-        mockAdapter.commitMessagesStream.and.returnValues(outStream1, outStream2);
+        mockVcs.commitMessagesStream.and.returnValues(outStream1, outStream2);
 
         runtime.executePromiseTask('vcs-commit-messages').then(function(taskOutput) {
           taskOutput.assertTempFile('vcs_commit_messages_2016-03-01_2016-03-31.log', "log-line1\nlog-line2\n");

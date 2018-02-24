@@ -3,14 +3,14 @@ var stream = require('stream'),
     moment = require('moment');
 
 var RevisionHelper = require_src('tasks/helpers/revision_helper'),
-    vcsSupport     = require_src('vcs_support'),
+    vcs            = require_src('vcs'),
     pp             = require_src('parallel_processing'),
     utils          = require_src('utils');
 
 describe('RevisionHelper', function() {
   beforeEach(function() {
     this.mockVcs = jasmine.createSpyObj('vcs adapter', ['revisions', 'showRevisionStream']);
-    spyOn(vcsSupport, 'adapter').and.returnValue(this.mockVcs);
+    spyOn(vcs, 'client').and.returnValue(this.mockVcs);
 
     this.subject = new RevisionHelper({
       repository: 'test_repository',
@@ -28,8 +28,8 @@ describe('RevisionHelper', function() {
       }
     };
 
-    it('creates a vcs Adapter object with the repository root', function() {
-      expect(vcsSupport.adapter).toHaveBeenCalledWith('test_repository');
+    it('creates a vcs client object with the context parameters', function() {
+      expect(vcs.client).toHaveBeenCalledWith('test_repository');
     });
 
     describe('when no revisions exist', function() {

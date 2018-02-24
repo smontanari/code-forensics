@@ -2,7 +2,7 @@ var _      = require('lodash'),
     moment = require('moment'),
     stream = require('stream');
 
-var SvnAdapter = require_src('vcs_support/svn/svn_adapter'),
+var SvnAdapter = require_src('vcs/svn/svn_adapter'),
     TimePeriod = require_src('models/time_interval/time_period'),
     command    = require_src('command');
 

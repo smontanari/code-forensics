@@ -1,7 +1,7 @@
 var _      = require('lodash'),
     stream = require('stream');
 
-var LogStreamTransformer = require_src('vcs_support/git/gitlog_stream_transformer.js');
+var LogStreamTransformer = require_src('vcs/git/gitlog_stream_transformer.js');
 
 describe('GitLogStreamTransformer', function() {
   describe('Author name normalisation', function() {
