@@ -10,6 +10,7 @@ This project is based on the excellent work of **Adam Tornhill** and his command
 * **Node.js** - code-forensics should run with most versions of node, however I haven't tested it with any version earlier than 4.
 * **npm v3** - code-forensics requires a flat install of its dependencies into the node_modules folder in order to visualise d3 diagrams.
 * **java 8** - Required in order to run code-maat. See the [Code Maat](https://github.com/adamtornhill/code-maat) repository for more details.
+* **git** - Required to run some of the gulp tasks.
 
 ## Install
 **code-forensics** is distributed as an nodejs module that runs on top of [gulp](https://github.com/gulpjs/gulp). It can be installed through npm:
