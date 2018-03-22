@@ -1,7 +1,7 @@
 var _      = require('lodash'),
     stream = require('stream');
 
-var rubyTasks = require_src('tasks/complexity_analysis/ruby'),
+var rubyTasks = require_src('tasks/complexity_analysis/ruby_tasks'),
     vcs       = require_src('vcs'),
     command   = require_src('command');
 

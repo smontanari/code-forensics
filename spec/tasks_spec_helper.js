@@ -118,7 +118,7 @@ beforeEach(function() {
     var taskContext = new TaskContext(config, parameters || {});
     var taskDefinitions = new TaskDefinitions(taskContext);
 
-    tasksFn(taskDefinitions, taskContext, taskHelpers(taskContext));
+    tasksFn(taskDefinitions, taskContext, taskHelpers(taskContext)).tasks();
 
     return new Runtime(taskFunctions);
   };

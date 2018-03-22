@@ -1,6 +1,6 @@
 var stream = require('stream');
 
-var javascriptTasks = require_src('tasks/complexity_analysis/javascript'),
+var javascriptTasks = require_src('tasks/complexity_analysis/javascript_tasks'),
     vcs             = require_src('vcs');
 
 describe('javascript tasks', function() {
