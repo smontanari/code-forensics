@@ -59,12 +59,17 @@ describe('TaskDefinitions', function() {
     doneCallback = jasmine.createSpy('doneCallback');
   });
 
-  var assertGulpInvocation = function(dependency, description) {
+  var assertGulpInvocation = function(parameters, dependency, runner, description) {
     it('serializes the task function with the dependencies', function() {
-      if (dependency) {
-        expect(gulpSeries).toHaveBeenCalledWith([jasmine.any(Function), mockDependency, jasmine.any(Function)]);
+      var gulpSeriesFns = [];
+      if (parameters) { gulpSeriesFns.push(jasmine.any(Function)); }
+      if (dependency) { gulpSeriesFns.push(mockDependency); }
+      if (runner) { gulpSeriesFns.push(mockRunners[runner].run); }
+
+      if (gulpSeriesFns.length > 1) {
+        expect(gulpSeries).toHaveBeenCalledWith(gulpSeriesFns);
       } else {
-        expect(gulpSeries).toHaveBeenCalledWith([jasmine.any(Function), jasmine.any(Function)]);
+        expect(gulpSeries.calls.count()).toEqual(0);
       }
     });
 
@@ -110,7 +115,7 @@ describe('TaskDefinitions', function() {
 
   describe('Adding task definitions', function() {
     beforeEach(function() {
-      this.subject = new TaskDefinitions({});
+      this.subject = new TaskDefinitions({ parameters: []});
     });
 
     describe('adding a task without dependencies', function() {
@@ -118,7 +123,7 @@ describe('TaskDefinitions', function() {
         this.subject.addTask('test-task', { run: 'taskFunction' });
       });
 
-      assertGulpInvocation(false, 'No description available');
+      assertGulpInvocation(false, false, 'default', 'No description available');
       assertDefaultRunnerInvocation({
         name: 'test-task', dependency: false, taskFunction: 'taskFunction', description: 'No description available', parameters: []
       });
@@ -129,7 +134,7 @@ describe('TaskDefinitions', function() {
         this.subject.addTask('test-task', mockDependency);
       });
 
-      assertGulpInvocation(false, 'No description available');
+      assertGulpInvocation(false, true, undefined, 'No description available');
       assertNoRunnerInvocation();
     });
 
@@ -138,7 +143,7 @@ describe('TaskDefinitions', function() {
         this.subject.addTask('test-task', { run: 'taskFunction' }, mockDependency);
       });
 
-      assertGulpInvocation(true, 'No description available');
+      assertGulpInvocation(false, true, 'default', 'No description available');
       assertDefaultRunnerInvocation({
         name: 'test-task', dependency: true, taskFunction: 'taskFunction', description: 'No description available', parameters: []
       });
@@ -153,7 +158,7 @@ describe('TaskDefinitions', function() {
         }, mockDependency);
       });
 
-      assertGulpInvocation(true, 'test task description');
+      assertGulpInvocation(false, true, 'default', 'test task description');
       assertDefaultRunnerInvocation({
         name: 'test-task', dependency: true, taskFunction: 'taskFunction', description: 'test task description', parameters: [{ name: 'testParam' }]
       });
@@ -164,7 +169,7 @@ describe('TaskDefinitions', function() {
         this.subject.addAnalysisTask('test-task', { run: 'taskFunction' }, mockDependency);
       });
 
-      assertGulpInvocation(true, 'No description available');
+      assertGulpInvocation(false, true, 'report', 'No description available');
       assertReportRunnerInvocation({
         name: 'test-task', dependency: true, taskFunction: 'taskFunction', description: 'No description available', parameters: []
       });
@@ -179,7 +184,7 @@ describe('TaskDefinitions', function() {
         });
       });
 
-      assertGulpInvocation(false, 'test task description');
+      assertGulpInvocation(false, false, 'report', 'test task description');
       assertReportRunnerInvocation({
         name: 'test-task', dependency: false, taskFunction: 'taskFunction', description: 'test task description', parameters: [{ name: 'testParam' }]
       });

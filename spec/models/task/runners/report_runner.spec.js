@@ -12,13 +12,13 @@ describe('ReportRunner', function() {
     doneCallback = jasmine.createSpy('done');
   });
 
-  it('executes the task function passing the report publisher and the done callback', function() {
+  it('executes the task function passing the report publisher', function() {
     var task = {
       run: jasmine.createSpy('taskFunction')
     };
     new ReportRunner(task).run(doneCallback);
 
-    expect(task.run).toHaveBeenCalledWith(mockPublisher, doneCallback);
+    expect(task.run).toHaveBeenCalledWith(mockPublisher);
   });
 
   describe('when the output of the task function is a stream', function() {

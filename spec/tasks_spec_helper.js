@@ -96,11 +96,8 @@ beforeEach(function() {
   this.runtimeSetup = function(tasksFn, contextConfig, parameters) {
     var taskFunctions = {};
     spyOn(gulp, 'parallel');
-    spyOn(gulp, 'series').and.callFake(function(fns) {
-      return function(done) {
-        var outputValues = fns.map(function(fn) { return fn.call(null, done); });
-        return outputValues.pop();
-      };
+    spyOn(gulp, 'series').and.callFake(function() {
+      return _.toArray(arguments).pop();
     });
     spyOn(gulp, 'task').and.callFake(function(taskName, fn) {
       if (fn) {
