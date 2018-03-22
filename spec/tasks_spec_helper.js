@@ -50,17 +50,19 @@ var TaskOutput = function(reportId) {
   };
 };
 
+var doneCallback = function() {};
+
 var Runtime = function(taskFunctions) {
   this.executeStreamTask = function(name) {
     return new Bluebird(function(resolve) {
-      taskFunctions[name].call()
+      taskFunctions[name].call(null, doneCallback)
         .on('close', resolve.bind(null, new TaskOutput()))
         .on('error', function(err) { fail(err); });
     });
   };
 
   this.executePromiseTask = function(name) {
-    return taskFunctions[name].call()
+    return taskFunctions[name].call(null, doneCallback)
       .then(function(reportId) { return new TaskOutput(reportId); })
       .catch(function(err) { fail(err); });
   };
@@ -93,8 +95,18 @@ beforeEach(function() {
 
   this.runtimeSetup = function(tasksFn, contextConfig, parameters) {
     var taskFunctions = {};
-    spyOn(gulp, 'task').and.callFake(function(taskName, deps, fn) {
-      taskFunctions[taskName] = fn;
+    spyOn(gulp, 'parallel');
+    spyOn(gulp, 'series').and.callFake(function(fns) {
+      return function(done) {
+        var outputValues = fns.map(function(fn) { return fn.call(null, done); });
+        return outputValues.pop();
+      };
+    });
+    spyOn(gulp, 'task').and.callFake(function(taskName, fn) {
+      if (fn) {
+        taskFunctions[taskName] = fn;
+      }
+      return {};
     });
 
     var config = _.merge({

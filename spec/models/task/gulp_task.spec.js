@@ -2,27 +2,27 @@ var Task              = require_src('models/task/gulp_task'),
     CFValidationError = require_src('models/validation_error');
 
 describe('Task', function() {
-  var assertTask = function(task, description, dependencies, fn, usage) {
+  var assertTask = function(task, description, dependency, fn, usage) {
     expect(task.name).toEqual('test-task');
     expect(task.description).toEqual(description);
     expect(task.usage).toEqual(usage);
-    expect(task.dependencies).toEqual(dependencies);
-    expect(task.taskFunction).toEqual(fn);
+    expect(task.dependency).toEqual(dependency);
+    expect(task.run).toEqual(fn);
   };
 
   describe('with a description and no parameters', function() {
     it('returns a Task with the given description', function() {
-      var task = new Task('test-task', { description: 'test task description' }, ['test-dep1', 'test-dep2'], 'testFunction');
+      var task = new Task('test-task', { description: 'test task description', run: 'testFunction' }, 'test-dependency');
 
-      assertTask(task, 'test task description', ['test-dep1', 'test-dep2'], 'testFunction', 'gulp test-task');
+      assertTask(task, 'test task description', 'test-dependency', 'testFunction', 'gulp test-task');
     });
   });
 
   describe('with no description and no parameters', function() {
     it('returns a Task with the default description', function() {
-      var task = new Task('test-task', ['test-dep1', 'test-dep2'], 'testFunction');
+      var task = new Task('test-task', { run: 'testFunction' }, 'test-dependency');
 
-      assertTask(task, 'No description available', ['test-dep1', 'test-dep2'], 'testFunction', 'gulp test-task');
+      assertTask(task, 'No description available', 'test-dependency', 'testFunction', 'gulp test-task');
     });
   });
 
@@ -30,28 +30,31 @@ describe('Task', function() {
     it('returns a Task with the usage information', function() {
       var task = new Task('test-task', {
         description: 'test task description',
+        run: 'testFunction',
         parameters: [{ name: 'param1', required: true }, { name: 'param2' }, { name: 'param3' }]
-      }, ['test-dep1', 'test-dep2'], 'testFunction');
+      }, 'test-dependency');
 
-      assertTask(task, 'test task description', ['test-dep1', 'test-dep2'], 'testFunction', 'gulp test-task --param1=<param1> [--param2=<param2>] [--param3=<param3>]');
+      assertTask(task, 'test task description', 'test-dependency', 'testFunction', 'gulp test-task --param1=<param1> [--param2=<param2>] [--param3=<param3>]');
     });
   });
 
   describe('with parameters and no description', function() {
     it('returns a Task with the usage information', function() {
       var task = new Task('test-task', {
+        run: 'testFunction',
         parameters: [{ name: 'param1', required: true }, { name: 'param2' }, { name: 'param3' }]
-      }, ['test-dep1', 'test-dep2'], 'testFunction');
+      }, 'test-dependency');
 
-      assertTask(task, 'No description available', ['test-dep1', 'test-dep2'], 'testFunction', 'gulp test-task --param1=<param1> [--param2=<param2>] [--param3=<param3>]');
+      assertTask(task, 'No description available', 'test-dependency', 'testFunction', 'gulp test-task --param1=<param1> [--param2=<param2>] [--param3=<param3>]');
     });
   });
 
   describe('with additional attributes', function() {
     it('returns a Task with the given attributes', function() {
       var task = new Task('test-task', {
-        testProperty: 123
-      }, ['test-dep1', 'test-dep2'], 'testFunction');
+        testProperty: 123,
+        run: 'testFunction'
+      }, 'test-dependency');
 
       expect(task.testProperty).toEqual(123);
     });
@@ -59,25 +62,18 @@ describe('Task', function() {
 
   describe('with no dependencies specified', function() {
     it('returns a task with an empty array of dependencies', function() {
-      var task = new Task('test-task', 'testFunction');
+      var task = new Task('test-task', { run: 'testFunction' });
 
-      assertTask(task, 'No description available', [], 'testFunction', 'gulp test-task');
-    });
-  });
-
-  describe('with no function specified', function() {
-    it('returns a task with no task function to execute', function() {
-      var task = new Task('test-task', ['test-dep1']);
-
-      assertTask(task, 'No description available', ['test-dep1'], undefined, 'gulp test-task');
+      assertTask(task, 'No description available', undefined, 'testFunction', 'gulp test-task');
     });
   });
 
   describe('Parameters validation', function() {
     beforeEach(function() {
       this.task = new Task('test-task', {
+        taskFunction: 'testFunction',
         parameters: [{ name: 'param1', required: true }, { name: 'param2' }, { name: 'param3' }]
-      }, 'testFunction');
+      });
     });
 
     it('does not throw any error if any required parameter is present', function() {

@@ -37,7 +37,7 @@
     "fast-csv": "^2.4.0",
     "findup-sync": "^2.0.0",
     "glob": "^7.1.2",
-    "gulp": "^3.9.1",
+    "gulp": "^4.0.0",
     "http-server": "^0.10.0",
     "is-stream": "^1.1.0",
     "knockout": "^3.4.2",
