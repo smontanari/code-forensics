@@ -1,5 +1,6 @@
 /*eslint-disable max-lines*/
-var gulp = require('gulp');
+var _    = require('lodash'),
+    gulp = require('gulp');
 
 var TaskDefinitions   = require_src('models/task/task_definitions'),
     CFValidationError = require_src('models/validation_error'),
@@ -39,6 +40,7 @@ describe('TaskDefinitions', function() {
     };
 
     gulpTaskFn = spyOn(gulp, 'task');
+    gulpSeries = spyOn(gulp, 'series')
     gulpTask = {};
     gulpTaskFn.and.callFake(function(_, fn) {
       if (fn) {
@@ -46,8 +48,8 @@ describe('TaskDefinitions', function() {
       }
       return gulpTask;
     });
-    gulpSeries = spyOn(gulp, 'series');
-    gulpSeries.and.callFake(function(fns) {
+    gulpSeries.and.callFake(function() {
+      var fns = _.toArray(arguments);
       return function(done) {
         var outputValues = fns.map(function(fn) { return fn.call(null, done); });
         return outputValues.pop();
@@ -67,7 +69,7 @@ describe('TaskDefinitions', function() {
       if (runner) { gulpSeriesFns.push(mockRunners[runner].run); }
 
       if (gulpSeriesFns.length > 1) {
-        expect(gulpSeries).toHaveBeenCalledWith(gulpSeriesFns);
+        expect(gulpSeries.calls.mostRecent().args).toEqual(gulpSeriesFns);
       } else {
         expect(gulpSeries.calls.count()).toEqual(0);
       }
@@ -158,7 +160,7 @@ describe('TaskDefinitions', function() {
         }, mockDependency);
       });
 
-      assertGulpInvocation(false, true, 'default', 'test task description');
+      assertGulpInvocation(true, true, 'default', 'test task description');
       assertDefaultRunnerInvocation({
         name: 'test-task', dependency: true, taskFunction: 'taskFunction', description: 'test task description', parameters: [{ name: 'testParam' }]
       });
@@ -184,7 +186,7 @@ describe('TaskDefinitions', function() {
         });
       });
 
-      assertGulpInvocation(false, false, 'report', 'test task description');
+      assertGulpInvocation(true, false, 'report', 'test task description');
       assertReportRunnerInvocation({
         name: 'test-task', dependency: false, taskFunction: 'taskFunction', description: 'test task description', parameters: [{ name: 'testParam' }]
       });
