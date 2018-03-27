@@ -13,10 +13,10 @@ describe('EnvConfigReader', function() {
     it('returns an object with default values', function() {
       expect(new EnvConfigReader().getConfiguration()).toEqual({
         maxConcurrency: undefined,
-        debugMode: undefined,
-        logEnabled: undefined,
+        debugMode: false,
+        logEnabled: true,
         serverPort: undefined,
-        codeMaat: { options: undefined }
+        codeMaat: { options: {} }
       });
     });
   });
