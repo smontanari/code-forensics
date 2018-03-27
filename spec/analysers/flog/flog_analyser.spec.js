@@ -22,7 +22,7 @@ describe('flog command definition', function() {
   it('checks the flog gem', function() {
     this.subject.installCheck.apply(this.mockCheck);
 
-    expect(this.mockCheck.verifyPackage).toHaveBeenCalledWith(jasmine.stringMatching(/gem list flog -i -v/), 'true', jasmine.any(String));
+    expect(this.mockCheck.verifyPackage).toHaveBeenCalledWith(jasmine.stringMatching(/gem list flog -i/), 'true', jasmine.any(String));
   });
 });
 
