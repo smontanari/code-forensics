@@ -40,7 +40,7 @@ describe('TaskDefinitions', function() {
     };
 
     gulpTaskFn = spyOn(gulp, 'task');
-    gulpSeries = spyOn(gulp, 'series')
+    gulpSeries = spyOn(gulp, 'series');
     gulpTask = {};
     gulpTaskFn.and.callFake(function(_, fn) {
       if (fn) {
