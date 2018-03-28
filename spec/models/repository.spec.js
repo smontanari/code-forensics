@@ -38,9 +38,9 @@ describe('Repository', function() {
             []
           );
 
-          this.subject = new Repository({ rootPath: '/root/path' });
+          var subject = new Repository({ rootPath: '/root/path' });
 
-          expect(this.subject.allFiles()).toEqual([
+          expect(subject.allFiles()).toEqual([
             { absolutePath: '/root/path/file1', relativePath: 'file1' },
             { absolutePath: '/root/path/file3', relativePath: 'file3' }
           ]);
@@ -78,6 +78,78 @@ describe('Repository', function() {
     });
 
     describe('.isValidPath()', function() {
+      describe('with no include and exclude paths', function() {
+        beforeEach(function() {
+          this.subject = new Repository({ rootPath: '/root/path' });
+        });
+
+        it('returns true for any absolute path under the root directory', function() {
+          expect(this.subject.isValidPath('/root/path/file1')).toBe(true);
+        });
+
+        it('returns false for any absolute path not under the root directory', function() {
+          expect(this.subject.isValidPath('/another_root/path/dir1/file3.ext')).toBe(false);
+        });
+
+        it('returns true for any relative path', function() {
+          expect(this.subject.isValidPath('any_folder/any_subfolder/anyFile.ext')).toBe(true);
+        });
+      });
+
+      describe('with given exclude paths', function() {
+        beforeEach(function() {
+          this.subject = new Repository({
+            rootPath: '/root/path',
+            excludePaths: ['some/invalid/paths', 'other/invalid/paths/**/*', 'files/**/*.invalid']
+          });
+        });
+
+        it('returns false for paths matching the exclude expressions', function() {
+          expect(this.subject.isValidPath('/root/path/some/invalid/paths/file1')).toBe(false);
+          expect(this.subject.isValidPath('some/invalid/paths/file3')).toBe(false);
+          expect(this.subject.isValidPath('other/invalid/paths/dir1/file4.ext')).toBe(false);
+          expect(this.subject.isValidPath('files/dir1/dir2/file5.invalid')).toBe(false);
+        });
+
+        it('returns true for paths not included in the exclude paths', function() {
+          expect(this.subject.isValidPath('/root/path/some/unincluded/path/file2')).toBe(true);
+        });
+
+        it('returns false for any absolute path not under the root directory', function() {
+          expect(this.subject.isValidPath('/another_root/path/dir1/file3.ext')).toBe(false);
+        });
+      });
+
+      describe('with given include paths', function() {
+        beforeEach(function() {
+          this.subject = new Repository({
+            rootPath: '/root/path',
+            includePaths: ['some/valid/paths', 'other/valid/paths/**/*', 'files/**/*.valid']
+          });
+        });
+
+        it('returns true for paths matching the include expressions', function() {
+          expect(this.subject.isValidPath('/root/path/some/valid/paths/file1')).toBe(true);
+          expect(this.subject.isValidPath('some/valid/paths/file2')).toBe(true);
+          expect(this.subject.isValidPath('other/valid/paths/dir1/file3.ext')).toBe(true);
+          expect(this.subject.isValidPath('files/dir1/dir2/file4.valid')).toBe(true);
+        });
+
+        it('returns false for paths not matching the include expressions', function() {
+          expect(this.subject.isValidPath('some/invalid/paths/file3')).toBe(false);
+          expect(this.subject.isValidPath('/root/path/some/invalid/paths/file1')).toBe(false);
+          expect(this.subject.isValidPath('/root/path/some/unincluded/path/file2')).toBe(false);
+          expect(this.subject.isValidPath('other/invalid/paths/dir1/file4.ext')).toBe(false);
+          expect(this.subject.isValidPath('files/dir1/dir2/file5.invalid')).toBe(false);
+        });
+
+        it('returns false for any absolute path not under the root directory', function() {
+          expect(this.subject.isValidPath('/another_root/path/dir1/file3.ext')).toBe(false);
+        });
+      });
+    });
+
+    describe('.fileExists()', function() {
       beforeEach(function() {
         this.subject = new Repository({ rootPath: '/some/path' });
 
@@ -88,9 +160,9 @@ describe('Repository', function() {
       });
 
       it('is a valid path only if it matches one of the files relative paths', function() {
-        expect(this.subject.isValidPath('test/valid-path/file1')).toBe(true);
-        expect(this.subject.isValidPath('test/valid-path/file3')).toBe(true);
-        expect(this.subject.isValidPath('test/invalid-path/file2')).toBe(false);
+        expect(this.subject.fileExists('test/valid-path/file1')).toBe(true);
+        expect(this.subject.fileExists('test/valid-path/file3')).toBe(true);
+        expect(this.subject.fileExists('test/invalid-path/file2')).toBe(false);
       });
     });
 
