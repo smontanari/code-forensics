@@ -29,7 +29,6 @@ describe('CodeMaat report tasks', function() {
 
         analysisStream.push({ path: 'test_file1', testData: 123 });
         analysisStream.push({ path: 'test_file2', testData: 456 });
-        analysisStream.push({ path: 'test_invalid_file', testData: 789 });
         analysisStream.end();
       });
     });
@@ -52,12 +51,7 @@ describe('CodeMaat report tasks', function() {
 
   beforeEach(function() {
     spyOn(command.Command, 'ensure');
-    runtime = this.runtimeSetup(codeMaatReportTasks, {
-      repository: { excludePaths: ['test_invalid_file'] }
-    });
-    _.each(['test_file1', 'test_file2', 'test_invalid_file'], function(f) {
-      runtime.prepareRepositoryFile(f, '');
-    });
+    runtime = this.runtimeSetup(codeMaatReportTasks);
   });
 
   afterEach(function() {

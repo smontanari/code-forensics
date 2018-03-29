@@ -87,6 +87,7 @@ describe('Social analysis tasks', function() {
   describe('developer-effort-analysis', function() {
     afterEach(function() {
       this.clearTemp();
+      this.clearRepo();
       this.clearOutput();
     });
 
@@ -109,8 +110,17 @@ describe('Social analysis tasks', function() {
           { path: "test/b/file2", author: 'Dev3', revisions: 5 },
           { path: "test/b/file2", author: 'Dev4', revisions: 2 },
           { path: "test/c/file3", author: 'Dev5', revisions: 10 },
-          { path: "test/c/file3", author: 'Dev with no team', revisions: 7 }
+          { path: "test/c/file3", author: 'Dev with no team', revisions: 7 },
+          { path: "test/test_invalid_file", author: 'Dev3', revisions: 10 }
         ]);
+
+        var runtime = this.runtime;
+        _.each([
+            "test/a/file1",
+            "test/b/file2",
+            "test/c/file3",
+          ], function(f) { runtime.prepareRepositoryFile(f, ''); }
+        );
       });
 
       it('publishes reports on the revisions distribution between developers and between teams', function(done) {
@@ -238,8 +248,17 @@ describe('Social analysis tasks', function() {
           { path: "test/b/file2", author: 'Dev3', revisions: 5 },
           { path: "test/b/file2", author: 'Dev4', revisions: 2 },
           { path: "test/c/file3", author: 'Dev5', revisions: 10 },
-          { path: "test/c/file3", author: 'Dev with no team', revisions: 7 }
+          { path: "test/c/file3", author: 'Dev with no team', revisions: 7 },
+          { path: "test/test_invalid_file", author: 'Dev3', revisions: 10 }
         ]);
+
+        var runtime = this.runtime;
+        _.each([
+            "test/a/file1",
+            "test/b/file2",
+            "test/c/file3",
+          ], function(f) { runtime.prepareRepositoryFile(f, ''); }
+        );
       });
 
       it('publishes only a report on the revisions distribution between developers', function(done) {
@@ -311,7 +330,6 @@ describe('Social analysis tasks', function() {
     beforeEach(function() {
       var runtime = this.runtime = this.runtimeSetup(socialAnalysisTasks,
         {
-          repository: { excludePaths: ['test_invalid_file'] },
           contributors: {
             'Team 1': ['Dev1', 'Dev2'],
             'Team 2': ['Dev3', ['Dev4', 'Alias dev 4'], 'Dev5']
@@ -321,7 +339,7 @@ describe('Social analysis tasks', function() {
       );
 
       _.each([
-        'test_file1', 'test_file2', 'test_file3', 'test_file4', 'test_file5', 'test_file6', 'test_invalid_file'
+        'test_file1', 'test_file2', 'test_file3', 'test_file4', 'test_file5', 'test_file6'
         ], function(f) {
         runtime.prepareRepositoryFile(f, '');
       });
@@ -528,7 +546,8 @@ describe('Social analysis tasks', function() {
           { path: 'test/ruby/app/file1.rb', author: 'Dev1', addedLines: 10, ownership: 53 },
           { path: 'test/web/styles/file2.css', author: 'Dev2', addedLines: 23, ownership: 26 },
           { path: 'test/ruby/app/models/file3.rb', author: 'Dev5', addedLines: 9, ownership: 44 },
-          { path: 'test/web/js/file4.js', author: 'Dev4', addedLines: 16, ownership: 29 }
+          { path: 'test/web/js/file4.js', author: 'Dev4', addedLines: 16, ownership: 29 },
+          { path: 'test/non/existing/file.rb', author: 'Dev1', addedLines: 34, ownership: 46 }
         ]);
 
         runtime.prepareTempReport('sloc-report.json', [

@@ -76,6 +76,8 @@ var Runtime = function(taskFunctions) {
   };
 
   this.prepareRepositoryFile = function(filename, content) {
+    var folder = Path.join(TEST_REPO_DIR, Path.dirname(filename));
+    mkdirp.sync(folder);
     fs.writeFileSync(Path.join(TEST_REPO_DIR, filename), content);
   };
 };
