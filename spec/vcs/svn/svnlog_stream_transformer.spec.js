@@ -70,7 +70,7 @@ describe('SvnLogStreamTransformer', function() {
         }
       };
       var stubRepository = {
-        fileExists: function() { return true; }
+        isValidPath: function() { return true; }
       };
       var stubAdapter = {
         vcsRelativePath: function() { return '^/test/path'; }
@@ -109,7 +109,7 @@ describe('SvnLogStreamTransformer', function() {
         find: function(name) { return { name: name }; }
       };
       var stubRepository = {
-        fileExists: function(path) { return path && path !== 'src/invalid_file.rb'; }
+        isValidPath: function(path) { return path && path !== 'src/invalid_file.rb'; }
       };
       var stubAdapter = {
         vcsRelativePath: function() { return "^/test/path\n"; }

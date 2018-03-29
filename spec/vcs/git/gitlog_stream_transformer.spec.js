@@ -13,7 +13,7 @@ describe('GitLogStreamTransformer', function() {
         }
       };
       var stubRepository = {
-        fileExists: function() { return true; }
+        isValidPath: function() { return true; }
       };
       this.subject = new LogStreamTransformer(stubRepository, stubDevelopersInfo);
     });
@@ -70,7 +70,7 @@ describe('GitLogStreamTransformer', function() {
         find: function(name) { return { name: name }; }
       };
       var stubRepository = {
-        fileExists: function(path) {
+        isValidPath: function(path) {
           return path !== 'test/invalid_file.rb';
         }
       };
