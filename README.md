@@ -3,11 +3,14 @@ code-forensics
 
 **code-forensics** is a toolset for analysing codebases stored in a version control system. It leverages the repository logs, or version history data, to perform deep analyses with regards to complexity, logical coupling, authors coupling and to inspect the evolution in time of different parts of a software system with respect to metrics like code churn and number of revisions.
 
+#### Version 1.0.0 released
+This release introduces some package upgrades and a slightly different behaviour on some analyses. If you have been using code-forensics in the past please read the [CHANGELOG](./CHANGELOG.md).
+
 ## Credits
 This project is based on the excellent work of **Adam Tornhill** and his command line tool [Code Maat](https://github.com/adamtornhill/code-maat). The majority of the analysis that **code-forensics** performs are actually described in Adam's book [Your Code as a Crime Scene](https://pragprog.com/book/atcrime/your-code-as-a-crime-scene).
 
 ## Pre-requisites
-* **Node.js** - code-forensics should run with most versions of node, however I haven't tested it with any version earlier than 4.
+* **Node.js** - **From release 1.0.0 code-forensics requires Nodejs 4 or later**. If you can't upgrade I suggest you use an earlier version of this package.
 * **npm v3** - code-forensics requires a flat install of its dependencies into the node_modules folder in order to visualise d3 diagrams.
 * **java 8** - Required in order to run code-maat. See the [Code Maat](https://github.com/adamtornhill/code-maat) repository for more details.
 
@@ -62,7 +65,7 @@ See [below](#task-usage-information) how to learn about any available task param
 **Note: it is highly recommended to specify a time interval for any analysis**. If not, **code-forensics** will attempt to analyse the git commits for the current date only, most likely resulting in empty or near empty reports. You can specify a time interval via command line parameters or through the configuration file. Please refer to the [provided documentation](https://github.com/smontanari/code-forensics/wiki).
 
 #### List analysis tasks
-To print the list of all the top level analysis tasks:
+By default running gulp without any argument will print the list of all the top level analysis tasks. Alternatively you can explicitly run the task `list-analysis-tasks`:
 ```
 $ gulp list-analysis-tasks
 ```
@@ -80,12 +83,14 @@ Currently the following analyses are implemented:
 * **commit-message-analysis**
 
 #### List all available tasks
-All available tasks can be printed, along with their description, by executing the following command:
+There are different options to print all the available tasks.
+
+The `help` task itself will list all the tasks along with their description, e.g.:
 ```
 $ gulp help
 ```
 
-Alternatively it's always possible to print all the tasks names with or without their dependencies using gulp cli options, e.g. `gulp -T` or `gulp --tasks-simple`.
+If you're interested in inspecting the dependencies between tasks you can leverage gulp version 4 way of displaying exeactly that in a nice tree-like format: run `gulp -T` or `gulp --tasks`. 
 
 #### Task usage information
 In order to learn which parameters can be passed to a task you can type the following command:
