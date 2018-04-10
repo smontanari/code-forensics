@@ -31,7 +31,7 @@ describe('platformCheck', function() {
       platformCheck.verifyExecutable('test-command', 'test error');
 
       expect(shell.which).toHaveBeenCalledWith('test-command');
-      expect(shell.echo).toHaveBeenCalledWith(jasmine.stringMatching(/Platform dependency error\ntest error/));
+      expect(shell.echo).toHaveBeenCalledWith(jasmine.stringMatching(/test error/));
       expect(shell.exit).toHaveBeenCalledWith(1);
     });
   });
@@ -52,7 +52,7 @@ describe('platformCheck', function() {
       platformCheck.verifyPackage('test-command', 'test result', 'test error');
 
       expect(shell.exec).toHaveBeenCalledWith('test-command', { silent: true });
-      expect(shell.echo).toHaveBeenCalledWith(jasmine.stringMatching(/Platform dependency error\ntest error/));
+      expect(shell.echo).toHaveBeenCalledWith(jasmine.stringMatching(/test error/));
       expect(shell.exit).toHaveBeenCalledWith(1);
     });
   });
@@ -75,7 +75,7 @@ describe('platformCheck', function() {
 
       platformCheck.verifyFile('/some/valid/file', 'test error');
 
-      expect(shell.echo).toHaveBeenCalledWith(jasmine.stringMatching(/Platform dependency error\ntest error/));
+      expect(shell.echo).toHaveBeenCalledWith(jasmine.stringMatching(/test error/));
       expect(shell.exit).toHaveBeenCalledWith(1);
     });
   });

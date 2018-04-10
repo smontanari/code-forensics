@@ -70,11 +70,13 @@ describe('System analysis tasks', function() {
       it(description, function(done) {
         var streams = _.map(analysisStreams, function(s) {
           var streamObjects = _.map(s.data, function() { return new stream.PassThrough({ objectMode: true }); });
+          var spyStrategy = jasmine.createSpy().and;
+          var stubAnalysis = _.spread(spyStrategy.returnValues).bind(spyStrategy);
           return _.extend({}, s, {
             streamObjects: streamObjects,
             mockAnalyser: {
               isSupported: function() { return _.includes(supportedAnalyses, s.codeMaatInstruction); },
-              fileAnalysisStream: _.spread(jasmine.createSpy().and.returnValues)(streamObjects)
+              fileAnalysisStream: stubAnalysis(streamObjects)
             }
           });
         });
