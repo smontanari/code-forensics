@@ -1,3 +1,4 @@
+/*global require_src*/
 var _ = require('lodash');
 
 var SlocAnalyser = require_src('analysers/sloc/sloc_analyser'),

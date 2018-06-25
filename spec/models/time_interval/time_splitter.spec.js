@@ -1,4 +1,5 @@
 /*eslint-disable max-lines*/
+/*global require_src*/
 var _      = require('lodash'),
     moment = require('moment');
 

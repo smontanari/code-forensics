@@ -1,3 +1,4 @@
+/*global require_src*/
 var SingletonFactory = require_src('utils/singleton_factory');
 
 describe('SingletonFactory', function() {

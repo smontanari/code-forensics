@@ -1,3 +1,4 @@
+/*global require_src*/
 var Tree = require_src('graph_support/tree');
 
 describe('Tree', function() {

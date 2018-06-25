@@ -1,3 +1,4 @@
+/*global require_src*/
 var objectTransformer = require_src('reporting/object_transformer');
 
 describe('objectTransformer', function() {

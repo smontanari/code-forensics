@@ -1,3 +1,4 @@
+/*global require_src*/
 var DefaultRunner = require_src('models/task/runners/default_runner');
 
 describe('DefaultRunner', function() {

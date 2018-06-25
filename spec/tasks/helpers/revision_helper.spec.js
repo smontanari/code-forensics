@@ -1,3 +1,4 @@
+/*global require_src*/
 var stream = require('stream'),
     map    = require("through2-map"),
     moment = require('moment');

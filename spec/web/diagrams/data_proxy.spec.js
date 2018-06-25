@@ -1,3 +1,4 @@
+/*global require_src*/
 var Bluebird  = require('bluebird');
 
 var DataProxy = require_src('web/diagrams/data_proxy');

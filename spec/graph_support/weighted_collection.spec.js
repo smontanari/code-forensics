@@ -1,3 +1,4 @@
+/*global require_src*/
 var _ = require('lodash');
 
 var WeightedCollection = require_src('graph_support/weighted_collection');

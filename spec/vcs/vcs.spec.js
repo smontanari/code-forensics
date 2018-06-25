@@ -1,3 +1,4 @@
+/*global require_src*/
 var vcs        = require_src('vcs'),
     vcsFactory = require_src('vcs/vcs_factory');
 

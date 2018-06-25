@@ -11,6 +11,8 @@
         "plugin:jasmine/recommended"
     ],
     "rules": {
+        "jasmine/no-suite-dupes": "off",
+        "jasmine/no-spec-dupes": "off",
         "accessor-pairs": "error",
         "array-bracket-spacing": [
             "error",

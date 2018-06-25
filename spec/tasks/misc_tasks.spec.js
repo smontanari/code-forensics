@@ -1,3 +1,4 @@
+/*global require_src*/
 var miscTasks = require_src('tasks/misc_tasks');
 
 describe('Misc Tasks', function() {

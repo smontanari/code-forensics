@@ -1,3 +1,4 @@
+/*global require_src*/
 var Path = require('path'),
     os   = require('os');
 

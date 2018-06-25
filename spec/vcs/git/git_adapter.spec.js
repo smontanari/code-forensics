@@ -1,3 +1,4 @@
+/*global require_src*/
 var moment = require('moment'),
     stream = require('stream');
 

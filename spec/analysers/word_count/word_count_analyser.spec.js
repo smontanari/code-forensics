@@ -1,3 +1,4 @@
+/*global require_src*/
 var stream = require('stream');
 
 var WordCountAnalyser = require_src('analysers/word_count/word_count_analyser');

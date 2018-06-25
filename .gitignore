@@ -5,3 +5,4 @@ test_fixtures/
 npm-debug.log
 todo.txt
 *.tgz
+.vscode/

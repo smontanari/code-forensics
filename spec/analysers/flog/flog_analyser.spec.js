@@ -1,3 +1,4 @@
+/*global require_src*/
 var stream = require('stream');
 
 var FlogAnalyser = require_src('analysers/flog/flog_analyser'),

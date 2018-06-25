@@ -1,3 +1,4 @@
+/*global require_src*/
 var Bluebird = require('bluebird'),
     stream   = require('stream');
 

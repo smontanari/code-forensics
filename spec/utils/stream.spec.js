@@ -1,3 +1,4 @@
+/*global require_src*/
 var fs     = require('fs'),
     _      = require('lodash'),
     stream = require('stream');

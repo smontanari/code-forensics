@@ -1,3 +1,4 @@
+/*global require_src*/
 var childProcess = require('child_process'),
     stream       = require('stream');
 
@@ -19,7 +20,7 @@ describe('Command.ensure()', function() {
     it('uses the installCheck function to ensure the command is available', function() {
       command.Command.ensure('test-command');
 
-      expect(this.commandDef.installCheck).toHaveBeenCalled();
+      expect(this.commandDef.installCheck).toHaveBeenCalledWith();
       expect(this.commandDef.installCheck.calls.mostRecent().object).toBe(utils.platformCheck);
     });
   });
@@ -42,10 +43,6 @@ describe('command', function() {
     spyOn(process.stderr, 'write');
   });
 
-  afterEach(function() {
-    expect(command.Command.definitions.getDefinition).toHaveBeenCalledWith('test-command');
-  });
-
   describe('.run()', function() {
     beforeEach(function() {
       spyOn(childProcess, 'spawnSync').and.returnValue({
@@ -54,6 +51,10 @@ describe('command', function() {
       });
 
       this.cmdOutput = command.run('test-command', ['arg1', 'arg2'], {opt1: 789, opt2: 'abc'});
+    });
+
+    it('fetches the command definition', function() {
+      expect(command.Command.definitions.getDefinition).toHaveBeenCalledWith('test-command');
     });
 
     it('spawns a sync process with the expected parameters', function() {
@@ -84,6 +85,10 @@ describe('command', function() {
       this.cmdStream = command.stream('test-command', ['arg1', 'arg2'], {opt1: 789, opt2: 'abc'});
     });
 
+    it('fetches the command definition', function () {
+      expect(command.Command.definitions.getDefinition).toHaveBeenCalledWith('test-command');
+    });
+
     it('spawns the process with the expected parameters', function() {
       expect(childProcess.spawn).toHaveBeenCalledWith('path/to/executable', [
         '--param1', '--param2', '-a', 123, '-b', 456, 'arg1', 'arg2'
@@ -95,7 +100,7 @@ describe('command', function() {
     });
 
     it('dumps command stderr stream', function() {
-      expect(spawnOutput.stderr.pipe).toHaveBeenCalled();
+      expect(spawnOutput.stderr.pipe).toHaveBeenCalledWith(jasmine.any(stream.Writable));
     });
   });
 
@@ -105,6 +110,7 @@ describe('command', function() {
 
       var proc = command.create('test-command', ['arg1', 'arg2'], {opt1: 789, opt2: 'abc'}).syncProcess();
 
+      expect(command.Command.definitions.getDefinition).toHaveBeenCalledWith('test-command');
       expect(proc).toEqual('sync process');
       expect(childProcess.spawnSync).toHaveBeenCalledWith('path/to/executable', [
         '--param1', '--param2', '-a', 123, '-b', 456, 'arg1', 'arg2'
@@ -116,6 +122,7 @@ describe('command', function() {
 
       var proc = command.create('test-command', ['arg1', 'arg2'], {opt1: 789, opt2: 'abc'}).asyncProcess();
 
+      expect(command.Command.definitions.getDefinition).toHaveBeenCalledWith('test-command');
       expect(proc).toEqual('async process');
       expect(childProcess.spawn).toHaveBeenCalledWith('path/to/executable', [
         '--param1', '--param2', '-a', 123, '-b', 456, 'arg1', 'arg2'

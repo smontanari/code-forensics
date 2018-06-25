@@ -1,3 +1,4 @@
+/*global require_src*/
 var pathMatchers = require_src('utils/path_matchers');
 
 describe('PathMatchers', function() {

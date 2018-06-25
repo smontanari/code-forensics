@@ -1,3 +1,4 @@
+/*global require_src*/
 var repositoryPath = require_src('models/repository_path'),
     utils          = require_src('utils');
 

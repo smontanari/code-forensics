@@ -1,3 +1,4 @@
+/*global require_src*/
 var fsUtils = require_src('utils').fileSystem;
 
 describe('utils.fileSystem', function() {

@@ -1,3 +1,4 @@
+/*global require_src*/
 var textFilters = require_src('analysers/word_count/text_filters');
 
 describe('TextFilters', function() {

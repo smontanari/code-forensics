@@ -1,3 +1,4 @@
+/*global require_src*/
 var hotspotAnalysisTasks = require_src('tasks/hotspot_analysis_tasks');
 
 describe('Hotspot analysis tasks', function() {

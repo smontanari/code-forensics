@@ -1,3 +1,4 @@
+/*global require_src*/
 global.require_src = function(path) {
   return require('../lib/' + path);
 };

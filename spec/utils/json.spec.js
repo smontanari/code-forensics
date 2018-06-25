@@ -1,3 +1,4 @@
+/*global require_src*/
 var fs     = require('fs'),
     stream = require('stream');
 

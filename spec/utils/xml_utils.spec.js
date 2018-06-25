@@ -1,3 +1,4 @@
+/*global require_src*/
 var XmlUtils = require_src('utils/xml_utils');
 
 describe('XmlUtils', function() {

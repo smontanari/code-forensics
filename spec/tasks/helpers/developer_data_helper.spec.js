@@ -1,3 +1,4 @@
+/*global require_src*/
 var DeveloperDataHelper = require_src('tasks/helpers/developer_data_helper'),
     DevelopersInfo       = require_src('models/developers_info');
 

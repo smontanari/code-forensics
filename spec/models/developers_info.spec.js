@@ -1,3 +1,4 @@
+/*global require_src*/
 var DevelopersInfo     = require_src('models/developers_info'),
     CFValidationError = require_src('models/validation_error');
 

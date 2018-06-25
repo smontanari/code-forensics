@@ -1,3 +1,4 @@
+/*global require_src*/
 var stream = require('stream'),
     _      = require('lodash');
 
@@ -239,6 +240,7 @@ describe('System analysis tasks', function() {
           }
         );
       });
+
       describe('with churn analysis not supported by the VCS type', function() {
         testAnalysis(
           'publishes a revisions report and a coupling report for each architectural layer of the system',

@@ -1,3 +1,4 @@
+/*global require_src*/
 var _        = require('lodash'),
     Bluebird = require('bluebird');
 

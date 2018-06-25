@@ -1,3 +1,4 @@
+/*global require_src*/
 var WordCounter = require_src('analysers/word_count/word_counter');
 
 describe('WordCounter', function() {

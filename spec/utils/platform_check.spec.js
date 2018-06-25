@@ -1,3 +1,4 @@
+/*global require_src*/
 var shell = require('shelljs'),
     fs    = require('fs');
 

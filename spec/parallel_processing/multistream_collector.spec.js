@@ -1,3 +1,4 @@
+/*global require_src*/
 var stream = require('stream'),
     reduce = require('through2-reduce'),
     _      = require('lodash');

@@ -1,3 +1,4 @@
+/*global require_src*/
 var _      = require('lodash'),
     moment = require('moment'),
     stream = require('stream');
@@ -134,7 +135,7 @@ describe('SvnAdapter', function() {
 
   var buildLogStream = function(output) {
     var logStream = new stream.PassThrough();
-    spyOn(command, 'stream').and.returnValue(logStream);
+    spyOn(command, 'stream').and.returnValue(logStream); //eslint-disable-line jasmine/no-unsafe-spy
 
     _.each(output, logStream.push.bind(logStream));
     logStream.end();

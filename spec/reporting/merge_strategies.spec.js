@@ -1,3 +1,4 @@
+/*global require_src*/
 var MergeStrategies = require_src('reporting/merge_strategies');
 
 describe('MergeStrategies', function() {

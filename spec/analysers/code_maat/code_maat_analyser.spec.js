@@ -1,4 +1,5 @@
 /*eslint-disable max-lines*/
+/*global require_src*/
 var stream = require('stream'),
     fs     = require('fs'),
     reduce = require('through2-reduce');

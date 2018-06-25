@@ -1,3 +1,4 @@
+/*global require_src*/
 var TimePeriodBuilder = require_src('models/time_interval/builder'),
     CFValidationError = require_src('models/validation_error');
 

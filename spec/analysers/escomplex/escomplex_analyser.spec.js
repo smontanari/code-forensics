@@ -1,3 +1,4 @@
+/*global require_src*/
 var stream    = require('stream'),
     fs        = require('fs'),
     escomplex = require('typhonjs-escomplex');

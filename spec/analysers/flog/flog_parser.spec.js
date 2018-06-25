@@ -1,3 +1,4 @@
+/*global require_src*/
 var FlogParser  = require_src('analysers/flog/flog_parser');
 
 describe('FlogParser', function() {

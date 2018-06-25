@@ -1,3 +1,4 @@
+/*global require_src*/
 var _ = require('lodash');
 
 var ParallelJobRunner = require_src('parallel_processing/parallel_job_runner');

@@ -1,3 +1,4 @@
+/*global require_src*/
 var stream = require('stream');
 
 var javascriptTasks = require_src('tasks/complexity_analysis/javascript_tasks'),

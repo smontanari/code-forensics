@@ -1,3 +1,4 @@
+/*global require_src*/
 var DefinitionsArchive = require_src('utils').DefinitionsArchive;
 
 describe('utils.DefinitionsArchive', function() {

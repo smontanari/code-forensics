@@ -1,3 +1,4 @@
+/*global require_src*/
 var factory           = require_src('vcs/vcs_factory'),
     GitAdapter        = require_src('vcs/git/git_adapter'),
     SvnAdapter        = require_src('vcs/svn/svn_adapter'),

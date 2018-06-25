@@ -1,4 +1,5 @@
 /*eslint-disable max-lines*/
+/*global require_src*/
 var moment   = require('moment'),
     mkdirp   = require('mkdirp'),
     Bluebird = require('bluebird');

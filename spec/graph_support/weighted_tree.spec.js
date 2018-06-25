@@ -1,3 +1,4 @@
+/*global require_src*/
 var WeightedTree = require_src('graph_support/weighted_tree');
 
 describe('WeightedTree', function() {

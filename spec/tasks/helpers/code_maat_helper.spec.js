@@ -1,3 +1,4 @@
+/*global require_src*/
 var _ = require('lodash');
 
 var Helper   = require_src('tasks/helpers/code_maat_helper'),

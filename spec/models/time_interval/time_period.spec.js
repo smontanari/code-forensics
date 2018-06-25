@@ -1,3 +1,4 @@
+/*global require_src*/
 var moment = require('moment');
 
 var TimePeriod = require_src('models/time_interval/time_period');

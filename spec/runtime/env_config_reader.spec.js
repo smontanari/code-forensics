@@ -1,3 +1,4 @@
+/*global require_src*/
 var EnvConfigReader = require_src('runtime/env_config_reader');
 
 describe('EnvConfigReader', function() {

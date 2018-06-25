@@ -1,3 +1,4 @@
+/*global require_src*/
 var glob = require("glob");
 
 var Repository        = require_src('models/repository'),

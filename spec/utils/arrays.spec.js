@@ -1,3 +1,4 @@
+/*global require_src*/
 var arraysUtils = require_src('utils').arrays;
 
 describe('utils.arrays', function() {

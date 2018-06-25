@@ -1,3 +1,4 @@
+/*global require_src*/
 var GraphDataHelper = require_src('tasks/helpers/graph_data_helper'),
     graphSupport    = require_src('graph_support');
 

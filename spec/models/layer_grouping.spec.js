@@ -1,3 +1,4 @@
+/*global require_src*/
 var LayerGrouping = require_src('models/layer_grouping');
 
 describe('LayerGrouping', function() {

@@ -1,3 +1,4 @@
+/*global require_src*/
 var fs = require('fs');
 
 var FileConfigReader = require_src('runtime/file_config_reader'),

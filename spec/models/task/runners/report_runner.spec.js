@@ -1,3 +1,4 @@
+/*global require_src*/
 var stream   = require('stream'),
     Bluebird = require('bluebird');
 
@@ -32,7 +33,7 @@ describe('ReportRunner', function() {
         done();
       });
 
-      output.push('123'); //TODO: mock utils.streamToPromise
+      output.push('123');
       output.end();
     });
   });
