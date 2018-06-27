@@ -61,6 +61,7 @@
     "sha1": "^1.1.1",
     "shelljs": "^0.8.1",
     "sloc": "^0.2.0",
+    "sort-stream2": "^1.0.0",
     "string_decoder": "^1.1.1",
     "systemjs": "^0.21.2",
     "through2": "^2.0.3",

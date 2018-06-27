@@ -2,7 +2,7 @@
 var stream = require('stream'),
     _      = require('lodash');
 
-var systemAnalysisTasks = require_src('tasks/system_analysis_tasks'),
+var systemAnalysisTasks = require_src('tasks/system_analysis/system_analysis_tasks'),
     codeMaat            = require_src('analysers/code_maat'),
     command             = require_src('command');
 
@@ -132,15 +132,15 @@ describe('System analysis tasks', function() {
               {
                 fileName: '2016-01-01_2016-02-28_system-revisions-data.json',
                 data: [
-                  { name: 'All files', revisions: 94, date: '2016-01-31T12:59:59.999Z' },
-                  { name: 'All files', revisions: 70, date: '2016-02-28T12:59:59.999Z' }
+                  { name: 'All files', revisions: 94, cumulativeRevisions:  94, date: '2016-01-31T12:59:59.999Z' },
+                  { name: 'All files', revisions: 70, cumulativeRevisions: 164, date: '2016-02-28T12:59:59.999Z' }
                 ]
               },
               {
                 fileName: '2016-01-01_2016-02-28_system-churn-data.json',
                 data: [
-                  { name: 'All files', addedLines: 102945, deletedLines: 17207, totalLines: 85738, date: '2016-01-31T12:59:59.999Z' },
-                  { name: 'All files', addedLines:  14127, deletedLines: 11954, totalLines:  2173, date: '2016-02-28T12:59:59.999Z' }
+                  { name: 'All files', addedLines: 102945, deletedLines: 17207, totalLines: 85738, cumulativeLines: 85738, date: '2016-01-31T12:59:59.999Z' },
+                  { name: 'All files', addedLines:  14127, deletedLines: 11954, totalLines:  2173, cumulativeLines: 87911, date: '2016-02-28T12:59:59.999Z' }
                 ]
               }
             ],
@@ -168,8 +168,8 @@ describe('System analysis tasks', function() {
               {
                 fileName: '2016-01-01_2016-02-28_system-revisions-data.json',
                 data: [
-                  { name: 'All files', revisions: 94, date: '2016-01-31T12:59:59.999Z' },
-                  { name: 'All files', revisions: 70, date: '2016-02-28T12:59:59.999Z' }
+                  { name: 'All files', revisions: 94, cumulativeRevisions:  94, date: '2016-01-31T12:59:59.999Z' },
+                  { name: 'All files', revisions: 70, cumulativeRevisions: 164, date: '2016-02-28T12:59:59.999Z' }
                 ]
               }
             ],
@@ -200,23 +200,23 @@ describe('System analysis tasks', function() {
               {
                 fileName: '2016-01-01_2016-02-28_system-revisions-data.json',
                 data: [
-                  { name: 'test_layer1', revisions: 32, date: '2016-01-31T12:59:59.999Z'},
-                  { name: 'test_layer2', revisions: 47, date: '2016-01-31T12:59:59.999Z'},
-                  { name: 'test_layer3', revisions: 15, date: '2016-01-31T12:59:59.999Z'},
-                  { name: 'test_layer1', revisions: 34, date: '2016-02-28T12:59:59.999Z'},
-                  { name: 'test_layer2', revisions: 25, date: '2016-02-28T12:59:59.999Z'},
-                  { name: 'test_layer3', revisions: 11, date: '2016-02-28T12:59:59.999Z'}
+                  { name: 'test_layer1', revisions: 32, cumulativeRevisions: 32, date: '2016-01-31T12:59:59.999Z'},
+                  { name: 'test_layer2', revisions: 47, cumulativeRevisions: 47, date: '2016-01-31T12:59:59.999Z'},
+                  { name: 'test_layer3', revisions: 15, cumulativeRevisions: 15, date: '2016-01-31T12:59:59.999Z'},
+                  { name: 'test_layer1', revisions: 34, cumulativeRevisions: 66, date: '2016-02-28T12:59:59.999Z'},
+                  { name: 'test_layer2', revisions: 25, cumulativeRevisions: 72, date: '2016-02-28T12:59:59.999Z'},
+                  { name: 'test_layer3', revisions: 11, cumulativeRevisions: 26, date: '2016-02-28T12:59:59.999Z'}
                 ]
               },
               {
                 fileName: '2016-01-01_2016-02-28_system-churn-data.json',
                 data: [
-                  { name: 'test_layer1', addedLines: 95295, deletedLines: 10209, totalLines: 85086, date: '2016-01-31T12:59:59.999Z'},
-                  { name: 'test_layer2', addedLines:  6940, deletedLines:  6961, totalLines:   -21, date: '2016-01-31T12:59:59.999Z'},
-                  { name: 'test_layer3', addedLines:   710, deletedLines:    37, totalLines:   673, date: '2016-01-31T12:59:59.999Z'},
-                  { name: 'test_layer1', addedLines: 12091, deletedLines: 10138, totalLines:  1953, date: '2016-02-28T12:59:59.999Z'},
-                  { name: 'test_layer2', addedLines:  1147, deletedLines:  1156, totalLines:    -9, date: '2016-02-28T12:59:59.999Z'},
-                  { name: 'test_layer3', addedLines:   889, deletedLines:   660, totalLines:   229, date: '2016-02-28T12:59:59.999Z'}
+                  { name: 'test_layer1', addedLines: 95295, deletedLines: 10209, totalLines: 85086, cumulativeLines: 85086, date: '2016-01-31T12:59:59.999Z'},
+                  { name: 'test_layer2', addedLines:  6940, deletedLines:  6961, totalLines:   -21, cumulativeLines:   -21, date: '2016-01-31T12:59:59.999Z'},
+                  { name: 'test_layer3', addedLines:   710, deletedLines:    37, totalLines:   673, cumulativeLines:   673, date: '2016-01-31T12:59:59.999Z'},
+                  { name: 'test_layer1', addedLines: 12091, deletedLines: 10138, totalLines:  1953, cumulativeLines: 87039, date: '2016-02-28T12:59:59.999Z'},
+                  { name: 'test_layer2', addedLines:  1147, deletedLines:  1156, totalLines:    -9, cumulativeLines:   -30, date: '2016-02-28T12:59:59.999Z'},
+                  { name: 'test_layer3', addedLines:   889, deletedLines:   660, totalLines:   229, cumulativeLines:   902, date: '2016-02-28T12:59:59.999Z'}
                 ]
               },
               {
@@ -252,12 +252,12 @@ describe('System analysis tasks', function() {
               {
                 fileName: '2016-01-01_2016-02-28_system-revisions-data.json',
                 data: [
-                  { name: 'test_layer1', revisions: 32, date: '2016-01-31T12:59:59.999Z'},
-                  { name: 'test_layer2', revisions: 47, date: '2016-01-31T12:59:59.999Z'},
-                  { name: 'test_layer3', revisions: 15, date: '2016-01-31T12:59:59.999Z'},
-                  { name: 'test_layer1', revisions: 34, date: '2016-02-28T12:59:59.999Z'},
-                  { name: 'test_layer2', revisions: 25, date: '2016-02-28T12:59:59.999Z'},
-                  { name: 'test_layer3', revisions: 11, date: '2016-02-28T12:59:59.999Z'}
+                  { name: 'test_layer1', revisions: 32, cumulativeRevisions: 32, date: '2016-01-31T12:59:59.999Z'},
+                  { name: 'test_layer2', revisions: 47, cumulativeRevisions: 47, date: '2016-01-31T12:59:59.999Z'},
+                  { name: 'test_layer3', revisions: 15, cumulativeRevisions: 15, date: '2016-01-31T12:59:59.999Z'},
+                  { name: 'test_layer1', revisions: 34, cumulativeRevisions: 66, date: '2016-02-28T12:59:59.999Z'},
+                  { name: 'test_layer2', revisions: 25, cumulativeRevisions: 72, date: '2016-02-28T12:59:59.999Z'},
+                  { name: 'test_layer3', revisions: 11, cumulativeRevisions: 26, date: '2016-02-28T12:59:59.999Z'}
                 ]
               },
               {
