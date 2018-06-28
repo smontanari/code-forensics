@@ -1,8 +1,10 @@
 # Changelog
 
 ### [Unreleased]
+
+### [1.1.0] - 2018-06-29
 #### Added
-- system evolution diagram shows cumulative loc metric in the churn section
+- system evolution diagram now shows cumulative loc metric in the churn section
 
 ### [1.0.1] - 2018-04-16
 #### Changed
