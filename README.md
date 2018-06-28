@@ -155,7 +155,7 @@ The results can then be displayed in a word cloud diagram at the url given above
 </table>
 
 ## License
-Copyright &copy; 2016-2017 Silvio Montanari
+Copyright &copy; 2016-2018 Silvio Montanari
 
 **code-forensics** is free software; you can redistribute it and/or modify it under the terms of the [GNU General Public License v3.0 or any later version](http://www.gnu.org/licenses/gpl.html).
 
