@@ -1,6 +1,12 @@
 # Changelog
 
 ### [Unreleased]
+#### Added
+- system evolution diagram shows cumulative loc metric in the churn section
+
+### [1.0.1] - 2018-04-16
+#### Changed
+- package.json requires nodejs v4
 
 ### [1.0.0] - 2018-04-13
 #### Added
