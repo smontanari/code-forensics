@@ -174,6 +174,41 @@ describe('CodeMaatAnalyser', function() {
     });
   });
 
+  describe('summary analysis', function() {
+    ['git', 'subversion'].forEach(function(vcsType) {
+      describe('Supported VCS', function() {
+        subject('summary', vcsType);
+        verifyInstallCheck();
+
+        prepareAnalyserStream(100);
+        verifySupportedAnalysis();
+        verifyHandleCodeMaatError('summary');
+        verifyNoData('summary', 'statistic,value');
+
+        it('returns a stream of the statistic data', function(done) {
+          this.outputStream.on('data', function(data) {
+            expect(data).toEqual([
+              { stat: 'commits', value: 5007 },
+              { stat: 'files', value: 4193 },
+              { stat: 'revisions', value: 18384 },
+              { stat: 'authors', value: 84 }
+            ]);
+            assertCommand('summary');
+          })
+          .on('end', done);
+
+          stubCodeMaatReport([
+            'statistic,value',
+            'number-of-commits,5007',
+            'number-of-entities,4193',
+            'number-of-entities-changed,18384',
+            'number-of-authors,84'
+          ]);
+        });
+      });
+    });
+  });
+
   describe('soc analysis', function() {
     ['git', 'subversion'].forEach(function(vcsType) {
       describe('Supported VCS', function() {
