@@ -8,9 +8,9 @@ var TimePeriodResults = require_src('tasks/system_analysis/time_period_results')
 
 describe('TimePeriodResults', function() {
   describe('resultsMapper', function() {
-    beforeEach(function () {
+    beforeEach(function() {
       this.subject = TimePeriodResults.resultsMapper(
-        function (obj) {
+        function(obj) {
           return {
             result1: obj.metricA,
             result2: obj.metricA * obj.metricB
@@ -28,10 +28,10 @@ describe('TimePeriodResults', function() {
 
       var allObjs = [];
       objStream.pipe(streamMap)
-        .on('data', function (obj) {
+        .on('data', function(obj) {
           allObjs.push(obj);
         })
-        .once('end', function () {
+        .once('end', function() {
           expect(allObjs).toEqual([
             { name: 'path1', date: '2010-06-07T23:30:00.000Z', result1: 10, result2: 20 },
             { name: 'path2', date: '2010-06-07T23:30:00.000Z', result1: 20, result2: 60 }
@@ -46,9 +46,9 @@ describe('TimePeriodResults', function() {
   });
 
   describe('resultsReducer', function() {
-    beforeEach(function () {
+    beforeEach(function() {
       this.subject = TimePeriodResults.resultsReducer(
-        function (obj) {
+        function(obj) {
           return {
             result1: obj.metricA,
             result2: obj.metricA * obj.metricB
@@ -67,7 +67,7 @@ describe('TimePeriodResults', function() {
       }, 'DD-MM-YYYY'), { result1: 0, result2: 0 });
 
       objStream.pipe(streamMap)
-        .on('data', function (obj) {
+        .on('data', function(obj) {
           expect(obj).toEqual(
             { name: 'All files', date: '2010-06-07T23:30:00.000Z', result1: 30, result2: 80 }
           );
@@ -81,7 +81,7 @@ describe('TimePeriodResults', function() {
   });
 
   describe('resultsAccumulator', function() {
-    beforeEach(function () {
+    beforeEach(function() {
       this.subject = TimePeriodResults.resultsAccumulator(
         {
           cumulativeResult1: _.property('metricA'),
@@ -90,15 +90,15 @@ describe('TimePeriodResults', function() {
       );
     });
 
-    it('returns a function that maps a stream of results with cumulative properties', function (done) {
+    it('returns a function that maps a stream of results with cumulative properties', function(done) {
       var objStream = new stream.PassThrough({ objectMode: true });
 
       var allObjs = [];
       objStream.pipe(this.subject)
-        .on('data', function (obj) {
+        .on('data', function(obj) {
           allObjs.push(obj);
         })
-        .once('end', function () {
+        .once('end', function() {
           expect(allObjs).toEqual([
             { name: 'path1', cumulativeResult1:  1, cumulativeResult2:  2, metricA: 1, metricB: 2, metric3: 5 },
             { name: 'path2', cumulativeResult1:  2, cumulativeResult2:  6, metricA: 2, metricB: 3, metric3: 5 },

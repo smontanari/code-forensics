@@ -85,7 +85,7 @@ describe('command', function() {
       this.cmdStream = command.stream('test-command', ['arg1', 'arg2'], {opt1: 789, opt2: 'abc'});
     });
 
-    it('fetches the command definition', function () {
+    it('fetches the command definition', function() {
       expect(command.Command.definitions.getDefinition).toHaveBeenCalledWith('test-command');
     });
 

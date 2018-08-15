@@ -40,7 +40,7 @@ var webServer = httpServer.createServer(options);
 
 /*eslint-disable no-console, no-process-exit*/
 
-webServer.listen(port, host, function () {
+webServer.listen(port, host, function() {
   console.log(chalk.yellow('Starting up http-server'));
   console.log(chalk.cyan('listening on ' + host + ':' + port));
   console.log(chalk.cyan('serving "/"     files from ' + webPath));
