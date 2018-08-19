@@ -477,19 +477,19 @@ describe('CodeMaatAnalyser', function() {
 
   describe('absolute churn analysis', function() {
     describe('Unsupported VCS', function() {
-      subject('absolute-churn', 'subversion');
+      subject('abs-churn', 'subversion');
       verifyInstallCheck();
       prepareAnalyserStream(100);
       verifyNotSupportedAnalysis();
     });
 
     describe('Supported VCS', function() {
-      subject('absolute-churn', 'git');
+      subject('abs-churn', 'git');
       verifyInstallCheck();
       prepareAnalyserStream(100);
       verifySupportedAnalysis();
-      verifyNoData('absolute-churn', 'date,added,deleted,commits');
-      verifyHandleCodeMaatError('absolute-churn');
+      verifyNoData('abs-churn', 'date,added,deleted,commits');
+      verifyHandleCodeMaatError('abs-churn');
 
       it('returns a stream of the absolute churn analysis', function(done) {
         this.outputStream.on('data', function(data) {
@@ -500,7 +500,7 @@ describe('CodeMaatAnalyser', function() {
             { date: '2015-12-24', addedLines:  205, deletedLines:  131, commits: 5 },
             { date: '2015-12-31', addedLines:   22, deletedLines:    1, commits: 1 }
           ]);
-          assertCommand('absolute-churn');
+          assertCommand('abs-churn');
         }).on('end', done);
 
         stubCodeMaatReport([

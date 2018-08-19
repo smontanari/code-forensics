@@ -14,18 +14,19 @@ describe('CodeMaatHelper', function() {
     spyOn(codeMaat, 'analyser').and.returnValue(this.mockAnalyser);
   });
 
-  _.each([
-    'revisionsAnalysis',
-    'sumCouplingAnalysis',
-    'temporalCouplingAnalysis',
-    'authorsAnalysis',
-    'mainDevAnalysis',
-    'effortAnalysis',
-    'codeOwnershipAnalysis',
-    'communicationAnalysis',
-    'absoluteChurnAnalysis',
-    'entityChurnAnalysis'
-  ], function(analysis) {
+  _.each({
+    'revisions': 'revisionsAnalysis',
+    'summary': 'summaryAnalysis',
+    'soc': 'sumCouplingAnalysis',
+    'coupling': 'temporalCouplingAnalysis',
+    'authors': 'authorsAnalysis',
+    'main-dev': 'mainDevAnalysis',
+    'entity-effort': 'effortAnalysis',
+    'entity-ownership': 'codeOwnershipAnalysis',
+    'communication': 'communicationAnalysis',
+    'abs-churn': 'absoluteChurnAnalysis',
+    'entity-churn': 'entityChurnAnalysis'
+  }, function(analysis, instruction) {
     it('returns information on vcs support', function() {
       expect(this.subject[analysis].isSupported()).toEqual('support-info');
     });
@@ -34,6 +35,7 @@ describe('CodeMaatHelper', function() {
       var result = this.subject[analysis]('test_input', 'test_options');
 
       expect(result).toEqual('test_result');
+      expect(codeMaat.analyser).toHaveBeenCalledWith(instruction);
       expect(this.mockAnalyser.fileAnalysisStream).toHaveBeenCalledWith('test_input', 'test_options');
     });
   });

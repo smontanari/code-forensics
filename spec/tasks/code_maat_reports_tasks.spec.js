@@ -9,7 +9,7 @@ var codeMaatReportTasks = require_src('tasks/code_maat_reports_tasks'),
 describe('CodeMaat report tasks', function() {
   var runtime;
 
-  var assertTaskReport = function(exampleDescription, analysis, taskName) {
+  var assertTaskReport = function(exampleDescription, taskName) {
     describe(taskName, function() {
       it(exampleDescription, function(done) {
         var analysisStream = new stream.PassThrough({ objectMode: true });
@@ -35,7 +35,7 @@ describe('CodeMaat report tasks', function() {
     });
   };
 
-  var assertMissingTaskReport = function(analysis, taskName) {
+  var assertMissingTaskReport = function(taskName) {
     describe(taskName, function() {
       it('does not write a report', function(done) {
         spyOn(codeMaat, 'analyser').and.returnValue(
@@ -61,19 +61,19 @@ describe('CodeMaat report tasks', function() {
   });
 
   describe('with any supported VCS type', function() {
-    assertTaskReport('writes a report on the number of revisions for each valid file', 'revisions', 'revisions-report');
-    assertTaskReport('writes a report on the effort distribution for each file', 'entity-effort', 'effort-report');
-    assertTaskReport('writes a report on the number of authors and revisions for each file', 'authors', 'authors-report');
-    assertTaskReport('writes a report on the main developers (by revisions) for each file', 'main-dev', 'main-dev-report');
-    assertTaskReport('writes a report on the developer ownership (by added lines of code) for each file', 'entity-ownership', 'code-ownership-report');
+    assertTaskReport('writes a report on the number of revisions for each valid file', 'revisions-report');
+    assertTaskReport('writes a report on the effort distribution for each file', 'effort-report');
+    assertTaskReport('writes a report on the number of authors and revisions for each file', 'authors-report');
+    assertTaskReport('writes a report on the main developers (by revisions) for each file', 'main-dev-report');
+    assertTaskReport('writes a report on the developer ownership (by added lines of code) for each file', 'code-ownership-report');
   });
 
   describe('with an unsupported VCS type', function() {
-    assertMissingTaskReport('revisions', 'revisions-report');
-    assertMissingTaskReport('entity-effort', 'effort-report');
-    assertMissingTaskReport('authors', 'authors-report');
-    assertMissingTaskReport('main-dev', 'main-dev-report');
-    assertMissingTaskReport('entity-ownership', 'code-ownership-report');
+    assertMissingTaskReport('revisions-report');
+    assertMissingTaskReport('effort-report');
+    assertMissingTaskReport('authors-report');
+    assertMissingTaskReport('main-dev-report');
+    assertMissingTaskReport('code-ownership-report');
   });
 });
 
