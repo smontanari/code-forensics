@@ -1,6 +1,11 @@
 # Changelog
 
 ### [Unreleased]
+#### Added
+- enabling codemaat summary analysis to be used in system evolution reports
+#### Fixed
+- correct date sorting in system evolution report
+- better handling of graph initialization errors. Fixes #35
 
 ### [1.1.0] - 2018-06-29
 #### Added
