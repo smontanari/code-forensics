@@ -65,7 +65,7 @@ describe('DataCollector', function() {
       it('returns the aggregation of all time periods analysis results', function(done) {
         var analysis = {
           codeMaatAnalysis: 'testAnalysis',
-          metricCollector: function(obj) { return { metric: obj.testMetricA }; },
+          selector: function(obj) { return { metric: obj.testMetricA }; },
           initialValue: { metric: 0 }
         };
         var data = [];
@@ -88,7 +88,7 @@ describe('DataCollector', function() {
       it('returns the aggregation of all time periods analysis results sorted by time', function(done) {
         var analysis = {
           codeMaatAnalysis: 'testAnalysis',
-          metricCollector: function(obj) { return { metric: obj.testMetricA }; },
+          selector: function(obj) { return { metric: obj.testMetricA }; },
           initialValue: { metric: 0 },
           accumulators: {
             cumulativeMetric: _.property('metric')
@@ -121,7 +121,7 @@ describe('DataCollector', function() {
       it('returns the map of all time periods analysis results', function(done) {
         var analysis = {
           codeMaatAnalysis: 'testAnalysis',
-          metricCollector: function(obj) { return { metric: obj.testMetricA }; }
+          selector: function(obj) { return { metric: obj.testMetricA }; }
         };
         var data = [];
         subject.reportStream(analysis)
@@ -146,7 +146,7 @@ describe('DataCollector', function() {
       it('returns the map of all time periods analysis results', function(done) {
         var analysis = {
           codeMaatAnalysis: 'testAnalysis',
-          metricCollector: function(obj) { return { metric: obj.testMetricA }; },
+          selector: function(obj) { return { metric: obj.testMetricA }; },
           accumulators: {
             cumulativeMetric: _.property('metric')
           }

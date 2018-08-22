@@ -1,3 +1,4 @@
+/*eslint-disable max-lines*/
 /*global require_src*/
 var stream = require('stream'),
     _      = require('lodash');
@@ -19,7 +20,7 @@ describe('System analysis tasks', function() {
   });
 
   describe('system-evolution-analysis', function() {
-    var revisionsAnalysisStreams = {
+    var layeredRevisionsAnalysisStreams = {
       codeMaatInstruction: 'revisions',
       data: [
         [
@@ -35,7 +36,41 @@ describe('System analysis tasks', function() {
       ]
     };
 
-    var churnAnalysisStreams = {
+    var summaryAnalysisStreams = {
+      codeMaatInstruction: 'summary',
+      data: [
+        [
+          { stat: 'revisions', value: 94 },
+          { stat: 'files',     value: 34 },
+          { stat: 'commits',   value: 67 },
+          { stat: 'authors',   value: 14 }
+        ],
+        [
+          { stat: 'revisions', value: 70 },
+          { stat: 'files',     value: 26 },
+          { stat: 'commits',   value: 52 },
+          { stat: 'authors',   value: 9 }
+        ]
+      ]
+    };
+
+    var absChurnAnalysisStreams = {
+      codeMaatInstruction: 'abs-churn',
+      data: [
+        [
+          { date: 'not relevant', addedLines: 95295, deletedLines: 10209, commits: 203 },
+          { date: 'not relevant', addedLines: 6940, deletedLines: 6961, commits: 944 },
+          { date: 'not relevant', addedLines: 710, deletedLines: 37, commits: 22 }
+        ],
+        [
+          { date: 'not relevant', addedLines: 12091, deletedLines: 10138, commits: 17 },
+          { date: 'not relevant', addedLines: 1147, deletedLines: 1156, commits: 26 },
+          { date: 'not relevant', addedLines: 889, deletedLines: 660, commits: 38 }
+        ]
+      ]
+    };
+
+    var layeredChurnAnalysisStreams = {
       codeMaatInstruction: 'entity-churn',
       data: [
         [
@@ -123,17 +158,29 @@ describe('System analysis tasks', function() {
     describe('with no layer group parameter', function() {
       describe('with churn analysis supported by the VCS type', function() {
         testAnalysis(
-          'publishes a revisions report and a churn report with data aggregated for all files',
+          'publishes a summary report and a churn report with data aggregated for all files',
           { dateFrom: '2016-01-01', dateTo: '2016-02-28', timeSplit: 'eom' },
-          [revisionsAnalysisStreams, churnAnalysisStreams],
-          ['revisions', 'entity-churn'],
+          [summaryAnalysisStreams, absChurnAnalysisStreams],
+          ['summary', 'abs-churn'],
           {
             reports: [
               {
-                fileName: '2016-01-01_2016-02-28_system-revisions-data.json',
+                fileName: '2016-01-01_2016-02-28_system-summary-data.json',
                 data: [
-                  { name: 'All files', revisions: 94, cumulativeRevisions:  94, date: '2016-01-31T12:59:59.999Z' },
-                  { name: 'All files', revisions: 70, cumulativeRevisions: 164, date: '2016-02-28T12:59:59.999Z' }
+                  {
+                    name: 'All files',
+                    revisions: 94, cumulativeRevisions: 94,
+                    commits: 67, cumulativeCommits: 67,
+                    authors: 14, cumulativeAuthors: 14,
+                    date: '2016-01-31T12:59:59.999Z'
+                  },
+                  {
+                    name: 'All files',
+                    revisions: 70, cumulativeRevisions: 164,
+                    commits: 52, cumulativeCommits: 119,
+                    authors: 9, cumulativeAuthors:  23,
+                    date: '2016-02-28T12:59:59.999Z'
+                  }
                 ]
               },
               {
@@ -151,7 +198,7 @@ describe('System analysis tasks', function() {
               reportName: 'system-evolution',
               parameters: { timeSplit: 'eom' },
               dateRange: '2016-01-01_2016-02-28',
-              enabledDiagrams: ['revisions-trend', 'churn-trend']
+              enabledDiagrams: ['stats-trend', 'churn-trend']
             }
           }
         );
@@ -161,15 +208,27 @@ describe('System analysis tasks', function() {
         testAnalysis(
           'publishes a revisions report with data aggregated for all files',
           { dateFrom: '2016-01-01', dateTo: '2016-02-28', timeSplit: 'eom' },
-          [revisionsAnalysisStreams, churnAnalysisStreams],
-          ['revisions'],
+          [summaryAnalysisStreams, absChurnAnalysisStreams],
+          ['summary'],
           {
             reports: [
               {
-                fileName: '2016-01-01_2016-02-28_system-revisions-data.json',
+                fileName: '2016-01-01_2016-02-28_system-summary-data.json',
                 data: [
-                  { name: 'All files', revisions: 94, cumulativeRevisions:  94, date: '2016-01-31T12:59:59.999Z' },
-                  { name: 'All files', revisions: 70, cumulativeRevisions: 164, date: '2016-02-28T12:59:59.999Z' }
+                  {
+                    name: 'All files',
+                    revisions: 94, cumulativeRevisions:  94,
+                    commits: 67, cumulativeCommits: 67,
+                    authors: 14, cumulativeAuthors: 14,
+                    date: '2016-01-31T12:59:59.999Z'
+                  },
+                  {
+                    name: 'All files',
+                    revisions: 70, cumulativeRevisions: 164,
+                    commits: 52, cumulativeCommits: 119,
+                    authors: 9, cumulativeAuthors: 23,
+                    date: '2016-02-28T12:59:59.999Z'
+                  }
                 ]
               }
             ],
@@ -181,7 +240,7 @@ describe('System analysis tasks', function() {
               reportName: 'system-evolution',
               parameters: { timeSplit: 'eom' },
               dateRange: '2016-01-01_2016-02-28',
-              enabledDiagrams: ['revisions-trend']
+              enabledDiagrams: ['stats-trend']
             }
           }
         );
@@ -193,12 +252,12 @@ describe('System analysis tasks', function() {
         testAnalysis(
           'publishes a revisions report, a code churn report and a coupling report for each architectural layer of the system',
           { dateFrom: '2016-01-01', dateTo: '2016-02-28', timeSplit: 'eom', layerGroup: 'test_boundary' },
-          [revisionsAnalysisStreams, churnAnalysisStreams, couplingAnalysisStreams],
+          [layeredRevisionsAnalysisStreams, layeredChurnAnalysisStreams, couplingAnalysisStreams],
           ['revisions', 'entity-churn', 'coupling'],
           {
             reports: [
               {
-                fileName: '2016-01-01_2016-02-28_system-revisions-data.json',
+                fileName: '2016-01-01_2016-02-28_system-summary-data.json',
                 data: [
                   { name: 'test_layer1', revisions: 32, cumulativeRevisions: 32, date: '2016-01-31T12:59:59.999Z'},
                   { name: 'test_layer2', revisions: 47, cumulativeRevisions: 47, date: '2016-01-31T12:59:59.999Z'},
@@ -235,7 +294,7 @@ describe('System analysis tasks', function() {
               reportName: 'system-evolution',
               parameters: { timeSplit: 'eom', layerGroup: 'test_boundary' },
               dateRange: '2016-01-01_2016-02-28',
-              enabledDiagrams: ['revisions-trend', 'churn-trend', 'coupling-trend']
+              enabledDiagrams: ['stats-trend', 'churn-trend', 'coupling-trend']
             }
           }
         );
@@ -245,12 +304,12 @@ describe('System analysis tasks', function() {
         testAnalysis(
           'publishes a revisions report and a coupling report for each architectural layer of the system',
           { dateFrom: '2016-01-01', dateTo: '2016-02-28', timeSplit: 'eom', layerGroup: 'test_boundary' },
-          [revisionsAnalysisStreams, churnAnalysisStreams, couplingAnalysisStreams],
+          [layeredRevisionsAnalysisStreams, layeredChurnAnalysisStreams, couplingAnalysisStreams],
           ['revisions', 'coupling'],
           {
             reports: [
               {
-                fileName: '2016-01-01_2016-02-28_system-revisions-data.json',
+                fileName: '2016-01-01_2016-02-28_system-summary-data.json',
                 data: [
                   { name: 'test_layer1', revisions: 32, cumulativeRevisions: 32, date: '2016-01-31T12:59:59.999Z'},
                   { name: 'test_layer2', revisions: 47, cumulativeRevisions: 47, date: '2016-01-31T12:59:59.999Z'},
@@ -279,7 +338,7 @@ describe('System analysis tasks', function() {
               reportName: 'system-evolution',
               parameters: { timeSplit: 'eom', layerGroup: 'test_boundary' },
               dateRange: '2016-01-01_2016-02-28',
-              enabledDiagrams: ['revisions-trend', 'coupling-trend']
+              enabledDiagrams: ['stats-trend', 'coupling-trend']
             }
           }
         );
