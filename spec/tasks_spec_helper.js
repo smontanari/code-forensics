@@ -53,18 +53,24 @@ var TaskOutput = function(reportId) {
 
 var doneCallback = function() {};
 
-var Runtime = function(taskFunctions) {
+var Runtime = function(gulpTasks, functions) {
   this.executeStreamTask = function(name) {
     return new Bluebird(function(resolve) {
-      taskFunctions[name].call(null, doneCallback)
-        .on('close', resolve.bind(null, new TaskOutput()))
-        .on('error', function(err) { fail(err); });
+      gulpTasks[name].run.call(null, doneCallback)
+      .on('close', resolve.bind(null, new TaskOutput()))
+      .on('error', function(err) { fail(err); });
     });
   };
 
   this.executePromiseTask = function(name) {
-    return taskFunctions[name].call(null, doneCallback)
+    return gulpTasks[name].run.call(null, doneCallback)
       .then(function(reportId) { return new TaskOutput(reportId); })
+      .catch(function(err) { fail(err); });
+  };
+
+  this.executePromiseFunction = function(name) {
+    return functions[name].call()
+      .then(function() { return new TaskOutput(); })
       .catch(function(err) { fail(err); });
   };
 
@@ -80,6 +86,13 @@ var Runtime = function(taskFunctions) {
     var folder = Path.join(TEST_REPO_DIR, Path.dirname(filename));
     mkdirp.sync(folder);
     fs.writeFileSync(Path.join(TEST_REPO_DIR, filename), content);
+  };
+
+  this.assertTaskDependencies = function(name, dependencies) {
+    _.each(dependencies, function(dependency) {
+      expect(gulpTasks[name].dependencies).toContain(dependency);
+    });
+    expect(gulpTasks[name].dependencies.length).toEqual(dependencies.length);
   };
 };
 
@@ -97,14 +110,22 @@ beforeEach(function() {
   };
 
   this.runtimeSetup = function(tasksFn, contextConfig, parameters) {
-    var taskFunctions = {};
-    spyOn(gulp, 'parallel');
+    var gulpTasks = {};
+    var currentTaskDependencies = [];
+
+    var addToDependecies = function() {
+      currentTaskDependencies = currentTaskDependencies.concat(
+        _.map(_.filter(arguments, _.isFunction), _.property('name'))
+      );
+    };
+    spyOn(gulp, 'parallel').and.callFake(addToDependecies);
     spyOn(gulp, 'series').and.callFake(function() {
+      addToDependecies.apply(null, arguments);
       return _.toArray(arguments).pop();
     });
     spyOn(gulp, 'task').and.callFake(function(taskName, fn) {
       if (fn) {
-        taskFunctions[taskName] = fn;
+        gulpTasks[taskName].run = fn;
       }
       return {};
     });
@@ -118,9 +139,22 @@ beforeEach(function() {
     var taskContext = new TaskContext(config, parameters || {});
     var taskDefinitions = new TaskDefinitions(taskContext);
 
-    tasksFn(taskDefinitions, taskContext, taskHelpers(taskContext)).tasks();
+    var addTask = taskDefinitions.addTask;
+    var addAnalysisTask = taskDefinitions.addAnalysisTask;
+    spyOn(taskDefinitions, 'addTask').and.callFake(function(taskName) {
+      gulpTasks[taskName] = { dependencies: currentTaskDependencies };
+      currentTaskDependencies = [];
+      return addTask.apply(taskDefinitions, arguments);
+    });
+    spyOn(taskDefinitions, 'addAnalysisTask').and.callFake(function(taskName) {
+      gulpTasks[taskName] = { dependencies: currentTaskDependencies };
+      currentTaskDependencies = [];
+      return addAnalysisTask.apply(taskDefinitions, arguments);
+    });
 
-    return new Runtime(taskFunctions);
+    var tasksRuntimeConfig = tasksFn(taskDefinitions, taskContext, taskHelpers(taskContext));
+    tasksRuntimeConfig.tasks(); //process the gulp tasks
+    return new Runtime(gulpTasks, tasksRuntimeConfig.functions);
   };
 });
 
