@@ -1,5 +1,5 @@
 /*eslint-disable max-lines*/
-/*global require_src*/
+/*global require_src cfHelpers*/
 var _      = require('lodash'),
     stream = require('stream');
 
@@ -8,6 +8,8 @@ var couplingAnalysisTasks = require_src('tasks/coupling_analysis_tasks'),
     command               = require_src('command');
 
 describe('Coupling analysis tasks', function() {
+  var runtime;
+
   beforeEach(function() {
     jasmine.clock().install();
     jasmine.clock().mockDate(new Date('2015-10-22T10:00:00.000Z'));
@@ -20,7 +22,7 @@ describe('Coupling analysis tasks', function() {
 
   describe('sum-of-coupling-analysis', function() {
     beforeEach(function() {
-      var runtime = this.runtime = this.runtimeSetup(couplingAnalysisTasks,
+      runtime = cfHelpers.runtimeSetup(couplingAnalysisTasks,
         { repository: { excludePaths: ['test_invalid_file'] } },
         { dateFrom: '2015-03-01' }
       );
@@ -30,8 +32,12 @@ describe('Coupling analysis tasks', function() {
     });
 
     afterEach(function() {
-      this.clearRepo();
-      this.clearOutput();
+      cfHelpers.clearRepo();
+      cfHelpers.clearOutput();
+    });
+
+    it('has the required dependencies', function() {
+      runtime.assertTaskDependencies('sum-of-coupling-analysis', ['vcsLogDump']);
     });
 
     it('publishes a report on the sum of coupling for each file', function(done) {
@@ -40,19 +46,18 @@ describe('Coupling analysis tasks', function() {
         { fileAnalysisStream: function() { return analysisStream; } }
       );
 
-      this.runtime.executePromiseTask('sum-of-coupling-analysis').then(function(taskOutput) {
-        taskOutput.assertOutputReport('2015-03-01_2015-10-22_sum-of-coupling-data.json', [
+      runtime.executePromiseTask('sum-of-coupling-analysis').then(function(taskOutput) {
+        return taskOutput.assertOutputReport('2015-03-01_2015-10-22_sum-of-coupling-data.json', [
           { path: 'test_file1', soc: 34 },
           { path: 'test_file2', soc: 62 }
-        ]);
-
-        taskOutput.assertManifest({
-          reportName: 'sum-of-coupling',
-          dateRange: '2015-03-01_2015-10-22',
-          enabledDiagrams: ['sum-of-coupling']
+        ]).then(function() {
+          return taskOutput.assertManifest({
+            reportName: 'sum-of-coupling',
+            dateRange: '2015-03-01_2015-10-22',
+            enabledDiagrams: ['sum-of-coupling']
+          });
         });
-        done();
-      });
+      }).then(done);
 
       expect(codeMaat.analyser).toHaveBeenCalledWith('soc');
       analysisStream.push({ path: 'test_file1', soc: 34 });
@@ -101,12 +106,12 @@ describe('Coupling analysis tasks', function() {
     ];
 
     beforeEach(function() {
-      this.runtime = this.runtimeSetup(couplingAnalysisTasks,
+      runtime = cfHelpers.runtimeSetup(couplingAnalysisTasks,
         {},
         { dateFrom: '2016-01-01', dateTo: '2016-03-31', timeSplit: 'eom', targetFile: 'test/target_file' }
       );
 
-      this.runtime.prepareTempReport('sloc-report.json', [
+      runtime.prepareTempReport('sloc-report.json', [
         { path: 'test/a/file1', sourceLines: 33, totalLines: 35 },
         { path: 'test/b/file2', sourceLines: 23, totalLines: 28 },
         { path: 'test/c/file3', sourceLines: 15, totalLines: 21 },
@@ -116,8 +121,12 @@ describe('Coupling analysis tasks', function() {
     });
 
     afterEach(function() {
-      this.clearTemp();
-      this.clearOutput();
+      cfHelpers.clearTemp();
+      cfHelpers.clearOutput();
+    });
+
+    it('has the required dependencies', function() {
+      runtime.assertTaskDependencies('temporal-coupling-analysis', ['vcsLogDump', 'slocReport']);
     });
 
     it('publishes as many reports as the given time periods with coupling information between each file and a target file', function(done) {
@@ -144,8 +153,8 @@ describe('Coupling analysis tasks', function() {
         }
       });
 
-      this.runtime.executePromiseTask('temporal-coupling-analysis').then(function(taskOutput) {
-        taskOutput.assertOutputReport('2016-01-01_2016-01-31_temporal-coupling-data.json',
+      runtime.executePromiseTask('temporal-coupling-analysis').then(function(taskOutput) {
+        return taskOutput.assertOutputReport('2016-01-01_2016-01-31_temporal-coupling-data.json',
           {
             children: [
               {
@@ -222,96 +231,95 @@ describe('Coupling analysis tasks', function() {
               }
             ]
           }
-        );
-
-        taskOutput.assertOutputReport('2016-03-01_2016-03-31_temporal-coupling-data.json',
-          {
-            children: [
-              {
-                name: 'test',
-                children: [
-                  {
-                    name: 'a',
-                    children: [
-                      {
-                        name: 'file1',
-                        children: [],
-                        sourceLines: 33,
-                        totalLines: 35,
-                        revisionsAvg: 30,
-                        couplingDegree: 10,
-                        addedLines: 147,
-                        deletedLines: 56,
-                        weight: 0.30303030303030304
-                      }
-                    ]
-                  },
-                  {
-                    name: 'b',
-                    children: [
-                      {
-                        name: 'file2',
-                        children: [],
-                        sourceLines: 23,
-                        totalLines: 28,
-                        addedLines:  19,
-                        deletedLines:  6,
-                        weight: 0
-                      }
-                    ]
-                  },
-                  {
-                    name: 'c',
-                    children: [
-                      {
-                        name: 'file3',
-                        children: [],
-                        sourceLines: 15,
-                        totalLines: 21,
-                        weight: 0
-                      }
-                    ]
-                  },
-                  {
-                    name: 'd',
-                    children: [
-                      {
-                        name: 'file4',
-                        children: [],
-                        sourceLines: 25,
-                        totalLines: 35,
-                        revisionsAvg: 18,
-                        couplingDegree: 33,
-                        addedLines:  91,
-                        deletedLines: 38,
-                        weight: 1
-                      }
-                    ]
-                  },
-                  {
-                    name: 'target_file',
-                    children: [],
-                    sourceLines: 55,
-                    totalLines: 62,
-                    addedLines: 50,
-                    deletedLines: 10,
-                    weight: 0
-                  }
-                ]
-              }
-            ]
-          }
-        );
-
-        taskOutput.assertMissingOutputReport('2016-02-01_2016-02-29_temporal-coupling-data.json');
-
-        taskOutput.assertManifest({
-          reportName: 'temporal-coupling',
-          dateRange: '2016-01-01_2016-03-31',
-          enabledDiagrams: ['temporal-coupling']
+        ).then(function() {
+          return taskOutput.assertOutputReport('2016-03-01_2016-03-31_temporal-coupling-data.json',
+            {
+              children: [
+                {
+                  name: 'test',
+                  children: [
+                    {
+                      name: 'a',
+                      children: [
+                        {
+                          name: 'file1',
+                          children: [],
+                          sourceLines: 33,
+                          totalLines: 35,
+                          revisionsAvg: 30,
+                          couplingDegree: 10,
+                          addedLines: 147,
+                          deletedLines: 56,
+                          weight: 0.30303030303030304
+                        }
+                      ]
+                    },
+                    {
+                      name: 'b',
+                      children: [
+                        {
+                          name: 'file2',
+                          children: [],
+                          sourceLines: 23,
+                          totalLines: 28,
+                          addedLines: 19,
+                          deletedLines: 6,
+                          weight: 0
+                        }
+                      ]
+                    },
+                    {
+                      name: 'c',
+                      children: [
+                        {
+                          name: 'file3',
+                          children: [],
+                          sourceLines: 15,
+                          totalLines: 21,
+                          weight: 0
+                        }
+                      ]
+                    },
+                    {
+                      name: 'd',
+                      children: [
+                        {
+                          name: 'file4',
+                          children: [],
+                          sourceLines: 25,
+                          totalLines: 35,
+                          revisionsAvg: 18,
+                          couplingDegree: 33,
+                          addedLines: 91,
+                          deletedLines: 38,
+                          weight: 1
+                        }
+                      ]
+                    },
+                    {
+                      name: 'target_file',
+                      children: [],
+                      sourceLines: 55,
+                      totalLines: 62,
+                      addedLines: 50,
+                      deletedLines: 10,
+                      weight: 0
+                    }
+                  ]
+                }
+              ]
+            }
+          );
+        }).then(function() {
+          return taskOutput.assertMissingOutputReport('2016-02-01_2016-02-29_temporal-coupling-data.json');
+        }).then(function() {
+          return taskOutput.assertManifest({
+            reportName: 'temporal-coupling',
+            dateRange: '2016-01-01_2016-03-31',
+            enabledDiagrams: ['temporal-coupling']
+          });
         });
-        done();
-      });
+      }).then(done);
 
       _.each(couplingStreams, function(s, index) {
         _.each(couplingStreamsData[index], s.push.bind(s));

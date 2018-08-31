@@ -1,4 +1,4 @@
-/*global require_src*/
+/*global require_src cfHelpers*/
 var _      = require('lodash'),
     stream = require('stream');
 
@@ -7,45 +7,44 @@ var rubyTasks = require_src('tasks/complexity_analysis/ruby_tasks'),
     command   = require_src('command');
 
 describe('ruby tasks', function() {
+  var runtime;
   beforeEach(function() {
     spyOn(command.Command, 'ensure');
   });
 
   describe('ruby-complexity-report', function() {
-    afterEach(function() {
-      this.clearRepo();
-      this.clearTemp();
-    });
+    var analysisStream1, analysisStream2;
 
-    it('writes a report on the complexity for each ruby file in the repository', function(done) {
-      var analysisStream1 = new stream.PassThrough();
-      var analysisStream2 = new stream.PassThrough();
+    var assertReport = function(taskOutput) {
+      return taskOutput.assertTempReport('ruby-complexity-report.json', [
+        {
+          path: "test_file1.rb", totalComplexity: 22, averageComplexity: 7.3,
+          methodComplexity: [
+            { name: 'main#none', complexity: 18.6 },
+            { name: 'chain#linking_to          /absolute/path/test_file1.rb:8', complexity: 1.7 }
+          ]
+        },
+        {
+          path: "test_file3.rb", totalComplexity: 95.1, averageComplexity: 8.6,
+          methodComplexity: [
+            { name: 'Module::TestFile2#test_method /absolute/path/test_file3.rb:54', complexity: 26.2 }
+          ]
+        }
+      ]);
+    };
+
+    beforeEach(function() {
+      analysisStream1 = new stream.PassThrough();
+      analysisStream2 = new stream.PassThrough();
       spyOn(command, 'stream').and.returnValues(analysisStream1, analysisStream2);
 
-      var runtime = this.runtimeSetup(rubyTasks);
+      runtime = cfHelpers.runtimeSetup(rubyTasks);
       _.each(['test_file1.rb', 'test_file2.js', 'test_file3.rb'], function(f) {
         runtime.prepareRepositoryFile(f, '');
       });
+    });
 
-      runtime.executeStreamTask('ruby-complexity-report').then(function(taskOutput) {
-        taskOutput.assertTempReport('ruby-complexity-report.json', [
-          {
-            path: "test_file1.rb", totalComplexity: 22, averageComplexity: 7.3,
-            methodComplexity: [
-              { name: 'main#none', complexity: 18.6 },
-              { name: 'chain#linking_to          /absolute/path/test_file1.rb:8', complexity: 1.7 }
-            ]
-          },
-          {
-            path: "test_file3.rb", totalComplexity: 95.1, averageComplexity: 8.6,
-            methodComplexity: [
-              { name: 'Module::TestFile2#test_method /absolute/path/test_file3.rb:54', complexity: 26.2 }
-            ]
-          }
-        ]);
-        done();
-      });
-
+    var streamData = function() {
       analysisStream1.push(
         "\t22.0: flog total\n" +
         "\t 7.3: flog/method average\n" +
@@ -62,6 +61,25 @@ describe('ruby tasks', function() {
       );
       analysisStream1.end();
       analysisStream2.end();
+    };
+
+    afterEach(function() {
+      cfHelpers.clearRepo();
+      cfHelpers.clearTemp();
+    });
+
+    describe('as a Task', function() {
+      it('writes a report on the complexity for each ruby file in the repository', function(done) {
+        runtime.executeStreamTask('ruby-complexity-report').then(assertReport).then(done);
+        streamData();
+      });
+    });
+
+    describe('as a Function', function() {
+      it('writes a report on the complexity for each ruby file in the repository', function(done) {
+        runtime.executeStreamFunction('rubyComplexityReport').then(assertReport).then(done);
+        streamData();
+      });
     });
   });
 
@@ -77,7 +95,7 @@ describe('ruby tasks', function() {
 
     afterEach(function() {
       jasmine.clock().uninstall();
-      this.clearOutput();
+      cfHelpers.clearOutput();
     });
 
     it('publishes an analysis on the complexity trend for a given ruby file in the repository', function(done) {
@@ -98,9 +116,9 @@ describe('ruby tasks', function() {
         )
       });
 
-      var runtime = this.runtimeSetup(rubyTasks, null, { dateFrom: '2015-03-01', targetFile: 'test_abs.rb' });
+      var runtime = cfHelpers.runtimeSetup(rubyTasks, null, { dateFrom: '2015-03-01', targetFile: 'test_abs.rb' });
       runtime.executePromiseTask('ruby-complexity-trend-analysis').then(function(taskOutput) {
-        taskOutput.assertOutputReport('2015-03-01_2015-10-22_complexity-trend-data.json', [
+        return taskOutput.assertOutputReport('2015-03-01_2015-10-22_complexity-trend-data.json', [
           {
             revision: 123,
             date: '2015-04-29T23:00:00.000Z',
@@ -122,16 +140,15 @@ describe('ruby tasks', function() {
               { name: 'Module::TestFile2#test_method /absolute/path/test_abs.rb:54', complexity: 26.2 }
             ]
           }
-        ]);
-
-        taskOutput.assertManifest({
-          reportName: 'complexity-trend',
-          parameters: { targetFile: 'test_abs.rb' },
-          dateRange: '2015-03-01_2015-10-22',
-          enabledDiagrams: ['total', 'func-mean', 'func-sd']
+        ]).then(function() {
+          return taskOutput.assertManifest({
+            reportName: 'complexity-trend',
+            parameters: { targetFile: 'test_abs.rb' },
+            dateRange: '2015-03-01_2015-10-22',
+            enabledDiagrams: ['total', 'func-mean', 'func-sd']
+          });
         });
-        done();
-      });
+      }).then(done);
 
       revisionStream1.push("def abs(a,b)\n");
       revisionStream1.push("a - b\nend");

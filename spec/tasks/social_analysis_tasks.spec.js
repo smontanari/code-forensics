@@ -1,5 +1,5 @@
 /*eslint-disable max-lines*/
-/*global require_src*/
+/*global require_src cfHelpers*/
 var _      = require('lodash'),
     stream = require('stream');
 
@@ -8,6 +8,8 @@ var socialAnalysisTasks = require_src('tasks/social_analysis_tasks'),
     command             = require_src('command');
 
 describe('Social analysis tasks', function() {
+  var runtime;
+
   beforeEach(function() {
     jasmine.clock().install();
     jasmine.clock().mockDate(new Date('2016-10-22T10:00:00.000Z'));
@@ -34,7 +36,7 @@ describe('Social analysis tasks', function() {
         'Third and very last'
       ].join("\n");
 
-      this.runtime = this.runtimeSetup(socialAnalysisTasks,
+      runtime = cfHelpers.runtimeSetup(socialAnalysisTasks,
         {
           commitMessageFilters: [
             /^\d+$/,
@@ -46,55 +48,62 @@ describe('Social analysis tasks', function() {
         { dateFrom: '2016-01-01', dateTo: '2016-02-28', timeSplit: 'eom', minWordCount: 2 }
       );
 
-      this.runtime.prepareTempFile('vcs_commit_messages_2016-01-01_2016-01-31.log', messages1);
-      this.runtime.prepareTempFile('vcs_commit_messages_2016-02-01_2016-02-28.log', messages2);
+      runtime.prepareTempFile('vcs_commit_messages_2016-01-01_2016-01-31.log', messages1);
+      runtime.prepareTempFile('vcs_commit_messages_2016-02-01_2016-02-28.log', messages2);
     });
 
     afterEach(function() {
-      this.clearTemp();
-      this.clearOutput();
+      cfHelpers.clearTemp();
+      cfHelpers.clearOutput();
     });
 
-    it('publishes a report on the frequency of words in commit messages', function(done) {
-      this.runtime.executePromiseTask('commit-message-analysis').then(function(taskOutput) {
-        taskOutput.assertOutputReport('2016-01-01_2016-01-31_commit-words-data.json',
+    it('has the required dependencies', function() {
+      runtime.assertTaskDependencies('commit-message-analysis', ['vcsCommitMessages']);
+    });
+
+    it('publishes a report on the frequency of words in commit messages', function() {
+      return runtime.executePromiseTask('commit-message-analysis').then(function(taskOutput) {
+        return taskOutput.assertOutputReport('2016-01-01_2016-01-31_commit-words-data.json',
           [
             { text: 'message', count: 4 },
             { text: 'abc', count: 2 },
             { text: 'second', count: 2 },
             { text: 'third', count: 2 }
           ]
-        );
-
-        taskOutput.assertOutputReport('2016-02-01_2016-02-28_commit-words-data.json',
-          [
-            { text: 'message', count: 3 },
-            { text: 'www', count: 2 },
-            { text: 'last', count: 2 }
-          ]
-        );
-
-        taskOutput.assertManifest({
-          reportName: 'commit-messages',
-          parameters: { timeSplit: 'eom', minWordCount: 2 },
-          dateRange: '2016-01-01_2016-02-28',
-          enabledDiagrams: ['commit-words']
+        ).then(function() {
+          return taskOutput.assertOutputReport('2016-02-01_2016-02-28_commit-words-data.json',
+            [
+              { text: 'message', count: 3 },
+              { text: 'www', count: 2 },
+              { text: 'last', count: 2 }
+            ]
+          );
+        }).then(function() {
+          return taskOutput.assertManifest({
+            reportName: 'commit-messages',
+            parameters: { timeSplit: 'eom', minWordCount: 2 },
+            dateRange: '2016-01-01_2016-02-28',
+            enabledDiagrams: ['commit-words']
+          });
         });
-        done();
       });
     });
   });
 
   describe('developer-effort-analysis', function() {
     afterEach(function() {
-      this.clearTemp();
-      this.clearRepo();
-      this.clearOutput();
+      cfHelpers.clearTemp();
+      cfHelpers.clearRepo();
+      cfHelpers.clearOutput();
+    });
+
+    it('has the required dependencies', function() {
+      runtime.assertTaskDependencies('developer-effort-analysis', ['vcsLogDump', 'effortReport']);
     });
 
     describe('when team information exists', function() {
       beforeEach(function() {
-        this.runtime = this.runtimeSetup(socialAnalysisTasks,
+        runtime = cfHelpers.runtimeSetup(socialAnalysisTasks,
           {
             contributors: {
               'Team 1': ['Dev1', 'Dev2'],
@@ -104,7 +113,7 @@ describe('Social analysis tasks', function() {
           { dateFrom: '2016-01-01' }
         );
 
-        this.runtime.prepareTempReport('effort-report.json', [
+        runtime.prepareTempReport('effort-report.json', [
           { path: "test/a/file1", author: 'Dev1', revisions: 5 },
           { path: "test/a/file1", author: 'Dev2', revisions: 2 },
           { path: "test/b/file2", author: 'Dev1', revisions: 8 },
@@ -115,7 +124,6 @@ describe('Social analysis tasks', function() {
           { path: "test/test_invalid_file", author: 'Dev3', revisions: 10 }
         ]);
 
-        var runtime = this.runtime;
         _.each([
             "test/a/file1",
             "test/b/file2",
@@ -124,9 +132,9 @@ describe('Social analysis tasks', function() {
         );
       });
 
-      it('publishes reports on the revisions distribution between developers and between teams', function(done) {
-        this.runtime.executePromiseTask('developer-effort-analysis').then(function(taskOutput) {
-          taskOutput.assertOutputReport('2016-01-01_2016-10-22_developer-effort-data.json',
+      it('publishes reports on the revisions distribution between developers and between teams', function() {
+        return runtime.executePromiseTask('developer-effort-analysis').then(function(taskOutput) {
+          return taskOutput.assertOutputReport('2016-01-01_2016-10-22_developer-effort-data.json',
             {
               children: [
                 {
@@ -173,76 +181,75 @@ describe('Social analysis tasks', function() {
                 }
               ]
             }
-          );
-
-          taskOutput.assertOutputReport('2016-01-01_2016-10-22_team-effort-data.json',
-            {
-              children: [
-                {
-                  name: 'test',
-                  children: [
-                    {
-                      name: 'a',
-                      children: [
-                        {
-                          name: 'file1',
-                          children: [
-                            { name: 'Team 1', revisions: 7, ownership: 100 }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      name: 'b',
-                      children: [
-                        {
-                          name: 'file2',
-                          children: [
-                            { name: 'Team 1', revisions: 8, ownership: 53 },
-                            { name: 'Team 2', revisions: 7, ownership: 47 }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      name: 'c',
-                      children: [
-                        {
-                          name: 'file3',
-                          children: [
-                            { name: 'Team 2', revisions: 10, ownership: 59 },
-                            { name: 'N/A (Dev with no team)', revisions: 7, ownership: 41 }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }
-          );
-
-          taskOutput.assertManifest({
-            reportName: 'developer-effort',
-            parameters: {},
-            dateRange: '2016-01-01_2016-10-22',
-            enabledDiagrams: ['individual-effort', 'team-effort']
+          ).then(function() {
+            return taskOutput.assertOutputReport('2016-01-01_2016-10-22_team-effort-data.json',
+              {
+                children: [
+                  {
+                    name: 'test',
+                    children: [
+                      {
+                        name: 'a',
+                        children: [
+                          {
+                            name: 'file1',
+                            children: [
+                              { name: 'Team 1', revisions: 7, ownership: 100 }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        name: 'b',
+                        children: [
+                          {
+                            name: 'file2',
+                            children: [
+                              { name: 'Team 1', revisions: 8, ownership: 53 },
+                              { name: 'Team 2', revisions: 7, ownership: 47 }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        name: 'c',
+                        children: [
+                          {
+                            name: 'file3',
+                            children: [
+                              { name: 'Team 2', revisions: 10, ownership: 59 },
+                              { name: 'N/A (Dev with no team)', revisions: 7, ownership: 41 }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            );
+          }).then(function() {
+            return taskOutput.assertManifest({
+              reportName: 'developer-effort',
+              parameters: {},
+              dateRange: '2016-01-01_2016-10-22',
+              enabledDiagrams: ['individual-effort', 'team-effort']
+            });
           });
-          done();
         });
       });
     });
 
     describe('when no team information exists', function() {
       beforeEach(function() {
-        this.runtime = this.runtimeSetup(socialAnalysisTasks,
+        runtime = cfHelpers.runtimeSetup(socialAnalysisTasks,
           {
             contributors: ['Dev1', 'Dev2', 'Dev3', ['Dev4', 'Alias dev 4'], 'Dev5']
           },
           { dateFrom: '2016-01-01' }
         );
 
-        this.runtime.prepareTempReport('effort-report.json', [
+        runtime.prepareTempReport('effort-report.json', [
           { path: "test/a/file1", author: 'Dev1', revisions: 5 },
           { path: "test/a/file1", author: 'Dev2', revisions: 2 },
           { path: "test/b/file2", author: 'Dev1', revisions: 8 },
@@ -253,7 +260,6 @@ describe('Social analysis tasks', function() {
           { path: "test/test_invalid_file", author: 'Dev3', revisions: 10 }
         ]);
 
-        var runtime = this.runtime;
         _.each([
             "test/a/file1",
             "test/b/file2",
@@ -262,9 +268,9 @@ describe('Social analysis tasks', function() {
         );
       });
 
-      it('publishes only a report on the revisions distribution between developers', function(done) {
-        this.runtime.executePromiseTask('developer-effort-analysis').then(function(taskOutput) {
-          taskOutput.assertOutputReport('2016-01-01_2016-10-22_developer-effort-data.json',
+      it('publishes only a report on the revisions distribution between developers', function() {
+        return runtime.executePromiseTask('developer-effort-analysis').then(function(taskOutput) {
+          return taskOutput.assertOutputReport('2016-01-01_2016-10-22_developer-effort-data.json',
             {
               children: [
                 {
@@ -311,17 +317,16 @@ describe('Social analysis tasks', function() {
                 }
               ]
             }
-          );
-
-          taskOutput.assertMissingOutputReport('2016-01-01_2016-10-22_team-effort-data.json');
-
-          taskOutput.assertManifest({
-            reportName: 'developer-effort',
-            parameters: {},
-            dateRange: '2016-01-01_2016-10-22',
-            enabledDiagrams: ['individual-effort']
+          ).then(function() {
+            return taskOutput.assertMissingOutputReport('2016-01-01_2016-10-22_team-effort-data.json');
+          }).then(function() {
+            return taskOutput.assertManifest({
+              reportName: 'developer-effort',
+              parameters: {},
+              dateRange: '2016-01-01_2016-10-22',
+              enabledDiagrams: ['individual-effort']
+            });
           });
-          done();
         });
       });
     });
@@ -329,7 +334,7 @@ describe('Social analysis tasks', function() {
 
   describe('developer-coupling-analysis', function() {
     beforeEach(function() {
-      var runtime = this.runtime = this.runtimeSetup(socialAnalysisTasks,
+      runtime = cfHelpers.runtimeSetup(socialAnalysisTasks,
         {
           contributors: {
             'Team 1': ['Dev1', 'Dev2'],
@@ -346,11 +351,15 @@ describe('Social analysis tasks', function() {
       });
     });
 
+    it('has the required dependencies', function() {
+      runtime.assertTaskDependencies('developer-coupling-analysis', ['vcsLogDump', 'authorsReport', 'codeOwnershipReport']);
+    });
+
     describe('when all analyses are supported for the VCS type', function() {
       var couplingStream, commAnalysisStream;
 
       beforeEach(function() {
-        this.runtime.prepareTempReport('authors-report.json', [
+        runtime.prepareTempReport('authors-report.json', [
           { path: "test_file1", authors: 4, revisions: 54 },
           { path: "test_file2", authors: 2, revisions: 68 },
           { path: "test_file3", authors: 3, revisions: 24 },
@@ -359,7 +368,7 @@ describe('Social analysis tasks', function() {
           { path: "test_file6", authors: 1, revisions: 42 }
         ]);
 
-        this.runtime.prepareTempReport('code-ownership-report.json', [
+        runtime.prepareTempReport('code-ownership-report.json', [
           { path: "test_file1", author: 'Dev1', addedLines: 12, deletedLines: 4 },
           { path: "test_file1", author: 'Dev2', addedLines: 5, deletedLines: 0 },
           { path: "test_file1", author: 'Dev3', addedLines: 6, deletedLines: 1 },
@@ -387,14 +396,14 @@ describe('Social analysis tasks', function() {
       });
 
       afterEach(function() {
-        this.clearTemp();
-        this.clearRepo();
-        this.clearOutput();
+        cfHelpers.clearTemp();
+        cfHelpers.clearRepo();
+        cfHelpers.clearOutput();
       });
 
       it('publishes a report on ownership and communication coupling between main developers', function(done) {
-        this.runtime.executePromiseTask('developer-coupling-analysis').then(function(taskOutput) {
-          taskOutput.assertOutputReport('2016-01-01_2016-10-22_main-dev-coupling-data.json',
+        runtime.executePromiseTask('developer-coupling-analysis').then(function(taskOutput) {
+          return taskOutput.assertOutputReport('2016-01-01_2016-10-22_main-dev-coupling-data.json',
             {
               children: [
                 {
@@ -457,22 +466,21 @@ describe('Social analysis tasks', function() {
                 }
               ]
             }
-          );
-
-          taskOutput.assertOutputReport('2016-01-01_2016-10-22_communication-network-data.json', [
-            { developer: { name: 'Dev1', team: 'Team 1' }, coupledDeveloper: { name: 'Dev2', team: 'Team 1' }, sharedCommits: 65, couplingStrength: 55 },
-            { developer: { name: 'Dev3', team: 'Team 2' }, coupledDeveloper: { name: 'Dev1', team: 'Team 1' }, sharedCommits: 194, couplingStrength: 51 },
-            { developer: { name: 'Dev4', team: 'Team 2' }, coupledDeveloper: { name: 'Dev5', team: 'Team 2' }, sharedCommits: 62, couplingStrength: 48 }
-          ]);
-
-          taskOutput.assertManifest({
-            reportName: 'developer-coupling',
-            parameters: { maxCoupledFiles: 2 },
-            dateRange: '2016-01-01_2016-10-22',
-            enabledDiagrams: ['main-developer-coupling', 'communication-network']
+          ).then(function() {
+            return taskOutput.assertOutputReport('2016-01-01_2016-10-22_communication-network-data.json', [
+              { developer: { name: 'Dev1', team: 'Team 1' }, coupledDeveloper: { name: 'Dev2', team: 'Team 1' }, sharedCommits: 65, couplingStrength: 55 },
+              { developer: { name: 'Dev3', team: 'Team 2' }, coupledDeveloper: { name: 'Dev1', team: 'Team 1' }, sharedCommits: 194, couplingStrength: 51 },
+              { developer: { name: 'Dev4', team: 'Team 2' }, coupledDeveloper: { name: 'Dev5', team: 'Team 2' }, sharedCommits: 62, couplingStrength: 48 }
+            ]);
+          }).then(function() {
+            return taskOutput.assertManifest({
+              reportName: 'developer-coupling',
+              parameters: { maxCoupledFiles: 2 },
+              dateRange: '2016-01-01_2016-10-22',
+              enabledDiagrams: ['main-developer-coupling', 'communication-network']
+            });
           });
-          done();
-        });
+        }).then(done);
 
         couplingStream.push({ path: 'test_invalid_file', coupledPath: 'test_file2', couplingDegree: 74, revisionsAvg: 68 });
         couplingStream.push({ path: 'test_file2', coupledPath: 'test_file5', couplingDegree: 66, revisionsAvg: 31 });
@@ -507,22 +515,23 @@ describe('Social analysis tasks', function() {
       });
 
       it('publishes a report on communication coupling only', function(done) {
-        this.runtime.executePromiseTask('developer-coupling-analysis').then(function(taskOutput) {
-          taskOutput.assertMissingOutputReport('2016-01-01_2016-10-22_main-dev-coupling-data.json');
-          taskOutput.assertOutputReport('2016-01-01_2016-10-22_communication-network-data.json', [
-            { developer: { name: 'Dev1', team: 'Team 1' }, coupledDeveloper: { name: 'Dev2', team: 'Team 1' }, sharedCommits: 65, couplingStrength: 55 },
-            { developer: { name: 'Dev3', team: 'Team 2' }, coupledDeveloper: { name: 'Dev1', team: 'Team 1' }, sharedCommits: 194, couplingStrength: 51 },
-            { developer: { name: 'Dev4', team: 'Team 2' }, coupledDeveloper: { name: 'Dev5', team: 'Team 2' }, sharedCommits: 62, couplingStrength: 48 }
-          ]);
-
-          taskOutput.assertManifest({
-            reportName: 'developer-coupling',
-            parameters: { maxCoupledFiles: 2 },
-            dateRange: '2016-01-01_2016-10-22',
-            enabledDiagrams: ['communication-network']
-          });
-          done();
-        });
+        runtime.executePromiseTask('developer-coupling-analysis').then(function(taskOutput) {
+          return taskOutput.assertMissingOutputReport('2016-01-01_2016-10-22_main-dev-coupling-data.json')
+            .then(function() {
+              return taskOutput.assertOutputReport('2016-01-01_2016-10-22_communication-network-data.json', [
+                { developer: { name: 'Dev1', team: 'Team 1' }, coupledDeveloper: { name: 'Dev2', team: 'Team 1' }, sharedCommits: 65, couplingStrength: 55 },
+                { developer: { name: 'Dev3', team: 'Team 2' }, coupledDeveloper: { name: 'Dev1', team: 'Team 1' }, sharedCommits: 194, couplingStrength: 51 },
+                { developer: { name: 'Dev4', team: 'Team 2' }, coupledDeveloper: { name: 'Dev5', team: 'Team 2' }, sharedCommits: 62, couplingStrength: 48 }
+              ]);
+            }).then(function() {
+              return taskOutput.assertManifest({
+                reportName: 'developer-coupling',
+                parameters: { maxCoupledFiles: 2 },
+                dateRange: '2016-01-01_2016-10-22',
+                enabledDiagrams: ['communication-network']
+              });
+            });
+        }).then(done);
 
         commAnalysisStream.push({ author: 'Dev1', coupledAuthor: 'Dev2', sharedCommits: 65, couplingStrength: 55 });
         commAnalysisStream.push({ author: 'Dev2', coupledAuthor: 'Dev1', sharedCommits: 65, couplingStrength: 55 });
@@ -537,8 +546,12 @@ describe('Social analysis tasks', function() {
 
   describe('knowledge-map-analysis', function() {
     afterEach(function() {
-      this.clearTemp();
-      this.clearOutput();
+      cfHelpers.clearTemp();
+      cfHelpers.clearOutput();
+    });
+
+    it('has the required dependencies', function() {
+      runtime.assertTaskDependencies('knowledge-map-analysis', ['vcsLogDump', 'slocReport', 'mainDevReport']);
     });
 
     describe('for a supported vcs type', function() {
@@ -565,7 +578,7 @@ describe('Social analysis tasks', function() {
 
       describe('when team information exists', function() {
         beforeEach(function() {
-          this.runtime = this.runtimeSetup(socialAnalysisTasks,
+          runtime = cfHelpers.runtimeSetup(socialAnalysisTasks,
             {
               contributors: {
                 'Team 1': ['Dev1', 'Dev2'],
@@ -575,12 +588,12 @@ describe('Social analysis tasks', function() {
             },
             { dateFrom: '2016-01-01' }
           );
-          prepareReports(this.runtime);
+          prepareReports(runtime);
         });
 
-        it('publishes a report on the main developer for each file ', function(done) {
-          this.runtime.executePromiseTask('knowledge-map-analysis').then(function(taskOutput) {
-            taskOutput.assertOutputReport('2016-01-01_2016-10-22_knowledge-map-data.json',
+        it('publishes a report on the main developer for each file ', function() {
+          return runtime.executePromiseTask('knowledge-map-analysis').then(function(taskOutput) {
+            return taskOutput.assertOutputReport('2016-01-01_2016-10-22_knowledge-map-data.json',
               {
                 children: [
                   {
@@ -660,34 +673,32 @@ describe('Social analysis tasks', function() {
                   }
                 ]
               }
-            );
-
-            taskOutput.assertManifest({
-              reportName: 'knowledge-map',
-              parameters: {},
-              dateRange: '2016-01-01_2016-10-22',
-              enabledDiagrams: ['individual-knowledge-map', 'team-knowledge-map'],
+            ).then(function() {
+              return taskOutput.assertManifest({
+                reportName: 'knowledge-map',
+                parameters: {},
+                dateRange: '2016-01-01_2016-10-22',
+                enabledDiagrams: ['individual-knowledge-map', 'team-knowledge-map'],
+              });
             });
-
-            done();
           });
         });
       });
 
       describe('when no team information exists', function() {
         beforeEach(function() {
-          this.runtime = this.runtimeSetup(socialAnalysisTasks,
+          runtime = cfHelpers.runtimeSetup(socialAnalysisTasks,
             {
               contributors: ['Dev1', 'Dev2', 'Dev3', ['Dev4', 'Alias dev 4'], 'Dev5']
             },
             { dateFrom: '2016-01-01' }
           );
-          prepareReports(this.runtime);
+          prepareReports(runtime);
         });
 
-        it('publishes a report on the main developer for each file ', function(done) {
-          this.runtime.executePromiseTask('knowledge-map-analysis').then(function(taskOutput) {
-            taskOutput.assertOutputReport('2016-01-01_2016-10-22_knowledge-map-data.json',
+        it('publishes a report on the main developer for each file ', function() {
+          return runtime.executePromiseTask('knowledge-map-analysis').then(function(taskOutput) {
+            return taskOutput.assertOutputReport('2016-01-01_2016-10-22_knowledge-map-data.json',
               {
                 children: [
                   {
@@ -763,16 +774,14 @@ describe('Social analysis tasks', function() {
                   }
                 ]
               }
-            );
-
-            taskOutput.assertManifest({
-              reportName: 'knowledge-map',
-              parameters: {},
-              dateRange: '2016-01-01_2016-10-22',
-              enabledDiagrams: ['individual-knowledge-map'],
+            ).then(function() {
+              return taskOutput.assertManifest({
+                reportName: 'knowledge-map',
+                parameters: {},
+                dateRange: '2016-01-01_2016-10-22',
+                enabledDiagrams: ['individual-knowledge-map'],
+              });
             });
-
-            done();
           });
         });
       });
@@ -780,7 +789,7 @@ describe('Social analysis tasks', function() {
 
     describe('for an unsupported vcs type', function() {
       beforeEach(function() {
-        this.runtime = this.runtimeSetup(socialAnalysisTasks,
+        runtime = cfHelpers.runtimeSetup(socialAnalysisTasks,
           {
             contributors: ['Dev1', 'Dev2', 'Dev3', ['Dev4', 'Alias dev 4'], 'Dev5']
           },
@@ -789,10 +798,9 @@ describe('Social analysis tasks', function() {
         spyOn(codeMaat, 'analyser').and.returnValue({ isSupported: _.stubFalse });
       });
 
-      it('fails to publish the report ', function(done) {
-        this.runtime.executePromiseTask('knowledge-map-analysis').then(function(taskOutput) {
-          taskOutput.assertMissingReportId();
-          done();
+      it('fails to publish the report ', function() {
+        return runtime.executePromiseTask('knowledge-map-analysis').then(function(taskOutput) {
+          return taskOutput.assertMissingReportId();
         });
       });
     });

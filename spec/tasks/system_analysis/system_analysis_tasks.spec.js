@@ -1,7 +1,8 @@
 /*eslint-disable max-lines*/
-/*global require_src*/
-var stream = require('stream'),
-    _      = require('lodash');
+/*global require_src cfHelpers*/
+var stream   = require('stream'),
+    _        = require('lodash'),
+    Bluebird = require('bluebird');
 
 var systemAnalysisTasks = require_src('tasks/system_analysis/system_analysis_tasks'),
     codeMaat            = require_src('analysers/code_maat'),
@@ -16,7 +17,7 @@ describe('System analysis tasks', function() {
 
   afterEach(function() {
     jasmine.clock().uninstall();
-    this.clearOutput();
+    cfHelpers.clearOutput();
   });
 
   describe('system-evolution-analysis', function() {
@@ -121,7 +122,7 @@ describe('System analysis tasks', function() {
           return _.find(streams, { codeMaatInstruction: instruction }).mockAnalyser;
         });
 
-        var runtime = this.runtimeSetup(systemAnalysisTasks,
+        var runtime = cfHelpers.runtimeSetup(systemAnalysisTasks,
           {
             layerGroups: {
               'test_boundary': [
@@ -134,17 +135,18 @@ describe('System analysis tasks', function() {
         );
 
         runtime.executePromiseTask('system-evolution-analysis').then(function(taskOutput) {
-          _.each(expectedResults.reports, function(r) {
-            taskOutput.assertOutputReport(r.fileName, r.data);
+          return Bluebird.all(
+            _.map(expectedResults.reports, function(r) {
+              return taskOutput.assertOutputReport(r.fileName, r.data);
+            }).concat(
+              _.map(expectedResults.missingReports, function(r) {
+                return taskOutput.assertMissingOutputReport(r.fileName);
+              })
+            )
+          ).then(function() {
+            return taskOutput.assertManifest(expectedResults.manifest);
           });
-          _.each(expectedResults.missingReports, function(r) {
-            taskOutput.assertMissingOutputReport(r.fileName);
-          });
-
-          taskOutput.assertManifest(expectedResults.manifest);
-
-          done();
-        });
+        }).then(done);
 
         _.each(streams, function(s) {
           _.each(s.data, function(values, index) {
@@ -154,6 +156,12 @@ describe('System analysis tasks', function() {
         });
       });
     };
+
+    it('has the required dependencies', function() {
+      var runtime = cfHelpers.runtimeSetup(systemAnalysisTasks);
+
+      runtime.assertTaskDependencies('system-evolution-analysis', ['vcsLogDump', 'generateLayerGroupingFiles']);
+    });
 
     describe('with no layer group parameter', function() {
       describe('with churn analysis supported by the VCS type', function() {

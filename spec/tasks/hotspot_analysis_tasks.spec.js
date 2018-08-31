@@ -1,7 +1,9 @@
-/*global require_src*/
+/*global require_src cfHelpers*/
 var hotspotAnalysisTasks = require_src('tasks/hotspot_analysis_tasks');
 
 describe('Hotspot analysis tasks', function() {
+  var runtime;
+
   beforeEach(function() {
     jasmine.clock().install();
     jasmine.clock().mockDate(new Date('2015-10-22T10:00:00.000Z'));
@@ -13,13 +15,18 @@ describe('Hotspot analysis tasks', function() {
 
   describe('hotspot-analysis', function() {
     afterEach(function() {
-      this.clearTemp();
-      this.clearOutput();
+      cfHelpers.clearTemp();
+      cfHelpers.clearOutput();
+    });
+
+    it('has the required dependencies', function() {
+      runtime = cfHelpers.runtimeSetup(hotspotAnalysisTasks);
+      runtime.assertTaskDependencies('hotspot-analysis', ['vcsLogDump', 'revisionsReport']);
     });
 
     describe('for supported languages', function() {
-      it('publishes an analysis report on code size, complexity and revisions for each file in the repository', function(done) {
-        var runtime = this.runtimeSetup(hotspotAnalysisTasks, { languages: ['ruby'] }, { dateFrom: '2015-03-01' });
+      it('publishes an analysis report on code size, complexity and revisions for each file in the repository', function() {
+        runtime = cfHelpers.runtimeSetup(hotspotAnalysisTasks, { languages: ['ruby'] }, { dateFrom: '2015-03-01' });
 
         runtime.prepareTempReport('sloc-report.json', [
           { path: 'test/ruby/app/file1.rb', sourceLines: 33, totalLines: 45 },
@@ -41,8 +48,8 @@ describe('Hotspot analysis tasks', function() {
           { path: 'test/ruby/app/file6.rb', methodComplexity: [{ name: 'File6', complexity: 10.1 }], totalComplexity: 19.3, averageComplexity: 9.6 }
         ]);
 
-        runtime.executePromiseTask('hotspot-analysis').then(function(taskOutput) {
-          taskOutput.assertOutputReport('2015-03-01_2015-10-22_revisions-hotspot-data.json', {
+        return runtime.executePromiseTask('hotspot-analysis').then(function(taskOutput) {
+          return taskOutput.assertOutputReport('2015-03-01_2015-10-22_revisions-hotspot-data.json', {
             children: [
               {
                 name: 'test',
@@ -113,21 +120,21 @@ describe('Hotspot analysis tasks', function() {
                 ]
               }
             ]
+          }).then(function() {
+            return taskOutput.assertManifest({
+              reportName: 'hotspot-analysis',
+              parameters: {},
+              dateRange: '2015-03-01_2015-10-22',
+              enabledDiagrams: ['sloc', 'complexity']
+            });
           });
-          taskOutput.assertManifest({
-            reportName: 'hotspot-analysis',
-            parameters: {},
-            dateRange: '2015-03-01_2015-10-22',
-            enabledDiagrams: ['sloc', 'complexity']
-          });
-          done();
         });
       });
     });
 
     describe('with no supported languages', function() {
-      it('publishes an analysis report on code size and revisions for each file in the repository', function(done) {
-        var runtime = this.runtimeSetup(hotspotAnalysisTasks, {}, { dateFrom: '2015-03-01' });
+      it('publishes an analysis report on code size and revisions for each file in the repository', function() {
+        runtime = cfHelpers.runtimeSetup(hotspotAnalysisTasks, {}, { dateFrom: '2015-03-01' });
 
         runtime.prepareTempReport('sloc-report.json', [
           { path: 'test/java/app/file1.java', sourceLines: 33, totalLines: 45 },
@@ -143,8 +150,8 @@ describe('Hotspot analysis tasks', function() {
           { path: 'test/web/pages/file5.html', revisions: 11 }
         ]);
 
-        runtime.executePromiseTask('hotspot-analysis', '103d9a240cc5358f24927d51261fd9dcdb75b314').then(function(taskOutput) {
-          taskOutput.assertOutputReport('2015-03-01_2015-10-22_revisions-hotspot-data.json', {
+        return runtime.executePromiseTask('hotspot-analysis').then(function(taskOutput) {
+          return taskOutput.assertOutputReport('2015-03-01_2015-10-22_revisions-hotspot-data.json', {
             children: [
               {
                 name: 'test',
@@ -213,14 +220,14 @@ describe('Hotspot analysis tasks', function() {
                 ]
               }
             ]
+          }).then(function() {
+            return taskOutput.assertManifest({
+              reportName: 'hotspot-analysis',
+              parameters: {},
+              dateRange: '2015-03-01_2015-10-22',
+              enabledDiagrams: ['sloc']
+            });
           });
-          taskOutput.assertManifest({
-            reportName: 'hotspot-analysis',
-            parameters: {},
-            dateRange: '2015-03-01_2015-10-22',
-            enabledDiagrams: ['sloc']
-          });
-          done();
         });
       });
     });

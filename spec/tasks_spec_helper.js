@@ -15,35 +15,48 @@ var TEST_TMP_DIR    = Path.resolve('test_fixtures/tmp'),
     TEST_OUTPUT_DIR = Path.resolve('test_fixtures/output'),
     TEST_REPO_DIR   = Path.resolve('test_fixtures/repo_root');
 
+var readFile = Bluebird.promisify(fs.readFile);
+
 var TaskOutput = function(reportId) {
   this.assertTempFile = function(filename, expectedValue) {
-    var content = fs.readFileSync(Path.join(TEST_TMP_DIR, filename));
-    expect(content.toString()).toEqual(expectedValue);
+    return readFile(Path.join(TEST_TMP_DIR, filename))
+      .then(function(buffer) {
+        expect(buffer.toString()).toEqual(expectedValue);
+      });
   };
 
   this.assertTempReport = function(filename, expectedValue) {
-    var report = JSON.parse(fs.readFileSync(Path.join(TEST_TMP_DIR, filename)));
-    expect(report).toEqual(expectedValue);
+    return readFile(Path.join(TEST_TMP_DIR, filename))
+      .then(function(buffer) {
+        expect(JSON.parse(buffer)).toEqual(expectedValue);
+      });
   };
 
   this.assertMissingTempReport = function(filename) {
     expect(fs.existsSync(Path.join(TEST_TMP_DIR, filename))).toBe(false);
+    return Bluebird.resolve();
   };
 
   this.assertOutputReport = function(filename, expectedValue) {
-    var report = JSON.parse(fs.readFileSync(Path.join(TEST_OUTPUT_DIR, reportId, filename)));
-    expect(report).toEqual(expectedValue);
+    return readFile(Path.join(TEST_OUTPUT_DIR, reportId, filename))
+      .then(function(buffer) {
+        expect(JSON.parse(buffer)).toEqual(expectedValue);
+      });
   };
 
   this.assertMissingOutputReport = function(filename) {
     expect(fs.existsSync(Path.join(TEST_OUTPUT_DIR, reportId, filename))).toBe(false);
+    return Bluebird.resolve();
   };
 
   this.assertManifest = function(options) {
-    var manifest = JSON.parse(fs.readFileSync(Path.join(TEST_OUTPUT_DIR, reportId, 'manifest.json')));
-    _.each(options, function(expectedValue, key) {
-      expect(manifest[key]).toEqual(expectedValue);
-    });
+    return readFile(Path.join(TEST_OUTPUT_DIR, reportId, 'manifest.json'))
+      .then(function(buffer) {
+        var manifest = JSON.parse(buffer);
+        _.each(options, function(expectedValue, key) {
+          expect(manifest[key]).toEqual(expectedValue);
+        });
+      });
   };
 
   this.assertMissingReportId = function() {
@@ -66,6 +79,14 @@ var Runtime = function(gulpTasks, functions) {
     return gulpTasks[name].run.call(null, doneCallback)
       .then(function(reportId) { return new TaskOutput(reportId); })
       .catch(function(err) { fail(err); });
+  };
+
+  this.executeStreamFunction = function(name) {
+    return new Bluebird(function(resolve) {
+      functions[name].call()
+      .on('close', resolve.bind(null, new TaskOutput()))
+      .on('error', function(err) { fail(err); });
+    });
   };
 
   this.executePromiseFunction = function(name) {
@@ -92,24 +113,25 @@ var Runtime = function(gulpTasks, functions) {
     _.each(dependencies, function(dependency) {
       expect(gulpTasks[name].dependencies).toContain(dependency);
     });
-    expect(gulpTasks[name].dependencies.length).toEqual(dependencies.length);
   };
 };
 
-beforeEach(function() {
-  this.clearTemp = function() {
+if (global.cfHelpers) {
+  throw new Error('Cannot define custom helper functions, namespace "cfHelpers" already defined.');
+}
+
+/*eslint-disable jasmine/no-unsafe-spy*/
+global.cfHelpers = {
+  clearTemp: function() {
     del.sync(TEST_TMP_DIR + '/*');
-  };
-
-  this.clearRepo = function() {
+  },
+  clearRepo: function() {
     del.sync(TEST_REPO_DIR + '/*');
-  };
-
-  this.clearOutput = function() {
+  },
+  clearOutput: function() {
     del.sync(TEST_OUTPUT_DIR + '/*');
-  };
-
-  this.runtimeSetup = function(tasksFn, contextConfig, parameters) {
+  },
+  runtimeSetup: function(tasksFn, contextConfig, parameters) {
     var gulpTasks = {};
     var currentTaskDependencies = [];
 
@@ -131,32 +153,34 @@ beforeEach(function() {
     });
 
     var config = _.merge({
-        tempDir: TEST_TMP_DIR,
-        outputDir: TEST_OUTPUT_DIR,
-        repository: { rootPath: TEST_REPO_DIR }
-      }, contextConfig);
+      tempDir: TEST_TMP_DIR,
+      outputDir: TEST_OUTPUT_DIR,
+      repository: { rootPath: TEST_REPO_DIR }
+    }, contextConfig);
 
     var taskContext = new TaskContext(config, parameters || {});
     var taskDefinitions = new TaskDefinitions(taskContext);
 
     var addTask = taskDefinitions.addTask;
     var addAnalysisTask = taskDefinitions.addAnalysisTask;
-    spyOn(taskDefinitions, 'addTask').and.callFake(function(taskName) {
-      gulpTasks[taskName] = { dependencies: currentTaskDependencies };
+    spyOn(taskDefinitions, 'addTask').and.callFake(function(taskName, taskInfo, taskDep) {
+      addToDependecies(taskDep);
+      gulpTasks[taskName] = { dependencies: _.uniq(currentTaskDependencies) };
+      addTask.apply(taskDefinitions, arguments);
       currentTaskDependencies = [];
-      return addTask.apply(taskDefinitions, arguments);
     });
-    spyOn(taskDefinitions, 'addAnalysisTask').and.callFake(function(taskName) {
-      gulpTasks[taskName] = { dependencies: currentTaskDependencies };
+    spyOn(taskDefinitions, 'addAnalysisTask').and.callFake(function(taskName, taskInfo, taskDep) {
+      addToDependecies(taskDep);
+      gulpTasks[taskName] = { dependencies: _.uniq(currentTaskDependencies) };
+      addAnalysisTask.apply(taskDefinitions, arguments);
       currentTaskDependencies = [];
-      return addAnalysisTask.apply(taskDefinitions, arguments);
     });
 
     var tasksRuntimeConfig = tasksFn(taskDefinitions, taskContext, taskHelpers(taskContext));
     tasksRuntimeConfig.tasks(); //process the gulp tasks
     return new Runtime(gulpTasks, tasksRuntimeConfig.functions);
-  };
-});
+  },
+};
 
 mkdirp.sync(TEST_TMP_DIR);
 mkdirp.sync(TEST_OUTPUT_DIR);

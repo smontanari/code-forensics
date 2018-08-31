@@ -1,4 +1,4 @@
-/*global require_src*/
+/*global require_src cfHelpers*/
 var _      = require('lodash'),
     stream = require('stream');
 
@@ -6,24 +6,37 @@ var codeAnalysisTasks = require_src('tasks/code_analysis_tasks'),
     vcs               = require_src('vcs');
 
 describe('Code analysis tasks', function() {
+  var runtime;
+
   describe('sloc-report', function() {
     afterEach(function() {
-      this.clearTemp();
-      this.clearRepo();
+      cfHelpers.clearTemp();
+      cfHelpers.clearRepo();
     });
 
-    it('writes a report on the number of lines of code for each file in the repository', function(done) {
-      var runtime = this.runtimeSetup(codeAnalysisTasks);
+    beforeEach(function() {
+      runtime = cfHelpers.runtimeSetup(codeAnalysisTasks);
 
       runtime.prepareRepositoryFile('test_file1.js', "line1\nline2");
       runtime.prepareRepositoryFile('test_file2.rb', "line1\nline2\nline3\n");
+    });
 
-      runtime.executeStreamTask('sloc-report').then(function(taskOutput) {
-        taskOutput.assertTempReport('sloc-report.json', [
-          { path: 'test_file1.js', sourceLines: 2, totalLines: 2 },
-          { path: 'test_file2.rb', sourceLines: 3, totalLines: 3 }
-        ]);
-        done();
+    var assertReport = function(taskOutput) {
+      return taskOutput.assertTempReport('sloc-report.json', [
+        { path: 'test_file1.js', sourceLines: 2, totalLines: 2 },
+        { path: 'test_file2.rb', sourceLines: 3, totalLines: 3 }
+      ]);
+    };
+
+    describe('as a Task', function() {
+      it('writes a report on the number of lines of code for each file in the repository', function() {
+        return runtime.executeStreamTask('sloc-report').then(assertReport);
+      });
+    });
+
+    describe('as a Function', function() {
+      it('writes a report on the number of lines of code for each file in the repository', function() {
+        return runtime.executeStreamFunction('slocReport').then(assertReport);
       });
     });
   });
@@ -41,7 +54,7 @@ describe('Code analysis tasks', function() {
 
     afterEach(function() {
       jasmine.clock().uninstall();
-      this.clearOutput();
+      cfHelpers.clearOutput();
     });
 
     it('publishes an analysis on the sloc trend for a given file in the repository', function(done) {
@@ -54,20 +67,20 @@ describe('Code analysis tasks', function() {
       ]);
       mockVcsClient.showRevisionStream.and.returnValues(revisionStream1, revisionStream2);
 
-      var runtime = this.runtimeSetup(codeAnalysisTasks, null, { dateFrom: '2015-03-01', targetFile: 'test_abs.rb' });
+      runtime = cfHelpers.runtimeSetup(codeAnalysisTasks, null, { dateFrom: '2015-03-01', targetFile: 'test_abs.rb' });
       runtime.executePromiseTask('sloc-trend-analysis').then(function(taskOutput) {
-        taskOutput.assertOutputReport('2015-03-01_2015-10-22_sloc-trend-data.json', [
+        return taskOutput.assertOutputReport('2015-03-01_2015-10-22_sloc-trend-data.json', [
           { revision: 123, date: '2015-04-29T23:00:00.000Z', path: 'test_abs.rb', sourceLines: 3, totalLines: 3 },
           { revision: 456, date: '2015-05-04T23:00:00.000Z', path: 'test_abs.rb', sourceLines: 5, totalLines: 5 }
-        ]);
-        taskOutput.assertManifest({
-          reportName: 'sloc-trend',
-          parameters: { targetFile: 'test_abs.rb' },
-          dateRange: '2015-03-01_2015-10-22',
-          enabledDiagrams: ['sloc']
+        ]).then(function() {
+          return taskOutput.assertManifest({
+            reportName: 'sloc-trend',
+            parameters: { targetFile: 'test_abs.rb' },
+            dateRange: '2015-03-01_2015-10-22',
+            enabledDiagrams: ['sloc']
+          });
         });
-        done();
-      });
+      }).then(done);
 
       _.times(3, function(n) {
         revisionStream1.push('line ' + n + "\n");
