@@ -1,41 +1,23 @@
 /*global require_src*/
-var _ = require('lodash'),
-  stream = require('stream'),
-  moment = require('moment');
+var _      = require('lodash'),
+    stream = require('stream');
 
-var DataCollector = require_src('tasks/system_analysis/data_collector'),
-    TimePeriod    = require_src('models/time_interval/time_period'),
-    LayerGrouping = require_src('models/layer_grouping');
+var DataCollector = require_src('tasks/system_analysis/data_collector');
 
 describe('DataCollector', function() {
-  var subject, mockFilesHelper, mockCodeMaatHelper, testAnalysisStreams;
+  var subject, mockAnalysis, testAnalysisStreams;
 
-  var timePeriods = [
-    new TimePeriod({ start: moment('2010-05-01 00Z'), end: moment('2010-05-31 00Z') }, 'DD-MM-YYYY'),
-    new TimePeriod({ start: moment('2010-04-01 00Z'), end: moment('2010-04-30 00Z') }, 'DD-MM-YYYY'),
-    new TimePeriod({ start: moment('2010-03-01 00Z'), end: moment('2010-03-31 00Z') }, 'DD-MM-YYYY'),
-  ];
+  var timePeriods = ['period1', 'period2', 'period3'];
 
   var streamsData = [
-    [
-      { testMetricA: 10, testMetricB: 'abc' },
-      { testMetricA: 20, testMetricB: 'xyz' },
-    ],
-    [
-      { testMetricA: 40, testMetricB: 'abc' },
-      { testMetricA: 50, testMetricB: 'xyz' }
-    ],
-    [
-      { testMetricA: 30, testMetricB: 'abc' },
-      { testMetricA: 30, testMetricB: 'xyz' },
-    ]
+    { metric: 30, date: '2010-05-31T00:00:00.000Z' },
+    { metric: 90, date: '2010-04-30T00:00:00.000Z' },
+    { metric: 60, date: '2010-03-31T00:00:00.000Z' }
   ];
 
   var streamTestData = function() {
     _.each(testAnalysisStreams, function(s, index) {
-      _.each(streamsData[index], function(v) {
-        s.push(v);
-      });
+      s.push(streamsData[index]);
       s.end();
     });
   };
@@ -47,127 +29,47 @@ describe('DataCollector', function() {
       new stream.PassThrough({ objectMode: true })
     ];
 
-    mockFilesHelper = jasmine.createSpyObj('filesHelper', ['vcsNormalisedLog', 'layerGrouping']);
-    mockCodeMaatHelper = {
-      testAnalysis: jasmine.createSpy('testAnalysis')
+    mockAnalysis = {
+      isSupported: jasmine.createSpy('analysis.isSupported'),
+      collect: jasmine.createSpy('analysis.collect'),
+      accumulator: new stream.PassThrough({ objectMode: true })
     };
-    var spyStrategy = mockCodeMaatHelper.testAnalysis.and;
-    spyStrategy.returnValues.apply(spyStrategy, testAnalysisStreams);
+    mockAnalysis.collect.and.returnValues.apply(mockAnalysis.collect.and, testAnalysisStreams);
   });
 
-  describe('with empty layer group', function() {
+  describe('when analysis is not supported', function() {
     beforeEach(function() {
-      var context = { timePeriods: timePeriods, layerGrouping: new LayerGrouping({}) };
-      subject = new DataCollector(context, mockFilesHelper, mockCodeMaatHelper);
+      mockAnalysis.isSupported.and.returnValue(false);
+      subject = new DataCollector(timePeriods);
     });
 
-    describe('with no cumulative results', function() {
-      it('returns the aggregation of all time periods analysis results', function(done) {
-        var analysis = {
-          codeMaatAnalysis: 'testAnalysis',
-          selector: function(obj) { return { metric: obj.testMetricA }; },
-          initialValue: { metric: 0 }
-        };
-        var data = [];
-        subject.reportStream(analysis)
-          .on('data', function(obj) { data.push(obj); })
+    it('returns a rejected promise', function(done) {
+      subject.collectDataStream(mockAnalysis).catch(done);
+    });
+  });
+
+  describe('when analysis is supported', function() {
+    beforeEach(function() {
+      mockAnalysis.isSupported.and.returnValue(true);
+      subject = new DataCollector(timePeriods);
+    });
+
+    it('returns a promise with the stream of all time periods analysis results, sorted', function(done) {
+      subject.collectDataStream(mockAnalysis)
+        .then(function(stream) {
+          var data = [];
+          stream.on('data', function(obj) { data.push(obj); })
           .on('end', function() {
             expect(data).toEqual([
-              jasmine.objectContaining({ metric: 30, date: '2010-05-31T00:00:00.000Z' }),
-              jasmine.objectContaining({ metric: 90, date: '2010-04-30T00:00:00.000Z' }),
               jasmine.objectContaining({ metric: 60, date: '2010-03-31T00:00:00.000Z' }),
+              jasmine.objectContaining({ metric: 90, date: '2010-04-30T00:00:00.000Z' }),
+              jasmine.objectContaining({ metric: 30, date: '2010-05-31T00:00:00.000Z' }),
             ]);
             done();
           });
+        });
 
-        streamTestData();
-      });
-    });
-
-    describe('with cumulative results', function() {
-      it('returns the aggregation of all time periods analysis results sorted by time', function(done) {
-        var analysis = {
-          codeMaatAnalysis: 'testAnalysis',
-          selector: function(obj) { return { metric: obj.testMetricA }; },
-          initialValue: { metric: 0 },
-          accumulators: {
-            cumulativeMetric: _.property('metric')
-          }
-        };
-        var data = [];
-        subject.reportStream(analysis)
-          .on('data', function(obj) { data.push(obj); })
-          .on('end', function() {
-            expect(data).toEqual([
-              jasmine.objectContaining({ metric: 60, cumulativeMetric:  60, date: '2010-03-31T00:00:00.000Z' }),
-              jasmine.objectContaining({ metric: 90, cumulativeMetric: 150, date: '2010-04-30T00:00:00.000Z' }),
-              jasmine.objectContaining({ metric: 30, cumulativeMetric: 180, date: '2010-05-31T00:00:00.000Z' }),
-            ]);
-            done();
-          });
-
-        streamTestData();
-      });
-    });
-  });
-
-  describe('with a layer group', function() {
-    beforeEach(function() {
-      var context = { timePeriods: timePeriods, layerGrouping: new LayerGrouping({ testLayer1: 'layer1', testLayer2: 'layer2' }) };
-      subject = new DataCollector(context, mockFilesHelper, mockCodeMaatHelper);
-    });
-
-    describe('with no cumulative results', function() {
-      it('returns the map of all time periods analysis results', function(done) {
-        var analysis = {
-          codeMaatAnalysis: 'testAnalysis',
-          selector: function(obj) { return { metric: obj.testMetricA }; }
-        };
-        var data = [];
-        subject.reportStream(analysis)
-          .on('data', function(obj) { data.push(obj); })
-          .on('end', function() {
-            expect(data).toEqual([
-              jasmine.objectContaining({ metric: 10, date: '2010-05-31T00:00:00.000Z' }),
-              jasmine.objectContaining({ metric: 20, date: '2010-05-31T00:00:00.000Z' }),
-              jasmine.objectContaining({ metric: 40, date: '2010-04-30T00:00:00.000Z' }),
-              jasmine.objectContaining({ metric: 50, date: '2010-04-30T00:00:00.000Z' }),
-              jasmine.objectContaining({ metric: 30, date: '2010-03-31T00:00:00.000Z' }),
-              jasmine.objectContaining({ metric: 30, date: '2010-03-31T00:00:00.000Z' }),
-            ]);
-            done();
-          });
-
-        streamTestData();
-      });
-    });
-
-    describe('with cumulative results', function() {
-      it('returns the map of all time periods analysis results', function(done) {
-        var analysis = {
-          codeMaatAnalysis: 'testAnalysis',
-          selector: function(obj) { return { metric: obj.testMetricA }; },
-          accumulators: {
-            cumulativeMetric: _.property('metric')
-          }
-        };
-        var data = [];
-        subject.reportStream(analysis)
-          .on('data', function(obj) { data.push(obj); })
-          .on('end', function() {
-            expect(data).toEqual([
-              jasmine.objectContaining({ metric: 30, cumulativeMetric:  30, date: '2010-03-31T00:00:00.000Z' }),
-              jasmine.objectContaining({ metric: 30, cumulativeMetric:  60, date: '2010-03-31T00:00:00.000Z' }),
-              jasmine.objectContaining({ metric: 40, cumulativeMetric: 100, date: '2010-04-30T00:00:00.000Z' }),
-              jasmine.objectContaining({ metric: 50, cumulativeMetric: 150, date: '2010-04-30T00:00:00.000Z' }),
-              jasmine.objectContaining({ metric: 10, cumulativeMetric: 160, date: '2010-05-31T00:00:00.000Z' }),
-              jasmine.objectContaining({ metric: 20, cumulativeMetric: 180, date: '2010-05-31T00:00:00.000Z' }),
-            ]);
-            done();
-          });
-
-        streamTestData();
-      });
+      streamTestData();
     });
   });
 });

@@ -19,7 +19,7 @@ describe('Misc Tasks', function() {
 
     describe('with the layer group parameter', function() {
       var assertLayerFiles = function(taskOutput) {
-        return taskOutput.assertTempFile('layer-grouping.txt', [
+        return taskOutput.assertTempFile('layer-groups.txt', [
           'test/path1 => Test Layer1',
           '^test\\/path2\\/((?!.*--abc\\.)).*\\/files$ => Test Layer1',
           'test_path3 => Test Layer2',
@@ -56,7 +56,7 @@ describe('Misc Tasks', function() {
 
     describe('with no layer group parameter', function() {
       var assertNoLayerFiles = function(taskOutput) {
-        return taskOutput.assertMissingTempReport('layer-grouping.txt')
+        return taskOutput.assertMissingTempReport('layer-groups.txt')
         .then(function() {
           return taskOutput.assertMissingTempReport('layer-group-test-layer-1.txt');
         }).then(function() {

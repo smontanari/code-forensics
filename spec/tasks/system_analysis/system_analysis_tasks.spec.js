@@ -21,98 +21,176 @@ describe('System analysis tasks', function() {
   });
 
   describe('system-evolution-analysis', function() {
-    var layeredRevisionsAnalysisStreams = {
-      codeMaatInstruction: 'revisions',
-      data: [
-        [
-          { path: 'test_layer1', revisions: 32 },
-          { path: 'test_layer2', revisions: 47 },
-          { path: 'test_layer3', revisions: 15 }
-        ],
-        [
-          { path: 'test_layer1', revisions: 34 },
-          { path: 'test_layer2', revisions: 25 },
-          { path: 'test_layer3', revisions: 11 }
-        ]
-      ]
-    };
-
     var summaryAnalysisStreams = {
       codeMaatInstruction: 'summary',
       data: [
-        [
-          { stat: 'revisions', value: 94 },
-          { stat: 'files',     value: 34 },
-          { stat: 'commits',   value: 67 },
-          { stat: 'authors',   value: 14 }
-        ],
-        [
-          { stat: 'revisions', value: 70 },
-          { stat: 'files',     value: 26 },
-          { stat: 'commits',   value: 52 },
-          { stat: 'authors',   value: 9 }
-        ]
+        {
+          period: '2016-01-01_2016-01-31',
+          values: [
+            { stat: 'revisions', value: 94 },
+            { stat: 'files',     value: 34 },
+            { stat: 'commits',   value: 67 },
+            { stat: 'authors',   value: 14 }
+          ]
+        },
+        {
+          period: '2016-02-01_2016-02-28',
+          values: [
+            { stat: 'revisions', value: 70 },
+            { stat: 'files',     value: 26 },
+            { stat: 'commits',   value: 52 },
+            { stat: 'authors',   value: 9 }
+          ]
+        }
       ]
     };
 
     var absChurnAnalysisStreams = {
       codeMaatInstruction: 'abs-churn',
       data: [
-        [
-          { date: 'not relevant', addedLines: 95295, deletedLines: 10209, commits: 203 },
-          { date: 'not relevant', addedLines: 6940, deletedLines: 6961, commits: 944 },
-          { date: 'not relevant', addedLines: 710, deletedLines: 37, commits: 22 }
-        ],
-        [
-          { date: 'not relevant', addedLines: 12091, deletedLines: 10138, commits: 17 },
-          { date: 'not relevant', addedLines: 1147, deletedLines: 1156, commits: 26 },
-          { date: 'not relevant', addedLines: 889, deletedLines: 660, commits: 38 }
-        ]
+        {
+          period: '2016-01-01_2016-01-31',
+          values: [
+            { date: 'not relevant', addedLines: 95295, deletedLines: 10209, commits: 203 },
+            { date: 'not relevant', addedLines: 6940, deletedLines: 6961, commits: 944 },
+            { date: 'not relevant', addedLines: 710, deletedLines: 37, commits: 22 }
+          ]
+        },
+        {
+          period: '2016-02-01_2016-02-28',
+          values: [
+            { date: 'not relevant', addedLines: 12091, deletedLines: 10138, commits: 17 },
+            { date: 'not relevant', addedLines: 1147, deletedLines: 1156, commits: 26 },
+            { date: 'not relevant', addedLines: 889, deletedLines: 660, commits: 38 }
+          ]
+        }
+      ]
+    };
+
+    var layeredSummaryAnalysisStreams = {
+      codeMaatInstruction: 'summary',
+      data: [
+        {
+          period: '2016-01-01_2016-01-31',
+          layerGroupFile: 'layer-group-test-layer-1.txt',
+          values: [
+            { stat: 'revisions', value: 12 },
+            { stat: 'commits', value: 42 },
+            { stat: 'authors', value: 8 },
+            { stat: 'files', value: 6 }
+          ],
+        },
+        {
+          period: '2016-01-01_2016-01-31',
+          layerGroupFile: 'layer-group-test-layer-2.txt',
+          values: [
+            { stat: 'revisions', value: 9 },
+            { stat: 'commits', value: 21 },
+            { stat: 'authors', value: 3 },
+            { stat: 'files', value: 4 }
+          ],
+        },
+        {
+          period: '2016-01-01_2016-01-31',
+          layerGroupFile: 'layer-group-test-layer-3.txt',
+          values: [
+            { stat: 'revisions', value: 2 },
+            { stat: 'commits', value: 5 },
+            { stat: 'authors', value: 1 },
+            { stat: 'files', value: 1 }
+          ],
+        },
+        {
+          period: '2016-02-01_2016-02-28',
+          layerGroupFile: 'layer-group-test-layer-1.txt',
+          values: [
+            { stat: 'revisions', value: 27 },
+            { stat: 'commits', value: 59 },
+            { stat: 'authors', value: 12 },
+            { stat: 'files', value: 17 }
+          ],
+        },
+        {
+          period: '2016-02-01_2016-02-28',
+          layerGroupFile: 'layer-group-test-layer-2.txt',
+          values: [
+            { stat: 'revisions', value: 14 },
+            { stat: 'commits', value: 30 },
+            { stat: 'authors', value: 4 },
+            { stat: 'files', value: 5 }
+          ],
+        },
+        {
+          period: '2016-02-01_2016-02-28',
+          layerGroupFile: 'layer-group-test-layer-3.txt',
+          values: [
+            { stat: 'revisions', value: 5 },
+            { stat: 'commits', value: 3 },
+            { stat: 'authors', value: 2 },
+            { stat: 'files', value: 2 }
+          ],
+        }
       ]
     };
 
     var layeredChurnAnalysisStreams = {
       codeMaatInstruction: 'entity-churn',
       data: [
-        [
-          { path: 'test_layer1', addedLines: 95295, deletedLines: 10209, commits: 203 },
-          { path: 'test_layer2', addedLines:  6940, deletedLines:  6961, commits: 944 },
-          { path: 'test_layer3', addedLines:   710, deletedLines:    37, commits:  22 }
-        ],
-        [
-          { path: 'test_layer1', addedLines: 12091, deletedLines: 10138, commits: 17 },
-          { path: 'test_layer2', addedLines:  1147, deletedLines:  1156, commits: 26 },
-          { path: 'test_layer3', addedLines:   889, deletedLines:   660, commits: 38 }
-        ]
+        {
+          period: '2016-01-01_2016-01-31',
+          layerGroupFile: 'layer-groups.txt',
+          values: [
+            { path: 'test_layer1', addedLines: 95295, deletedLines: 10209, commits: 203 },
+            { path: 'test_layer2', addedLines:  6940, deletedLines:  6961, commits: 944 },
+            { path: 'test_layer3', addedLines:   710, deletedLines:    37, commits:  22 }
+          ]
+        },
+        {
+          period: '2016-02-01_2016-02-28',
+          layerGroupFile: 'layer-groups.txt',
+          values: [
+            { path: 'test_layer1', addedLines: 12091, deletedLines: 10138, commits: 17 },
+            { path: 'test_layer2', addedLines:  1147, deletedLines:  1156, commits: 26 },
+            { path: 'test_layer3', addedLines:   889, deletedLines:   660, commits: 38 }
+          ]
+        }
       ]
     };
 
-    var couplingAnalysisStreams = {
+    var layeredCouplingAnalysisStreams = {
       codeMaatInstruction: 'coupling',
       data: [
-        [
-          { path: 'test_layer1', coupledPath: 'test_layer2', couplingDegree: 23, revisionsAvg: 12 },
-          { path: 'test_layer1', coupledPath: 'test_layer3', couplingDegree: 41, revisionsAvg: 22 },
-          { path: 'test_layer2', coupledPath: 'test_layer3', couplingDegree: 30, revisionsAvg: 5 }
-        ],
-        [
-          { path: 'test_layer1', coupledPath: 'test_layer2', couplingDegree: 33, revisionsAvg: 18 },
-          { path: 'test_layer1', coupledPath: 'test_layer3', couplingDegree: 52, revisionsAvg: 32 },
-          { path: 'test_layer2', coupledPath: 'test_layer3', couplingDegree: 10, revisionsAvg: 30 }
-        ]
+        {
+          period: '2016-01-01_2016-01-31',
+          layerGroupFile: 'layer-groups.txt',
+          values: [
+            { path: 'test_layer1', coupledPath: 'test_layer2', couplingDegree: 23, revisionsAvg: 12 },
+            { path: 'test_layer1', coupledPath: 'test_layer3', couplingDegree: 41, revisionsAvg: 22 },
+            { path: 'test_layer2', coupledPath: 'test_layer3', couplingDegree: 30, revisionsAvg: 5 }
+          ]
+        },
+        {
+          period: '2016-02-01_2016-02-28',
+          layerGroupFile: 'layer-groups.txt',
+          values: [
+            { path: 'test_layer1', coupledPath: 'test_layer2', couplingDegree: 33, revisionsAvg: 18 },
+            { path: 'test_layer1', coupledPath: 'test_layer3', couplingDegree: 52, revisionsAvg: 32 },
+            { path: 'test_layer2', coupledPath: 'test_layer3', couplingDegree: 10, revisionsAvg: 30 }
+          ]
+        }
       ]
     };
 
     var testAnalysis = function(description, taskParameters, analysisStreams, supportedAnalyses, expectedResults) {
       it(description, function(done) {
-        var streams = _.map(analysisStreams, function(s) {
-          var streamObjects = _.map(s.data, function() { return new stream.PassThrough({ objectMode: true }); });
-          var spyStrategy = jasmine.createSpy().and;
-          var stubAnalysis = _.spread(spyStrategy.returnValues).bind(spyStrategy);
-          return _.extend({}, s, {
+        var streams = _.map(analysisStreams, function(analysisStream) {
+          var streamObjects = _.map(analysisStream.data, function() { return new stream.PassThrough({ objectMode: true }); });
+          var mockAnalysisStream = jasmine.createSpy('analysisStream');
+          var stubAnalysis = _.spread(mockAnalysisStream.and.returnValues).bind(mockAnalysisStream.and);
+          return _.extend({}, analysisStream, {
             streamObjects: streamObjects,
             mockAnalyser: {
-              isSupported: function() { return _.includes(supportedAnalyses, s.codeMaatInstruction); },
+              isSupported: function() { return _.includes(supportedAnalyses, analysisStream.codeMaatInstruction); },
               fileAnalysisStream: stubAnalysis(streamObjects)
             }
           });
@@ -126,8 +204,9 @@ describe('System analysis tasks', function() {
           {
             layerGroups: {
               'test_boundary': [
-                { name: 'Test Layer1', paths: ['test/path1', 'test_path2'] },
-                { name: 'Test Layer2', paths: ['test_path3'] }
+                { name: 'test_layer1', paths: 'some paths' },
+                { name: 'test_layer2', paths: 'some paths' },
+                { name: 'test_layer3', paths: 'some paths' },
               ]
             }
           },
@@ -135,6 +214,19 @@ describe('System analysis tasks', function() {
         );
 
         runtime.executePromiseTask('system-evolution-analysis').then(function(taskOutput) {
+          _.each(streams, function(testStream) {
+            if (testStream.mockAnalyser.isSupported()) {
+              _.each(testStream.data, function(d) {
+                if (d.layerGroupFile) {
+                  expect(testStream.mockAnalyser.fileAnalysisStream).toHaveBeenCalledWith(jasmine.stringMatching(d.period), jasmine.objectContaining({ '-g': jasmine.stringMatching(d.layerGroupFile) }));
+                } else {
+                  expect(testStream.mockAnalyser.fileAnalysisStream).toHaveBeenCalledWith(jasmine.stringMatching(d.period), undefined);
+                }
+              });
+            } else {
+              expect(testStream.mockAnalyser.fileAnalysisStream).not.toHaveBeenCalled();
+            }
+          });
           return Bluebird.all(
             _.map(expectedResults.reports, function(r) {
               return taskOutput.assertOutputReport(r.fileName, r.data);
@@ -149,8 +241,8 @@ describe('System analysis tasks', function() {
         }).then(done);
 
         _.each(streams, function(s) {
-          _.each(s.data, function(values, index) {
-            _.each(values, function(v) { s.streamObjects[index].push(v); });
+          _.each(s.data, function(d, index) {
+            _.each(d.values, function(v) { s.streamObjects[index].push(v); });
             s.streamObjects[index].end();
           });
         });
@@ -206,7 +298,7 @@ describe('System analysis tasks', function() {
               reportName: 'system-evolution',
               parameters: { timeSplit: 'eom' },
               dateRange: '2016-01-01_2016-02-28',
-              enabledDiagrams: ['stats-trend', 'churn-trend']
+              enabledDiagrams: ['revisions-trend', 'commits-trend', 'authors-trend', 'churn-trend']
             }
           }
         );
@@ -248,7 +340,7 @@ describe('System analysis tasks', function() {
               reportName: 'system-evolution',
               parameters: { timeSplit: 'eom' },
               dateRange: '2016-01-01_2016-02-28',
-              enabledDiagrams: ['stats-trend']
+              enabledDiagrams: ['revisions-trend', 'commits-trend', 'authors-trend']
             }
           }
         );
@@ -258,21 +350,51 @@ describe('System analysis tasks', function() {
     describe('with a layer group parameter', function() {
       describe('with churn analysis supported by the VCS type', function() {
         testAnalysis(
-          'publishes a revisions report, a code churn report and a coupling report for each architectural layer of the system',
+          'publishes a summary report, a code churn report and a coupling report for each architectural layer of the system',
           { dateFrom: '2016-01-01', dateTo: '2016-02-28', timeSplit: 'eom', layerGroup: 'test_boundary' },
-          [layeredRevisionsAnalysisStreams, layeredChurnAnalysisStreams, couplingAnalysisStreams],
-          ['revisions', 'entity-churn', 'coupling'],
+          [layeredSummaryAnalysisStreams, layeredChurnAnalysisStreams, layeredCouplingAnalysisStreams],
+          ['summary', 'entity-churn', 'coupling'],
           {
             reports: [
               {
                 fileName: '2016-01-01_2016-02-28_system-summary-data.json',
                 data: [
-                  { name: 'test_layer1', revisions: 32, cumulativeRevisions: 32, date: '2016-01-31T12:59:59.999Z'},
-                  { name: 'test_layer2', revisions: 47, cumulativeRevisions: 47, date: '2016-01-31T12:59:59.999Z'},
-                  { name: 'test_layer3', revisions: 15, cumulativeRevisions: 15, date: '2016-01-31T12:59:59.999Z'},
-                  { name: 'test_layer1', revisions: 34, cumulativeRevisions: 66, date: '2016-02-28T12:59:59.999Z'},
-                  { name: 'test_layer2', revisions: 25, cumulativeRevisions: 72, date: '2016-02-28T12:59:59.999Z'},
-                  { name: 'test_layer3', revisions: 11, cumulativeRevisions: 26, date: '2016-02-28T12:59:59.999Z'}
+                  {
+                    name: 'test_layer1', date: '2016-01-31T12:59:59.999Z',
+                    revisions: 12, cumulativeRevisions: 12,
+                    commits:   42, cumulativeCommits:   42,
+                    authors:    8, cumulativeAuthors:    8
+                  },
+                  {
+                    name: 'test_layer2', date: '2016-01-31T12:59:59.999Z',
+                    revisions: 9, cumulativeRevisions: 9,
+                    commits:  21, cumulativeCommits:  21,
+                    authors:   3, cumulativeAuthors:   3
+                  },
+                  {
+                    name: 'test_layer3', date: '2016-01-31T12:59:59.999Z',
+                    revisions: 2, cumulativeRevisions: 2,
+                    commits:   5, cumulativeCommits:   5,
+                    authors:   1, cumulativeAuthors:   1
+                  },
+                  {
+                    name: 'test_layer1', date: '2016-02-28T12:59:59.999Z',
+                    revisions: 27, cumulativeRevisions: 39,
+                    commits:   59, cumulativeCommits:  101,
+                    authors:   12, cumulativeAuthors:   20
+                  },
+                  {
+                    name: 'test_layer2', date: '2016-02-28T12:59:59.999Z',
+                    revisions: 14, cumulativeRevisions: 23,
+                    commits:   30, cumulativeCommits:   51,
+                    authors:    4, cumulativeAuthors:    7
+                  },
+                  {
+                    name: 'test_layer3', date: '2016-02-28T12:59:59.999Z',
+                    revisions: 5, cumulativeRevisions: 7,
+                    commits:   3, cumulativeCommits:   8,
+                    authors:   2, cumulativeAuthors:   3
+                  }
                 ]
               },
               {
@@ -302,7 +424,7 @@ describe('System analysis tasks', function() {
               reportName: 'system-evolution',
               parameters: { timeSplit: 'eom', layerGroup: 'test_boundary' },
               dateRange: '2016-01-01_2016-02-28',
-              enabledDiagrams: ['stats-trend', 'churn-trend', 'coupling-trend']
+              enabledDiagrams: ['revisions-trend', 'commits-trend', 'authors-trend', 'churn-trend', 'coupling-trend']
             }
           }
         );
@@ -310,21 +432,51 @@ describe('System analysis tasks', function() {
 
       describe('with churn analysis not supported by the VCS type', function() {
         testAnalysis(
-          'publishes a revisions report and a coupling report for each architectural layer of the system',
+          'publishes a summary report and a coupling report for each architectural layer of the system',
           { dateFrom: '2016-01-01', dateTo: '2016-02-28', timeSplit: 'eom', layerGroup: 'test_boundary' },
-          [layeredRevisionsAnalysisStreams, layeredChurnAnalysisStreams, couplingAnalysisStreams],
-          ['revisions', 'coupling'],
+          [layeredSummaryAnalysisStreams, layeredChurnAnalysisStreams, layeredCouplingAnalysisStreams],
+          ['summary', 'coupling'],
           {
             reports: [
               {
                 fileName: '2016-01-01_2016-02-28_system-summary-data.json',
                 data: [
-                  { name: 'test_layer1', revisions: 32, cumulativeRevisions: 32, date: '2016-01-31T12:59:59.999Z'},
-                  { name: 'test_layer2', revisions: 47, cumulativeRevisions: 47, date: '2016-01-31T12:59:59.999Z'},
-                  { name: 'test_layer3', revisions: 15, cumulativeRevisions: 15, date: '2016-01-31T12:59:59.999Z'},
-                  { name: 'test_layer1', revisions: 34, cumulativeRevisions: 66, date: '2016-02-28T12:59:59.999Z'},
-                  { name: 'test_layer2', revisions: 25, cumulativeRevisions: 72, date: '2016-02-28T12:59:59.999Z'},
-                  { name: 'test_layer3', revisions: 11, cumulativeRevisions: 26, date: '2016-02-28T12:59:59.999Z'}
+                  {
+                    name: 'test_layer1', date: '2016-01-31T12:59:59.999Z',
+                    revisions: 12, cumulativeRevisions: 12,
+                    commits: 42, cumulativeCommits: 42,
+                    authors: 8, cumulativeAuthors: 8
+                  },
+                  {
+                    name: 'test_layer2', date: '2016-01-31T12:59:59.999Z',
+                    revisions: 9, cumulativeRevisions: 9,
+                    commits: 21, cumulativeCommits: 21,
+                    authors: 3, cumulativeAuthors: 3
+                  },
+                  {
+                    name: 'test_layer3', date: '2016-01-31T12:59:59.999Z',
+                    revisions: 2, cumulativeRevisions: 2,
+                    commits: 5, cumulativeCommits: 5,
+                    authors: 1, cumulativeAuthors: 1
+                  },
+                  {
+                    name: 'test_layer1', date: '2016-02-28T12:59:59.999Z',
+                    revisions: 27, cumulativeRevisions: 39,
+                    commits: 59, cumulativeCommits: 101,
+                    authors: 12, cumulativeAuthors: 20
+                  },
+                  {
+                    name: 'test_layer2', date: '2016-02-28T12:59:59.999Z',
+                    revisions: 14, cumulativeRevisions: 23,
+                    commits: 30, cumulativeCommits: 51,
+                    authors: 4, cumulativeAuthors: 7
+                  },
+                  {
+                    name: 'test_layer3', date: '2016-02-28T12:59:59.999Z',
+                    revisions: 5, cumulativeRevisions: 7,
+                    commits: 3, cumulativeCommits: 8,
+                    authors: 2, cumulativeAuthors: 3
+                  }
                 ]
               },
               {
@@ -346,7 +498,7 @@ describe('System analysis tasks', function() {
               reportName: 'system-evolution',
               parameters: { timeSplit: 'eom', layerGroup: 'test_boundary' },
               dateRange: '2016-01-01_2016-02-28',
-              enabledDiagrams: ['stats-trend', 'coupling-trend']
+              enabledDiagrams: ['revisions-trend', 'commits-trend', 'authors-trend', 'coupling-trend']
             }
           }
         );
