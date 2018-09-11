@@ -552,6 +552,7 @@ describe('Social analysis tasks', function() {
     });
 
     it('has the required dependencies', function() {
+      runtime = cfHelpers.runtimeSetup(socialAnalysisTasks);
       runtime.assertTaskDependencies('knowledge-map-analysis', ['vcsLogDump', 'slocReport', 'mainDevReport']);
     });
 
