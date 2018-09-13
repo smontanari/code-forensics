@@ -2,9 +2,18 @@
 
 ### [Unreleased]
 
+### [2.0.0] - 2018-09-??
+#### Added
+- (Number of) authors trend to the _system-evolution-analysis_ task
+- (Number of) commits trend to the _system-evolution-analysis_ task
+
+#### Changed
+- **BREAKING CHANGE**: the _system-evolution-analysis_ task now writes the (number of) revisions trend data into a new report file, i.e. "system-summary-data.json", which is derived from a code-maat "summary" analysis, together with commits and authors statistics. This change requires a new, non backward-compatible change to the graph initialisation logic. Older system evolution analysis reports will not be parsed correctly and will not render a "Revisions" diagram
+- The _generate-layer-grouping-file_ task has been renamed to _generate-layer-grouping-files_ and now it generates individual layer group files as well as the original one. This is used to filter by layer the results of code-maat analysis that don't explictly provide file/entity paths data (e.g. "summary" analysis)
+
 ### [1.1.1] - 2018-09-11
 #### Added
-- enabling codemaat summary analysis. Not available yet as analysis task
+- enabling code-maat summary analysis. Not available yet as analysis task
 #### Fixed
 - correct date sorting in system evolution report
 - better handling of graph initialization errors. Fixes #35

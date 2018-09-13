@@ -3,8 +3,15 @@ code-forensics
 
 **code-forensics** is a toolset for analysing codebases stored in a version control system. It leverages the repository logs, or version history data, to perform deep analyses with regards to complexity, logical coupling, authors coupling and to inspect the evolution in time of different parts of a software system with respect to metrics like code churn and number of revisions.
 
-#### Version 1.0.0 released
-This release introduces some package upgrades and a slightly different behaviour on some analyses. If you have been using code-forensics in the past please read the [CHANGELOG](./CHANGELOG.md).
+#### Version 2 released
+This release introduces new metrics trends in the system evolution analysis (number of commits, number of authors). This change requires a different logic to generate and render the revisions trend diagram, which breaks compatibility with respect to older versions. See the [CHANGELOG](./CHANGELOG.md) for more details.
+
+#### Upcoming features
+I'm also planning to add the following analyses in future versions of code-forensics:
+- code fragmentation analysis: to be used together with the current developer effort analysis to see if the fragmentation in your files is healthy or not.
+- code age analysis: another perspective to find out how old and stable the different parts of your codebase actually are.
+
+Of course, if you think there could be any new analysis or feature that could be useful in this tool, you're welcome to open a new issue and even to help directly with the code!
 
 ## Credits
 This project is based on the excellent work of **Adam Tornhill** and his command line tool [Code Maat](https://github.com/adamtornhill/code-maat). The majority of the analysis that **code-forensics** performs are actually described in Adam's book [Your Code as a Crime Scene](https://pragprog.com/book/atcrime/your-code-as-a-crime-scene).
@@ -90,7 +97,7 @@ The `help` task itself will list all the tasks along with their description, e.g
 $ gulp help
 ```
 
-If you're interested in inspecting the dependencies between tasks you can leverage gulp version 4 way of displaying exeactly that in a nice tree-like format: run `gulp -T` or `gulp --tasks`. 
+If you're interested in inspecting the dependencies between tasks you can leverage gulp version 4 way of displaying exeactly that in a nice tree-like format: run `gulp -T` or `gulp --tasks`.
 
 #### Task usage information
 In order to learn which parameters can be passed to a task you can type the following command:
