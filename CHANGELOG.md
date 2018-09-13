@@ -2,7 +2,7 @@
 
 ### [Unreleased]
 
-### [2.0.0] - 2018-09-??
+### [2.0.0] - 2018-09-14
 #### Added
 - (Number of) authors trend to the _system-evolution-analysis_ task
 - (Number of) commits trend to the _system-evolution-analysis_ task
