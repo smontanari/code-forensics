@@ -22,11 +22,12 @@ This project is based on the excellent work of **Adam Tornhill** and his command
 * **java 8** - Required in order to run code-maat. See the [Code Maat](https://github.com/adamtornhill/code-maat) repository for more details.
 
 ## Install
-**code-forensics** is distributed as an nodejs module that runs on top of [gulp](https://github.com/gulpjs/gulp). It can be installed through npm:
 
 `$ npm install code-forensics`
 
-**Note**: I strongly recommend against installing **code-forensics** as a global module, as it requires certain packages to be at the top level of the node_modules folder in order to correctly run its internal http server and serve the pages to the browser for the visualisation part of the analysis. If **code-forensics** is installed as a global module such packages may conflict with already existing ones and that could cause all sorts of unpredictable issues.
+**Note 1**: **code-forensics** is distributed as a nodejs module that runs on top of [gulp version 4](https://github.com/gulpjs/gulp). Be aware that if you have gulp already installed as a global module and it's not the required version you will have to explicitly execute the gulp command that comes with the installation of **code-forensics**.
+
+**Note 2**: I would advise against installing **code-forensics** as a global module, as it requires certain packages to be at the top level of the node_modules folder in order to correctly run its internal http server and serve the pages to the browser for the visualisation part of the analysis. If **code-forensics** is installed as a global module such packages may conflict with already existing ones and that could cause all sorts of unpredictable issues.
 
 ## VCS support
 At the moment **code-forensics** can work with **git** and **svn** based repositories, however other version control systems could be supported in the future, given the ability of Code Maat to parse log data from the most popular ones.
@@ -61,7 +62,7 @@ require('code-forensics').configure(
 The only required configuration value is the file system path to the root directory of the version control repository to analyse, however this example is not practical and I would recommend you learn about and configure other parameters to more effectively target the analyses you intend to run.
 
 ### Running analyses
-Analyses are executed as a gulp task. Depending on how the gulp module is installed (as global or local) there are different ways to invoke the gulp command. Here, to simplify the examples, I will assume it is available on your command PATH.
+Analyses are executed as a gulp task. Depending on how the gulp module is installed (as global or local) there are different ways to invoke the gulp command. Here, to simplify the examples, I will assume it is available on your command PATH. I will also assume you are running the required version (4) of gulp.
 
 Each analysis may require or accept optional parameters.
 ```
