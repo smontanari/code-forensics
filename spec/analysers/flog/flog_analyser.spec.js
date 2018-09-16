@@ -90,7 +90,7 @@ describe('FlogAnalyser', function() {
     describe('without any transformation', function() {
       it('parses and streams results from the flog command applied to an input stream', function(done) {
         var commandProcess = { stdin: new stream.PassThrough(), stdout: new stream.PassThrough() };
-        spyOn(command, 'create').and.returnValue({ asyncProcess: function() { return commandProcess; } });
+        spyOn(command, 'createAsync').and.returnValue(commandProcess);
         var report;
 
         commandProcess.stdin
@@ -109,7 +109,7 @@ describe('FlogAnalyser', function() {
         })
         .on('end', function() {
           expect(report).toEqual({ path: 'test/file', flog: 'complexity report' });
-          expect(command.create).toHaveBeenCalledWith('flog', []);
+          expect(command.createAsync).toHaveBeenCalledWith('flog', []);
           done();
         });
 
@@ -121,7 +121,7 @@ describe('FlogAnalyser', function() {
     describe('with a transformation applied to the report', function() {
       it('parses and streams results from the flog command applied to a stream and tranforms the end report', function(done) {
         var commandProcess = { stdin: new stream.PassThrough(), stdout: new stream.PassThrough() };
-        spyOn(command, 'create').and.returnValue({ asyncProcess: function() { return commandProcess; } });
+        spyOn(command, 'createAsync').and.returnValue(commandProcess);
         var report;
 
         commandProcess.stdin
@@ -140,7 +140,7 @@ describe('FlogAnalyser', function() {
         })
         .on('end', function() {
           expect(report).toEqual({ test: 'some value', result: 'complexity report' });
-          expect(command.create).toHaveBeenCalledWith('flog', []);
+          expect(command.createAsync).toHaveBeenCalledWith('flog', []);
           done();
         });
 

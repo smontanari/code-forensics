@@ -104,11 +104,11 @@ describe('command', function() {
     });
   });
 
-  describe('.create()', function() {
+  describe('.createSync()', function() {
     it('returns a synchronous child process', function() {
       spyOn(childProcess, 'spawnSync').and.returnValue('sync process');
 
-      var proc = command.create('test-command', ['arg1', 'arg2'], {opt1: 789, opt2: 'abc'}).syncProcess();
+      var proc = command.createSync('test-command', ['arg1', 'arg2'], {opt1: 789, opt2: 'abc'});
 
       expect(command.Command.definitions.getDefinition).toHaveBeenCalledWith('test-command');
       expect(proc).toEqual('sync process');
@@ -116,11 +116,13 @@ describe('command', function() {
         '--param1', '--param2', '-a', 123, '-b', 456, 'arg1', 'arg2'
       ], { opt1: 789, opt2: 'abc' });
     });
+  });
 
+  describe('.createAsync()', function() {
     it('returns an asynchronous child process', function() {
       spyOn(childProcess, 'spawn').and.returnValue('async process');
 
-      var proc = command.create('test-command', ['arg1', 'arg2'], {opt1: 789, opt2: 'abc'}).asyncProcess();
+      var proc = command.createAsync('test-command', ['arg1', 'arg2'], {opt1: 789, opt2: 'abc'});
 
       expect(command.Command.definitions.getDefinition).toHaveBeenCalledWith('test-command');
       expect(proc).toEqual('async process');

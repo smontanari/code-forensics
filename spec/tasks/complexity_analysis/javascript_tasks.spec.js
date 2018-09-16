@@ -83,12 +83,11 @@ describe('javascript tasks', function() {
       }).then(done);
 
       revisionStream1.push("function abs(a,b) {\n");
-      revisionStream1.push("return a - b;\n};");
-      revisionStream1.end();
-
       revisionStream2.push("function abs(a,b) {\n");
       revisionStream2.push("if (a < b) {\n;");
       revisionStream2.push("return b - a;\n};\n");
+      revisionStream1.push("return a - b;\n};");
+      revisionStream1.end();
       revisionStream2.push("return a - b;\n");
       revisionStream2.push("};\n");
       revisionStream2.end();

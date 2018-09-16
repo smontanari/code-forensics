@@ -45,22 +45,26 @@ describe('ruby tasks', function() {
     });
 
     var streamData = function() {
-      analysisStream1.push(
-        "\t22.0: flog total\n" +
-        "\t 7.3: flog/method average\n" +
-        "\n" +
-        "\t18.6: main#none\n" +
-        "\t 1.7: chain#linking_to          /absolute/path/test_file1.rb:8\n"
-      );
-
-      analysisStream2.push(
-        "\t95.1: flog total\n" +
-        "\t 8.6: flog/method average\n" +
-        "\n" +
+      _.each([
+        "\t22.0: flog total\n",
+        "\t 7.3: flog/method average\n",
+      ], function(line) {
+        analysisStream1.push(line);
+      });
+      _.each([
+        "\t95.1: flog total\n",
+        "\t 8.6: flog/method average\n",
+        "\n",
         "\t26.2: Module::TestFile2#test_method /absolute/path/test_file3.rb:54"
-      );
-      analysisStream1.end();
+      ], function(line) { analysisStream2.push(line); });
+      _.each([
+        "\n",
+        "\t18.6: main#none\n",
+        "\t 1.7: chain#linking_to          /absolute/path/test_file1.rb:8\n"
+      ], function(line) { analysisStream1.push(line); });
+
       analysisStream2.end();
+      analysisStream1.end();
     };
 
     afterEach(function() {
@@ -109,12 +113,10 @@ describe('ruby tasks', function() {
         { revisionId: 456, date: '2015-05-04T23:00:00.000Z' }
       ]);
       mockVcs.showRevisionStream.and.returnValues(revisionStream1, revisionStream2);
-      spyOn(command, 'create').and.returnValue({
-        asyncProcess: jasmine.createSpy().and.returnValues(
-          { stdin: new stream.PassThrough(), stdout: complexityStream1 },
-          { stdin: new stream.PassThrough(), stdout: complexityStream2 }
-        )
-      });
+      spyOn(command, 'createAsync').and.returnValues(
+        { stdin: new stream.PassThrough(), stdout: complexityStream1 },
+        { stdin: new stream.PassThrough(), stdout: complexityStream2 }
+      );
 
       var runtime = cfHelpers.runtimeSetup(rubyTasks, null, { dateFrom: '2015-03-01', targetFile: 'test_abs.rb' });
       runtime.executePromiseTask('ruby-complexity-trend-analysis').then(function(taskOutput) {

@@ -5,9 +5,9 @@ var _      = require('lodash'),
 var DataCollector = require_src('tasks/system_analysis/data_collector');
 
 describe('DataCollector', function() {
-  var subject, mockAnalysis, testAnalysisStreams;
+  var subject, mockAnalysis, testAnalysisStream;
 
-  var timePeriods = ['p1', 'p2', 'p3', 'p4', 'p5'];
+  var timePeriods = 'time-periods';
 
   var streamsData = [
     { metric: 30, date: '2010-05-31T00:00:00.000Z' },
@@ -17,24 +17,15 @@ describe('DataCollector', function() {
     { metric: 20 }
   ];
 
-  var streamTestData = function() {
-    _.each(testAnalysisStreams, function(s, index) {
-      s.push(streamsData[index]);
-      s.end();
-    });
-  };
-
   beforeEach(function() {
-    testAnalysisStreams = _.times(5, function() {
-      return new stream.PassThrough({ objectMode: true });
-    });
+    testAnalysisStream = new stream.PassThrough({ objectMode: true });
 
     mockAnalysis = {
       isSupported: jasmine.createSpy('analysis.isSupported'),
       collect: jasmine.createSpy('analysis.collect'),
       accumulator: new stream.PassThrough({ objectMode: true })
     };
-    mockAnalysis.collect.and.returnValues.apply(mockAnalysis.collect.and, testAnalysisStreams);
+    mockAnalysis.collect.and.returnValue(testAnalysisStream);
   });
 
   describe('when analysis is not supported', function() {
@@ -69,7 +60,10 @@ describe('DataCollector', function() {
           });
         });
 
-      streamTestData();
+      _.each(streamsData, function(data) {
+        testAnalysisStream.push(data);
+      });
+      testAnalysisStream.end();
     });
   });
 });

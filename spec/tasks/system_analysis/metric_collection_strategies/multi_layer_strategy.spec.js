@@ -5,9 +5,9 @@ var stream = require('stream'),
 var multiLayerStrategy = require_src('tasks/system_analysis/metric_collection_strategies/multi_layer_strategy'),
     TimePeriod         = require_src('models/time_interval/time_period');
 
-describe('noLayerStrategy', function() {
+describe('multiLayerStrategy', function() {
   describe('metrics collection', function() {
-    var collectFn, mockFilesHelper, mockCodeMaatHelper, testAnalysisStream;
+    var strategyFn, mockFilesHelper, mockStreamProcessor, mockCodeMaatHelper, testAnalysisStream, strategyAnalysisFn;
 
     beforeEach(function() {
       testAnalysisStream = new stream.PassThrough({ objectMode: true });
@@ -19,20 +19,34 @@ describe('noLayerStrategy', function() {
       mockCodeMaatHelper = {
         testAnalysis: jasmine.createSpy('testAnalysis').and.returnValue(testAnalysisStream)
       };
+      mockStreamProcessor = {
+        mergeAll: jasmine.createSpy('mergeAll').and.callFake(function(_, fn) {
+          strategyAnalysisFn = fn;
+          return 'test_output';
+        })
+      };
 
-      collectFn = multiLayerStrategy(
+      strategyFn = multiLayerStrategy(
+        mockStreamProcessor,
+        { files: mockFilesHelper, codeMaat: mockCodeMaatHelper },
         {
-          selector: function(obj) { return { metric1: obj.testMetricA, metric2: obj.testMetricC }; }
-        },
-        'testAnalysis',
-        { files: mockFilesHelper, codeMaat: mockCodeMaatHelper }
+          metrics: {
+            selector: function(obj) { return { metric1: obj.testMetricA, metric2: obj.testMetricC }; }
+          },
+          analysis: 'testAnalysis'
+        }
       );
     });
 
     it('maps the stream data', function(done) {
+      var output = strategyFn(['p1', 'p2']);
+
+      expect(output).toEqual('test_output');
+      expect(mockStreamProcessor.mergeAll).toHaveBeenCalledWith(['p1', 'p2'], jasmine.any(Function));
+
       var timePeriod = new TimePeriod({ start: moment('2010-05-01 00Z'), end: moment('2010-05-31 00Z') }, 'DD-MM-YYYY');
       var data = [];
-      collectFn(timePeriod)
+      strategyAnalysisFn(timePeriod)
         .on('data', function(obj) { data.push(obj); })
         .on('end', function() {
           expect(data).toEqual([
