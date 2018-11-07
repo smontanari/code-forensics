@@ -120,7 +120,9 @@ describe('TimePeriodResults', function() {
         this.subject = TimePeriodResults.resultsAccumulator(
           {
             cumulativeResult1: _.property('metricA'),
-            cumulativeResult2: function(obj) { return obj.metricA * obj.metricB; }
+            cumulativeResult2: function(obj) {
+              return (obj.metricA || 0) * (obj.metricB || 0);
+            }
           }
         );
       });

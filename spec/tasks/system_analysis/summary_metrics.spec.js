@@ -10,7 +10,7 @@ describe('SummaryMetrics', function() {
   });
 
   it('returns the metric initial value initialized to 0', function() {
-    expect(summaryMetrics.initialValue).toEqual({ revisions: 0, commits: 0, authors: 0 });
+    expect(summaryMetrics.defaultValue).toEqual({ revisions: 0, commits: 0, authors: 0 });
   });
 
   it('maps the metric accumulators to the given properties', function() {

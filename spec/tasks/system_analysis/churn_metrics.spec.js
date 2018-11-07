@@ -11,7 +11,7 @@ describe('ChurnMetrics', function() {
   });
 
   it('returns the metrics initial values initialized to 0', function() {
-    expect(churnMetrics.initialValue).toEqual({
+    expect(churnMetrics.defaultValue).toEqual({
       addedLines: 0,
       deletedLines: 0,
       totalLines: 0

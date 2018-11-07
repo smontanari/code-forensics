@@ -34,7 +34,16 @@ describe('System analysis tasks', function() {
           ]
         },
         {
-          period: '2016-02-01_2016-02-28',
+          period: '2016-02-01_2016-02-29',
+          values: [
+            { stat: 'revisions', value: 0 },
+            { stat: 'files',     value: 0 },
+            { stat: 'commits',   value: 0 },
+            { stat: 'authors',   value: 0 }
+          ]
+        },
+        {
+          period: '2016-03-01_2016-03-31',
           values: [
             { stat: 'revisions', value: 70 },
             { stat: 'files',     value: 26 },
@@ -57,7 +66,15 @@ describe('System analysis tasks', function() {
           ]
         },
         {
-          period: '2016-02-01_2016-02-28',
+          period: '2016-02-01_2016-02-29',
+          values: [
+            { date: 'not relevant', addedLines: 0, deletedLines: 0, commits: 0 },
+            { date: 'not relevant', addedLines: 0, deletedLines: 0, commits: 0 },
+            { date: 'not relevant', addedLines: 0, deletedLines: 0, commits: 0 }
+          ]
+        },
+        {
+          period: '2016-03-01_2016-03-31',
           values: [
             { date: 'not relevant', addedLines: 12091, deletedLines: 10138, commits: 17 },
             { date: 'not relevant', addedLines: 1147, deletedLines: 1156, commits: 26 },
@@ -101,7 +118,37 @@ describe('System analysis tasks', function() {
           ],
         },
         {
-          period: '2016-02-01_2016-02-28',
+          period: '2016-02-01_2016-02-29',
+          layerGroupFile: 'layer-group-test-layer-1.txt',
+          values: [
+            { stat: 'revisions', value: 0 },
+            { stat: 'commits', value: 0 },
+            { stat: 'authors', value: 0 },
+            { stat: 'files', value: 0 }
+          ],
+        },
+        {
+          period: '2016-02-01_2016-02-29',
+          layerGroupFile: 'layer-group-test-layer-2.txt',
+          values: [
+            { stat: 'revisions', value: 0 },
+            { stat: 'commits', value: 0 },
+            { stat: 'authors', value: 0 },
+            { stat: 'files', value: 0 }
+          ],
+        },
+        {
+          period: '2016-02-01_2016-02-29',
+          layerGroupFile: 'layer-group-test-layer-3.txt',
+          values: [
+            { stat: 'revisions', value: 0 },
+            { stat: 'commits', value: 0 },
+            { stat: 'authors', value: 0 },
+            { stat: 'files', value: 0 }
+          ],
+        },
+        {
+          period: '2016-03-01_2016-03-31',
           layerGroupFile: 'layer-group-test-layer-1.txt',
           values: [
             { stat: 'revisions', value: 27 },
@@ -111,7 +158,7 @@ describe('System analysis tasks', function() {
           ],
         },
         {
-          period: '2016-02-01_2016-02-28',
+          period: '2016-03-01_2016-03-31',
           layerGroupFile: 'layer-group-test-layer-2.txt',
           values: [
             { stat: 'revisions', value: 14 },
@@ -121,7 +168,7 @@ describe('System analysis tasks', function() {
           ],
         },
         {
-          period: '2016-02-01_2016-02-28',
+          period: '2016-03-01_2016-03-31',
           layerGroupFile: 'layer-group-test-layer-3.txt',
           values: [
             { stat: 'revisions', value: 5 },
@@ -146,7 +193,16 @@ describe('System analysis tasks', function() {
           ]
         },
         {
-          period: '2016-02-01_2016-02-28',
+          period: '2016-02-01_2016-02-29',
+          layerGroupFile: 'layer-groups.txt',
+          values: [
+            { path: 'test_layer1', addedLines: 0, deletedLines: 0, commits: 0 },
+            { path: 'test_layer2', addedLines: 0, deletedLines: 0, commits: 0 },
+            { path: 'test_layer3', addedLines: 0, deletedLines: 0, commits: 0 }
+          ]
+        },
+        {
+          period: '2016-03-01_2016-03-31',
           layerGroupFile: 'layer-groups.txt',
           values: [
             { path: 'test_layer1', addedLines: 12091, deletedLines: 10138, commits: 17 },
@@ -170,7 +226,16 @@ describe('System analysis tasks', function() {
           ]
         },
         {
-          period: '2016-02-01_2016-02-28',
+          period: '2016-02-01_2016-02-29',
+          layerGroupFile: 'layer-groups.txt',
+          values: [
+            { path: 'test_layer1', coupledPath: 'test_layer2', couplingDegree: 0, revisionsAvg: 0 },
+            { path: 'test_layer1', coupledPath: 'test_layer3', couplingDegree: 0, revisionsAvg: 0 },
+            { path: 'test_layer2', coupledPath: 'test_layer3', couplingDegree: 0, revisionsAvg: 0 }
+          ]
+        },
+        {
+          period: '2016-03-01_2016-03-31',
           layerGroupFile: 'layer-groups.txt',
           values: [
             { path: 'test_layer1', coupledPath: 'test_layer2', couplingDegree: 33, revisionsAvg: 18 },
@@ -259,13 +324,13 @@ describe('System analysis tasks', function() {
       describe('with churn analysis supported by the VCS type', function() {
         testAnalysis(
           'publishes a summary report and a churn report with data aggregated for all files',
-          { dateFrom: '2016-01-01', dateTo: '2016-02-28', timeSplit: 'eom' },
+          { dateFrom: '2016-01-01', dateTo: '2016-03-31', timeSplit: 'eom' },
           [summaryAnalysisStreams, absChurnAnalysisStreams],
           ['summary', 'abs-churn'],
           {
             reports: [
               {
-                fileName: '2016-01-01_2016-02-28_system-summary-data.json',
+                fileName: '2016-01-01_2016-03-31_system-summary-data.json',
                 data: [
                   {
                     name: 'All files',
@@ -276,28 +341,36 @@ describe('System analysis tasks', function() {
                   },
                   {
                     name: 'All files',
+                    revisions: 0, cumulativeRevisions: 94,
+                    commits: 0, cumulativeCommits: 67,
+                    authors: 0, cumulativeAuthors: 14,
+                    date: '2016-02-29T12:59:59.999Z'
+                  },
+                  {
+                    name: 'All files',
                     revisions: 70, cumulativeRevisions: 164,
                     commits: 52, cumulativeCommits: 119,
                     authors: 9, cumulativeAuthors:  23,
-                    date: '2016-02-28T12:59:59.999Z'
+                    date: '2016-03-31T12:59:59.999Z'
                   }
                 ]
               },
               {
-                fileName: '2016-01-01_2016-02-28_system-churn-data.json',
+                fileName: '2016-01-01_2016-03-31_system-churn-data.json',
                 data: [
                   { name: 'All files', addedLines: 102945, deletedLines: 17207, totalLines: 85738, cumulativeLines: 85738, date: '2016-01-31T12:59:59.999Z' },
-                  { name: 'All files', addedLines:  14127, deletedLines: 11954, totalLines:  2173, cumulativeLines: 87911, date: '2016-02-28T12:59:59.999Z' }
+                  { name: 'All files', addedLines: 0, deletedLines: 0, totalLines: 0, cumulativeLines: 85738, date: '2016-02-29T12:59:59.999Z' },
+                  { name: 'All files', addedLines:  14127, deletedLines: 11954, totalLines:  2173, cumulativeLines: 87911, date: '2016-03-31T12:59:59.999Z' }
                 ]
               }
             ],
             missingReports: [
-              { fileName: '2016-01-01_2016-02-28_system-coupling-data.json' }
+              { fileName: '2016-01-01_2016-03-31_system-coupling-data.json' }
             ],
             manifest: {
               reportName: 'system-evolution',
               parameters: { timeSplit: 'eom' },
-              dateRange: '2016-01-01_2016-02-28',
+              dateRange: '2016-01-01_2016-03-31',
               enabledDiagrams: ['revisions-trend', 'commits-trend', 'authors-trend', 'churn-trend']
             }
           }
@@ -307,13 +380,13 @@ describe('System analysis tasks', function() {
       describe('with churn analysis not supported by the VCS type', function() {
         testAnalysis(
           'publishes a revisions report with data aggregated for all files',
-          { dateFrom: '2016-01-01', dateTo: '2016-02-28', timeSplit: 'eom' },
+          { dateFrom: '2016-01-01', dateTo: '2016-03-31', timeSplit: 'eom' },
           [summaryAnalysisStreams, absChurnAnalysisStreams],
           ['summary'],
           {
             reports: [
               {
-                fileName: '2016-01-01_2016-02-28_system-summary-data.json',
+                fileName: '2016-01-01_2016-03-31_system-summary-data.json',
                 data: [
                   {
                     name: 'All files',
@@ -324,22 +397,29 @@ describe('System analysis tasks', function() {
                   },
                   {
                     name: 'All files',
+                    revisions: 0, cumulativeRevisions:  94,
+                    commits: 0, cumulativeCommits: 67,
+                    authors: 0, cumulativeAuthors: 14,
+                    date: '2016-02-29T12:59:59.999Z'
+                  },
+                  {
+                    name: 'All files',
                     revisions: 70, cumulativeRevisions: 164,
                     commits: 52, cumulativeCommits: 119,
                     authors: 9, cumulativeAuthors: 23,
-                    date: '2016-02-28T12:59:59.999Z'
+                    date: '2016-03-31T12:59:59.999Z'
                   }
                 ]
               }
             ],
             missingReports: [
-              { fileName: '2016-01-01_2016-02-28_system-coupling-data.json' },
-              { fileName: '2016-01-01_2016-02-28_system-churn-data.json' }
+              { fileName: '2016-01-01_2016-03-31_system-coupling-data.json' },
+              { fileName: '2016-01-01_2016-03-31_system-churn-data.json' }
             ],
             manifest: {
               reportName: 'system-evolution',
               parameters: { timeSplit: 'eom' },
-              dateRange: '2016-01-01_2016-02-28',
+              dateRange: '2016-01-01_2016-03-31',
               enabledDiagrams: ['revisions-trend', 'commits-trend', 'authors-trend']
             }
           }
@@ -351,13 +431,13 @@ describe('System analysis tasks', function() {
       describe('with churn analysis supported by the VCS type', function() {
         testAnalysis(
           'publishes a summary report, a code churn report and a coupling report for each architectural layer of the system',
-          { dateFrom: '2016-01-01', dateTo: '2016-02-28', timeSplit: 'eom', layerGroup: 'test_boundary' },
+          { dateFrom: '2016-01-01', dateTo: '2016-03-31', timeSplit: 'eom', layerGroup: 'test_boundary' },
           [layeredSummaryAnalysisStreams, layeredChurnAnalysisStreams, layeredCouplingAnalysisStreams],
           ['summary', 'entity-churn', 'coupling'],
           {
             reports: [
               {
-                fileName: '2016-01-01_2016-02-28_system-summary-data.json',
+                fileName: '2016-01-01_2016-03-31_system-summary-data.json',
                 data: [
                   {
                     name: 'test_layer1', date: '2016-01-31T12:59:59.999Z',
@@ -378,19 +458,37 @@ describe('System analysis tasks', function() {
                     authors:   1, cumulativeAuthors:   1
                   },
                   {
-                    name: 'test_layer1', date: '2016-02-28T12:59:59.999Z',
+                    name: 'test_layer1', date: '2016-02-29T12:59:59.999Z',
+                    revisions: 0, cumulativeRevisions: 12,
+                    commits:   0, cumulativeCommits:   42,
+                    authors:   0, cumulativeAuthors:    8
+                  },
+                  {
+                    name: 'test_layer2', date: '2016-02-29T12:59:59.999Z',
+                    revisions: 0, cumulativeRevisions: 9,
+                    commits:   0, cumulativeCommits:  21,
+                    authors:   0, cumulativeAuthors:   3
+                  },
+                  {
+                    name: 'test_layer3', date: '2016-02-29T12:59:59.999Z',
+                    revisions: 0, cumulativeRevisions: 2,
+                    commits:   0, cumulativeCommits:   5,
+                    authors:   0, cumulativeAuthors:   1
+                  },
+                  {
+                    name: 'test_layer1', date: '2016-03-31T12:59:59.999Z',
                     revisions: 27, cumulativeRevisions: 39,
                     commits:   59, cumulativeCommits:  101,
                     authors:   12, cumulativeAuthors:   20
                   },
                   {
-                    name: 'test_layer2', date: '2016-02-28T12:59:59.999Z',
+                    name: 'test_layer2', date: '2016-03-31T12:59:59.999Z',
                     revisions: 14, cumulativeRevisions: 23,
                     commits:   30, cumulativeCommits:   51,
                     authors:    4, cumulativeAuthors:    7
                   },
                   {
-                    name: 'test_layer3', date: '2016-02-28T12:59:59.999Z',
+                    name: 'test_layer3', date: '2016-03-31T12:59:59.999Z',
                     revisions: 5, cumulativeRevisions: 7,
                     commits:   3, cumulativeCommits:   8,
                     authors:   2, cumulativeAuthors:   3
@@ -398,32 +496,38 @@ describe('System analysis tasks', function() {
                 ]
               },
               {
-                fileName: '2016-01-01_2016-02-28_system-churn-data.json',
+                fileName: '2016-01-01_2016-03-31_system-churn-data.json',
                 data: [
                   { name: 'test_layer1', addedLines: 95295, deletedLines: 10209, totalLines: 85086, cumulativeLines: 85086, date: '2016-01-31T12:59:59.999Z'},
                   { name: 'test_layer2', addedLines:  6940, deletedLines:  6961, totalLines:   -21, cumulativeLines:   -21, date: '2016-01-31T12:59:59.999Z'},
                   { name: 'test_layer3', addedLines:   710, deletedLines:    37, totalLines:   673, cumulativeLines:   673, date: '2016-01-31T12:59:59.999Z'},
-                  { name: 'test_layer1', addedLines: 12091, deletedLines: 10138, totalLines:  1953, cumulativeLines: 87039, date: '2016-02-28T12:59:59.999Z'},
-                  { name: 'test_layer2', addedLines:  1147, deletedLines:  1156, totalLines:    -9, cumulativeLines:   -30, date: '2016-02-28T12:59:59.999Z'},
-                  { name: 'test_layer3', addedLines:   889, deletedLines:   660, totalLines:   229, cumulativeLines:   902, date: '2016-02-28T12:59:59.999Z'}
+                  { name: 'test_layer1', addedLines:     0, deletedLines:     0, totalLines:     0, cumulativeLines: 85086, date: '2016-02-29T12:59:59.999Z'},
+                  { name: 'test_layer2', addedLines:     0, deletedLines:     0, totalLines:     0, cumulativeLines:   -21, date: '2016-02-29T12:59:59.999Z'},
+                  { name: 'test_layer3', addedLines:     0, deletedLines:     0, totalLines:     0, cumulativeLines:   673, date: '2016-02-29T12:59:59.999Z'},
+                  { name: 'test_layer1', addedLines: 12091, deletedLines: 10138, totalLines:  1953, cumulativeLines: 87039, date: '2016-03-31T12:59:59.999Z'},
+                  { name: 'test_layer2', addedLines:  1147, deletedLines:  1156, totalLines:    -9, cumulativeLines:   -30, date: '2016-03-31T12:59:59.999Z'},
+                  { name: 'test_layer3', addedLines:   889, deletedLines:   660, totalLines:   229, cumulativeLines:   902, date: '2016-03-31T12:59:59.999Z'}
                 ]
               },
               {
-                fileName: '2016-01-01_2016-02-28_system-coupling-data.json',
+                fileName: '2016-01-01_2016-03-31_system-coupling-data.json',
                 data: [
                   { name: 'test_layer1', coupledName: 'test_layer2', couplingDegree: 23, date: '2016-01-31T12:59:59.999Z'},
                   { name: 'test_layer1', coupledName: 'test_layer3', couplingDegree: 41, date: '2016-01-31T12:59:59.999Z'},
                   { name: 'test_layer2', coupledName: 'test_layer3', couplingDegree: 30, date: '2016-01-31T12:59:59.999Z'},
-                  { name: 'test_layer1', coupledName: 'test_layer2', couplingDegree: 33, date: '2016-02-28T12:59:59.999Z'},
-                  { name: 'test_layer1', coupledName: 'test_layer3', couplingDegree: 52, date: '2016-02-28T12:59:59.999Z'},
-                  { name: 'test_layer2', coupledName: 'test_layer3', couplingDegree: 10, date: '2016-02-28T12:59:59.999Z'}
+                  { name: 'test_layer1', coupledName: 'test_layer2', couplingDegree:  0, date: '2016-02-29T12:59:59.999Z'},
+                  { name: 'test_layer1', coupledName: 'test_layer3', couplingDegree:  0, date: '2016-02-29T12:59:59.999Z'},
+                  { name: 'test_layer2', coupledName: 'test_layer3', couplingDegree:  0, date: '2016-02-29T12:59:59.999Z'},
+                  { name: 'test_layer1', coupledName: 'test_layer2', couplingDegree: 33, date: '2016-03-31T12:59:59.999Z'},
+                  { name: 'test_layer1', coupledName: 'test_layer3', couplingDegree: 52, date: '2016-03-31T12:59:59.999Z'},
+                  { name: 'test_layer2', coupledName: 'test_layer3', couplingDegree: 10, date: '2016-03-31T12:59:59.999Z'}
                 ]
               }
             ],
             manifest: {
               reportName: 'system-evolution',
               parameters: { timeSplit: 'eom', layerGroup: 'test_boundary' },
-              dateRange: '2016-01-01_2016-02-28',
+              dateRange: '2016-01-01_2016-03-31',
               enabledDiagrams: ['revisions-trend', 'commits-trend', 'authors-trend', 'churn-trend', 'coupling-trend']
             }
           }
@@ -433,13 +537,13 @@ describe('System analysis tasks', function() {
       describe('with churn analysis not supported by the VCS type', function() {
         testAnalysis(
           'publishes a summary report and a coupling report for each architectural layer of the system',
-          { dateFrom: '2016-01-01', dateTo: '2016-02-28', timeSplit: 'eom', layerGroup: 'test_boundary' },
+          { dateFrom: '2016-01-01', dateTo: '2016-03-31', timeSplit: 'eom', layerGroup: 'test_boundary' },
           [layeredSummaryAnalysisStreams, layeredChurnAnalysisStreams, layeredCouplingAnalysisStreams],
           ['summary', 'coupling'],
           {
             reports: [
               {
-                fileName: '2016-01-01_2016-02-28_system-summary-data.json',
+                fileName: '2016-01-01_2016-03-31_system-summary-data.json',
                 data: [
                   {
                     name: 'test_layer1', date: '2016-01-31T12:59:59.999Z',
@@ -460,19 +564,37 @@ describe('System analysis tasks', function() {
                     authors: 1, cumulativeAuthors: 1
                   },
                   {
-                    name: 'test_layer1', date: '2016-02-28T12:59:59.999Z',
+                    name: 'test_layer1', date: '2016-02-29T12:59:59.999Z',
+                    revisions: 0, cumulativeRevisions: 12,
+                    commits: 0, cumulativeCommits: 42,
+                    authors: 0, cumulativeAuthors: 8
+                  },
+                  {
+                    name: 'test_layer2', date: '2016-02-29T12:59:59.999Z',
+                    revisions: 0, cumulativeRevisions: 9,
+                    commits: 0, cumulativeCommits: 21,
+                    authors: 0, cumulativeAuthors: 3
+                  },
+                  {
+                    name: 'test_layer3', date: '2016-02-29T12:59:59.999Z',
+                    revisions: 0, cumulativeRevisions: 2,
+                    commits: 0, cumulativeCommits: 5,
+                    authors: 0, cumulativeAuthors: 1
+                  },
+                  {
+                    name: 'test_layer1', date: '2016-03-31T12:59:59.999Z',
                     revisions: 27, cumulativeRevisions: 39,
                     commits: 59, cumulativeCommits: 101,
                     authors: 12, cumulativeAuthors: 20
                   },
                   {
-                    name: 'test_layer2', date: '2016-02-28T12:59:59.999Z',
+                    name: 'test_layer2', date: '2016-03-31T12:59:59.999Z',
                     revisions: 14, cumulativeRevisions: 23,
                     commits: 30, cumulativeCommits: 51,
                     authors: 4, cumulativeAuthors: 7
                   },
                   {
-                    name: 'test_layer3', date: '2016-02-28T12:59:59.999Z',
+                    name: 'test_layer3', date: '2016-03-31T12:59:59.999Z',
                     revisions: 5, cumulativeRevisions: 7,
                     commits: 3, cumulativeCommits: 8,
                     authors: 2, cumulativeAuthors: 3
@@ -480,24 +602,27 @@ describe('System analysis tasks', function() {
                 ]
               },
               {
-                fileName: '2016-01-01_2016-02-28_system-coupling-data.json',
+                fileName: '2016-01-01_2016-03-31_system-coupling-data.json',
                 data: [
                   { name: 'test_layer1', coupledName: 'test_layer2', couplingDegree: 23, date: '2016-01-31T12:59:59.999Z'},
                   { name: 'test_layer1', coupledName: 'test_layer3', couplingDegree: 41, date: '2016-01-31T12:59:59.999Z'},
                   { name: 'test_layer2', coupledName: 'test_layer3', couplingDegree: 30, date: '2016-01-31T12:59:59.999Z'},
-                  { name: 'test_layer1', coupledName: 'test_layer2', couplingDegree: 33, date: '2016-02-28T12:59:59.999Z'},
-                  { name: 'test_layer1', coupledName: 'test_layer3', couplingDegree: 52, date: '2016-02-28T12:59:59.999Z'},
-                  { name: 'test_layer2', coupledName: 'test_layer3', couplingDegree: 10, date: '2016-02-28T12:59:59.999Z'}
+                  { name: 'test_layer1', coupledName: 'test_layer2', couplingDegree:  0, date: '2016-02-29T12:59:59.999Z'},
+                  { name: 'test_layer1', coupledName: 'test_layer3', couplingDegree:  0, date: '2016-02-29T12:59:59.999Z'},
+                  { name: 'test_layer2', coupledName: 'test_layer3', couplingDegree:  0, date: '2016-02-29T12:59:59.999Z'},
+                  { name: 'test_layer1', coupledName: 'test_layer2', couplingDegree: 33, date: '2016-03-31T12:59:59.999Z'},
+                  { name: 'test_layer1', coupledName: 'test_layer3', couplingDegree: 52, date: '2016-03-31T12:59:59.999Z'},
+                  { name: 'test_layer2', coupledName: 'test_layer3', couplingDegree: 10, date: '2016-03-31T12:59:59.999Z'}
                 ]
               }
             ],
             missingReports: [
-              { fileName: '2016-01-01_2016-02-28_system-churn-data.json' }
+              { fileName: '2016-01-01_2016-03-31_system-churn-data.json' }
             ],
             manifest: {
               reportName: 'system-evolution',
               parameters: { timeSplit: 'eom', layerGroup: 'test_boundary' },
-              dateRange: '2016-01-01_2016-02-28',
+              dateRange: '2016-01-01_2016-03-31',
               enabledDiagrams: ['revisions-trend', 'commits-trend', 'authors-trend', 'coupling-trend']
             }
           }

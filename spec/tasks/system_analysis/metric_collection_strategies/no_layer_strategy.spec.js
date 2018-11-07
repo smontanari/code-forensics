@@ -22,7 +22,7 @@ describe('noLayerStrategy', function() {
       collectFn = noLayerStrategy(
         {
           selector: function(obj) { return { metric1: obj.testMetricA, metric2: obj.testMetricC }; },
-          initialValue: { metric1: 0, metric2: 0 }
+          defaultValue: { metric1: 0, metric2: 0 }
         },
         'testAnalysis',
         { files: mockFilesHelper, codeMaat: mockCodeMaatHelper }

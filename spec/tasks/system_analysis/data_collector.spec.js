@@ -7,12 +7,14 @@ var DataCollector = require_src('tasks/system_analysis/data_collector');
 describe('DataCollector', function() {
   var subject, mockAnalysis, testAnalysisStreams;
 
-  var timePeriods = ['period1', 'period2', 'period3'];
+  var timePeriods = ['p1', 'p2', 'p3', 'p4', 'p5'];
 
   var streamsData = [
     { metric: 30, date: '2010-05-31T00:00:00.000Z' },
     { metric: 90, date: '2010-04-30T00:00:00.000Z' },
-    { metric: 60, date: '2010-03-31T00:00:00.000Z' }
+    { date: 'x' },
+    { metric: 60, date: '2010-03-31T00:00:00.000Z' },
+    { metric: 20 }
   ];
 
   var streamTestData = function() {
@@ -23,11 +25,9 @@ describe('DataCollector', function() {
   };
 
   beforeEach(function() {
-    testAnalysisStreams = [
-      new stream.PassThrough({ objectMode: true }),
-      new stream.PassThrough({ objectMode: true }),
-      new stream.PassThrough({ objectMode: true })
-    ];
+    testAnalysisStreams = _.times(5, function() {
+      return new stream.PassThrough({ objectMode: true });
+    });
 
     mockAnalysis = {
       isSupported: jasmine.createSpy('analysis.isSupported'),
