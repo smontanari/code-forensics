@@ -2,6 +2,10 @@
 
 ### [Unreleased]
 
+### [2.0.1] - 2018-11-08
+#### Fixed
+- Removed/amended invalid lines in the System Evolution summary report (issue #37) when no revisions data is available for a certain time period.
+
 ### [2.0.0] - 2018-09-14
 #### Added
 - (Number of) authors trend to the _system-evolution-analysis_ task
