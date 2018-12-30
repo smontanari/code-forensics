@@ -2,6 +2,12 @@
 
 ### [Unreleased]
 
+### [2.1.1] - 2018-12-30
+
+#### Fixed
+
+- Reading property `serialProcessing` from configuration file.
+
 ### [2.1.0] - 2018-12-27
 
 #### Changed
