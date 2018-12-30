@@ -16,7 +16,7 @@
   program will use all the available cpu cores to run multiple commands in
   parallel. With the environment variable `SERIAL_PROCESSING` set, or with the
   configuration property `serialProcessing: true`, the program will switch to
-  run one command at a time. See the [wiki]() for more information.
+  run one command at a time. See the [wiki](https://github.com/smontanari/code-forensics/wiki/Advanced-setup#max-number-of-parallel-processes) for more information.
 
   The previous way of configuring parallelism (using the `maxConcurrency`
   setting) is still maintained for backward compatibility, but it is
