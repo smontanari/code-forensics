@@ -1,6 +1,6 @@
 /*global require_src*/
-var _     = require('lodash'),
-    chalk = require('chalk');
+var _    = require('lodash'),
+    ansi = require('ansi-colors');
 
 var logger = require_src('log/logger');
 
@@ -33,21 +33,21 @@ describe('Logger', function() {
 
   it('writes a debug message with a detail', function() {
     logger.debug('test message: ', 'test detail');
-    assertStdout(chalk.green('test message: ') + 'test detail');
+    assertStdout(ansi.green('test message: ') + 'test detail');
   });
 
   it('writes an info message with a detail', function() {
     logger.info('test message: ', 'test detail');
-    assertStdout(chalk.yellow('test message: ') + 'test detail');
+    assertStdout(ansi.yellow('test message: ') + 'test detail');
   });
 
   it('writes a warning message', function() {
     logger.warn('test message');
-    assertStdout(chalk.bgWhite.magenta('test message'));
+    assertStdout(ansi.bgWhite.magenta('test message'));
   });
 
   it('writes an error message', function() {
     logger.error('test message');
-    assertStdout(chalk.bgWhite.red('test message'));
+    assertStdout(ansi.bgWhite.red('test message'));
   });
 });

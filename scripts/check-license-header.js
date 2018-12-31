@@ -3,7 +3,7 @@
 var fs       = require('fs'),
     Bluebird = require('bluebird'),
     readline = require('readline'),
-    chalk    = require('chalk'),
+    ansi     = require('ansi-colors'),
     glob     = require('glob');
 
 var FileData = function(pathname) {
@@ -33,7 +33,7 @@ Bluebird.map(glob.sync('{./lib/**/*.js,./public/styles/**/*.less}'), function(fi
   if (invalidFiles.length > 0) {
     console.log('Missing header licensing in files: ');
     invalidFiles.forEach(function(file) {
-      console.log(chalk.red(file.path));
+      console.log(ansi.red(file.path));
     });
     process.exit(1);
   }

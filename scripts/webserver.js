@@ -10,7 +10,7 @@
 var httpServer = require('http-server/lib/http-server'),
     findup     = require('findup-sync'),
     ecstatic   = require('ecstatic'),
-    chalk      = require('chalk'),
+    ansi       = require('ansi-colors'),
     Path       = require('path');
 
 var args   = require('minimist')(process.argv.slice(2));
@@ -41,12 +41,12 @@ var webServer = httpServer.createServer(options);
 /*eslint-disable no-console*/
 
 webServer.listen(port, host, function() {
-  console.log(chalk.yellow('Starting up http-server'));
-  console.log(chalk.cyan('listening on ' + host + ':' + port));
-  console.log(chalk.cyan('serving "/"     files from ' + webPath));
-  console.log(chalk.cyan('serving "/js"   files from ' + jsPath));
-  console.log(chalk.cyan('serving "/lib"  files from ' + libPath));
-  console.log(chalk.cyan('serving "/data" files from ' + dataPath));
+  console.log(ansi.yellow('Starting up http-server'));
+  console.log(ansi.cyan('listening on ' + host + ':' + port));
+  console.log(ansi.cyan('serving "/"     files from ' + webPath));
+  console.log(ansi.cyan('serving "/js"   files from ' + jsPath));
+  console.log(ansi.cyan('serving "/lib"  files from ' + libPath));
+  console.log(ansi.cyan('serving "/data" files from ' + dataPath));
   console.log('Hit CTRL-C to stop the server');
 });
 
@@ -54,7 +54,7 @@ webServer.listen(port, host, function() {
 ['SIGINT', 'SIGTERM'].forEach(function(event) {
   process.on(event, function() {
     webServer.close();
-    console.log(chalk.yellow("\nhttp-server stopped."));
+    console.log(ansi.yellow("\nhttp-server stopped."));
   });
 });
 
