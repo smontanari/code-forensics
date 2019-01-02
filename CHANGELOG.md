@@ -2,6 +2,11 @@
 
 ### [Unreleased]
 
+#### Changed
+
+- Removed direct dependency on `fancy-log` to work around some log colour issues
+- Replaced `chalk` with `ansi-colors`
+
 ### [2.1.1] - 2018-12-30
 
 #### Fixed

@@ -3,7 +3,7 @@ code-forensics
 
 **code-forensics** is a toolset for analysing codebases stored in a version control system. It leverages the repository logs, or version history data, to perform deep analyses with regards to complexity, logical coupling, authors coupling and to inspect the evolution in time of different parts of a software system with respect to metrics like code churn and number of revisions.
 
-#### Version 2 released
+#### Version 2 release (September 2018)
 This release introduces new metrics trends in the system evolution analysis (number of commits, number of authors). This change requires a different logic to generate and render the revisions trend diagram, which breaks compatibility with respect to older versions. See the [CHANGELOG](./CHANGELOG.md) for more details.
 
 #### Upcoming features
@@ -163,7 +163,7 @@ The results can then be displayed in a word cloud diagram at the url given above
 </table>
 
 ## License
-Copyright &copy; 2016-2018 Silvio Montanari
+Copyright &copy; 2016-2019 Silvio Montanari
 
 **code-forensics** is free software; you can redistribute it and/or modify it under the terms of the [GNU General Public License v3.0 or any later version](http://www.gnu.org/licenses/gpl.html).
 
