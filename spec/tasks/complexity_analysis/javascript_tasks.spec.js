@@ -11,8 +11,8 @@ describe('javascript tasks', function() {
   describe('javascript-complexity-report', function() {
     var assertReport = function(taskOutput) {
       return taskOutput.assertTempReport('javascript-complexity-report.json', [
-        { path: "test_file1.js", totalComplexity: 1, averageComplexity: 1, methodComplexity: [{ name: 'sum', complexity: 1 }] },
-        { path: "test_file3.js", totalComplexity: 2, averageComplexity: 2, methodComplexity: [{ name: 'Calculator.division', complexity: 2 }] }
+        { path: "test_file1.js", totalComplexity: 2, averageComplexity: 1, methodComplexity: [{ name: 'sum', complexity: 1 }] },
+        { path: "test_file3.js", totalComplexity: 3, averageComplexity: 2, methodComplexity: [{ name: 'Calculator.division', complexity: 2 }] }
       ]);
     };
 
@@ -72,8 +72,8 @@ describe('javascript tasks', function() {
       runtime.executePromiseTask('javascript-complexity-trend-analysis').then(function(taskOutput) {
         return Bluebird.all([
             taskOutput.assertOutputReport('2015-03-01_2015-10-22_complexity-trend-data.json', [
-            { revision: 123, date: '2015-04-29T23:00:00.000Z', path: 'test_abs.js', totalComplexity: 1, averageComplexity: 1, methodComplexity: [{ name: 'abs', complexity: 1 }] },
-            { revision: 456, date: '2015-05-04T23:00:00.000Z', path: 'test_abs.js', totalComplexity: 2, averageComplexity: 2, methodComplexity: [{ name: 'abs', complexity: 2 }] }
+            { revision: 123, date: '2015-04-29T23:00:00.000Z', path: 'test_abs.js', totalComplexity: 2, averageComplexity: 1, methodComplexity: [{ name: 'abs', complexity: 1 }] },
+            { revision: 456, date: '2015-05-04T23:00:00.000Z', path: 'test_abs.js', totalComplexity: 3, averageComplexity: 2, methodComplexity: [{ name: 'abs', complexity: 2 }] }
           ]),
           taskOutput.assertManifest({
             reportName: 'complexity-trend',

@@ -4,6 +4,8 @@
 
 #### Changed
 
+- Upgraded escomplex to 0.1.0
+- Upgraded a number of package dependencies
 - Removed direct dependency on `fancy-log` to work around some log colour issues
 - Replaced `chalk` with `ansi-colors`
 

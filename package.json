@@ -68,7 +68,7 @@
     "through2-filter": "^3.0.0",
     "through2-map": "^3.0.0",
     "through2-reduce": "^1.1.1",
-    "typhonjs-escomplex": "^0.0.12",
+    "typhonjs-escomplex": "^0.1.0",
     "xml": "^1.0.1",
     "xml-reader": "^2.4.3"
   },

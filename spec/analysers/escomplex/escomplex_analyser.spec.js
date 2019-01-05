@@ -7,10 +7,10 @@ var ESComplexAnalyser = require_src('analysers/escomplex/escomplex_analyser');
 
 describe('ESComplexAnalyser', function() {
   var escomplexReport = {
-    methodAggregate: { cyclomatic: 11 },
+    aggregate: { cyclomatic: 11 },
     classes: [
       {
-        methodAggregate: { cyclomatic: 5 },
+        aggregate: { cyclomatic: 5 },
         methods: [
           { cyclomatic: 1, name: 'ma1' },
           { cyclomatic: 6, name: 'ma2' }
@@ -19,7 +19,7 @@ describe('ESComplexAnalyser', function() {
         name: 'A'
       },
       {
-        methodAggregate: { cyclomatic: 3 },
+        aggregate: { cyclomatic: 3 },
         methods: [
           { cyclomatic: 2, name: 'mb1' },
           { cyclomatic: 3, name: 'mb2' },
@@ -49,7 +49,7 @@ describe('ESComplexAnalyser', function() {
 
   describe('.fileAnalysisStream()', function() {
     beforeEach(function() {
-      spyOn(fs, 'readFile').and.callFake(function(path, callback) {
+      spyOn(fs, 'readFile').and.callFake(function(_, callback) {
         callback(null, 'test content');
       });
     });
@@ -77,7 +77,7 @@ describe('ESComplexAnalyser', function() {
             ]
           });
 
-          expect(escomplex.analyzeModule).toHaveBeenCalledWith('test content', { a: 'optionA', b: 'optionB' });
+          expect(escomplex.analyzeModule).toHaveBeenCalledWith('test content', {}, { a: 'optionA', b: 'optionB' });
           expect(fs.readFile).toHaveBeenCalledWith('test/file.js', jasmine.any(Function));
           done();
         });
@@ -99,7 +99,7 @@ describe('ESComplexAnalyser', function() {
             result: 11
           });
 
-          expect(escomplex.analyzeModule).toHaveBeenCalledWith('test content', { a: 'optionA', b: 'optionB' });
+          expect(escomplex.analyzeModule).toHaveBeenCalledWith('test content', {}, { a: 'optionA', b: 'optionB' });
           expect(fs.readFile).toHaveBeenCalledWith('test/file.js', jasmine.any(Function));
           done();
         });
@@ -133,7 +133,7 @@ describe('ESComplexAnalyser', function() {
             ]
           });
 
-          expect(escomplex.analyzeModule).toHaveBeenCalledWith('test content', { a: 'optionA', b: 'optionB' });
+          expect(escomplex.analyzeModule).toHaveBeenCalledWith('test content', {}, { a: 'optionA', b: 'optionB' });
           done();
         });
 
@@ -159,7 +159,7 @@ describe('ESComplexAnalyser', function() {
             result: 11
           });
 
-          expect(escomplex.analyzeModule).toHaveBeenCalledWith('test content', { a: 'optionA', b: 'optionB' });
+          expect(escomplex.analyzeModule).toHaveBeenCalledWith('test content', {}, { a: 'optionA', b: 'optionB' });
           done();
         });
 
