@@ -1,7 +1,8 @@
 /*eslint-disable max-lines*/
 /*global require_src cfHelpers*/
-var _      = require('lodash'),
-    stream = require('stream');
+var _        = require('lodash'),
+    Bluebird = require('bluebird'),
+    stream   = require('stream');
 
 var socialAnalysisTasks = require_src('tasks/social_analysis_tasks'),
     codeMaat            = require_src('analysers/code_maat'),
@@ -403,85 +404,87 @@ describe('Social analysis tasks', function() {
       });
 
       it('publishes a report on ownership and communication coupling between main developers', function(done) {
-        runtime.executePromiseTask('developer-coupling-analysis').then(function(taskOutput) {
-          return taskOutput.assertOutputReport('2016-01-01_2016-10-22_main-dev-coupling-data.json',
-            {
-              children: [
-                {
-                  path: 'test_file1',
-                  authors: 4,
-                  revisions: 54,
-                  mainDev: 'Dev1',
-                  ownership: 52,
-                  weight: 0.5934065934065934,
-                  coupledEntries: [
-                    { path: 'test_file4', couplingDegree: 41, revisionsAvg: 22 },
-                    { path: 'test_file3', couplingDegree: 23, revisionsAvg: 12 }
-                  ]
-                },
-                {
-                  path: 'test_file2',
-                  authors: 2,
-                  revisions: 68,
-                  mainDev: 'Dev2',
-                  ownership: 83,
-                  weight: 0.7472527472527473,
-                  coupledEntries: [
-                    { path: 'test_file5', couplingDegree: 66, revisionsAvg: 31 }
-                  ]
-                },
-                {
-                  path: 'test_file3',
-                  authors: 3,
-                  revisions: 24,
-                  mainDev: 'Dev3',
-                  ownership: 64,
-                  weight: 0.26373626373626374,
-                  coupledEntries: [
-                    { path: 'test_file5', couplingDegree: 49, revisionsAvg: 29 },
-                    { path: 'test_file1', couplingDegree: 23, revisionsAvg: 12 }
-                  ]
-                },
-                {
-                  path: 'test_file4',
-                  authors: 5,
-                  revisions: 52,
-                  mainDev: 'Dev5',
-                  ownership: 75,
-                  weight: 0.5714285714285714,
-                  coupledEntries: [
-                    { path: 'test_file1', couplingDegree: 41, revisionsAvg: 22 }
-                  ]
-                },
-                {
-                  path: 'test_file5',
-                  authors: 6,
-                  revisions: 91,
-                  mainDev: 'Dev4',
-                  ownership: 100,
-                  weight: 1,
-                  coupledEntries: [
-                    { path: 'test_file2', couplingDegree: 66, revisionsAvg: 31 },
-                    { path: 'test_file3', couplingDegree: 49, revisionsAvg: 29 }
-                  ]
-                }
-              ]
-            }
-          ).then(function() {
-            return taskOutput.assertOutputReport('2016-01-01_2016-10-22_communication-network-data.json', [
-              { developer: { name: 'Dev1', team: 'Team 1' }, coupledDeveloper: { name: 'Dev2', team: 'Team 1' }, sharedCommits: 65, couplingStrength: 55 },
-              { developer: { name: 'Dev3', team: 'Team 2' }, coupledDeveloper: { name: 'Dev1', team: 'Team 1' }, sharedCommits: 194, couplingStrength: 51 },
-              { developer: { name: 'Dev4', team: 'Team 2' }, coupledDeveloper: { name: 'Dev5', team: 'Team 2' }, sharedCommits: 62, couplingStrength: 48 }
+        runtime.executePromiseTask('developer-coupling-analysis')
+          .then(function(taskOutput) {
+            return Bluebird.all([
+              taskOutput.assertOutputReport('2016-01-01_2016-10-22_main-dev-coupling-data.json',
+              {
+                children: [
+                  {
+                    path: 'test_file1',
+                    authors: 4,
+                    revisions: 54,
+                    mainDev: 'Dev1',
+                    ownership: 52,
+                    weight: 0.5934065934065934,
+                    coupledEntries: [
+                      { path: 'test_file4', couplingDegree: 41, revisionsAvg: 22 },
+                      { path: 'test_file3', couplingDegree: 23, revisionsAvg: 12 }
+                    ]
+                  },
+                  {
+                    path: 'test_file2',
+                    authors: 2,
+                    revisions: 68,
+                    mainDev: 'Dev2',
+                    ownership: 83,
+                    weight: 0.7472527472527473,
+                    coupledEntries: [
+                      { path: 'test_file5', couplingDegree: 66, revisionsAvg: 31 }
+                    ]
+                  },
+                  {
+                    path: 'test_file3',
+                    authors: 3,
+                    revisions: 24,
+                    mainDev: 'Dev3',
+                    ownership: 64,
+                    weight: 0.26373626373626374,
+                    coupledEntries: [
+                      { path: 'test_file5', couplingDegree: 49, revisionsAvg: 29 },
+                      { path: 'test_file1', couplingDegree: 23, revisionsAvg: 12 }
+                    ]
+                  },
+                  {
+                    path: 'test_file4',
+                    authors: 5,
+                    revisions: 52,
+                    mainDev: 'Dev5',
+                    ownership: 75,
+                    weight: 0.5714285714285714,
+                    coupledEntries: [
+                      { path: 'test_file1', couplingDegree: 41, revisionsAvg: 22 }
+                    ]
+                  },
+                  {
+                    path: 'test_file5',
+                    authors: 6,
+                    revisions: 91,
+                    mainDev: 'Dev4',
+                    ownership: 100,
+                    weight: 1,
+                    coupledEntries: [
+                      { path: 'test_file2', couplingDegree: 66, revisionsAvg: 31 },
+                      { path: 'test_file3', couplingDegree: 49, revisionsAvg: 29 }
+                    ]
+                  }
+                ]
+              }),
+              taskOutput.assertOutputReport('2016-01-01_2016-10-22_communication-network-data.json', [
+                { developer: { name: 'Dev1', team: 'Team 1' }, coupledDeveloper: { name: 'Dev2', team: 'Team 1' }, sharedCommits: 65, couplingStrength: 55 },
+                { developer: { name: 'Dev3', team: 'Team 2' }, coupledDeveloper: { name: 'Dev1', team: 'Team 1' }, sharedCommits: 194, couplingStrength: 51 },
+                { developer: { name: 'Dev4', team: 'Team 2' }, coupledDeveloper: { name: 'Dev5', team: 'Team 2' }, sharedCommits: 62, couplingStrength: 48 }
+              ]),
+              taskOutput.assertManifest({
+                reportName: 'developer-coupling',
+                parameters: { maxCoupledFiles: 2 },
+                dateRange: '2016-01-01_2016-10-22',
+                enabledDiagrams: ['main-developer-coupling', 'communication-network']
+              })
             ]);
-          }).then(function() {
-            return taskOutput.assertManifest({
-              reportName: 'developer-coupling',
-              parameters: { maxCoupledFiles: 2 },
-              dateRange: '2016-01-01_2016-10-22',
-              enabledDiagrams: ['main-developer-coupling', 'communication-network']
-            });
-          });
-        }).then(done);
+          })
+          .then(done)
+          .catch(done.fail);
 
         couplingStream.push({ path: 'test_invalid_file', coupledPath: 'test_file2', couplingDegree: 74, revisionsAvg: 68 });
         couplingStream.push({ path: 'test_file2', coupledPath: 'test_file5', couplingDegree: 66, revisionsAvg: 31 });
@@ -517,22 +520,23 @@ describe('Social analysis tasks', function() {
 
       it('publishes a report on communication coupling only', function(done) {
         runtime.executePromiseTask('developer-coupling-analysis').then(function(taskOutput) {
-          return taskOutput.assertMissingOutputReport('2016-01-01_2016-10-22_main-dev-coupling-data.json')
-            .then(function() {
-              return taskOutput.assertOutputReport('2016-01-01_2016-10-22_communication-network-data.json', [
-                { developer: { name: 'Dev1', team: 'Team 1' }, coupledDeveloper: { name: 'Dev2', team: 'Team 1' }, sharedCommits: 65, couplingStrength: 55 },
-                { developer: { name: 'Dev3', team: 'Team 2' }, coupledDeveloper: { name: 'Dev1', team: 'Team 1' }, sharedCommits: 194, couplingStrength: 51 },
-                { developer: { name: 'Dev4', team: 'Team 2' }, coupledDeveloper: { name: 'Dev5', team: 'Team 2' }, sharedCommits: 62, couplingStrength: 48 }
-              ]);
-            }).then(function() {
-              return taskOutput.assertManifest({
-                reportName: 'developer-coupling',
-                parameters: { maxCoupledFiles: 2 },
-                dateRange: '2016-01-01_2016-10-22',
-                enabledDiagrams: ['communication-network']
-              });
-            });
-        }).then(done);
+          return Bluebird.all([
+            taskOutput.assertMissingOutputReport('2016-01-01_2016-10-22_main-dev-coupling-data.json'),
+            taskOutput.assertOutputReport('2016-01-01_2016-10-22_communication-network-data.json', [
+              { developer: { name: 'Dev1', team: 'Team 1' }, coupledDeveloper: { name: 'Dev2', team: 'Team 1' }, sharedCommits: 65, couplingStrength: 55 },
+              { developer: { name: 'Dev3', team: 'Team 2' }, coupledDeveloper: { name: 'Dev1', team: 'Team 1' }, sharedCommits: 194, couplingStrength: 51 },
+              { developer: { name: 'Dev4', team: 'Team 2' }, coupledDeveloper: { name: 'Dev5', team: 'Team 2' }, sharedCommits: 62, couplingStrength: 48 }
+            ]),
+            taskOutput.assertManifest({
+              reportName: 'developer-coupling',
+              parameters: { maxCoupledFiles: 2 },
+              dateRange: '2016-01-01_2016-10-22',
+              enabledDiagrams: ['communication-network']
+            })
+          ]);
+        })
+        .then(done)
+        .catch(done.fail);
 
         commAnalysisStream.push({ author: 'Dev1', coupledAuthor: 'Dev2', sharedCommits: 65, couplingStrength: 55 });
         commAnalysisStream.push({ author: 'Dev2', coupledAuthor: 'Dev1', sharedCommits: 65, couplingStrength: 55 });

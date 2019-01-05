@@ -125,8 +125,8 @@ describe('Publisher', function() {
         this.subject.enableDiagram('test-diagram2');
       });
 
-      it('creates a manifest file', function(done) {
-        this.subject.createManifest().then(function() {
+      it('creates a manifest file', function() {
+        return this.subject.createManifest().then(function() {
           var manifest = utils.json.objectToFile.calls.mostRecent().args[1];
 
           expect(manifest.id).toEqual('c8c1dcae8f21797ee19a82d7958caf0aba7da1c6');
@@ -138,8 +138,6 @@ describe('Publisher', function() {
           expect(manifest.dataFiles).toEqual([
             { fileType: undefined, timePeriod: '2012-04_2012-05', fileUrl: 'c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/2012-04_2012-05_test-file.json'},
           ]);
-
-          done();
         });
       });
     });
@@ -155,8 +153,8 @@ describe('Publisher', function() {
         this.subject.enableDiagram('test-diagram');
       });
 
-      it('creates a manifest file', function(done) {
-        this.subject.createManifest().then(function() {
+      it('creates a manifest file', function() {
+        return this.subject.createManifest().then(function() {
           var manifest = utils.json.objectToFile.calls.mostRecent().args[1];
 
           expect(manifest.id).toEqual('c8c1dcae8f21797ee19a82d7958caf0aba7da1c6');
@@ -167,8 +165,6 @@ describe('Publisher', function() {
           expect(manifest.dataFiles).toEqual([
             { fileType: undefined, timePeriod: '2012-04_2012-05', fileUrl: 'c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/2012-04_2012-05_test-file.json'},
           ]);
-
-          done();
         });
       });
     });
@@ -185,8 +181,8 @@ describe('Publisher', function() {
         this.subject.enableDiagram('test-diagram');
       });
 
-      it('creates a manifest file', function(done) {
-        this.subject.createManifest().then(function() {
+      it('creates a manifest file', function() {
+        return this.subject.createManifest().then(function() {
           var manifest = utils.json.objectToFile.calls.mostRecent().args[1];
 
           expect(manifest.id).toEqual('c8c1dcae8f21797ee19a82d7958caf0aba7da1c6');
@@ -197,8 +193,6 @@ describe('Publisher', function() {
             { fileType: undefined, timePeriod: '2012-04_2012-05', fileUrl: 'c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/2012-04_2012-05_test-file.json'},
             { fileType: undefined, timePeriod: '2012-06_2012-07', fileUrl: 'c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/2012-06_2012-07_test-file.json'}
           ]);
-
-          done();
         });
       });
     });
@@ -218,8 +212,8 @@ describe('Publisher', function() {
         this.subject.enableDiagram('test-diagram');
       });
 
-      it('creates a manifest file', function(done) {
-        this.subject.createManifest().then(function() {
+      it('creates a manifest file', function() {
+        return this.subject.createManifest().then(function() {
           var manifest = utils.json.objectToFile.calls.mostRecent().args[1];
 
           expect(manifest.id).toEqual('c8c1dcae8f21797ee19a82d7958caf0aba7da1c6');
@@ -230,8 +224,6 @@ describe('Publisher', function() {
             { fileType: 'report-type1', timePeriod: '2012-04_2012-05', fileUrl: 'c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/2012-04_2012-05_test-file1.json'},
             { fileType: 'report-type2', timePeriod: '2012-06_2012-07', fileUrl: 'c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/2012-06_2012-07_test-file2.json'}
           ]);
-
-          done();
         });
       });
     });
@@ -282,12 +274,11 @@ describe('Publisher', function() {
         this.subject.enableDiagram('test-diagram');
       });
 
-      it('exposes the relevant context parameters for the analysis report', function(done) {
-        this.subject.createManifest().then(function() {
+      it('exposes the relevant context parameters for the analysis report', function() {
+        return this.subject.createManifest().then(function() {
           var manifest = utils.json.objectToFile.calls.mostRecent().args[1];
 
           expect(manifest.parameters).toEqual({ param1: 'test_param1' });
-          done();
         });
       });
     });
@@ -303,10 +294,9 @@ describe('Publisher', function() {
         this.subject.enableDiagram('test-diagram');
       });
 
-      it('exposes the reportId value', function(done) {
-        this.subject.createManifest().then(function(reportId) {
+      it('exposes the reportId value', function() {
+        return this.subject.createManifest().then(function(reportId) {
           expect(reportId).toEqual('c8c1dcae8f21797ee19a82d7958caf0aba7da1c6');
-          done();
         });
       });
     });

@@ -55,7 +55,8 @@ describe('DataSourceHandler', function() {
           { a: 456, b: 'vbn' }
         ]);
         done();
-      });
+      })
+      .catch(done.fail);
 
     inputStream.write({ a: 123, b: 'zxc' });
     inputStream.write({ a: 456, b: 'vbn' });
@@ -71,7 +72,8 @@ describe('DataSourceHandler', function() {
           { a: 456, b: 'vbn' }
         ]);
         done();
-      });
+      })
+      .catch(done.fail);
 
     inputStream.write({ a: 123, b: 'zxc' });
     inputStream.write({ a: 456, b: 'vbn' });
@@ -84,7 +86,8 @@ describe('DataSourceHandler', function() {
       .then(function(data) {
         expect(data).toEqual([{ a: 123, b: 'zxc' }, { a: 456, b: 'vbn' }]);
         done();
-      });
+      })
+      .catch(done.fail);
 
     inputStream.write({ a: 123, b: 'zxc' });
     inputStream.write({ a: 456, b: 'vbn' });

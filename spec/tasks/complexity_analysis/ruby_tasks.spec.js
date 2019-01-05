@@ -1,6 +1,7 @@
 /*global require_src cfHelpers*/
-var _      = require('lodash'),
-    stream = require('stream');
+var _        = require('lodash'),
+    Bluebird = require('bluebird'),
+    stream   = require('stream');
 
 var rubyTasks = require_src('tasks/complexity_analysis/ruby_tasks'),
     vcs       = require_src('vcs'),
@@ -74,14 +75,22 @@ describe('ruby tasks', function() {
 
     describe('as a Task', function() {
       it('writes a report on the complexity for each ruby file in the repository', function(done) {
-        runtime.executeStreamTask('ruby-complexity-report').then(assertReport).then(done);
+        runtime.executeStreamTask('ruby-complexity-report')
+          .then(assertReport)
+          .then(done)
+          .catch(done.fail);
+
         streamData();
       });
     });
 
     describe('as a Function', function() {
       it('writes a report on the complexity for each ruby file in the repository', function(done) {
-        runtime.executeStreamFunction('rubyComplexityReport').then(assertReport).then(done);
+        runtime.executeStreamFunction('rubyComplexityReport')
+          .then(assertReport)
+          .then(done)
+          .catch(done.fail);
+
         streamData();
       });
     });
@@ -120,37 +129,40 @@ describe('ruby tasks', function() {
 
       var runtime = cfHelpers.runtimeSetup(rubyTasks, null, { dateFrom: '2015-03-01', targetFile: 'test_abs.rb' });
       runtime.executePromiseTask('ruby-complexity-trend-analysis').then(function(taskOutput) {
-        return taskOutput.assertOutputReport('2015-03-01_2015-10-22_complexity-trend-data.json', [
-          {
-            revision: 123,
-            date: '2015-04-29T23:00:00.000Z',
-            path: 'test_abs.rb',
-            totalComplexity: 22.0,
-            averageComplexity: 7.3,
-            methodComplexity: [
-              { name: 'main#none', complexity: 18.6 },
-              { name: 'chain#linking_to          /absolute/path/test_abs.rb:8', complexity: 1.7 }
-            ]
-          },
-          {
-            revision: 456,
-            date: '2015-05-04T23:00:00.000Z',
-            path: 'test_abs.rb',
-            totalComplexity: 95.1,
-            averageComplexity: 8.6,
-            methodComplexity: [
-              { name: 'Module::TestFile2#test_method /absolute/path/test_abs.rb:54', complexity: 26.2 }
-            ]
-          }
-        ]).then(function() {
-          return taskOutput.assertManifest({
+        return Bluebird.all([
+          taskOutput.assertOutputReport('2015-03-01_2015-10-22_complexity-trend-data.json', [
+            {
+              revision: 123,
+              date: '2015-04-29T23:00:00.000Z',
+              path: 'test_abs.rb',
+              totalComplexity: 22.0,
+              averageComplexity: 7.3,
+              methodComplexity: [
+                { name: 'main#none', complexity: 18.6 },
+                { name: 'chain#linking_to          /absolute/path/test_abs.rb:8', complexity: 1.7 }
+              ]
+            },
+            {
+              revision: 456,
+              date: '2015-05-04T23:00:00.000Z',
+              path: 'test_abs.rb',
+              totalComplexity: 95.1,
+              averageComplexity: 8.6,
+              methodComplexity: [
+                { name: 'Module::TestFile2#test_method /absolute/path/test_abs.rb:54', complexity: 26.2 }
+              ]
+            }
+          ]),
+          taskOutput.assertManifest({
             reportName: 'complexity-trend',
             parameters: { targetFile: 'test_abs.rb' },
             dateRange: '2015-03-01_2015-10-22',
             enabledDiagrams: ['total', 'func-mean', 'func-sd']
-          });
-        });
-      }).then(done);
+          })
+        ]);
+      })
+      .then(done)
+      .catch(done.fail);
 
       revisionStream1.push("def abs(a,b)\n");
       revisionStream1.push("a - b\nend");

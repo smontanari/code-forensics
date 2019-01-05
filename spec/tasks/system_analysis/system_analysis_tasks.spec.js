@@ -278,20 +278,22 @@ describe('System analysis tasks', function() {
           taskParameters
         );
 
-        runtime.executePromiseTask('system-evolution-analysis').then(function(taskOutput) {
-          _.each(streams, function(testStream) {
-            if (testStream.mockAnalyser.isSupported()) {
-              _.each(testStream.data, function(d) {
-                if (d.layerGroupFile) {
-                  expect(testStream.mockAnalyser.fileAnalysisStream).toHaveBeenCalledWith(jasmine.stringMatching(d.period), jasmine.objectContaining({ '-g': jasmine.stringMatching(d.layerGroupFile) }));
-                } else {
-                  expect(testStream.mockAnalyser.fileAnalysisStream).toHaveBeenCalledWith(jasmine.stringMatching(d.period), undefined);
-                }
-              });
-            } else {
-              expect(testStream.mockAnalyser.fileAnalysisStream).not.toHaveBeenCalled();
-            }
-          });
+        runtime.executePromiseTask('system-evolution-analysis')
+          .then(function(taskOutput) {
+            _.each(streams, function(testStream) {
+              if (testStream.mockAnalyser.isSupported()) {
+                _.each(testStream.data, function(d) {
+                  if (d.layerGroupFile) {
+                    expect(testStream.mockAnalyser.fileAnalysisStream).toHaveBeenCalledWith(jasmine.stringMatching(d.period), jasmine.objectContaining({ '-g': jasmine.stringMatching(d.layerGroupFile) }));
+                  } else {
+                    expect(testStream.mockAnalyser.fileAnalysisStream).toHaveBeenCalledWith(jasmine.stringMatching(d.period), undefined);
+                  }
+                });
+              } else {
+                expect(testStream.mockAnalyser.fileAnalysisStream).not.toHaveBeenCalled();
+              }
+            });
+
           return Bluebird.all(
             _.map(expectedResults.reports, function(r) {
               return taskOutput.assertOutputReport(r.fileName, r.data);
@@ -299,11 +301,13 @@ describe('System analysis tasks', function() {
               _.map(expectedResults.missingReports, function(r) {
                 return taskOutput.assertMissingOutputReport(r.fileName);
               })
-            )
-          ).then(function() {
-            return taskOutput.assertManifest(expectedResults.manifest);
-          });
-        }).then(done);
+            ).concat([
+              taskOutput.assertManifest(expectedResults.manifest)
+            ])
+          );
+        })
+        .then(done)
+        .catch(done.fail);
 
         _.each(streams, function(s) {
           _.each(s.data, function(d, index) {

@@ -28,40 +28,39 @@ describe('TaskExecutor', function() {
   });
 
   describe('run a list of functions', function() {
-    it('completes returning the success/failure of every job', function(done) {
-      subject.runAll([
+    it('completes returning the success/failure of every job', function() {
+      return subject.runAll([
         function() { return 'abc'; },
         function() { throw new Error('something is wrong'); },
         function() { return function() { throw new Error('cannot return a value'); }; },
         function() { return Bluebird.resolve(123); }
       ]).then(function(data) {
-        assertSettledPromises(data, [
-          { fulfilled: true, value: 'abc' },
-          { fulfilled: false, reason: 'something is wrong' },
-          { fulfilled: false, reason: 'cannot return a value' },
-          { fulfilled: true, value: 123 }
-        ]);
-        done();
-      });
+          assertSettledPromises(data, [
+            { fulfilled: true, value: 'abc' },
+            { fulfilled: false, reason: 'something is wrong' },
+            { fulfilled: false, reason: 'cannot return a value' },
+            { fulfilled: true, value: 123 }
+          ]);
+        });
     });
   });
 
   describe('map and run an iterable', function() {
-    it('completes returning the success/failure of every job', function(done) {
-      subject.runAll([
+    it('completes returning the success/failure of every job', function() {
+      return subject.runAll([
         function() { return 'abc'; },
         function() { throw new Error('something is wrong'); },
         function() { return function() { throw new Error('cannot return a value'); }; },
         function() { return Bluebird.resolve(123); }
-      ], function(fn) { return fn(); }).then(function(data) {
-        assertSettledPromises(data, [
-          { fulfilled: true, value: 'abc' },
-          { fulfilled: false, reason: 'something is wrong' },
-          { fulfilled: false, reason: 'cannot return a value' },
-          { fulfilled: true, value: 123 }
-        ]);
-        done();
-      });
+      ], function(fn) { return fn(); })
+        .then(function(data) {
+          assertSettledPromises(data, [
+            { fulfilled: true, value: 'abc' },
+            { fulfilled: false, reason: 'something is wrong' },
+            { fulfilled: false, reason: 'cannot return a value' },
+            { fulfilled: true, value: 123 }
+          ]);
+        });
     });
   });
 });

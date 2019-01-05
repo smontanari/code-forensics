@@ -12,15 +12,14 @@ describe('utils.json', function() {
       });
     });
 
-    it('reads and parses the json file', function(done) {
-      json.fileToObject('test/file').then(function(content) {
+    it('reads and parses the json file', function() {
+      return json.fileToObject('test/file').then(function(content) {
         expect(content).toEqual({
           object: [
             { a: 123 },
             { a: 456, b: { c: 'test' } }
           ]
         });
-        done();
       });
     });
   });
@@ -65,13 +64,11 @@ describe('utils.json', function() {
   });
 
   describe('.objectToFile', function() {
-    it('writes json to a file', function(done) {
+    it('writes json to a file', function() {
       spyOn(fs, 'writeFile').and.callFake(function(file, data, cb) { cb(); });
 
-      json.objectToFile('test/file', {obj: {a: 123, b: 'zxc'}}).then(function() {
+      return json.objectToFile('test/file', {obj: {a: 123, b: 'zxc'}}).then(function() {
         expect(fs.writeFile).toHaveBeenCalledWith('test/file', '{\n  "obj": {\n    "a": 123,\n    "b": "zxc"\n  }\n}', jasmine.any(Function));
-
-        done();
       });
     });
   });

@@ -99,7 +99,8 @@ describe('StreamProcessor', function() {
           expect(data[1].reason().message).toEqual('test stream error');
           expect(data[2].isFulfilled()).toBe(true);
           done();
-      });
+        })
+        .catch(done.fail);
 
       _.delay(function() {
         streams[0].push('123');
@@ -123,7 +124,8 @@ describe('StreamProcessor', function() {
         .then(function(result) {
           expect(result.isFulfilled()).toBe(true);
           done();
-        });
+        })
+        .catch(done.fail);
 
       _.delay(function() {
         s.push({ a: '123', b: '456' });
@@ -140,7 +142,8 @@ describe('StreamProcessor', function() {
           expect(result.isRejected()).toBe(true);
           expect(result.reason().message).toEqual('stream failure');
           done();
-        });
+        })
+        .catch(done.fail);
 
       _.delay(function() {
         s.push({ a: '123', b: '456' });
@@ -160,7 +163,8 @@ describe('StreamProcessor', function() {
             { a: 'abc', b: 'xyz' }
           ]);
           done();
-        });
+        })
+        .catch(done.fail);
 
       _.delay(function() {
         s.push({ a: '123', b: '456' });

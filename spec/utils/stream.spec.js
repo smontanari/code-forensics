@@ -101,10 +101,12 @@ describe('utils.stream', function() {
         var completed = false;
         this.inputStream.on('end', function() { completed = true; });
 
-        streamUtils.streamToPromise(this.inputStream).then(function() {
-          expect(completed).toBe(true);
-          done();
-        });
+        streamUtils.streamToPromise(this.inputStream)
+          .then(function() {
+            expect(completed).toBe(true);
+            done();
+          })
+          .catch(done.fail);
 
         this.inputStream.resume();
         this.inputStream.push('something');
@@ -133,10 +135,12 @@ describe('utils.stream', function() {
         var completed = false;
         this.inputStream.on('finish', function() { completed = true; });
 
-        streamUtils.streamToPromise(this.inputStream).then(function() {
-          expect(completed).toBe(true);
-          done();
-        });
+        streamUtils.streamToPromise(this.inputStream)
+          .then(function() {
+            expect(completed).toBe(true);
+            done();
+          })
+          .catch(done.fail);
 
         this.inputStream.write('something');
         this.inputStream.end();
@@ -167,10 +171,12 @@ describe('utils.stream', function() {
     it('collects all stream chunks into an array', function(done) {
       var readable = new stream.PassThrough();
 
-      streamUtils.objectStreamToArray(readable).then(function(data) {
-        expect(data.join(' ')).toEqual('not many things');
-        done();
-      });
+      streamUtils.objectStreamToArray(readable)
+        .then(function(data) {
+          expect(data.join(' ')).toEqual('not many things');
+          done();
+        })
+        .catch(done.fail);
 
       readable.push('not');
       readable.push('many');

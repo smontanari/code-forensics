@@ -58,7 +58,8 @@ describe('DataCollector', function() {
             ]);
             done();
           });
-        });
+        })
+        .catch(done.fail);
 
       _.each(streamsData, function(data) {
         testAnalysisStream.push(data);

@@ -28,10 +28,12 @@ describe('ReportRunner', function() {
 
       new ReportRunner({
         run: function() { return output; }
-      }).run(doneCallback).then(function() {
-        expect(mockPublisher.createManifest).toHaveBeenCalledWith(undefined);
-        done();
-      });
+      }).run(doneCallback)
+        .then(function() {
+          expect(mockPublisher.createManifest).toHaveBeenCalledWith(undefined);
+          done();
+        })
+        .catch(done.fail);
 
       output.push('123');
       output.end();
@@ -42,10 +44,12 @@ describe('ReportRunner', function() {
     it('creates the manifest after the task function is completed', function(done) {
       new ReportRunner({
         run: function() { return 123; }
-      }).run(doneCallback).then(function() {
-        expect(mockPublisher.createManifest).toHaveBeenCalledWith(123);
-        done();
-      });
+      }).run(doneCallback)
+        .then(function() {
+          expect(mockPublisher.createManifest).toHaveBeenCalledWith(123);
+          done();
+        })
+        .catch(done.fail);
     });
   });
 
@@ -53,19 +57,23 @@ describe('ReportRunner', function() {
     it('creates the manifest after the task promise is fulfilled', function(done) {
       new ReportRunner({
         run: function() { return Bluebird.resolve('promise result'); }
-      }).run(doneCallback).then(function() {
-        expect(mockPublisher.createManifest).toHaveBeenCalledWith('promise result');
-        done();
-      });
+      }).run(doneCallback)
+        .then(function() {
+          expect(mockPublisher.createManifest).toHaveBeenCalledWith('promise result');
+          done();
+        })
+        .catch(done.fail);
     });
 
     it('does not create the manifest if the task promise is rejected', function(done) {
       new ReportRunner({
         run: function() { return Bluebird.reject(new Error()); }
-      }).run(doneCallback).then(function() {
-        expect(mockPublisher.createManifest).not.toHaveBeenCalledWith();
-        done();
-      });
+      }).run(doneCallback)
+        .then(function() {
+          expect(mockPublisher.createManifest).not.toHaveBeenCalledWith();
+          done();
+        })
+        .catch(done.fail);
     });
   });
 

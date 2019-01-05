@@ -1,5 +1,6 @@
 /*global require_src cfHelpers*/
-var stream = require('stream');
+var stream   = require('stream'),
+    Bluebird = require('bluebird');
 
 var javascriptTasks = require_src('tasks/complexity_analysis/javascript_tasks'),
     vcs             = require_src('vcs');
@@ -69,18 +70,21 @@ describe('javascript tasks', function() {
       runtime = cfHelpers.runtimeSetup(javascriptTasks, null, { dateFrom: '2015-03-01', targetFile: 'test_abs.js' });
 
       runtime.executePromiseTask('javascript-complexity-trend-analysis').then(function(taskOutput) {
-        return taskOutput.assertOutputReport('2015-03-01_2015-10-22_complexity-trend-data.json', [
-          { revision: 123, date: '2015-04-29T23:00:00.000Z', path: 'test_abs.js', totalComplexity: 1, averageComplexity: 1, methodComplexity: [{ name: 'abs', complexity: 1 }] },
-          { revision: 456, date: '2015-05-04T23:00:00.000Z', path: 'test_abs.js', totalComplexity: 2, averageComplexity: 2, methodComplexity: [{ name: 'abs', complexity: 2 }] }
-        ]).then(function() {
-          return taskOutput.assertManifest({
+        return Bluebird.all([
+            taskOutput.assertOutputReport('2015-03-01_2015-10-22_complexity-trend-data.json', [
+            { revision: 123, date: '2015-04-29T23:00:00.000Z', path: 'test_abs.js', totalComplexity: 1, averageComplexity: 1, methodComplexity: [{ name: 'abs', complexity: 1 }] },
+            { revision: 456, date: '2015-05-04T23:00:00.000Z', path: 'test_abs.js', totalComplexity: 2, averageComplexity: 2, methodComplexity: [{ name: 'abs', complexity: 2 }] }
+          ]),
+          taskOutput.assertManifest({
             reportName: 'complexity-trend',
             parameters: { targetFile: 'test_abs.js' },
             dateRange: '2015-03-01_2015-10-22',
             enabledDiagrams: ['total', 'func-mean', 'func-sd']
-          });
-        });
-      }).then(done);
+          })
+        ]);
+      })
+      .then(done)
+      .catch(done.fail);
 
       revisionStream1.push("function abs(a,b) {\n");
       revisionStream2.push("function abs(a,b) {\n");

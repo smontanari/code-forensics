@@ -40,7 +40,10 @@ describe('VCS Tasks', function() {
             var outStream = new stream.PassThrough();
             mockVcs[adapterMethod].and.returnValues(outStream);
 
-            runtime.executePromiseTask(taskName).then(assertOutput).then(done);
+            runtime.executePromiseTask(taskName)
+              .then(assertOutput)
+              .then(done)
+              .catch(done.fail);
 
             outStream.push("log-line1\n");
             outStream.push("log-line2\n");
@@ -55,7 +58,10 @@ describe('VCS Tasks', function() {
             var outStream = new stream.PassThrough();
             mockVcs[adapterMethod].and.returnValues(outStream);
 
-            runtime.executePromiseFunction(functionName).then(assertOutput).then(done);
+            runtime.executePromiseFunction(functionName)
+              .then(assertOutput)
+              .then(done)
+              .catch(done.fail);
 
             outStream.push("log-line1\n");
             outStream.push("log-line2\n");
@@ -180,7 +186,10 @@ describe('VCS Tasks', function() {
           var outStream2 = new stream.PassThrough();
           mockVcs.logStream.and.returnValues(outStream1, outStream2);
 
-          runtime.executePromiseTask('vcs-log-dump').then(assertTempFiles).then(done);
+          runtime.executePromiseTask('vcs-log-dump')
+            .then(assertTempFiles)
+            .then(done)
+            .catch(done.fail);
 
           _.each(logLines1, function(line) { outStream1.push(line + "\n"); });
           _.each(logLines2, function(line) { outStream2.push(line + "\n"); });
@@ -195,7 +204,10 @@ describe('VCS Tasks', function() {
           var outStream2 = new stream.PassThrough();
           mockVcs.logStream.and.returnValues(outStream1, outStream2);
 
-          runtime.executePromiseFunction('vcsLogDump').then(assertTempFiles).then(done);
+          runtime.executePromiseFunction('vcsLogDump')
+            .then(assertTempFiles)
+            .then(done)
+            .catch(done.fail);
 
           _.each(logLines1, function(line) { outStream1.push(line + "\n"); });
           _.each(logLines2, function(line) { outStream2.push(line + "\n"); });
@@ -218,7 +230,10 @@ describe('VCS Tasks', function() {
           var outStream2 = new stream.PassThrough();
           mockVcs.commitMessagesStream.and.returnValues(outStream1, outStream2);
 
-          runtime.executePromiseTask('vcs-commit-messages').then(assertTempFiles).then(done);
+          runtime.executePromiseTask('vcs-commit-messages')
+            .then(assertTempFiles)
+            .then(done)
+            .catch(done.fail);
 
           outStream1.push('log-line1\n');
           outStream1.push('log-line2\n');
@@ -237,7 +252,10 @@ describe('VCS Tasks', function() {
           var outStream2 = new stream.PassThrough();
           mockVcs.commitMessagesStream.and.returnValues(outStream1, outStream2);
 
-          runtime.executePromiseFunction('vcsCommitMessages').then(assertTempFiles).then(done);
+          runtime.executePromiseFunction('vcsCommitMessages')
+            .then(assertTempFiles)
+            .then(done)
+            .catch(done.fail);
 
           outStream1.push('log-line1\n');
           outStream1.push('log-line2\n');

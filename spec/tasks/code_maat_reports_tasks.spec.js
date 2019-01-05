@@ -32,7 +32,10 @@ describe('CodeMaat report tasks', function() {
 
       describe('as a Task', function() {
         it(exampleDescription, function(done) {
-          runtime.executePromiseTask(taskName).then(_.wrap(taskName, assertOutput)).then(done);
+          runtime.executePromiseTask(taskName)
+            .then(_.wrap(taskName, assertOutput))
+            .then(done)
+            .catch(done.fail);
 
           analysisStream.push({ path: 'test_file1', testData: 123 });
           analysisStream.push({ path: 'test_file2', testData: 456 });
@@ -42,7 +45,10 @@ describe('CodeMaat report tasks', function() {
 
       describe('as a Function', function() {
         it(exampleDescription, function(done) {
-          runtime.executePromiseFunction(functionName).then(_.wrap(taskName, assertOutput)).then(done);
+          runtime.executePromiseFunction(functionName)
+            .then(_.wrap(taskName, assertOutput))
+            .then(done)
+            .catch(done.fail);
 
           analysisStream.push({ path: 'test_file1', testData: 123 });
           analysisStream.push({ path: 'test_file2', testData: 456 });

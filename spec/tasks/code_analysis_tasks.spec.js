@@ -1,6 +1,7 @@
 /*global require_src cfHelpers*/
-var _      = require('lodash'),
-    stream = require('stream');
+var _        = require('lodash'),
+    Bluebird = require('bluebird'),
+    stream   = require('stream');
 
 var codeAnalysisTasks = require_src('tasks/code_analysis_tasks'),
     vcs               = require_src('vcs');
@@ -68,19 +69,23 @@ describe('Code analysis tasks', function() {
       mockVcsClient.showRevisionStream.and.returnValues(revisionStream1, revisionStream2);
 
       runtime = cfHelpers.runtimeSetup(codeAnalysisTasks, null, { dateFrom: '2015-03-01', targetFile: 'test_abs.rb' });
-      runtime.executePromiseTask('sloc-trend-analysis').then(function(taskOutput) {
-        return taskOutput.assertOutputReport('2015-03-01_2015-10-22_sloc-trend-data.json', [
-          { revision: 123, date: '2015-04-29T23:00:00.000Z', path: 'test_abs.rb', sourceLines: 3, totalLines: 3 },
-          { revision: 456, date: '2015-05-04T23:00:00.000Z', path: 'test_abs.rb', sourceLines: 5, totalLines: 5 }
-        ]).then(function() {
-          return taskOutput.assertManifest({
-            reportName: 'sloc-trend',
-            parameters: { targetFile: 'test_abs.rb' },
-            dateRange: '2015-03-01_2015-10-22',
-            enabledDiagrams: ['sloc']
-          });
-        });
-      }).then(done);
+      runtime.executePromiseTask('sloc-trend-analysis')
+        .then(function(taskOutput) {
+          return Bluebird.all([
+            taskOutput.assertOutputReport('2015-03-01_2015-10-22_sloc-trend-data.json', [
+              { revision: 123, date: '2015-04-29T23:00:00.000Z', path: 'test_abs.rb', sourceLines: 3, totalLines: 3 },
+              { revision: 456, date: '2015-05-04T23:00:00.000Z', path: 'test_abs.rb', sourceLines: 5, totalLines: 5 }
+            ]),
+            taskOutput.assertManifest({
+              reportName: 'sloc-trend',
+              parameters: { targetFile: 'test_abs.rb' },
+              dateRange: '2015-03-01_2015-10-22',
+              enabledDiagrams: ['sloc']
+            })
+          ]);
+        })
+        .then(done)
+        .catch(done.fail);
 
       _.times(3, function(n) {
         revisionStream1.push('line ' + n + "\n");

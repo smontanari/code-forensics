@@ -1,7 +1,8 @@
 /*eslint-disable max-lines*/
 /*global require_src cfHelpers*/
-var _      = require('lodash'),
-    stream = require('stream');
+var _        = require('lodash'),
+    Bluebird = require('bluebird'),
+    stream   = require('stream');
 
 var couplingAnalysisTasks = require_src('tasks/coupling_analysis_tasks'),
     codeMaat              = require_src('analysers/code_maat'),
@@ -47,17 +48,20 @@ describe('Coupling analysis tasks', function() {
       );
 
       runtime.executePromiseTask('sum-of-coupling-analysis').then(function(taskOutput) {
-        return taskOutput.assertOutputReport('2015-03-01_2015-10-22_sum-of-coupling-data.json', [
-          { path: 'test_file1', soc: 34 },
-          { path: 'test_file2', soc: 62 }
-        ]).then(function() {
-          return taskOutput.assertManifest({
+        return Bluebird.all([
+          taskOutput.assertOutputReport('2015-03-01_2015-10-22_sum-of-coupling-data.json', [
+            { path: 'test_file1', soc: 34 },
+            { path: 'test_file2', soc: 62 }
+          ]),
+          taskOutput.assertManifest({
             reportName: 'sum-of-coupling',
             dateRange: '2015-03-01_2015-10-22',
             enabledDiagrams: ['sum-of-coupling']
-          });
-        });
-      }).then(done);
+          })
+        ]);
+      })
+      .then(done)
+      .catch(done.fail);
 
       expect(codeMaat.analyser).toHaveBeenCalledWith('soc');
       analysisStream.push({ path: 'test_file1', soc: 34 });
@@ -153,173 +157,175 @@ describe('Coupling analysis tasks', function() {
         }
       });
 
-      runtime.executePromiseTask('temporal-coupling-analysis').then(function(taskOutput) {
-        return taskOutput.assertOutputReport('2016-01-01_2016-01-31_temporal-coupling-data.json',
-          {
-            children: [
+      runtime.executePromiseTask('temporal-coupling-analysis')
+        .then(function(taskOutput) {
+          return Bluebird.all([
+            taskOutput.assertOutputReport('2016-01-01_2016-01-31_temporal-coupling-data.json',
               {
-                name: 'test',
                 children: [
                   {
-                    name: 'a',
+                    name: 'test',
                     children: [
                       {
-                        name: 'file1',
-                        children: [],
-                        sourceLines: 33,
-                        totalLines: 35,
-                        couplingDegree: 23,
-                        revisionsAvg: 12,
-                        addedLines: 295,
-                        deletedLines: 209,
-                        weight: 0.7666666666666667
-                      }
-                    ]
-                  },
-                  {
-                    name: 'b',
-                    children: [
+                        name: 'a',
+                        children: [
+                          {
+                            name: 'file1',
+                            children: [],
+                            sourceLines: 33,
+                            totalLines: 35,
+                            couplingDegree: 23,
+                            revisionsAvg: 12,
+                            addedLines: 295,
+                            deletedLines: 209,
+                            weight: 0.7666666666666667
+                          }
+                        ]
+                      },
                       {
-                        name: 'file2',
+                        name: 'b',
+                        children: [
+                          {
+                            name: 'file2',
+                            children: [],
+                            sourceLines: 23,
+                            totalLines: 28,
+                            addedLines:  40,
+                            deletedLines:  61,
+                            weight: 0
+                          }
+                        ]
+                      },
+                      {
+                        name: 'c',
+                        children: [
+                          {
+                            name: 'file3',
+                            children: [],
+                            sourceLines: 15,
+                            totalLines: 21,
+                            revisionsAvg: 5,
+                            couplingDegree: 30,
+                            addedLines:  71,
+                            deletedLines:  37,
+                            weight: 1
+                          }
+                        ]
+                      },
+                      {
+                        name: 'd',
+                        children: [
+                          {
+                            name: 'file4',
+                            children: [],
+                            sourceLines: 25,
+                            totalLines: 35,
+                            weight: 0
+                          }
+                        ]
+                      },
+                      {
+                        name: 'target_file',
                         children: [],
-                        sourceLines: 23,
-                        totalLines: 28,
-                        addedLines:  40,
-                        deletedLines:  61,
+                        sourceLines: 55,
+                        totalLines: 62,
+                        addedLines: 150,
+                        deletedLines: 60,
                         weight: 0
                       }
                     ]
-                  },
-                  {
-                    name: 'c',
-                    children: [
-                      {
-                        name: 'file3',
-                        children: [],
-                        sourceLines: 15,
-                        totalLines: 21,
-                        revisionsAvg: 5,
-                        couplingDegree: 30,
-                        addedLines:  71,
-                        deletedLines:  37,
-                        weight: 1
-                      }
-                    ]
-                  },
-                  {
-                    name: 'd',
-                    children: [
-                      {
-                        name: 'file4',
-                        children: [],
-                        sourceLines: 25,
-                        totalLines: 35,
-                        weight: 0
-                      }
-                    ]
-                  },
-                  {
-                    name: 'target_file',
-                    children: [],
-                    sourceLines: 55,
-                    totalLines: 62,
-                    addedLines: 150,
-                    deletedLines: 60,
-                    weight: 0
                   }
                 ]
               }
-            ]
-          }
-        ).then(function() {
-          return taskOutput.assertOutputReport('2016-03-01_2016-03-31_temporal-coupling-data.json',
-            {
-              children: [
-                {
-                  name: 'test',
-                  children: [
-                    {
-                      name: 'a',
-                      children: [
-                        {
-                          name: 'file1',
-                          children: [],
-                          sourceLines: 33,
-                          totalLines: 35,
-                          revisionsAvg: 30,
-                          couplingDegree: 10,
-                          addedLines: 147,
-                          deletedLines: 56,
-                          weight: 0.30303030303030304
-                        }
-                      ]
-                    },
-                    {
-                      name: 'b',
-                      children: [
-                        {
-                          name: 'file2',
-                          children: [],
-                          sourceLines: 23,
-                          totalLines: 28,
-                          addedLines: 19,
-                          deletedLines: 6,
-                          weight: 0
-                        }
-                      ]
-                    },
-                    {
-                      name: 'c',
-                      children: [
-                        {
-                          name: 'file3',
-                          children: [],
-                          sourceLines: 15,
-                          totalLines: 21,
-                          weight: 0
-                        }
-                      ]
-                    },
-                    {
-                      name: 'd',
-                      children: [
-                        {
-                          name: 'file4',
-                          children: [],
-                          sourceLines: 25,
-                          totalLines: 35,
-                          revisionsAvg: 18,
-                          couplingDegree: 33,
-                          addedLines: 91,
-                          deletedLines: 38,
-                          weight: 1
-                        }
-                      ]
-                    },
-                    {
-                      name: 'target_file',
-                      children: [],
-                      sourceLines: 55,
-                      totalLines: 62,
-                      addedLines: 50,
-                      deletedLines: 10,
-                      weight: 0
-                    }
-                  ]
-                }
-              ]
-            }
-          );
-        }).then(function() {
-          return taskOutput.assertMissingOutputReport('2016-02-01_2016-02-29_temporal-coupling-data.json');
-        }).then(function() {
-          return taskOutput.assertManifest({
-            reportName: 'temporal-coupling',
-            dateRange: '2016-01-01_2016-03-31',
-            enabledDiagrams: ['temporal-coupling']
-          });
-        });
-      }).then(done);
+            ),
+            taskOutput.assertOutputReport('2016-03-01_2016-03-31_temporal-coupling-data.json',
+              {
+                children: [
+                  {
+                    name: 'test',
+                    children: [
+                      {
+                        name: 'a',
+                        children: [
+                          {
+                            name: 'file1',
+                            children: [],
+                            sourceLines: 33,
+                            totalLines: 35,
+                            revisionsAvg: 30,
+                            couplingDegree: 10,
+                            addedLines: 147,
+                            deletedLines: 56,
+                            weight: 0.30303030303030304
+                          }
+                        ]
+                      },
+                      {
+                        name: 'b',
+                        children: [
+                          {
+                            name: 'file2',
+                            children: [],
+                            sourceLines: 23,
+                            totalLines: 28,
+                            addedLines: 19,
+                            deletedLines: 6,
+                            weight: 0
+                          }
+                        ]
+                      },
+                      {
+                        name: 'c',
+                        children: [
+                          {
+                            name: 'file3',
+                            children: [],
+                            sourceLines: 15,
+                            totalLines: 21,
+                            weight: 0
+                          }
+                        ]
+                      },
+                      {
+                        name: 'd',
+                        children: [
+                          {
+                            name: 'file4',
+                            children: [],
+                            sourceLines: 25,
+                            totalLines: 35,
+                            revisionsAvg: 18,
+                            couplingDegree: 33,
+                            addedLines: 91,
+                            deletedLines: 38,
+                            weight: 1
+                          }
+                        ]
+                      },
+                      {
+                        name: 'target_file',
+                        children: [],
+                        sourceLines: 55,
+                        totalLines: 62,
+                        addedLines: 50,
+                        deletedLines: 10,
+                        weight: 0
+                      }
+                    ]
+                  }
+                ]
+              }
+            ),
+            taskOutput.assertMissingOutputReport('2016-02-01_2016-02-29_temporal-coupling-data.json'),
+            taskOutput.assertManifest({
+              reportName: 'temporal-coupling',
+              dateRange: '2016-01-01_2016-03-31',
+              enabledDiagrams: ['temporal-coupling']
+            })
+          ]);
+        })
+        .then(done)
+        .catch(done.fail);
 
       _.each(couplingStreams, function(s, index) {
         _.each(couplingStreamsData[index], s.push.bind(s));
