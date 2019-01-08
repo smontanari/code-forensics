@@ -5,7 +5,11 @@
 #### Changed
 
 - Upgraded escomplex to 0.1.0
-- Upgraded a number of package dependencies
+- Upgraded package dependencies: JSONStream, bluebird, csv-string, d3,
+  d3-tip,ecstatic, findup-sync, glob, less, lodash, merge2, moment, multipipe,
+  multistream, mustache, router, shelljs, sloc, string_decoder, systemjs,
+  through2, through2-filter, typhonjs-escomplex, eslint, eslint-plugin-jasmine,
+  jasmine
 - Removed direct dependency on `fancy-log` to work around some log colour issues
 - Replaced `chalk` with `ansi-colors`
 
@@ -23,7 +27,9 @@
   program will use all the available cpu cores to run multiple commands in
   parallel. With the environment variable `SERIAL_PROCESSING` set, or with the
   configuration property `serialProcessing: true`, the program will switch to
-  run one command at a time. See the [wiki](https://github.com/smontanari/code-forensics/wiki/Advanced-setup#parallel-vs-serial-execution) for more information.
+  run one command at a time. See the
+  [wiki](https://github.com/smontanari/code-forensics/wiki/Advanced-setup#parallel-vs-serial-execution)
+  for more information.
 
   The previous way of configuring parallelism (using the `maxConcurrency`
   setting) is still maintained for backward compatibility, but it is
