@@ -1,8 +1,8 @@
 <script id="metric-range-filters" type="text/html">
   <div data-bind="foreach: diagram.controls.filters.metricRange">
     <p class="control-name metric-filter"><span data-bind="text: $parent.filtersData('metric-range-filters', 'labels[' + $index() + ']')"></span> <output data-bind="text: displayValue"></output></p>
-    <div class="slider">
-      <input class="bar" type="range" data-bind="textInput: inputValue, attr: { min: range().min, max: range().max }"/>
+    <div>
+      <input class="slider" type="range" data-bind="textInput: inputValue, attr: { min: range().min, max: range().max }"/>
     </div>
   </div>
 </script>

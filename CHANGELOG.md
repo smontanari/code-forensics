@@ -10,6 +10,7 @@
   multistream, mustache, router, shelljs, sloc, string_decoder, systemjs,
   through2, through2-filter, typhonjs-escomplex, eslint, eslint-plugin-jasmine,
   jasmine
+- simplified styling of slider component
 - Removed direct dependency on `fancy-log` to work around some log colour issues
 - Replaced `chalk` with `ansi-colors`
 
