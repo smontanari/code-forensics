@@ -76,6 +76,7 @@
     "eslint": "^5.16.0",
     "eslint-plugin-jasmine": "^2.10.1",
     "jasmine": "^3.4.0",
-    "jasmine-spec-reporter": "^4.2.1"
+    "jasmine-spec-reporter": "^4.2.1",
+    "moment-timezone": "^0.5.25"
   }
 }

@@ -8,7 +8,7 @@ describe('Logger', function() {
 
   var assertStdout = function(msg) {
     expect(process.stdout.write.calls.count()).toEqual(2);
-    expect(process.stdout.write.calls.argsFor(0)).toEqual(['[21:14:57] ']);
+    expect(process.stdout.write.calls.argsFor(0)).toEqual(['[10:14:57] ']);
     expect(process.stdout.write.calls.argsFor(1)).toEqual([msg + '\n', jasmine.any(Function)]);
   };
 

@@ -27,7 +27,7 @@ describe('ESComplexAnalyser', function() {
         ],
         methodAverage: { cyclomatic: 3 },
         name: 'B'
-      },
+      }
     ],
     methods: [
       { cyclomatic: 3, name: 'fn1' },

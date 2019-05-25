@@ -179,7 +179,7 @@ global.cfHelpers = {
     var tasksRuntimeConfig = tasksFn(taskDefinitions, taskContext, taskHelpers(taskContext));
     tasksRuntimeConfig.tasks(); //process the gulp tasks
     return new Runtime(gulpTasks, tasksRuntimeConfig.functions);
-  },
+  }
 };
 
 mkdirp.sync(TEST_TMP_DIR);

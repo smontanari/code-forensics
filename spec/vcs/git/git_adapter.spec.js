@@ -100,7 +100,7 @@ describe('GitAdapter', function() {
     });
 
     it('returns an empty list if the command output is empty', function() {
-      spyOn(command, 'run').and.returnValue(new Buffer("\n"));
+      spyOn(command, 'run').and.returnValue(new Buffer('\n'));
       var revisions = this.subject.revisions('test/file', this.timePeriod);
 
       expect(revisions).toEqual([]);

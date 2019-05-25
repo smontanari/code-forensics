@@ -18,8 +18,8 @@ describe('Code analysis tasks', function() {
     beforeEach(function() {
       runtime = cfHelpers.runtimeSetup(codeAnalysisTasks);
 
-      runtime.prepareRepositoryFile('test_file1.js', "line1\nline2");
-      runtime.prepareRepositoryFile('test_file2.rb', "line1\nline2\nline3\n");
+      runtime.prepareRepositoryFile('test_file1.js', 'line1\nline2');
+      runtime.prepareRepositoryFile('test_file2.rb', 'line1\nline2\nline3\n');
     });
 
     var assertReport = function(taskOutput) {
@@ -88,12 +88,12 @@ describe('Code analysis tasks', function() {
         .catch(done.fail);
 
       _.times(3, function(n) {
-        revisionStream1.push('line ' + n + "\n");
+        revisionStream1.push('line ' + n + '\n');
       });
       revisionStream1.end();
 
       _.times(5, function(n) {
-        revisionStream2.push('line ' + n + "\n");
+        revisionStream2.push('line ' + n + '\n');
       });
       revisionStream2.end();
     });

@@ -22,7 +22,7 @@ describe('LayerGrouping', function() {
         'test/path4 => a_Layer 2',
         '^test\\/path3\\/.*--abc\\/files$ => a_Layer 2',
         'test/path5 => another layer-3'
-      ].join("\n"));
+      ].join('\n'));
     });
   });
 
@@ -36,20 +36,20 @@ describe('LayerGrouping', function() {
         'test/path1 => Layer 1',
         'test/path2 => Layer 1',
         '^test\\/path3\\/((?!.*--abc\\.)).*\\/files$ => Layer 1'
-      ].join("\n"));
+      ].join('\n'));
 
       expect(layers[1].name).toEqual('a-layer-2');
       expect(layers[1].value).toEqual('a_Layer 2');
       expect(layers[1].toString()).toEqual([
         'test/path4 => a_Layer 2',
         '^test\\/path3\\/.*--abc\\/files$ => a_Layer 2'
-      ].join("\n"));
+      ].join('\n'));
 
       expect(layers[2].name).toEqual('another-layer-3');
       expect(layers[2].value).toEqual('another layer-3');
       expect(layers[2].toString()).toEqual([
         'test/path5 => another layer-3'
-      ].join("\n"));
+      ].join('\n'));
     };
 
     beforeEach(function() {

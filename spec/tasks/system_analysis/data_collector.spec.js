@@ -54,7 +54,7 @@ describe('DataCollector', function() {
             expect(data).toEqual([
               jasmine.objectContaining({ metric: 60, date: '2010-03-31T00:00:00.000Z' }),
               jasmine.objectContaining({ metric: 90, date: '2010-04-30T00:00:00.000Z' }),
-              jasmine.objectContaining({ metric: 30, date: '2010-05-31T00:00:00.000Z' }),
+              jasmine.objectContaining({ metric: 30, date: '2010-05-31T00:00:00.000Z' })
             ]);
             done();
           });

@@ -50,7 +50,7 @@ describe('noLayerStrategy', function() {
         .on('data', function(obj) { data.push(obj); })
         .on('end', function() {
           expect(data).toEqual([
-            jasmine.objectContaining({ name: 'All files', metric1: 60, metric2: 30, date: '2010-05-31T00:00:00.000Z' }),
+            jasmine.objectContaining({ name: 'All files', metric1: 60, metric2: 30, date: '2010-05-31T00:00:00.000Z' })
           ]);
 
           expect(mockFilesHelper.vcsNormalisedLog).toHaveBeenCalledWith(timePeriod);

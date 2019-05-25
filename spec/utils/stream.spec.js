@@ -85,7 +85,7 @@ describe('utils.stream', function() {
           done();
         });
 
-        input.write("test");
+        input.write('test');
         input.end();
       });
     });

@@ -33,8 +33,8 @@ describe('TimePeriodResults', function() {
         })
         .once('end', function() {
           expect(allObjs).toEqual([
-            { name: 'path1', date: '2010-06-07T23:30:00.000Z', result1: 10, result2: 20 },
-            { name: 'path2', date: '2010-06-07T23:30:00.000Z', result1: 20, result2: 60 }
+            { name: 'path1', date: '2010-06-08T09:30:00.000Z', result1: 10, result2: 20 },
+            { name: 'path2', date: '2010-06-08T09:30:00.000Z', result1: 20, result2: 60 }
           ]);
           done();
         });
@@ -67,7 +67,7 @@ describe('TimePeriodResults', function() {
       objStream.pipe(streamMap)
         .on('data', function(obj) {
           expect(obj).toEqual(
-            { name: 'path', date: '2010-06-07T23:30:00.000Z', result1: 10, result2: 10 }
+            { name: 'path', date: '2010-06-08T09:30:00.000Z', result1: 10, result2: 10 }
           );
         })
         .once('end', done);
@@ -103,7 +103,7 @@ describe('TimePeriodResults', function() {
       objStream.pipe(streamMap)
         .on('data', function(obj) {
           expect(obj).toEqual(
-            { name: 'All files', date: '2010-06-07T23:30:00.000Z', result1: 30, result2: 80 }
+            { name: 'All files', date: '2010-06-08T09:30:00.000Z', result1: 30, result2: 80 }
           );
         })
         .once('end', done);
@@ -141,7 +141,7 @@ describe('TimePeriodResults', function() {
               { name: 'path2', cumulativeResult1:  2, cumulativeResult2:  6, metricA: 2, metricB: 3, metricC: 5 },
               { name: 'path2', cumulativeResult1:  9, cumulativeResult2: 20, metricA: 7, metricB: 2, metricC: 5 },
               { name: 'path1', cumulativeResult1:  4, cumulativeResult2: 17, metricA: 3, metricB: 5, metricC: 5 },
-              { name: 'path2', cumulativeResult1: 13, cumulativeResult2: 28, metricA: 4, metricB: 2, metricC: 5 },
+              { name: 'path2', cumulativeResult1: 13, cumulativeResult2: 28, metricA: 4, metricB: 2, metricC: 5 }
             ]);
             done();
           });

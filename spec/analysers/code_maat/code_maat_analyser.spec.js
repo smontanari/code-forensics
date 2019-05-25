@@ -58,7 +58,7 @@ describe('CodeMaatAnalyser', function() {
 
   var stubCodeMaatReport = function(data) {
     data.forEach(function(line) {
-      commandOutputStream.write(line + "\n");
+      commandOutputStream.write(line + '\n');
     });
     commandOutputStream.end();
   };

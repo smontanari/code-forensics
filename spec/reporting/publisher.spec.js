@@ -136,7 +136,7 @@ describe('Publisher', function() {
           expect(manifest.dateRange).toEqual('2012-03_2012-07');
           expect(manifest.enabledDiagrams).toEqual(['test-diagram1', 'test-diagram2']);
           expect(manifest.dataFiles).toEqual([
-            { fileType: undefined, timePeriod: '2012-04_2012-05', fileUrl: 'c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/2012-04_2012-05_test-file.json'},
+            { fileType: undefined, timePeriod: '2012-04_2012-05', fileUrl: 'c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/2012-04_2012-05_test-file.json'}
           ]);
         });
       });
@@ -163,7 +163,7 @@ describe('Publisher', function() {
           expect(manifest.time).toEqual('2013-10-22T13:00:00.000Z');
           expect(manifest.dateRange).toEqual('2012-03_2012-07');
           expect(manifest.dataFiles).toEqual([
-            { fileType: undefined, timePeriod: '2012-04_2012-05', fileUrl: 'c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/2012-04_2012-05_test-file.json'},
+            { fileType: undefined, timePeriod: '2012-04_2012-05', fileUrl: 'c8c1dcae8f21797ee19a82d7958caf0aba7da1c6/2012-04_2012-05_test-file.json'}
           ]);
         });
       });

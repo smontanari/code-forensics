@@ -17,8 +17,8 @@ describe('TimePeriod', function() {
 
   it('returns an object with ISO formatted dates', function() {
     expect(new TimePeriod(this.period, 'YYYY-MM-DD').toISOFormat()).toEqual({
-      startDate: '2013-02-07T22:30:26.123Z',
-      endDate: '2014-01-18T08:10:46.456Z'
+      startDate: '2013-02-08T09:30:26.123Z',
+      endDate: '2014-01-18T19:10:46.456Z'
     });
   });
 

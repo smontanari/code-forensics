@@ -78,7 +78,7 @@ describe('SlocAnalyser', function() {
             },
             extensionMapping: {
               '.test1': 'rb',
-              '.rake': 'html',
+              '.rake': 'html'
             }
           }
         });
@@ -104,7 +104,7 @@ describe('SlocAnalyser', function() {
   describe('.fileAnalysis()', function() {
     beforeEach(function() {
       spyOn(utils.stream, 'readFileToObjectStream').and.callFake(function(file, cb) {
-        return cb("line1\n#line2\n\nline3");
+        return cb('line1\n#line2\n\nline3');
       });
     });
     verifySlocReport('fileAnalysisStream');
@@ -113,7 +113,7 @@ describe('SlocAnalyser', function() {
   describe('.sourceAnalysis()', function() {
     beforeEach(function() {
       spyOn(utils.stream, 'reduceToObjectStream').and.callFake(function(cb) {
-        return cb("line1\n#line2\n\nline3");
+        return cb('line1\n#line2\n\nline3');
       });
     });
 

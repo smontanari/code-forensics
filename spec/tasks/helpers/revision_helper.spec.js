@@ -1,6 +1,6 @@
 /*global require_src*/
 var stream = require('stream'),
-    map    = require("through2-map"),
+    map    = require('through2-map'),
     moment = require('moment');
 
 var RevisionHelper = require_src('tasks/helpers/revision_helper'),

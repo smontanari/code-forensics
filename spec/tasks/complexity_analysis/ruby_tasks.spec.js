@@ -19,14 +19,14 @@ describe('ruby tasks', function() {
     var assertReport = function(taskOutput) {
       return taskOutput.assertTempReport('ruby-complexity-report.json', [
         {
-          path: "test_file1.rb", totalComplexity: 22, averageComplexity: 7.3,
+          path: 'test_file1.rb', totalComplexity: 22, averageComplexity: 7.3,
           methodComplexity: [
             { name: 'main#none', complexity: 18.6 },
             { name: 'chain#linking_to          /absolute/path/test_file1.rb:8', complexity: 1.7 }
           ]
         },
         {
-          path: "test_file3.rb", totalComplexity: 95.1, averageComplexity: 8.6,
+          path: 'test_file3.rb', totalComplexity: 95.1, averageComplexity: 8.6,
           methodComplexity: [
             { name: 'Module::TestFile2#test_method /absolute/path/test_file3.rb:54', complexity: 26.2 }
           ]
@@ -47,21 +47,21 @@ describe('ruby tasks', function() {
 
     var streamData = function() {
       _.each([
-        "\t22.0: flog total\n",
-        "\t 7.3: flog/method average\n",
+        '\t22.0: flog total\n',
+        '\t 7.3: flog/method average\n'
       ], function(line) {
         analysisStream1.push(line);
       });
       _.each([
-        "\t95.1: flog total\n",
-        "\t 8.6: flog/method average\n",
-        "\n",
-        "\t26.2: Module::TestFile2#test_method /absolute/path/test_file3.rb:54"
+        '\t95.1: flog total\n',
+        '\t 8.6: flog/method average\n',
+        '\n',
+        '\t26.2: Module::TestFile2#test_method /absolute/path/test_file3.rb:54'
       ], function(line) { analysisStream2.push(line); });
       _.each([
-        "\n",
-        "\t18.6: main#none\n",
-        "\t 1.7: chain#linking_to          /absolute/path/test_file1.rb:8\n"
+        '\n',
+        '\t18.6: main#none\n',
+        '\t 1.7: chain#linking_to          /absolute/path/test_file1.rb:8\n'
       ], function(line) { analysisStream1.push(line); });
 
       analysisStream2.end();
@@ -164,30 +164,30 @@ describe('ruby tasks', function() {
       .then(done)
       .catch(done.fail);
 
-      revisionStream1.push("def abs(a,b)\n");
-      revisionStream1.push("a - b\nend");
+      revisionStream1.push('def abs(a,b)\n');
+      revisionStream1.push('a - b\nend');
       revisionStream1.end();
 
-      revisionStream2.push("def abs(a,b)\n");
-      revisionStream2.push("return b - a if (a < b)\n");
-      revisionStream2.push("a - b\n");
-      revisionStream2.push("end\n");
+      revisionStream2.push('def abs(a,b)\n');
+      revisionStream2.push('return b - a if (a < b)\n');
+      revisionStream2.push('a - b\n');
+      revisionStream2.push('end\n');
       revisionStream2.end();
 
       complexityStream1.push(
-        "\t22.0: flog total\n" +
-        "\t 7.3: flog/method average\n" +
-        "\n" +
-        "\t18.6: main#none\n" +
-        "\t 1.7: chain#linking_to          /absolute/path/test_abs.rb:8\n"
+        '\t22.0: flog total\n' +
+        '\t 7.3: flog/method average\n' +
+        '\n' +
+        '\t18.6: main#none\n' +
+        '\t 1.7: chain#linking_to          /absolute/path/test_abs.rb:8\n'
       );
       complexityStream1.end();
 
       complexityStream2.push(
-        "\t95.1: flog total\n" +
-        "\t 8.6: flog/method average\n" +
-        "\n" +
-        "\t26.2: Module::TestFile2#test_method /absolute/path/test_abs.rb:54"
+        '\t95.1: flog total\n' +
+        '\t 8.6: flog/method average\n' +
+        '\n' +
+        '\t26.2: Module::TestFile2#test_method /absolute/path/test_abs.rb:54'
       );
       complexityStream2.end();
     });

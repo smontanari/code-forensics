@@ -15,10 +15,10 @@ describe('ReportComposer', function() {
     spyOn(DataSourceHandler, 'instance').and.returnValue(mockDataSourceHandler);
     mockDataSourceHandler.processDataSource.and.returnValues(
       Bluebird.resolve([
-        { a: 123, b: "qwe" },
-        { a: 456, b: "vbn" },
-        { a: 123, b: "zxc" },
-        { a: 999, b: "asd" }
+        { a: 123, b: 'qwe' },
+        { a: 456, b: 'vbn' },
+        { a: 123, b: 'zxc' },
+        { a: 999, b: 'asd' }
       ]),
       Bluebird.resolve([
         { a: 123, c: 'XXX' },
@@ -50,10 +50,10 @@ describe('ReportComposer', function() {
         })
       ]).buildReport().then(function(reportData) {
         expect(reportData).toEqual([
-          { a: 123, b: "qwe", c: 'XXX', d: { d1: 111, d2: 222 } },
-          { a: 456, b: "vbn", c: 'YYY', d: { d1: 333, d2: 444 } },
-          { a: 123, b: "zxc", c: 'XXX', d: { d1: 111, d2: 222 } },
-          { a: 999, b: "asd" }
+          { a: 123, b: 'qwe', c: 'XXX', d: { d1: 111, d2: 222 } },
+          { a: 456, b: 'vbn', c: 'YYY', d: { d1: 333, d2: 444 } },
+          { a: 123, b: 'zxc', c: 'XXX', d: { d1: 111, d2: 222 } },
+          { a: 999, b: 'asd' }
         ]);
 
         expect(mockDataSourceHandler.processDataSource.calls.allArgs()).toEqual([

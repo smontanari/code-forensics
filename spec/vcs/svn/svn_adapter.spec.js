@@ -122,7 +122,7 @@ describe('SvnAdapter', function() {
     '<msg>test message 2</msg>',
     '</logentry>',
     '</log>'
-  ].join("\n");
+  ].join('\n');
 
   beforeEach(function() {
     spyOn(command.Command, 'ensure');
@@ -174,7 +174,7 @@ describe('SvnAdapter', function() {
           result += chunk.toString();
         })
         .on('end', function() {
-          expect(result).toEqual("test message 123\ntest message 456\ntest message 789\n");
+          expect(result).toEqual('test message 123\ntest message 456\ntest message 789\n');
           done();
         });
 
@@ -218,7 +218,7 @@ describe('SvnAdapter', function() {
         '<?xml version="1.0" encoding="UTF-8"?>',
         '<log>',
         '</log>'
-      ].join("\n")));
+      ].join('\n')));
       var revisions = this.subject.revisions('test/file', this.timePeriod);
 
       expect(revisions).toEqual([]);

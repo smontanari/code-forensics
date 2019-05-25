@@ -24,16 +24,16 @@ describe('Misc Tasks', function() {
           '^test\\/path2\\/((?!.*--abc\\.)).*\\/files$ => Test Layer1',
           'test_path3 => Test Layer2',
           '^test\\/path4\\/.*\\.cf$ => Test Layer2'
-        ].join("\n")).then(function() {
+        ].join('\n')).then(function() {
           return taskOutput.assertTempFile('layer-group-test-layer-1.txt', [
             'test/path1 => Test Layer1',
             '^test\\/path2\\/((?!.*--abc\\.)).*\\/files$ => Test Layer1'
-          ].join("\n"));
+          ].join('\n'));
         }).then(function() {
           return taskOutput.assertTempFile('layer-group-test-layer-2.txt', [
             'test_path3 => Test Layer2',
             '^test\\/path4\\/.*\\.cf$ => Test Layer2'
-          ].join("\n"));
+          ].join('\n'));
         });
       };
 

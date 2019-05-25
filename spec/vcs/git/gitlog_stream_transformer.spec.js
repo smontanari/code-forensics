@@ -41,23 +41,23 @@ describe('GitLogStreamTransformer', function() {
             '0 1 test/file3.rb',
             '0 20  test/file4.html.erb',
             '6 8 test/file5.js'
-          ].join("\n"));
+          ].join('\n'));
           done();
         });
 
       var logLines = [
-        "--98b656f--2016-10-31--Developer 1\n",
-        "--f7633f6--2016-10-31--Developer 3\n",
-        "10  0 test/file1.yml.erb\n",
+        '--98b656f--2016-10-31--Developer 1\n',
+        '--f7633f6--2016-10-31--Developer 3\n',
+        '10  0 test/file1.yml.erb\n',
         '\n',
-        "--6ff89bc--2016-10-31--Developer_2\n",
-        "1 1 test/file2.rb\n",
+        '--6ff89bc--2016-10-31--Developer_2\n',
+        '1 1 test/file2.rb\n',
         '\n',
-        "--02790fd--2016-10-31--Developer.3\n",
-        "--5fbfb14--2016-10-28--Alias developer 2\n",
-        "0 1 test/file3.rb\n",
-        "0 20  test/file4.html.erb\n",
-        "6 8 test/file5.js"
+        '--02790fd--2016-10-31--Developer.3\n',
+        '--5fbfb14--2016-10-28--Alias developer 2\n',
+        '0 1 test/file3.rb\n',
+        '0 20  test/file4.html.erb\n',
+        '6 8 test/file5.js'
       ];
 
       _.each(logLines, logStream.push.bind(logStream));
@@ -89,34 +89,34 @@ describe('GitLogStreamTransformer', function() {
         .on('end', function() {
           expect(result).toEqual([
             '--98b656f--2016-10-31--Developer 1',
-            "1\t17\ttest/some/file123.rb",
-            "42\t0\ttest/another/file456.rb",
-            "10\t0\ttest/file1.yml.erb",
+            '1\t17\ttest/some/file123.rb',
+            '42\t0\ttest/another/file456.rb',
+            '10\t0\ttest/file1.yml.erb',
             '',
             '--6ff89bc--2016-10-31--Developer_2',
             '',
             '--02790fd--2016-10-31--Developer.3',
             '--5fbfb14--2016-10-28--Developer_2',
-            "0\t1\ttest/file3.rb",
-            "6\t8\ttest/file5.js"
-          ].join("\n"));
+            '0\t1\ttest/file3.rb',
+            '6\t8\ttest/file5.js'
+          ].join('\n'));
           done();
         });
 
       var logLines = [
-        "--98b656f--2016-10-31--Developer 1\n",
-        "1\t17\ttest/some/file123.rb\n",
-        "42\t0\ttest/another/file456.rb\n",
-        "10\t0\ttest/file1.yml.erb\n",
-        "\n",
-        "--6ff89bc--2016-10-31--Developer_2\n",
-        "1\t1\ttest/invalid_file.rb\n",
-        "\n",
-        "--02790fd--2016-10-31--Developer.3\n",
-        "--5fbfb14--2016-10-28--Developer_2\n",
-        "0\t1\ttest/file3.rb\n",
-        "-\t-\ttest/invalid_file.rb\n",
-        "6\t8\ttest/file5.js"
+        '--98b656f--2016-10-31--Developer 1\n',
+        '1\t17\ttest/some/file123.rb\n',
+        '42\t0\ttest/another/file456.rb\n',
+        '10\t0\ttest/file1.yml.erb\n',
+        '\n',
+        '--6ff89bc--2016-10-31--Developer_2\n',
+        '1\t1\ttest/invalid_file.rb\n',
+        '\n',
+        '--02790fd--2016-10-31--Developer.3\n',
+        '--5fbfb14--2016-10-28--Developer_2\n',
+        '0\t1\ttest/file3.rb\n',
+        '-\t-\ttest/invalid_file.rb\n',
+        '6\t8\ttest/file5.js'
       ];
 
       _.each(logLines, logStream.push.bind(logStream));
@@ -134,24 +134,24 @@ describe('GitLogStreamTransformer', function() {
         .on('end', function() {
           expect(result).toEqual([
             '--98b656f--2016-10-31--Developer 1',
-            "10\t0\ttest/file1.yml.erb",
+            '10\t0\ttest/file1.yml.erb',
             '',
             '--6ff89bc--2016-10-31--Developer_2',
             '',
             ''
-          ].join("\n"));
+          ].join('\n'));
           done();
         });
 
       var logLines = [
         '--98b656f--2016-10-31--Developer 1',
-        "10\t0\ttest/file1.yml.erb",
+        '10\t0\ttest/file1.yml.erb',
         '',
         '--6ff89bc--2016-10-31--Developer_2',
-        "1\t1\ttest/invalid_file.rb",
+        '1\t1\ttest/invalid_file.rb',
         '',
         ''
-      ].join("\n");
+      ].join('\n');
 
       _.each(logLines, logStream.push.bind(logStream));
       logStream.end();

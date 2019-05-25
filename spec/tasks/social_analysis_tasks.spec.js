@@ -29,13 +29,13 @@ describe('Social analysis tasks', function() {
         'xxx-message this does not count',
         'After second before third message',
         'Third message abc www'
-      ].join("\n");
+      ].join('\n');
       var messages2 = [
         'Message 1 www',
         'Message 2 www',
         'Second last message abc',
         'Third and very last'
-      ].join("\n");
+      ].join('\n');
 
       runtime = cfHelpers.runtimeSetup(socialAnalysisTasks,
         {
@@ -116,20 +116,20 @@ describe('Social analysis tasks', function() {
         );
 
         runtime.prepareTempReport('effort-report.json', [
-          { path: "test/a/file1", author: 'Dev1', revisions: 5 },
-          { path: "test/a/file1", author: 'Dev2', revisions: 2 },
-          { path: "test/b/file2", author: 'Dev1', revisions: 8 },
-          { path: "test/b/file2", author: 'Dev3', revisions: 5 },
-          { path: "test/b/file2", author: 'Dev4', revisions: 2 },
-          { path: "test/c/file3", author: 'Dev5', revisions: 10 },
-          { path: "test/c/file3", author: 'Dev with no team', revisions: 7 },
-          { path: "test/test_invalid_file", author: 'Dev3', revisions: 10 }
+          { path: 'test/a/file1', author: 'Dev1', revisions: 5 },
+          { path: 'test/a/file1', author: 'Dev2', revisions: 2 },
+          { path: 'test/b/file2', author: 'Dev1', revisions: 8 },
+          { path: 'test/b/file2', author: 'Dev3', revisions: 5 },
+          { path: 'test/b/file2', author: 'Dev4', revisions: 2 },
+          { path: 'test/c/file3', author: 'Dev5', revisions: 10 },
+          { path: 'test/c/file3', author: 'Dev with no team', revisions: 7 },
+          { path: 'test/test_invalid_file', author: 'Dev3', revisions: 10 }
         ]);
 
         _.each([
-            "test/a/file1",
-            "test/b/file2",
-            "test/c/file3",
+            'test/a/file1',
+            'test/b/file2',
+            'test/c/file3'
           ], function(f) { runtime.prepareRepositoryFile(f, ''); }
         );
       });
@@ -252,20 +252,20 @@ describe('Social analysis tasks', function() {
         );
 
         runtime.prepareTempReport('effort-report.json', [
-          { path: "test/a/file1", author: 'Dev1', revisions: 5 },
-          { path: "test/a/file1", author: 'Dev2', revisions: 2 },
-          { path: "test/b/file2", author: 'Dev1', revisions: 8 },
-          { path: "test/b/file2", author: 'Dev3', revisions: 5 },
-          { path: "test/b/file2", author: 'Dev4', revisions: 2 },
-          { path: "test/c/file3", author: 'Dev5', revisions: 10 },
-          { path: "test/c/file3", author: 'Dev with no team', revisions: 7 },
-          { path: "test/test_invalid_file", author: 'Dev3', revisions: 10 }
+          { path: 'test/a/file1', author: 'Dev1', revisions: 5 },
+          { path: 'test/a/file1', author: 'Dev2', revisions: 2 },
+          { path: 'test/b/file2', author: 'Dev1', revisions: 8 },
+          { path: 'test/b/file2', author: 'Dev3', revisions: 5 },
+          { path: 'test/b/file2', author: 'Dev4', revisions: 2 },
+          { path: 'test/c/file3', author: 'Dev5', revisions: 10 },
+          { path: 'test/c/file3', author: 'Dev with no team', revisions: 7 },
+          { path: 'test/test_invalid_file', author: 'Dev3', revisions: 10 }
         ]);
 
         _.each([
-            "test/a/file1",
-            "test/b/file2",
-            "test/c/file3",
+            'test/a/file1',
+            'test/b/file2',
+            'test/c/file3'
           ], function(f) { runtime.prepareRepositoryFile(f, ''); }
         );
       });
@@ -362,27 +362,27 @@ describe('Social analysis tasks', function() {
 
       beforeEach(function() {
         runtime.prepareTempReport('authors-report.json', [
-          { path: "test_file1", authors: 4, revisions: 54 },
-          { path: "test_file2", authors: 2, revisions: 68 },
-          { path: "test_file3", authors: 3, revisions: 24 },
-          { path: "test_file4", authors: 5, revisions: 52 },
-          { path: "test_file5", authors: 6, revisions: 91 },
-          { path: "test_file6", authors: 1, revisions: 42 }
+          { path: 'test_file1', authors: 4, revisions: 54 },
+          { path: 'test_file2', authors: 2, revisions: 68 },
+          { path: 'test_file3', authors: 3, revisions: 24 },
+          { path: 'test_file4', authors: 5, revisions: 52 },
+          { path: 'test_file5', authors: 6, revisions: 91 },
+          { path: 'test_file6', authors: 1, revisions: 42 }
         ]);
 
         runtime.prepareTempReport('code-ownership-report.json', [
-          { path: "test_file1", author: 'Dev1', addedLines: 12, deletedLines: 4 },
-          { path: "test_file1", author: 'Dev2', addedLines: 5, deletedLines: 0 },
-          { path: "test_file1", author: 'Dev3', addedLines: 6, deletedLines: 1 },
-          { path: "test_file2", author: 'Dev2', addedLines: 15, deletedLines: 5 },
-          { path: "test_file2", author: 'Dev5', addedLines: 3, deletedLines: 2 },
-          { path: "test_file3", author: 'Dev3', addedLines: 7, deletedLines: 3 },
-          { path: "test_file3", author: 'Dev2', addedLines: 4, deletedLines: 1 },
-          { path: "test_file4", author: 'Dev5', addedLines: 9, deletedLines: 0 },
-          { path: "test_file4", author: 'Dev1', addedLines: 3, deletedLines: 0 },
-          { path: "test_file5", author: 'Dev4', addedLines: 5, deletedLines: 0 },
-          { path: "test_file5", author: 'Dev4', addedLines: 5, deletedLines: 0 },
-          { path: "test_file6", author: 'Dev5', addedLines: 14, deletedLines: 0 }
+          { path: 'test_file1', author: 'Dev1', addedLines: 12, deletedLines: 4 },
+          { path: 'test_file1', author: 'Dev2', addedLines: 5, deletedLines: 0 },
+          { path: 'test_file1', author: 'Dev3', addedLines: 6, deletedLines: 1 },
+          { path: 'test_file2', author: 'Dev2', addedLines: 15, deletedLines: 5 },
+          { path: 'test_file2', author: 'Dev5', addedLines: 3, deletedLines: 2 },
+          { path: 'test_file3', author: 'Dev3', addedLines: 7, deletedLines: 3 },
+          { path: 'test_file3', author: 'Dev2', addedLines: 4, deletedLines: 1 },
+          { path: 'test_file4', author: 'Dev5', addedLines: 9, deletedLines: 0 },
+          { path: 'test_file4', author: 'Dev1', addedLines: 3, deletedLines: 0 },
+          { path: 'test_file5', author: 'Dev4', addedLines: 5, deletedLines: 0 },
+          { path: 'test_file5', author: 'Dev4', addedLines: 5, deletedLines: 0 },
+          { path: 'test_file6', author: 'Dev5', addedLines: 14, deletedLines: 0 }
         ]);
 
         couplingStream = new stream.PassThrough({ objectMode: true });
@@ -684,7 +684,7 @@ describe('Social analysis tasks', function() {
                 reportName: 'knowledge-map',
                 parameters: {},
                 dateRange: '2016-01-01_2016-10-22',
-                enabledDiagrams: ['individual-knowledge-map', 'team-knowledge-map'],
+                enabledDiagrams: ['individual-knowledge-map', 'team-knowledge-map']
               });
             });
           });
@@ -785,7 +785,7 @@ describe('Social analysis tasks', function() {
                 reportName: 'knowledge-map',
                 parameters: {},
                 dateRange: '2016-01-01_2016-10-22',
-                enabledDiagrams: ['individual-knowledge-map'],
+                enabledDiagrams: ['individual-knowledge-map']
               });
             });
           });

@@ -20,8 +20,8 @@ describe('WordCountAnalyser', function() {
       })
       .on('end', done);
 
-      this.inputStream.write("First message\n");
-      this.inputStream.write("Second message\n");
+      this.inputStream.write('First message\n');
+      this.inputStream.write('Second message\n');
       this.inputStream.end();
     });
   });
@@ -42,11 +42,11 @@ describe('WordCountAnalyser', function() {
       })
       .on('end', done);
 
-      this.inputStream.write("123 message\n");
-      this.inputStream.write("Bar message\n");
-      this.inputStream.write("Foo Bar message\n");
-      this.inputStream.write("Baz-qaz  message\n");
-      this.inputStream.write("qaz\n");
+      this.inputStream.write('123 message\n');
+      this.inputStream.write('Bar message\n');
+      this.inputStream.write('Foo Bar message\n');
+      this.inputStream.write('Baz-qaz  message\n');
+      this.inputStream.write('qaz\n');
       this.inputStream.end();
     });
   });

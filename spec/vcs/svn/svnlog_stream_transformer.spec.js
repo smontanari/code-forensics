@@ -113,7 +113,7 @@ describe('SvnLogStreamTransformer', function() {
         isValidPath: function(path) { return path && path !== 'src/invalid_file.rb'; }
       };
       var stubAdapter = {
-        vcsRelativePath: function() { return "^/test/path\n"; }
+        vcsRelativePath: function() { return '^/test/path\n'; }
       };
       this.subject = new LogStreamTransformer(stubRepository, stubDevelopersInfo, stubAdapter);
     });

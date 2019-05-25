@@ -54,7 +54,7 @@ webServer.listen(port, host, function() {
 ['SIGINT', 'SIGTERM'].forEach(function(event) {
   process.on(event, function() {
     webServer.close();
-    console.log(ansi.yellow("\nhttp-server stopped."));
+    console.log(ansi.yellow('\nhttp-server stopped.'));
   });
 });
 

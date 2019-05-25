@@ -29,7 +29,7 @@ describe('VCS Tasks', function() {
       var assertOutput = function(taskOutput) {
         return taskOutput.assertTempFile(filenamePrefix + '_2016-01-01_2016-01-31.log', 'pre-existing content')
           .then(function() {
-            return taskOutput.assertTempFile(filenamePrefix + '_2016-02-01_2016-02-28.log', "log-line1\nlog-line2\nlog-line3\n");
+            return taskOutput.assertTempFile(filenamePrefix + '_2016-02-01_2016-02-28.log', 'log-line1\nlog-line2\nlog-line3\n');
           });
       };
 
@@ -45,9 +45,9 @@ describe('VCS Tasks', function() {
               .then(done)
               .catch(done.fail);
 
-            outStream.push("log-line1\n");
-            outStream.push("log-line2\n");
-            outStream.push("log-line3\n");
+            outStream.push('log-line1\n');
+            outStream.push('log-line2\n');
+            outStream.push('log-line3\n');
             outStream.end();
           });
         });
@@ -63,9 +63,9 @@ describe('VCS Tasks', function() {
               .then(done)
               .catch(done.fail);
 
-            outStream.push("log-line1\n");
-            outStream.push("log-line2\n");
-            outStream.push("log-line3\n");
+            outStream.push('log-line1\n');
+            outStream.push('log-line2\n');
+            outStream.push('log-line3\n');
             outStream.end();
           });
         });
@@ -96,81 +96,81 @@ describe('VCS Tasks', function() {
     var assertTempFiles = function(taskOutput) {
       return taskOutput.assertTempFile('vcslog_2016-03-01_2016-03-31.log', [
         '--98b656f--2016-10-31--Developer 1',
-        "10\t0\ttest_file1",
+        '10\t0\ttest_file1',
         '',
         '--6ff89bc--2016-10-31--Developer_2',
-        "1\t1\ttest_invalid_file",
+        '1\t1\ttest_invalid_file',
         '',
         '--02790fd--2016-10-31--Developer.3',
         '--5fbfb14--2016-10-28--Alias developer 4',
-        "0\t1\ttest_file3",
-        "-\t-\ttest_invalid_file",
-        "6\t8\ttest_file4\n"
-      ].join("\n"))
+        '0\t1\ttest_file3',
+        '-\t-\ttest_invalid_file',
+        '6\t8\ttest_file4\n'
+      ].join('\n'))
       .then(function() {
         return taskOutput.assertTempFile('vcslog_2016-04-01_2016-04-30.log', [
           '--98b656f--2016-11-14--Developer 1',
-          "31\t12\ttest_file2",
-          "1\t1\ttest_invalid_file",
+          '31\t12\ttest_file2',
+          '1\t1\ttest_invalid_file',
           '',
           '--02790fd--2016-11-17--Developer.3',
           '--5fbfb14--2016-11-24--Alias developer 4',
-          "7\t41\ttest_file3",
-          "-\t-\ttest_file2",
-          "6\t8\ttest_file4\n"
-        ].join("\n"));
+          '7\t41\ttest_file3',
+          '-\t-\ttest_file2',
+          '6\t8\ttest_file4\n'
+        ].join('\n'));
       })
       .then(function() {
         return taskOutput.assertTempFile('vcslog_normalised_2016-03-01_2016-03-31.log', [
           '--98b656f--2016-10-31--Developer 1',
-          "10\t0\ttest_file1",
+          '10\t0\ttest_file1',
           '',
           '--6ff89bc--2016-10-31--Developer_2',
           '',
           '--02790fd--2016-10-31--Developer.3',
           '--5fbfb14--2016-10-28--Dev4',
-          "0\t1\ttest_file3",
-          "6\t8\ttest_file4\n"
-        ].join("\n"));
+          '0\t1\ttest_file3',
+          '6\t8\ttest_file4\n'
+        ].join('\n'));
       })
       .then(function() {
         return taskOutput.assertTempFile('vcslog_normalised_2016-04-01_2016-04-30.log', [
           '--98b656f--2016-11-14--Developer 1',
-          "31\t12\ttest_file2",
+          '31\t12\ttest_file2',
           '',
           '--02790fd--2016-11-17--Developer.3',
           '--5fbfb14--2016-11-24--Dev4',
-          "7\t41\ttest_file3",
-          "-\t-\ttest_file2",
-          "6\t8\ttest_file4\n"
-        ].join("\n"));
+          '7\t41\ttest_file3',
+          '-\t-\ttest_file2',
+          '6\t8\ttest_file4\n'
+        ].join('\n'));
       });
     };
 
     var logLines1 = [
       '--98b656f--2016-10-31--Developer 1',
-      "10\t0\ttest_file1",
+      '10\t0\ttest_file1',
       '',
       '--6ff89bc--2016-10-31--Developer_2',
-      "1\t1\ttest_invalid_file",
+      '1\t1\ttest_invalid_file',
       '',
       '--02790fd--2016-10-31--Developer.3',
       '--5fbfb14--2016-10-28--Alias developer 4',
-      "0\t1\ttest_file3",
-      "-\t-\ttest_invalid_file",
-      "6\t8\ttest_file4"
+      '0\t1\ttest_file3',
+      '-\t-\ttest_invalid_file',
+      '6\t8\ttest_file4'
     ];
 
     var logLines2 = [
       '--98b656f--2016-11-14--Developer 1',
-      "31\t12\ttest_file2",
-      "1\t1\ttest_invalid_file",
+      '31\t12\ttest_file2',
+      '1\t1\ttest_invalid_file',
       '',
       '--02790fd--2016-11-17--Developer.3',
       '--5fbfb14--2016-11-24--Alias developer 4',
-      "7\t41\ttest_file3",
-      "-\t-\ttest_file2",
-      "6\t8\ttest_file4"
+      '7\t41\ttest_file3',
+      '-\t-\ttest_file2',
+      '6\t8\ttest_file4'
     ];
 
     describe('vcs-log-dump', function() {
@@ -191,8 +191,8 @@ describe('VCS Tasks', function() {
             .then(done)
             .catch(done.fail);
 
-          _.each(logLines1, function(line) { outStream1.push(line + "\n"); });
-          _.each(logLines2, function(line) { outStream2.push(line + "\n"); });
+          _.each(logLines1, function(line) { outStream1.push(line + '\n'); });
+          _.each(logLines2, function(line) { outStream2.push(line + '\n'); });
           outStream1.end();
           outStream2.end();
         });
@@ -209,8 +209,8 @@ describe('VCS Tasks', function() {
             .then(done)
             .catch(done.fail);
 
-          _.each(logLines1, function(line) { outStream1.push(line + "\n"); });
-          _.each(logLines2, function(line) { outStream2.push(line + "\n"); });
+          _.each(logLines1, function(line) { outStream1.push(line + '\n'); });
+          _.each(logLines2, function(line) { outStream2.push(line + '\n'); });
           outStream1.end();
           outStream2.end();
         });
@@ -219,9 +219,9 @@ describe('VCS Tasks', function() {
 
     describe('vcs-commit-messages', function() {
       var assertTempFiles = function(taskOutput) {
-        return taskOutput.assertTempFile('vcs_commit_messages_2016-03-01_2016-03-31.log', "log-line1\nlog-line2\n")
+        return taskOutput.assertTempFile('vcs_commit_messages_2016-03-01_2016-03-31.log', 'log-line1\nlog-line2\n')
           .then(function() {
-            return taskOutput.assertTempFile('vcs_commit_messages_2016-04-01_2016-04-30.log', "log-line1\nlog-line2\nlog-line3\n");
+            return taskOutput.assertTempFile('vcs_commit_messages_2016-04-01_2016-04-30.log', 'log-line1\nlog-line2\nlog-line3\n');
           });
       };
       describe('as a Task', function() {

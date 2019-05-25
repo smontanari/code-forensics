@@ -11,17 +11,17 @@ describe('javascript tasks', function() {
   describe('javascript-complexity-report', function() {
     var assertReport = function(taskOutput) {
       return taskOutput.assertTempReport('javascript-complexity-report.json', [
-        { path: "test_file1.js", totalComplexity: 2, averageComplexity: 1, methodComplexity: [{ name: 'sum', complexity: 1 }] },
-        { path: "test_file3.js", totalComplexity: 3, averageComplexity: 2, methodComplexity: [{ name: 'Calculator.division', complexity: 2 }] }
+        { path: 'test_file1.js', totalComplexity: 2, averageComplexity: 1, methodComplexity: [{ name: 'sum', complexity: 1 }] },
+        { path: 'test_file3.js', totalComplexity: 3, averageComplexity: 2, methodComplexity: [{ name: 'Calculator.division', complexity: 2 }] }
       ]);
     };
 
     beforeEach(function() {
       runtime = cfHelpers.runtimeSetup(javascriptTasks);
 
-      runtime.prepareRepositoryFile('test_file1.js', "function sum(a,b) { return a+b; };");
-      runtime.prepareRepositoryFile('test_file2.rb', "line1\nline2\nline3\n");
-      runtime.prepareRepositoryFile('test_file3.js', "class Calculator { division(a,b) { if (b > 0) { return a/b; } }; };");
+      runtime.prepareRepositoryFile('test_file1.js', 'function sum(a,b) { return a+b; };');
+      runtime.prepareRepositoryFile('test_file2.rb', 'line1\nline2\nline3\n');
+      runtime.prepareRepositoryFile('test_file3.js', 'class Calculator { division(a,b) { if (b > 0) { return a/b; } }; };');
     });
 
     afterEach(function() {
@@ -86,14 +86,14 @@ describe('javascript tasks', function() {
       .then(done)
       .catch(done.fail);
 
-      revisionStream1.push("function abs(a,b) {\n");
-      revisionStream2.push("function abs(a,b) {\n");
-      revisionStream2.push("if (a < b) {\n;");
-      revisionStream2.push("return b - a;\n};\n");
-      revisionStream1.push("return a - b;\n};");
+      revisionStream1.push('function abs(a,b) {\n');
+      revisionStream2.push('function abs(a,b) {\n');
+      revisionStream2.push('if (a < b) {\n;');
+      revisionStream2.push('return b - a;\n};\n');
+      revisionStream1.push('return a - b;\n};');
       revisionStream1.end();
-      revisionStream2.push("return a - b;\n");
-      revisionStream2.push("};\n");
+      revisionStream2.push('return a - b;\n');
+      revisionStream2.push('};\n');
       revisionStream2.end();
     });
   });
