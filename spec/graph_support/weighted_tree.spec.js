@@ -1,7 +1,7 @@
-/*global require_src*/
-var WeightedTree = require_src('graph_support/weighted_tree');
+var WeightedTree = require('graph_support/weighted_tree');
 
 describe('WeightedTree', function() {
+  var subject;
   it('returns a one node tree with no weight', function() {
     var node = new WeightedTree('test/root', 'branch', {weightedProperty: 'value'}).rootNode();
 
@@ -11,7 +11,7 @@ describe('WeightedTree', function() {
 
   describe('for a normalised weight tree', function() {
     beforeEach(function() {
-      this.subject = new WeightedTree('test/root', 'branch', {weightedProperty: 'value', normalised: true});
+      subject = new WeightedTree('test/root', 'branch', {weightedProperty: 'value', normalised: true});
     });
 
     it('returns the root of a tree with the relative weight value', function() {
@@ -19,9 +19,9 @@ describe('WeightedTree', function() {
         { branch: 'test/root/b1/item1', value: 2 },
         { branch: 'test/root/b1/item2', value: 5 },
         { branch: 'test/root/b2/item3', value: 7 }
-      ].forEach(this.subject.withItem.bind(this.subject));
+      ].forEach(subject.withItem.bind(subject));
 
-      var node = this.subject.rootNode();
+      var node = subject.rootNode();
 
       expect(node.getChildNode('b1/item1').weight).toBeCloseTo(0.286, 3);
       expect(node.getChildNode('b1/item2').weight).toBeCloseTo(0.714, 3);
@@ -31,7 +31,7 @@ describe('WeightedTree', function() {
 
   describe('for non normalised weight tree', function() {
     beforeEach(function() {
-      this.subject = new WeightedTree('test/root', 'branch', {weightedProperty: 'value', weightPropertyName: 'load', normalised: false});
+      subject = new WeightedTree('test/root', 'branch', {weightedProperty: 'value', weightPropertyName: 'load', normalised: false});
     });
 
     it('returns the root of a tree with the absolute weight value', function() {
@@ -39,9 +39,9 @@ describe('WeightedTree', function() {
         { branch: 'test/root/b1/item1', value: 3 },
         { branch: 'test/root/b1/item2', value: 6 },
         { branch: 'test/root/b2/item3', value: 8 }
-      ].forEach(this.subject.withItem.bind(this.subject));
+      ].forEach(subject.withItem.bind(subject));
 
-      var node = this.subject.rootNode();
+      var node = subject.rootNode();
 
       expect(node.getChildNode('b1/item1').load).toEqual(3);
       expect(node.getChildNode('b1/item2').load).toEqual(6);

@@ -1,16 +1,16 @@
-/*global require_src*/
 var stream = require('stream');
 
-var WordCountAnalyser = require_src('analysers/word_count/word_count_analyser');
+var WordCountAnalyser = require('analysers/word_count/word_count_analyser');
 
 describe('WordCountAnalyser', function() {
+  var inputStream;
   beforeEach(function() {
-    this.inputStream = new stream.PassThrough();
+    inputStream = new stream.PassThrough();
   });
 
   describe('with no filters', function() {
     it('returns all the input words', function(done) {
-      this.inputStream.pipe(new WordCountAnalyser().textAnalysisStream())
+      inputStream.pipe(new WordCountAnalyser().textAnalysisStream())
       .on('data', function(wordCountReport) {
         expect(wordCountReport).toEqual([
           { text: 'message', count: 2 },
@@ -20,15 +20,15 @@ describe('WordCountAnalyser', function() {
       })
       .on('end', done);
 
-      this.inputStream.write('First message\n');
-      this.inputStream.write('Second message\n');
-      this.inputStream.end();
+      inputStream.write('First message\n');
+      inputStream.write('Second message\n');
+      inputStream.end();
     });
   });
 
   describe('with text filters', function() {
     it('returns the filtered words', function(done) {
-      this.inputStream.pipe(new WordCountAnalyser().textAnalysisStream([
+      inputStream.pipe(new WordCountAnalyser().textAnalysisStream([
         /^\d+ message/,
         'foo',
         function(w) { return w === 'qaz'; }
@@ -42,12 +42,12 @@ describe('WordCountAnalyser', function() {
       })
       .on('end', done);
 
-      this.inputStream.write('123 message\n');
-      this.inputStream.write('Bar message\n');
-      this.inputStream.write('Foo Bar message\n');
-      this.inputStream.write('Baz-qaz  message\n');
-      this.inputStream.write('qaz\n');
-      this.inputStream.end();
+      inputStream.write('123 message\n');
+      inputStream.write('Bar message\n');
+      inputStream.write('Foo Bar message\n');
+      inputStream.write('Baz-qaz  message\n');
+      inputStream.write('qaz\n');
+      inputStream.end();
     });
   });
 });

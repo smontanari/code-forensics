@@ -1,24 +1,24 @@
-/*eslint-disable max-lines*/
-/*global require_src cfHelpers*/
 var _        = require('lodash'),
     Bluebird = require('bluebird'),
-    stream   = require('stream');
+    stream   = require('stream'),
+    lolex    = require('lolex');
 
-var socialAnalysisTasks = require_src('tasks/social_analysis_tasks'),
-    codeMaat            = require_src('analysers/code_maat'),
-    command             = require_src('command');
+var socialAnalysisTasks = require('tasks/social_analysis_tasks'),
+    codeMaat            = require('analysers/code_maat'),
+    command             = require('command');
+
+var taskHelpers = require('../jest_tasks_helpers');
 
 describe('Social analysis tasks', function() {
-  var runtime;
+  var runtime, clock;
 
   beforeEach(function() {
-    jasmine.clock().install();
-    jasmine.clock().mockDate(new Date('2016-10-22T10:00:00.000Z'));
-    spyOn(command.Command, 'ensure');
+    clock = lolex.install({ now: new Date('2016-10-22T10:00:00.000Z') });
+    command.Command.ensure = jest.fn();
   });
 
   afterEach(function() {
-    jasmine.clock().uninstall();
+    clock.uninstall();
   });
 
   describe('commit-message-analysis', function() {
@@ -37,7 +37,7 @@ describe('Social analysis tasks', function() {
         'Third and very last'
       ].join('\n');
 
-      runtime = cfHelpers.runtimeSetup(socialAnalysisTasks,
+      runtime = taskHelpers.runtimeSetup(socialAnalysisTasks,
         {
           commitMessageFilters: [
             /^\d+$/,
@@ -54,8 +54,8 @@ describe('Social analysis tasks', function() {
     });
 
     afterEach(function() {
-      cfHelpers.clearTemp();
-      cfHelpers.clearOutput();
+      taskHelpers.clearTemp();
+      taskHelpers.clearOutput();
     });
 
     it('has the required dependencies', function() {
@@ -64,48 +64,30 @@ describe('Social analysis tasks', function() {
 
     it('publishes a report on the frequency of words in commit messages', function() {
       return runtime.executePromiseTask('commit-message-analysis').then(function(taskOutput) {
-        return taskOutput.assertOutputReport('2016-01-01_2016-01-31_commit-words-data.json',
-          [
-            { text: 'message', count: 4 },
-            { text: 'abc', count: 2 },
-            { text: 'second', count: 2 },
-            { text: 'third', count: 2 }
-          ]
-        ).then(function() {
-          return taskOutput.assertOutputReport('2016-02-01_2016-02-28_commit-words-data.json',
-            [
-              { text: 'message', count: 3 },
-              { text: 'www', count: 2 },
-              { text: 'last', count: 2 }
-            ]
-          );
-        }).then(function() {
-          return taskOutput.assertManifest({
-            reportName: 'commit-messages',
-            parameters: { timeSplit: 'eom', minWordCount: 2 },
-            dateRange: '2016-01-01_2016-02-28',
-            enabledDiagrams: ['commit-words']
-          });
-        });
+        return Bluebird.all([
+          taskOutput.assertOutputReport('2016-01-01_2016-01-31_commit-words-data.json'),
+          taskOutput.assertOutputReport('2016-02-01_2016-02-28_commit-words-data.json'),
+          taskOutput.assertManifest()
+        ]);
       });
     });
   });
 
   describe('developer-effort-analysis', function() {
     afterEach(function() {
-      cfHelpers.clearTemp();
-      cfHelpers.clearRepo();
-      cfHelpers.clearOutput();
+      taskHelpers.clearTemp();
+      taskHelpers.clearRepo();
+      taskHelpers.clearOutput();
     });
 
     it('has the required dependencies', function() {
-      runtime = cfHelpers.runtimeSetup(socialAnalysisTasks);
+      runtime = taskHelpers.runtimeSetup(socialAnalysisTasks);
       runtime.assertTaskDependencies('developer-effort-analysis', ['vcsLogDump', 'effortReport']);
     });
 
     describe('when team information exists', function() {
       beforeEach(function() {
-        runtime = cfHelpers.runtimeSetup(socialAnalysisTasks,
+        runtime = taskHelpers.runtimeSetup(socialAnalysisTasks,
           {
             contributors: {
               'Team 1': ['Dev1', 'Dev2'],
@@ -126,125 +108,27 @@ describe('Social analysis tasks', function() {
           { path: 'test/test_invalid_file', author: 'Dev3', revisions: 10 }
         ]);
 
-        _.each([
-            'test/a/file1',
-            'test/b/file2',
-            'test/c/file3'
-          ], function(f) { runtime.prepareRepositoryFile(f, ''); }
-        );
+        [
+          'test/a/file1',
+          'test/b/file2',
+          'test/c/file3'
+        ].forEach(function(f) { runtime.prepareRepositoryFile(f, ''); });
       });
 
       it('publishes reports on the revisions distribution between developers and between teams', function() {
         return runtime.executePromiseTask('developer-effort-analysis').then(function(taskOutput) {
-          return taskOutput.assertOutputReport('2016-01-01_2016-10-22_developer-effort-data.json',
-            {
-              children: [
-                {
-                  name: 'test',
-                  children: [
-                    {
-                      name: 'a',
-                      children: [
-                        {
-                          name: 'file1',
-                          children: [
-                            { name: 'Dev1', revisions: 5, ownership: 71 },
-                            { name: 'Dev2', revisions: 2, ownership: 29 }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      name: 'b',
-                      children: [
-                        {
-                          name: 'file2',
-                          children: [
-                            { name: 'Dev1', revisions: 8, ownership: 53 },
-                            { name: 'Dev3', revisions: 5, ownership: 33 },
-                            { name: 'Dev4', revisions: 2, ownership: 13 }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      name: 'c',
-                      children: [
-                        {
-                          name: 'file3',
-                          children: [
-                            { name: 'Dev5', revisions: 10, ownership: 59 },
-                            { name: 'Dev with no team', revisions: 7, ownership: 41 }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }
-          ).then(function() {
-            return taskOutput.assertOutputReport('2016-01-01_2016-10-22_team-effort-data.json',
-              {
-                children: [
-                  {
-                    name: 'test',
-                    children: [
-                      {
-                        name: 'a',
-                        children: [
-                          {
-                            name: 'file1',
-                            children: [
-                              { name: 'Team 1', revisions: 7, ownership: 100 }
-                            ]
-                          }
-                        ]
-                      },
-                      {
-                        name: 'b',
-                        children: [
-                          {
-                            name: 'file2',
-                            children: [
-                              { name: 'Team 1', revisions: 8, ownership: 53 },
-                              { name: 'Team 2', revisions: 7, ownership: 47 }
-                            ]
-                          }
-                        ]
-                      },
-                      {
-                        name: 'c',
-                        children: [
-                          {
-                            name: 'file3',
-                            children: [
-                              { name: 'Team 2', revisions: 10, ownership: 59 },
-                              { name: 'N/A (Dev with no team)', revisions: 7, ownership: 41 }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            );
-          }).then(function() {
-            return taskOutput.assertManifest({
-              reportName: 'developer-effort',
-              parameters: {},
-              dateRange: '2016-01-01_2016-10-22',
-              enabledDiagrams: ['individual-effort', 'team-effort']
-            });
-          });
+          return Bluebird.all([
+            taskOutput.assertOutputReport('2016-01-01_2016-10-22_developer-effort-data.json'),
+            taskOutput.assertOutputReport('2016-01-01_2016-10-22_team-effort-data.json'),
+            taskOutput.assertManifest()
+          ]);
         });
       });
     });
 
     describe('when no team information exists', function() {
       beforeEach(function() {
-        runtime = cfHelpers.runtimeSetup(socialAnalysisTasks,
+        runtime = taskHelpers.runtimeSetup(socialAnalysisTasks,
           {
             contributors: ['Dev1', 'Dev2', 'Dev3', ['Dev4', 'Alias dev 4'], 'Dev5']
           },
@@ -262,73 +146,20 @@ describe('Social analysis tasks', function() {
           { path: 'test/test_invalid_file', author: 'Dev3', revisions: 10 }
         ]);
 
-        _.each([
-            'test/a/file1',
-            'test/b/file2',
-            'test/c/file3'
-          ], function(f) { runtime.prepareRepositoryFile(f, ''); }
-        );
+        [
+          'test/a/file1',
+          'test/b/file2',
+          'test/c/file3'
+        ].forEach(function(f) { runtime.prepareRepositoryFile(f, ''); });
       });
 
       it('publishes only a report on the revisions distribution between developers', function() {
         return runtime.executePromiseTask('developer-effort-analysis').then(function(taskOutput) {
-          return taskOutput.assertOutputReport('2016-01-01_2016-10-22_developer-effort-data.json',
-            {
-              children: [
-                {
-                  name: 'test',
-                  children: [
-                    {
-                      name: 'a',
-                      children: [
-                        {
-                          name: 'file1',
-                          children: [
-                            { name: 'Dev1', revisions: 5, ownership: 71 },
-                            { name: 'Dev2', revisions: 2, ownership: 29 }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      name: 'b',
-                      children: [
-                        {
-                          name: 'file2',
-                          children: [
-                            { name: 'Dev1', revisions: 8, ownership: 53 },
-                            { name: 'Dev3', revisions: 5, ownership: 33 },
-                            { name: 'Dev4', revisions: 2, ownership: 13 }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      name: 'c',
-                      children: [
-                        {
-                          name: 'file3',
-                          children: [
-                            { name: 'Dev5', revisions: 10, ownership: 59 },
-                            { name: 'Dev with no team', revisions: 7, ownership: 41 }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }
-          ).then(function() {
-            return taskOutput.assertMissingOutputReport('2016-01-01_2016-10-22_team-effort-data.json');
-          }).then(function() {
-            return taskOutput.assertManifest({
-              reportName: 'developer-effort',
-              parameters: {},
-              dateRange: '2016-01-01_2016-10-22',
-              enabledDiagrams: ['individual-effort']
-            });
-          });
+          return Bluebird.all([
+            taskOutput.assertOutputReport('2016-01-01_2016-10-22_developer-effort-data.json'),
+            taskOutput.assertMissingOutputReport('2016-01-01_2016-10-22_team-effort-data.json'),
+            taskOutput.assertManifest()
+          ]);
         });
       });
     });
@@ -336,7 +167,8 @@ describe('Social analysis tasks', function() {
 
   describe('developer-coupling-analysis', function() {
     beforeEach(function() {
-      runtime = cfHelpers.runtimeSetup(socialAnalysisTasks,
+      codeMaat.analyser = jest.fn();
+      runtime = taskHelpers.runtimeSetup(socialAnalysisTasks,
         {
           contributors: {
             'Team 1': ['Dev1', 'Dev2'],
@@ -346,9 +178,9 @@ describe('Social analysis tasks', function() {
         { dateFrom: '2016-01-01', maxCoupledFiles: 2 }
       );
 
-      _.each([
+      [
         'test_file1', 'test_file2', 'test_file3', 'test_file4', 'test_file5', 'test_file6'
-        ], function(f) {
+      ].forEach(function(f) {
         runtime.prepareRepositoryFile(f, '');
       });
     });
@@ -388,7 +220,7 @@ describe('Social analysis tasks', function() {
         couplingStream = new stream.PassThrough({ objectMode: true });
         commAnalysisStream = new stream.PassThrough({ objectMode: true });
 
-        spyOn(codeMaat, 'analyser').and.callFake(function(instruction) {
+        codeMaat.analyser.mockImplementation(function(instruction) {
           return {
             'entity-ownership': { isSupported: _.stubTrue },
             coupling: { isSupported: _.stubTrue, fileAnalysisStream: function() { return couplingStream; } },
@@ -398,92 +230,21 @@ describe('Social analysis tasks', function() {
       });
 
       afterEach(function() {
-        cfHelpers.clearTemp();
-        cfHelpers.clearRepo();
-        cfHelpers.clearOutput();
+        taskHelpers.clearTemp();
+        taskHelpers.clearRepo();
+        taskHelpers.clearOutput();
       });
 
       it('publishes a report on ownership and communication coupling between main developers', function(done) {
         runtime.executePromiseTask('developer-coupling-analysis')
           .then(function(taskOutput) {
             return Bluebird.all([
-              taskOutput.assertOutputReport('2016-01-01_2016-10-22_main-dev-coupling-data.json',
-              {
-                children: [
-                  {
-                    path: 'test_file1',
-                    authors: 4,
-                    revisions: 54,
-                    mainDev: 'Dev1',
-                    ownership: 52,
-                    weight: 0.5934065934065934,
-                    coupledEntries: [
-                      { path: 'test_file4', couplingDegree: 41, revisionsAvg: 22 },
-                      { path: 'test_file3', couplingDegree: 23, revisionsAvg: 12 }
-                    ]
-                  },
-                  {
-                    path: 'test_file2',
-                    authors: 2,
-                    revisions: 68,
-                    mainDev: 'Dev2',
-                    ownership: 83,
-                    weight: 0.7472527472527473,
-                    coupledEntries: [
-                      { path: 'test_file5', couplingDegree: 66, revisionsAvg: 31 }
-                    ]
-                  },
-                  {
-                    path: 'test_file3',
-                    authors: 3,
-                    revisions: 24,
-                    mainDev: 'Dev3',
-                    ownership: 64,
-                    weight: 0.26373626373626374,
-                    coupledEntries: [
-                      { path: 'test_file5', couplingDegree: 49, revisionsAvg: 29 },
-                      { path: 'test_file1', couplingDegree: 23, revisionsAvg: 12 }
-                    ]
-                  },
-                  {
-                    path: 'test_file4',
-                    authors: 5,
-                    revisions: 52,
-                    mainDev: 'Dev5',
-                    ownership: 75,
-                    weight: 0.5714285714285714,
-                    coupledEntries: [
-                      { path: 'test_file1', couplingDegree: 41, revisionsAvg: 22 }
-                    ]
-                  },
-                  {
-                    path: 'test_file5',
-                    authors: 6,
-                    revisions: 91,
-                    mainDev: 'Dev4',
-                    ownership: 100,
-                    weight: 1,
-                    coupledEntries: [
-                      { path: 'test_file2', couplingDegree: 66, revisionsAvg: 31 },
-                      { path: 'test_file3', couplingDegree: 49, revisionsAvg: 29 }
-                    ]
-                  }
-                ]
-              }),
-              taskOutput.assertOutputReport('2016-01-01_2016-10-22_communication-network-data.json', [
-                { developer: { name: 'Dev1', team: 'Team 1' }, coupledDeveloper: { name: 'Dev2', team: 'Team 1' }, sharedCommits: 65, couplingStrength: 55 },
-                { developer: { name: 'Dev3', team: 'Team 2' }, coupledDeveloper: { name: 'Dev1', team: 'Team 1' }, sharedCommits: 194, couplingStrength: 51 },
-                { developer: { name: 'Dev4', team: 'Team 2' }, coupledDeveloper: { name: 'Dev5', team: 'Team 2' }, sharedCommits: 62, couplingStrength: 48 }
-              ]),
-              taskOutput.assertManifest({
-                reportName: 'developer-coupling',
-                parameters: { maxCoupledFiles: 2 },
-                dateRange: '2016-01-01_2016-10-22',
-                enabledDiagrams: ['main-developer-coupling', 'communication-network']
-              })
+              taskOutput.assertOutputReport('2016-01-01_2016-10-22_main-dev-coupling-data.json'),
+              taskOutput.assertOutputReport('2016-01-01_2016-10-22_communication-network-data.json'),
+              taskOutput.assertManifest()
             ]);
           })
-          .then(done)
+          .then(function() { done(); })
           .catch(done.fail);
 
         couplingStream.push({ path: 'test_invalid_file', coupledPath: 'test_file2', couplingDegree: 74, revisionsAvg: 68 });
@@ -509,7 +270,7 @@ describe('Social analysis tasks', function() {
       beforeEach(function() {
         commAnalysisStream = new stream.PassThrough({ objectMode: true });
 
-        spyOn(codeMaat, 'analyser').and.callFake(function(instruction) {
+        codeMaat.analyser.mockImplementation(function(instruction) {
           return {
             'entity-ownership': { isSupported: _.stubFalse },
             coupling: { isSupported: _.stubTrue },
@@ -522,20 +283,11 @@ describe('Social analysis tasks', function() {
         runtime.executePromiseTask('developer-coupling-analysis').then(function(taskOutput) {
           return Bluebird.all([
             taskOutput.assertMissingOutputReport('2016-01-01_2016-10-22_main-dev-coupling-data.json'),
-            taskOutput.assertOutputReport('2016-01-01_2016-10-22_communication-network-data.json', [
-              { developer: { name: 'Dev1', team: 'Team 1' }, coupledDeveloper: { name: 'Dev2', team: 'Team 1' }, sharedCommits: 65, couplingStrength: 55 },
-              { developer: { name: 'Dev3', team: 'Team 2' }, coupledDeveloper: { name: 'Dev1', team: 'Team 1' }, sharedCommits: 194, couplingStrength: 51 },
-              { developer: { name: 'Dev4', team: 'Team 2' }, coupledDeveloper: { name: 'Dev5', team: 'Team 2' }, sharedCommits: 62, couplingStrength: 48 }
-            ]),
-            taskOutput.assertManifest({
-              reportName: 'developer-coupling',
-              parameters: { maxCoupledFiles: 2 },
-              dateRange: '2016-01-01_2016-10-22',
-              enabledDiagrams: ['communication-network']
-            })
+            taskOutput.assertOutputReport('2016-01-01_2016-10-22_communication-network-data.json'),
+            taskOutput.assertManifest()
           ]);
         })
-        .then(done)
+        .then(function() { done(); })
         .catch(done.fail);
 
         commAnalysisStream.push({ author: 'Dev1', coupledAuthor: 'Dev2', sharedCommits: 65, couplingStrength: 55 });
@@ -551,12 +303,12 @@ describe('Social analysis tasks', function() {
 
   describe('knowledge-map-analysis', function() {
     afterEach(function() {
-      cfHelpers.clearTemp();
-      cfHelpers.clearOutput();
+      taskHelpers.clearTemp();
+      taskHelpers.clearOutput();
     });
 
     it('has the required dependencies', function() {
-      runtime = cfHelpers.runtimeSetup(socialAnalysisTasks);
+      runtime = taskHelpers.runtimeSetup(socialAnalysisTasks);
       runtime.assertTaskDependencies('knowledge-map-analysis', ['vcsLogDump', 'slocReport', 'mainDevReport']);
     });
 
@@ -579,12 +331,12 @@ describe('Social analysis tasks', function() {
       };
 
       beforeEach(function() {
-        spyOn(codeMaat, 'analyser').and.returnValue({ isSupported: _.stubTrue });
+        codeMaat.analyser = jest.fn().mockReturnValue({ isSupported: _.stubTrue });
       });
 
       describe('when team information exists', function() {
         beforeEach(function() {
-          runtime = cfHelpers.runtimeSetup(socialAnalysisTasks,
+          runtime = taskHelpers.runtimeSetup(socialAnalysisTasks,
             {
               contributors: {
                 'Team 1': ['Dev1', 'Dev2'],
@@ -599,101 +351,17 @@ describe('Social analysis tasks', function() {
 
         it('publishes a report on the main developer for each file ', function() {
           return runtime.executePromiseTask('knowledge-map-analysis').then(function(taskOutput) {
-            return taskOutput.assertOutputReport('2016-01-01_2016-10-22_knowledge-map-data.json',
-              {
-                children: [
-                  {
-                    name: 'test',
-                    children: [
-                      {
-                        name: 'ruby',
-                        children: [
-                          {
-                            name: 'app',
-                            children: [
-                              {
-                                name: 'file1.rb',
-                                children: [],
-                                sourceLines: 33,
-                                totalLines: 45,
-                                mainDev: 'Dev1',
-                                team: 'Team 1',
-                                addedLines: 10,
-                                ownership: 53
-                              },
-                              {
-                                name: 'models',
-                                children: [
-                                  {
-                                    name: 'file3.rb',
-                                    children: [],
-                                    sourceLines: 15,
-                                    totalLines: 21,
-                                    mainDev: 'Dev5',
-                                    team: 'Ex team',
-                                    addedLines: 9,
-                                    ownership: 44
-                                  }
-                                ]
-                              }
-                            ]
-                          }
-                        ]
-                      },
-                      {
-                        name: 'web',
-                        children: [
-                          {
-                            name: 'styles',
-                            children: [
-                              {
-                                name: 'file2.css',
-                                children: [],
-                                sourceLines: 23,
-                                totalLines: 31,
-                                mainDev: 'Dev2',
-                                team: 'Team 1',
-                                addedLines: 23,
-                                ownership: 26
-                              }
-                            ]
-                          },
-                          {
-                            name: 'js',
-                            children: [
-                              {
-                                name: 'file4.js',
-                                children: [],
-                                sourceLines: 25,
-                                totalLines: 35,
-                                mainDev: 'Dev4',
-                                team: 'Team 2',
-                                addedLines: 16,
-                                ownership: 29
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            ).then(function() {
-              return taskOutput.assertManifest({
-                reportName: 'knowledge-map',
-                parameters: {},
-                dateRange: '2016-01-01_2016-10-22',
-                enabledDiagrams: ['individual-knowledge-map', 'team-knowledge-map']
-              });
-            });
+            return Bluebird.all([
+              taskOutput.assertOutputReport('2016-01-01_2016-10-22_knowledge-map-data.json'),
+              taskOutput.assertManifest()
+            ]);
           });
         });
       });
 
       describe('when no team information exists', function() {
         beforeEach(function() {
-          runtime = cfHelpers.runtimeSetup(socialAnalysisTasks,
+          runtime = taskHelpers.runtimeSetup(socialAnalysisTasks,
             {
               contributors: ['Dev1', 'Dev2', 'Dev3', ['Dev4', 'Alias dev 4'], 'Dev5']
             },
@@ -704,90 +372,10 @@ describe('Social analysis tasks', function() {
 
         it('publishes a report on the main developer for each file ', function() {
           return runtime.executePromiseTask('knowledge-map-analysis').then(function(taskOutput) {
-            return taskOutput.assertOutputReport('2016-01-01_2016-10-22_knowledge-map-data.json',
-              {
-                children: [
-                  {
-                    name: 'test',
-                    children: [
-                      {
-                        name: 'ruby',
-                        children: [
-                          {
-                            name: 'app',
-                            children: [
-                              {
-                                name: 'file1.rb',
-                                children: [],
-                                sourceLines: 33,
-                                totalLines: 45,
-                                mainDev: 'Dev1',
-                                addedLines: 10,
-                                ownership: 53
-                              },
-                              {
-                                name: 'models',
-                                children: [
-                                  {
-                                    name: 'file3.rb',
-                                    children: [],
-                                    sourceLines: 15,
-                                    totalLines: 21,
-                                    mainDev: 'Dev5',
-                                    addedLines: 9,
-                                    ownership: 44
-                                  }
-                                ]
-                              }
-                            ]
-                          }
-                        ]
-                      },
-                      {
-                        name: 'web',
-                        children: [
-                          {
-                            name: 'styles',
-                            children: [
-                              {
-                                name: 'file2.css',
-                                children: [],
-                                sourceLines: 23,
-                                totalLines: 31,
-                                mainDev: 'Dev2',
-                                addedLines: 23,
-                                ownership: 26
-                              }
-                            ]
-                          },
-                          {
-                            name: 'js',
-                            children: [
-                              {
-                                name: 'file4.js',
-                                children: [],
-                                sourceLines: 25,
-                                totalLines: 35,
-                                mainDev: 'Dev4',
-                                addedLines: 16,
-                                ownership: 29
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            ).then(function() {
-              return taskOutput.assertManifest({
-                reportName: 'knowledge-map',
-                parameters: {},
-                dateRange: '2016-01-01_2016-10-22',
-                enabledDiagrams: ['individual-knowledge-map']
-              });
-            });
+            return Bluebird.all([
+              taskOutput.assertOutputReport('2016-01-01_2016-10-22_knowledge-map-data.json'),
+              taskOutput.assertManifest()
+            ]);
           });
         });
       });
@@ -795,13 +383,13 @@ describe('Social analysis tasks', function() {
 
     describe('for an unsupported vcs type', function() {
       beforeEach(function() {
-        runtime = cfHelpers.runtimeSetup(socialAnalysisTasks,
+        runtime = taskHelpers.runtimeSetup(socialAnalysisTasks,
           {
             contributors: ['Dev1', 'Dev2', 'Dev3', ['Dev4', 'Alias dev 4'], 'Dev5']
           },
           { dateFrom: '2016-01-01' }
         );
-        spyOn(codeMaat, 'analyser').and.returnValue({ isSupported: _.stubFalse });
+        codeMaat.analyser = jest.fn().mockReturnValue({ isSupported: _.stubFalse });
       });
 
       it('fails to publish the report ', function() {

@@ -1,0 +1,58 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Code analysis tasks sloc-report as a Function writes a report on the number of lines of code for each file in the repository: sloc-report.json 1`] = `
+"[
+{\\"path\\":\\"test_file1.js\\",\\"sourceLines\\":2,\\"totalLines\\":2},
+{\\"path\\":\\"test_file2.rb\\",\\"sourceLines\\":3,\\"totalLines\\":3}
+]
+"
+`;
+
+exports[`Code analysis tasks sloc-report as a Task writes a report on the number of lines of code for each file in the repository: sloc-report.json 1`] = `
+"[
+{\\"path\\":\\"test_file1.js\\",\\"sourceLines\\":2,\\"totalLines\\":2},
+{\\"path\\":\\"test_file2.rb\\",\\"sourceLines\\":3,\\"totalLines\\":3}
+]
+"
+`;
+
+exports[`Code analysis tasks sloc-trend-analysis publishes an analysis on the sloc trend for a given file in the repository: 2015-03-01_2015-10-22_sloc-trend-data.json 1`] = `
+Array [
+  Object {
+    "date": "2015-04-29T23:00:00.000Z",
+    "path": "test_abs.rb",
+    "revision": 123,
+    "sourceLines": 3,
+    "totalLines": 3,
+  },
+  Object {
+    "date": "2015-05-04T23:00:00.000Z",
+    "path": "test_abs.rb",
+    "revision": 456,
+    "sourceLines": 5,
+    "totalLines": 5,
+  },
+]
+`;
+
+exports[`Code analysis tasks sloc-trend-analysis publishes an analysis on the sloc trend for a given file in the repository: manifest 1`] = `
+Object {
+  "dataFiles": Array [
+    Object {
+      "fileUrl": "dbe9f7623278c6f5b3acbd89c20b4b5d70661491/2015-03-01_2015-10-22_sloc-trend-data.json",
+      "timePeriod": "2015-03-01_2015-10-22",
+    },
+  ],
+  "dateRange": "2015-03-01_2015-10-22",
+  "enabledDiagrams": Array [
+    "sloc",
+  ],
+  "id": "dbe9f7623278c6f5b3acbd89c20b4b5d70661491",
+  "parameters": Object {
+    "targetFile": "test_abs.rb",
+  },
+  "reportName": "sloc-trend",
+  "taskName": "sloc-trend-analysis",
+  "time": "2015-10-22T10:00:00.000Z",
+}
+`;

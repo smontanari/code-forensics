@@ -1,11 +1,10 @@
-/*global require_src*/
-var repositoryPath = require_src('models/repository_path'),
-    utils          = require_src('utils');
+var repositoryPath = require('models/repository_path'),
+    utils          = require('utils');
 
 describe('repositoryPath', function() {
   beforeEach(function() {
-    spyOn(utils.fileSystem, 'isDirectory');
-    spyOn(utils.fileSystem, 'isFile');
+    jest.spyOn(utils.fileSystem, 'isDirectory');
+    jest.spyOn(utils.fileSystem, 'isFile');
   });
 
   describe('.makeGlob()', function() {
@@ -17,7 +16,7 @@ describe('repositoryPath', function() {
 
     describe('for a file path', function() {
       it('returns the path itself', function() {
-        utils.fileSystem.isFile.and.returnValue(true);
+        utils.fileSystem.isFile.mockReturnValue(true);
 
         expect(repositoryPath.makeGlob('/some/file.path')).toEqual('/some/file.path');
       });
@@ -25,7 +24,7 @@ describe('repositoryPath', function() {
 
     describe('for a directory path', function() {
       it('returns glob for all files in the directory', function() {
-        utils.fileSystem.isDirectory.and.returnValue(true);
+        utils.fileSystem.isDirectory.mockReturnValue(true);
 
         expect(repositoryPath.makeGlob('/some/dir/path')).toEqual('/some/dir/path/**/*');
       });
@@ -34,7 +33,7 @@ describe('repositoryPath', function() {
 
   describe('.expand()', function() {
     it('return the expanded list of paths', function() {
-      utils.fileSystem.isFile.and.callFake(function(name) {
+      utils.fileSystem.isFile.mockImplementation(function(name) {
         return !(/folder$/).test(name);
       });
 
@@ -57,7 +56,7 @@ describe('repositoryPath', function() {
 
   describe('.normalise()', function() {
     it('returns the normalised paths', function() {
-      utils.fileSystem.isDirectory.and.returnValue(true);
+      utils.fileSystem.isDirectory.mockReturnValue(true);
 
       expect(repositoryPath.normalise('/test/root', ['some/path/*', 'another/path/'])).toEqual([
         '/test/root/some/path/*',

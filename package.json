@@ -22,8 +22,7 @@
     "npm": ">=3.0.0"
   },
   "scripts": {
-    "test": "./scripts/jasmine-runner.js",
-    "test-verbose": "./scripts/jasmine-runner.js --verbose",
+    "test": "jest",
     "lint": "eslint lib/ spec/ scripts/",
     "preversion": "npm run test && npm run lint",
     "postversion": "git push && git push --tags"
@@ -74,9 +73,8 @@
   },
   "devDependencies": {
     "eslint": "^5.16.0",
-    "eslint-plugin-jasmine": "^2.10.1",
-    "jasmine": "^3.4.0",
-    "jasmine-spec-reporter": "^4.2.1",
+    "jest": "^24.8.0",
+    "lolex": "^4.0.1",
     "moment-timezone": "^0.5.25"
   }
 }

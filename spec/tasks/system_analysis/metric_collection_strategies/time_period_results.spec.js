@@ -1,15 +1,15 @@
-/*global require_src*/
 var _      = require('lodash'),
     stream = require('stream'),
     moment = require('moment');
 
-var TimePeriodResults = require_src('tasks/system_analysis/metric_collection_strategies/time_period_results'),
-    TimePeriod        = require_src('models/time_interval/time_period');
+var TimePeriodResults = require('tasks/system_analysis/metric_collection_strategies/time_period_results'),
+    TimePeriod        = require('models/time_interval/time_period');
 
 describe('TimePeriodResults', function() {
+  var subject;
   describe('resultsMapper', function() {
     beforeEach(function() {
-      this.subject = TimePeriodResults.resultsMapper(
+      subject = TimePeriodResults.resultsMapper(
         function(obj) {
           return {
             result1: obj.metricA,
@@ -21,7 +21,7 @@ describe('TimePeriodResults', function() {
     it('returns a function that maps a stream of results', function(done) {
       var objStream = new stream.PassThrough({ objectMode: true });
 
-      var streamMap = this.subject.call(null, new TimePeriod({
+      var streamMap = subject.call(null, new TimePeriod({
         start: moment('2010-01-08 09:30:00.000'),
         end: moment('2010-06-08 09:30:00.000')
       }, 'DD-MM-YYYY'));
@@ -47,7 +47,7 @@ describe('TimePeriodResults', function() {
 
   describe('resultsMerger', function() {
     beforeEach(function() {
-      this.subject = TimePeriodResults.resultsMerger(
+      subject = TimePeriodResults.resultsMerger(
         function(obj) {
           return {
             result1: obj.metricA,
@@ -59,7 +59,7 @@ describe('TimePeriodResults', function() {
     it('returns a function that merges a stream of results', function(done) {
       var objStream = new stream.PassThrough({ objectMode: true });
 
-      var streamMap = this.subject.call(null, new TimePeriod({
+      var streamMap = subject.call(null, new TimePeriod({
         start: moment('2010-01-08 09:30:00.000'),
         end: moment('2010-06-08 09:30:00.000')
       }, 'DD-MM-YYYY'));
@@ -81,7 +81,7 @@ describe('TimePeriodResults', function() {
 
   describe('resultsReducer', function() {
     beforeEach(function() {
-      this.subject = TimePeriodResults.resultsReducer(
+      subject = TimePeriodResults.resultsReducer(
         function(obj) {
           return {
             result1: obj.metricA,
@@ -95,7 +95,7 @@ describe('TimePeriodResults', function() {
     it('returns a function that reduces a stream of results', function(done) {
       var objStream = new stream.PassThrough({ objectMode: true });
 
-      var streamMap = this.subject.call(null, new TimePeriod({
+      var streamMap = subject.call(null, new TimePeriod({
         start: moment('2010-01-08 09:30:00.000'),
         end: moment('2010-06-08 09:30:00.000')
       }, 'DD-MM-YYYY'), { result1: 0, result2: 0 });
@@ -117,7 +117,7 @@ describe('TimePeriodResults', function() {
   describe('resultsAccumulator', function() {
     describe('with an accumulators map', function() {
       beforeEach(function() {
-        this.subject = TimePeriodResults.resultsAccumulator(
+        subject = TimePeriodResults.resultsAccumulator(
           {
             cumulativeResult1: _.property('metricA'),
             cumulativeResult2: function(obj) {
@@ -131,7 +131,7 @@ describe('TimePeriodResults', function() {
         var objStream = new stream.PassThrough({ objectMode: true });
 
         var allObjs = [];
-        objStream.pipe(this.subject)
+        objStream.pipe(subject)
           .on('data', function(obj) {
             allObjs.push(obj);
           })
@@ -157,7 +157,7 @@ describe('TimePeriodResults', function() {
 
     describe('with no accumulators map', function() {
       beforeEach(function() {
-        this.subject = TimePeriodResults.resultsAccumulator();
+        subject = TimePeriodResults.resultsAccumulator();
       });
 
       it('returns a function that maps the same stream of results', function(done) {
@@ -172,7 +172,7 @@ describe('TimePeriodResults', function() {
         ];
 
         var allObjs = [];
-        objStream.pipe(this.subject)
+        objStream.pipe(subject)
           .on('data', function(obj) {
             allObjs.push(obj);
           })
@@ -181,7 +181,7 @@ describe('TimePeriodResults', function() {
             done();
           });
 
-        _.each(inputItems, objStream.push.bind(objStream));
+        inputItems.forEach(objStream.push.bind(objStream));
         objStream.end();
       });
     });

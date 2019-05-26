@@ -1,0 +1,72 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`javascript tasks javascript-complexity-report as a Function writes a report on the complexity for each javascript file in the repository: javascript-complexity-report.json 1`] = `
+"[
+{\\"path\\":\\"test_file1.js\\",\\"totalComplexity\\":2,\\"averageComplexity\\":1,\\"methodComplexity\\":[{\\"name\\":\\"sum\\",\\"complexity\\":1}]},
+{\\"path\\":\\"test_file3.js\\",\\"totalComplexity\\":3,\\"averageComplexity\\":2,\\"methodComplexity\\":[{\\"name\\":\\"Calculator.division\\",\\"complexity\\":2}]}
+]
+"
+`;
+
+exports[`javascript tasks javascript-complexity-report as a Task writes a report on the complexity for each javascript file in the repository: javascript-complexity-report.json 1`] = `
+"[
+{\\"path\\":\\"test_file1.js\\",\\"totalComplexity\\":2,\\"averageComplexity\\":1,\\"methodComplexity\\":[{\\"name\\":\\"sum\\",\\"complexity\\":1}]},
+{\\"path\\":\\"test_file3.js\\",\\"totalComplexity\\":3,\\"averageComplexity\\":2,\\"methodComplexity\\":[{\\"name\\":\\"Calculator.division\\",\\"complexity\\":2}]}
+]
+"
+`;
+
+exports[`javascript tasks javascript-complexity-trend-analysis publishes an analysis on the complexity trend for a given javascript file in the repository: 2015-03-01_2015-10-22_complexity-trend-data.json 1`] = `
+Array [
+  Object {
+    "averageComplexity": 1,
+    "date": "2015-04-29T23:00:00.000Z",
+    "methodComplexity": Array [
+      Object {
+        "complexity": 1,
+        "name": "abs",
+      },
+    ],
+    "path": "test_abs.js",
+    "revision": 123,
+    "totalComplexity": 2,
+  },
+  Object {
+    "averageComplexity": 2,
+    "date": "2015-05-04T23:00:00.000Z",
+    "methodComplexity": Array [
+      Object {
+        "complexity": 2,
+        "name": "abs",
+      },
+    ],
+    "path": "test_abs.js",
+    "revision": 456,
+    "totalComplexity": 3,
+  },
+]
+`;
+
+exports[`javascript tasks javascript-complexity-trend-analysis publishes an analysis on the complexity trend for a given javascript file in the repository: manifest 1`] = `
+Object {
+  "dataFiles": Array [
+    Object {
+      "fileUrl": "41ab3dc9b2f3c211c9e26ce4bef11eb8104fc930/2015-03-01_2015-10-22_complexity-trend-data.json",
+      "timePeriod": "2015-03-01_2015-10-22",
+    },
+  ],
+  "dateRange": "2015-03-01_2015-10-22",
+  "enabledDiagrams": Array [
+    "total",
+    "func-mean",
+    "func-sd",
+  ],
+  "id": "41ab3dc9b2f3c211c9e26ce4bef11eb8104fc930",
+  "parameters": Object {
+    "targetFile": "test_abs.js",
+  },
+  "reportName": "complexity-trend",
+  "taskName": "javascript-complexity-trend-analysis",
+  "time": "2015-10-22T10:00:00.000Z",
+}
+`;

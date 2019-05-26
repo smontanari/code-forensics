@@ -1,5 +1,4 @@
-/*global require_src*/
-var pathMatchers = require_src('utils/path_matchers');
+var pathMatchers = require('utils/path_matchers');
 
 describe('PathMatchers', function() {
   describe('.haveSamePath()', function() {

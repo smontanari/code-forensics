@@ -1,30 +1,37 @@
-/*global require_src*/
-var _      = require('lodash'),
-    moment = require('moment'),
+var moment = require('moment'),
     stream = require('stream');
 
-var SvnAdapter = require_src('vcs/svn/svn_adapter'),
-    TimePeriod = require_src('models/time_interval/time_period'),
-    command    = require_src('command');
+var SvnAdapter = require('vcs/svn/svn_adapter'),
+    TimePeriod = require('models/time_interval/time_period'),
+    command    = require('command');
 
 describe('svn command definition', function() {
+  var subject, mockPlatformCheck;
   beforeEach(function() {
-    this.subject = command.Command.definitions.getDefinition('svn');
-    this.mockCheck = jasmine.createSpyObj('check', ['verifyExecutable', 'verifyPackage']);
+    subject = command.Command.definitions.getDefinition('svn');
+    mockPlatformCheck = {
+      verifyExecutable: jest.fn(),
+      verifyPackage: jest.fn()
+    };
   });
 
   it('defines the "svn" command', function() {
-    expect(this.subject).toEqual(jasmine.anything());
+    expect(subject).toEqual({
+      cmd: 'svn',
+      args: [],
+      installCheck: expect.any(Function)
+    });
   });
 
   it('checks the executable', function() {
-    this.subject.installCheck.apply(this.mockCheck);
+    subject.installCheck.apply(mockPlatformCheck);
 
-    expect(this.mockCheck.verifyExecutable).toHaveBeenCalledWith('svn', jasmine.any(String));
+    expect(mockPlatformCheck.verifyExecutable).toHaveBeenCalledWith('svn', expect.any(String));
   });
 });
 
 describe('SvnAdapter', function() {
+  var subject, timePeriod;
   var CORRUPTED_LOG_OUTPUT = [
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<log>',
@@ -37,6 +44,7 @@ describe('SvnAdapter', function() {
     '   action="M"',
     '   prop-mods="false"'
   ];
+
   var GENERIC_LOG_OUTPUT = [
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<log>',
@@ -125,19 +133,25 @@ describe('SvnAdapter', function() {
   ].join('\n');
 
   beforeEach(function() {
-    spyOn(command.Command, 'ensure');
+    command.Command.ensure = jest.fn();
+    command.stream = jest.fn();
+    command.run = jest.fn();
 
-    this.subject = new SvnAdapter({ rootPath: '/root/dir' });
-    this.timePeriod = new TimePeriod({
+    subject = new SvnAdapter({ rootPath: '/root/dir' });
+    timePeriod = new TimePeriod({
       start: moment('2015-08-22T14:51:42.123Z'), end: moment('2015-10-12T11:10:06.456Z')
     });
   });
 
   var buildLogStream = function(output) {
     var logStream = new stream.PassThrough();
-    spyOn(command, 'stream').and.returnValue(logStream); //eslint-disable-line jasmine/no-unsafe-spy
+    command.stream.mockReturnValue(logStream);
 
-    _.each(output, logStream.push.bind(logStream));
+    if (Array.isArray(output)) {
+      output.forEach(logStream.push.bind(logStream));
+    } else {
+      logStream.push(output);
+    }
     logStream.end();
   };
 
@@ -150,7 +164,7 @@ describe('SvnAdapter', function() {
       buildLogStream('LOG_OUTPUT');
       var result = '';
 
-      this.subject.logStream(this.timePeriod)
+      subject.logStream(timePeriod)
         .on('data', function(chunk) {
           result += chunk.toString();
         })
@@ -169,7 +183,7 @@ describe('SvnAdapter', function() {
       buildLogStream(GENERIC_LOG_OUTPUT);
 
       var result = '';
-      this.subject.commitMessagesStream(this.timePeriod)
+      subject.commitMessagesStream(timePeriod)
         .on('data', function(chunk) {
           result += chunk.toString();
         })
@@ -184,15 +198,17 @@ describe('SvnAdapter', function() {
 
     it('throws an error if the stream ends before the xml document is complete', function(done) {
       buildLogStream(CORRUPTED_LOG_OUTPUT);
-      this.subject.commitMessagesStream(this.timePeriod)
-        .on('error', done);
+      subject.commitMessagesStream(timePeriod)
+        .on('error', function() {
+          done();
+        });
     });
   });
 
   describe('.showRevisionStream()', function() {
     it('returns the svn revision content as a stream', function() {
-      spyOn(command, 'stream').and.returnValue('output-stream');
-      var output = this.subject.showRevisionStream('qwe123', 'test/file');
+      command.stream.mockReturnValue('output-stream');
+      var output = subject.showRevisionStream('qwe123', 'test/file');
 
       expect(output).toEqual('output-stream');
       expect(command.stream).toHaveBeenCalledWith('svn', ['cat', '-r', 'qwe123', 'test/file'], {cwd: '/root/dir'});
@@ -201,8 +217,8 @@ describe('SvnAdapter', function() {
 
   describe('.revisions()', function() {
     it('returns the list of revisions for the given time period', function() {
-      spyOn(command, 'run').and.returnValue(new Buffer(SINGLE_FILE_OUTPUT));
-      var revisions = this.subject.revisions('test/file', this.timePeriod);
+      command.run.mockReturnValue(new Buffer(SINGLE_FILE_OUTPUT));
+      var revisions = subject.revisions('test/file', timePeriod);
 
       expect(revisions).toEqual([
         { revisionId: '477837', date: '2006-11-21T19:21:56.144109Z' },
@@ -214,12 +230,12 @@ describe('SvnAdapter', function() {
     });
 
     it('returns an empty list if the command output is empty', function() {
-      spyOn(command, 'run').and.returnValue(new Buffer([
+      command.run.mockReturnValue(new Buffer([
         '<?xml version="1.0" encoding="UTF-8"?>',
         '<log>',
         '</log>'
       ].join('\n')));
-      var revisions = this.subject.revisions('test/file', this.timePeriod);
+      var revisions = subject.revisions('test/file', timePeriod);
 
       expect(revisions).toEqual([]);
     });
@@ -227,9 +243,9 @@ describe('SvnAdapter', function() {
 
   describe('vcsRelativePath()', function() {
     it('returns the relative file path based on the repository url', function() {
-      spyOn(command, 'run').and.returnValue(new Buffer('^/local/project/path'));
+      command.run.mockReturnValue(new Buffer('^/local/project/path'));
 
-      var result = this.subject.vcsRelativePath();
+      var result = subject.vcsRelativePath();
 
       expect(result).toEqual('^/local/project/path');
       expect(command.run).toHaveBeenCalledWith('svn', ['info', '--show-item', 'relative-url'], {cwd: '/root/dir'});

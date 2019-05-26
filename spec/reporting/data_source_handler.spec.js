@@ -1,10 +1,8 @@
-/*global require_src*/
-var _        = require('lodash'),
-    Bluebird = require('bluebird'),
-    stream   = require('stream');
+var _      = require('lodash'),
+    stream = require('stream');
 
-var DataSourceHandler = require_src('reporting/data_source_handler'),
-    utils             = require_src('utils');
+var DataSourceHandler = require('reporting/data_source_handler'),
+    utils             = require('utils');
 
 describe('DataSourceHandler', function() {
   var subject;
@@ -13,21 +11,19 @@ describe('DataSourceHandler', function() {
   });
 
   it('returns data from an array object', function() {
-    return subject.processDataSource([{ a: 123, b: 'zxc' }, { a: 456, b: 'vbn' }])
-      .then(function(data) {
-        expect(data).toEqual([
-          { a: 123, b: 'zxc' },
-          { a: 456, b: 'vbn' }
-        ]);
-      });
+    expect(subject.processDataSource([{ a: 123, b: 'zxc' }, { a: 456, b: 'vbn' }]))
+      .resolves.toEqual([
+        { a: 123, b: 'zxc' },
+        { a: 456, b: 'vbn' }
+      ]);
   });
 
   it('returns data from a json file', function() {
-    spyOn(utils.fileSystem, 'isFile').and.returnValue(true);
-    spyOn(utils.json, 'fileToObject').and.returnValue(Bluebird.resolve([
-        { a: 123, b: 'zxc' },
-        { a: 456, b: 'vbn' }
-      ]));
+    utils.fileSystem.isFile = jest.fn().mockReturnValue(true);
+    utils.json.fileToObject = jest.fn().mockResolvedValue([
+      { a: 123, b: 'zxc' },
+      { a: 456, b: 'vbn' }
+    ]);
 
     return subject.processDataSource('test/file.json')
       .then(function(data) {
@@ -82,7 +78,7 @@ describe('DataSourceHandler', function() {
 
   it('returns data from a promise generating an object stream', function(done) {
     var inputStream = new stream.PassThrough({ objectMode: true });
-    subject.processDataSource(Bluebird.resolve(inputStream))
+    subject.processDataSource(jest.fn().mockResolvedValue(inputStream))
       .then(function(data) {
         expect(data).toEqual([{ a: 123, b: 'zxc' }, { a: 456, b: 'vbn' }]);
         done();

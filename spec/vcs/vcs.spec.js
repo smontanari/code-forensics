@@ -1,21 +1,19 @@
-/*global require_src*/
-var vcs        = require_src('vcs'),
-    vcsFactory = require_src('vcs/vcs_factory');
+var vcs        = require('vcs'),
+    vcsFactory = require('vcs/vcs_factory');
 
 describe('vcs', function() {
   describe('vcs client', function() {
+    var mockAdapter;
     beforeEach(function() {
-      var mockAdapter = jasmine.createSpyObj('adapter', ['revisions', 'showRevisionStream', 'logStream', 'commitMessagesStream']);
+      mockAdapter = {};
       ['revisions', 'showRevisionStream', 'logStream', 'commitMessagesStream'].forEach(function(method) {
-        mockAdapter[method].and.returnValue('output of: ' + method);
+        mockAdapter[method] = jest.fn().mockReturnValue('output of: ' + method);
       });
-      this.mockAdapter = mockAdapter;
-      spyOn(vcsFactory, 'adapter').and.returnValue(mockAdapter);
+      vcsFactory.adapter = jest.fn().mockReturnValue(mockAdapter);
     });
 
     it('delegates the functions call to the adapter', function() {
       var vcsClient = vcs.client('test repository');
-      var mockAdapter = this.mockAdapter;
 
       ['revisions', 'showRevisionStream', 'logStream', 'commitMessagesStream'].forEach(function(method) {
         expect(vcsClient[method]('arg1', 'arg2')).toEqual('output of: ' + method);
@@ -23,15 +21,17 @@ describe('vcs', function() {
       });
 
       expect(vcsFactory.adapter).toHaveBeenCalledWith('test repository');
-      expect(vcsFactory.adapter.calls.count()).toEqual(1);
+      expect(vcsFactory.adapter).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('vcs logTransformer', function() {
+    var mockTransformer;
     beforeEach(function() {
-      this.mockTransformer = jasmine.createSpyObj('logTransformer', ['normaliseLogStream']);
-      this.mockTransformer.normaliseLogStream.and.returnValue('output of: normaliseLogStream');
-      spyOn(vcsFactory, 'logStreamTransformer').and.returnValue(this.mockTransformer);
+      mockTransformer = {
+        normaliseLogStream: jest.fn().mockReturnValue('output of: normaliseLogStream')
+      };
+      vcsFactory.logStreamTransformer = jest.fn().mockReturnValue(mockTransformer);
     });
 
     it('delegates the functions call to the logTransformer', function() {
@@ -39,11 +39,11 @@ describe('vcs', function() {
 
       expect(vcsLogTransformer.normaliseLogStream('arg1', 'arg2')).toEqual('output of: normaliseLogStream');
       expect(vcsLogTransformer.normaliseLogStream('arg3', 'arg4')).toEqual('output of: normaliseLogStream');
-      expect(this.mockTransformer.normaliseLogStream).toHaveBeenCalledWith('arg1', 'arg2');
-      expect(this.mockTransformer.normaliseLogStream).toHaveBeenCalledWith('arg3', 'arg4');
+      expect(mockTransformer.normaliseLogStream).toHaveBeenCalledWith('arg1', 'arg2');
+      expect(mockTransformer.normaliseLogStream).toHaveBeenCalledWith('arg3', 'arg4');
 
       expect(vcsFactory.logStreamTransformer).toHaveBeenCalledWith('test repository', 'test developers info');
-      expect(vcsFactory.logStreamTransformer.calls.count()).toEqual(1);
+      expect(vcsFactory.logStreamTransformer).toHaveBeenCalledTimes(1);
     });
   });
 });

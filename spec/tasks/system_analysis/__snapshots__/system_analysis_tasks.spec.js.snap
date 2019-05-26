@@ -1,0 +1,611 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`System analysis tasks system-evolution-analysis with a layer group parameter with churn analysis not supported by the VCS type publishes a summary report and a coupling report for each architectural layer of the system: 2016-01-01_2016-03-31_system-coupling-data.json 1`] = `
+Array [
+  Object {
+    "coupledName": "test_layer2",
+    "couplingDegree": 23,
+    "date": "2016-01-31T23:59:59.999Z",
+    "name": "test_layer1",
+  },
+  Object {
+    "coupledName": "test_layer3",
+    "couplingDegree": 41,
+    "date": "2016-01-31T23:59:59.999Z",
+    "name": "test_layer1",
+  },
+  Object {
+    "coupledName": "test_layer3",
+    "couplingDegree": 30,
+    "date": "2016-01-31T23:59:59.999Z",
+    "name": "test_layer2",
+  },
+  Object {
+    "coupledName": "test_layer2",
+    "couplingDegree": 0,
+    "date": "2016-02-29T23:59:59.999Z",
+    "name": "test_layer1",
+  },
+  Object {
+    "coupledName": "test_layer3",
+    "couplingDegree": 0,
+    "date": "2016-02-29T23:59:59.999Z",
+    "name": "test_layer1",
+  },
+  Object {
+    "coupledName": "test_layer3",
+    "couplingDegree": 0,
+    "date": "2016-02-29T23:59:59.999Z",
+    "name": "test_layer2",
+  },
+  Object {
+    "coupledName": "test_layer2",
+    "couplingDegree": 33,
+    "date": "2016-03-31T23:59:59.999Z",
+    "name": "test_layer1",
+  },
+  Object {
+    "coupledName": "test_layer3",
+    "couplingDegree": 52,
+    "date": "2016-03-31T23:59:59.999Z",
+    "name": "test_layer1",
+  },
+  Object {
+    "coupledName": "test_layer3",
+    "couplingDegree": 10,
+    "date": "2016-03-31T23:59:59.999Z",
+    "name": "test_layer2",
+  },
+]
+`;
+
+exports[`System analysis tasks system-evolution-analysis with a layer group parameter with churn analysis not supported by the VCS type publishes a summary report and a coupling report for each architectural layer of the system: 2016-01-01_2016-03-31_system-summary-data.json 1`] = `
+Array [
+  Object {
+    "authors": 8,
+    "commits": 42,
+    "cumulativeAuthors": 8,
+    "cumulativeCommits": 42,
+    "cumulativeRevisions": 12,
+    "date": "2016-01-31T23:59:59.999Z",
+    "name": "test_layer1",
+    "revisions": 12,
+  },
+  Object {
+    "authors": 3,
+    "commits": 21,
+    "cumulativeAuthors": 3,
+    "cumulativeCommits": 21,
+    "cumulativeRevisions": 9,
+    "date": "2016-01-31T23:59:59.999Z",
+    "name": "test_layer2",
+    "revisions": 9,
+  },
+  Object {
+    "authors": 1,
+    "commits": 5,
+    "cumulativeAuthors": 1,
+    "cumulativeCommits": 5,
+    "cumulativeRevisions": 2,
+    "date": "2016-01-31T23:59:59.999Z",
+    "name": "test_layer3",
+    "revisions": 2,
+  },
+  Object {
+    "authors": 0,
+    "commits": 0,
+    "cumulativeAuthors": 8,
+    "cumulativeCommits": 42,
+    "cumulativeRevisions": 12,
+    "date": "2016-02-29T23:59:59.999Z",
+    "name": "test_layer1",
+    "revisions": 0,
+  },
+  Object {
+    "authors": 0,
+    "commits": 0,
+    "cumulativeAuthors": 3,
+    "cumulativeCommits": 21,
+    "cumulativeRevisions": 9,
+    "date": "2016-02-29T23:59:59.999Z",
+    "name": "test_layer2",
+    "revisions": 0,
+  },
+  Object {
+    "authors": 0,
+    "commits": 0,
+    "cumulativeAuthors": 1,
+    "cumulativeCommits": 5,
+    "cumulativeRevisions": 2,
+    "date": "2016-02-29T23:59:59.999Z",
+    "name": "test_layer3",
+    "revisions": 0,
+  },
+  Object {
+    "authors": 12,
+    "commits": 59,
+    "cumulativeAuthors": 20,
+    "cumulativeCommits": 101,
+    "cumulativeRevisions": 39,
+    "date": "2016-03-31T23:59:59.999Z",
+    "name": "test_layer1",
+    "revisions": 27,
+  },
+  Object {
+    "authors": 4,
+    "commits": 30,
+    "cumulativeAuthors": 7,
+    "cumulativeCommits": 51,
+    "cumulativeRevisions": 23,
+    "date": "2016-03-31T23:59:59.999Z",
+    "name": "test_layer2",
+    "revisions": 14,
+  },
+  Object {
+    "authors": 2,
+    "commits": 3,
+    "cumulativeAuthors": 3,
+    "cumulativeCommits": 8,
+    "cumulativeRevisions": 7,
+    "date": "2016-03-31T23:59:59.999Z",
+    "name": "test_layer3",
+    "revisions": 5,
+  },
+]
+`;
+
+exports[`System analysis tasks system-evolution-analysis with a layer group parameter with churn analysis not supported by the VCS type publishes a summary report and a coupling report for each architectural layer of the system: manifest 1`] = `
+Object {
+  "dataFiles": Array [
+    Object {
+      "fileType": "summary-stats",
+      "fileUrl": "376716484935bc38610b095a36fabbe9c01527ad/2016-01-01_2016-03-31_system-summary-data.json",
+      "timePeriod": "2016-01-01_2016-03-31",
+    },
+    Object {
+      "fileType": "coupling-trend",
+      "fileUrl": "376716484935bc38610b095a36fabbe9c01527ad/2016-01-01_2016-03-31_system-coupling-data.json",
+      "timePeriod": "2016-01-01_2016-03-31",
+    },
+  ],
+  "dateRange": "2016-01-01_2016-03-31",
+  "enabledDiagrams": Array [
+    "revisions-trend",
+    "commits-trend",
+    "authors-trend",
+    "coupling-trend",
+  ],
+  "id": "376716484935bc38610b095a36fabbe9c01527ad",
+  "parameters": Object {
+    "layerGroup": "test_boundary",
+    "timeSplit": "eom",
+  },
+  "reportName": "system-evolution",
+  "taskName": "system-evolution-analysis",
+  "time": "2015-10-22T10:00:00.000Z",
+}
+`;
+
+exports[`System analysis tasks system-evolution-analysis with a layer group parameter with churn analysis supported by the VCS type publishes a summary report, a code churn report and a coupling report for each architectural layer of the system: 2016-01-01_2016-03-31_system-churn-data.json 1`] = `
+Array [
+  Object {
+    "addedLines": 95295,
+    "cumulativeLines": 85086,
+    "date": "2016-01-31T23:59:59.999Z",
+    "deletedLines": 10209,
+    "name": "test_layer1",
+    "totalLines": 85086,
+  },
+  Object {
+    "addedLines": 6940,
+    "cumulativeLines": -21,
+    "date": "2016-01-31T23:59:59.999Z",
+    "deletedLines": 6961,
+    "name": "test_layer2",
+    "totalLines": -21,
+  },
+  Object {
+    "addedLines": 710,
+    "cumulativeLines": 673,
+    "date": "2016-01-31T23:59:59.999Z",
+    "deletedLines": 37,
+    "name": "test_layer3",
+    "totalLines": 673,
+  },
+  Object {
+    "addedLines": 0,
+    "cumulativeLines": 85086,
+    "date": "2016-02-29T23:59:59.999Z",
+    "deletedLines": 0,
+    "name": "test_layer1",
+    "totalLines": 0,
+  },
+  Object {
+    "addedLines": 0,
+    "cumulativeLines": -21,
+    "date": "2016-02-29T23:59:59.999Z",
+    "deletedLines": 0,
+    "name": "test_layer2",
+    "totalLines": 0,
+  },
+  Object {
+    "addedLines": 0,
+    "cumulativeLines": 673,
+    "date": "2016-02-29T23:59:59.999Z",
+    "deletedLines": 0,
+    "name": "test_layer3",
+    "totalLines": 0,
+  },
+  Object {
+    "addedLines": 12091,
+    "cumulativeLines": 87039,
+    "date": "2016-03-31T23:59:59.999Z",
+    "deletedLines": 10138,
+    "name": "test_layer1",
+    "totalLines": 1953,
+  },
+  Object {
+    "addedLines": 1147,
+    "cumulativeLines": -30,
+    "date": "2016-03-31T23:59:59.999Z",
+    "deletedLines": 1156,
+    "name": "test_layer2",
+    "totalLines": -9,
+  },
+  Object {
+    "addedLines": 889,
+    "cumulativeLines": 902,
+    "date": "2016-03-31T23:59:59.999Z",
+    "deletedLines": 660,
+    "name": "test_layer3",
+    "totalLines": 229,
+  },
+]
+`;
+
+exports[`System analysis tasks system-evolution-analysis with a layer group parameter with churn analysis supported by the VCS type publishes a summary report, a code churn report and a coupling report for each architectural layer of the system: 2016-01-01_2016-03-31_system-coupling-data.json 1`] = `
+Array [
+  Object {
+    "coupledName": "test_layer2",
+    "couplingDegree": 23,
+    "date": "2016-01-31T23:59:59.999Z",
+    "name": "test_layer1",
+  },
+  Object {
+    "coupledName": "test_layer3",
+    "couplingDegree": 41,
+    "date": "2016-01-31T23:59:59.999Z",
+    "name": "test_layer1",
+  },
+  Object {
+    "coupledName": "test_layer3",
+    "couplingDegree": 30,
+    "date": "2016-01-31T23:59:59.999Z",
+    "name": "test_layer2",
+  },
+  Object {
+    "coupledName": "test_layer2",
+    "couplingDegree": 0,
+    "date": "2016-02-29T23:59:59.999Z",
+    "name": "test_layer1",
+  },
+  Object {
+    "coupledName": "test_layer3",
+    "couplingDegree": 0,
+    "date": "2016-02-29T23:59:59.999Z",
+    "name": "test_layer1",
+  },
+  Object {
+    "coupledName": "test_layer3",
+    "couplingDegree": 0,
+    "date": "2016-02-29T23:59:59.999Z",
+    "name": "test_layer2",
+  },
+  Object {
+    "coupledName": "test_layer2",
+    "couplingDegree": 33,
+    "date": "2016-03-31T23:59:59.999Z",
+    "name": "test_layer1",
+  },
+  Object {
+    "coupledName": "test_layer3",
+    "couplingDegree": 52,
+    "date": "2016-03-31T23:59:59.999Z",
+    "name": "test_layer1",
+  },
+  Object {
+    "coupledName": "test_layer3",
+    "couplingDegree": 10,
+    "date": "2016-03-31T23:59:59.999Z",
+    "name": "test_layer2",
+  },
+]
+`;
+
+exports[`System analysis tasks system-evolution-analysis with a layer group parameter with churn analysis supported by the VCS type publishes a summary report, a code churn report and a coupling report for each architectural layer of the system: 2016-01-01_2016-03-31_system-summary-data.json 1`] = `
+Array [
+  Object {
+    "authors": 8,
+    "commits": 42,
+    "cumulativeAuthors": 8,
+    "cumulativeCommits": 42,
+    "cumulativeRevisions": 12,
+    "date": "2016-01-31T23:59:59.999Z",
+    "name": "test_layer1",
+    "revisions": 12,
+  },
+  Object {
+    "authors": 3,
+    "commits": 21,
+    "cumulativeAuthors": 3,
+    "cumulativeCommits": 21,
+    "cumulativeRevisions": 9,
+    "date": "2016-01-31T23:59:59.999Z",
+    "name": "test_layer2",
+    "revisions": 9,
+  },
+  Object {
+    "authors": 1,
+    "commits": 5,
+    "cumulativeAuthors": 1,
+    "cumulativeCommits": 5,
+    "cumulativeRevisions": 2,
+    "date": "2016-01-31T23:59:59.999Z",
+    "name": "test_layer3",
+    "revisions": 2,
+  },
+  Object {
+    "authors": 0,
+    "commits": 0,
+    "cumulativeAuthors": 8,
+    "cumulativeCommits": 42,
+    "cumulativeRevisions": 12,
+    "date": "2016-02-29T23:59:59.999Z",
+    "name": "test_layer1",
+    "revisions": 0,
+  },
+  Object {
+    "authors": 0,
+    "commits": 0,
+    "cumulativeAuthors": 3,
+    "cumulativeCommits": 21,
+    "cumulativeRevisions": 9,
+    "date": "2016-02-29T23:59:59.999Z",
+    "name": "test_layer2",
+    "revisions": 0,
+  },
+  Object {
+    "authors": 0,
+    "commits": 0,
+    "cumulativeAuthors": 1,
+    "cumulativeCommits": 5,
+    "cumulativeRevisions": 2,
+    "date": "2016-02-29T23:59:59.999Z",
+    "name": "test_layer3",
+    "revisions": 0,
+  },
+  Object {
+    "authors": 12,
+    "commits": 59,
+    "cumulativeAuthors": 20,
+    "cumulativeCommits": 101,
+    "cumulativeRevisions": 39,
+    "date": "2016-03-31T23:59:59.999Z",
+    "name": "test_layer1",
+    "revisions": 27,
+  },
+  Object {
+    "authors": 4,
+    "commits": 30,
+    "cumulativeAuthors": 7,
+    "cumulativeCommits": 51,
+    "cumulativeRevisions": 23,
+    "date": "2016-03-31T23:59:59.999Z",
+    "name": "test_layer2",
+    "revisions": 14,
+  },
+  Object {
+    "authors": 2,
+    "commits": 3,
+    "cumulativeAuthors": 3,
+    "cumulativeCommits": 8,
+    "cumulativeRevisions": 7,
+    "date": "2016-03-31T23:59:59.999Z",
+    "name": "test_layer3",
+    "revisions": 5,
+  },
+]
+`;
+
+exports[`System analysis tasks system-evolution-analysis with a layer group parameter with churn analysis supported by the VCS type publishes a summary report, a code churn report and a coupling report for each architectural layer of the system: manifest 1`] = `
+Object {
+  "dataFiles": Array [
+    Object {
+      "fileType": "summary-stats",
+      "fileUrl": "376716484935bc38610b095a36fabbe9c01527ad/2016-01-01_2016-03-31_system-summary-data.json",
+      "timePeriod": "2016-01-01_2016-03-31",
+    },
+    Object {
+      "fileType": "churn-trend",
+      "fileUrl": "376716484935bc38610b095a36fabbe9c01527ad/2016-01-01_2016-03-31_system-churn-data.json",
+      "timePeriod": "2016-01-01_2016-03-31",
+    },
+    Object {
+      "fileType": "coupling-trend",
+      "fileUrl": "376716484935bc38610b095a36fabbe9c01527ad/2016-01-01_2016-03-31_system-coupling-data.json",
+      "timePeriod": "2016-01-01_2016-03-31",
+    },
+  ],
+  "dateRange": "2016-01-01_2016-03-31",
+  "enabledDiagrams": Array [
+    "revisions-trend",
+    "commits-trend",
+    "authors-trend",
+    "churn-trend",
+    "coupling-trend",
+  ],
+  "id": "376716484935bc38610b095a36fabbe9c01527ad",
+  "parameters": Object {
+    "layerGroup": "test_boundary",
+    "timeSplit": "eom",
+  },
+  "reportName": "system-evolution",
+  "taskName": "system-evolution-analysis",
+  "time": "2015-10-22T10:00:00.000Z",
+}
+`;
+
+exports[`System analysis tasks system-evolution-analysis with no layer group parameter with churn analysis not supported by the VCS type publishes a revisions report with data aggregated for all files: 2016-01-01_2016-03-31_system-summary-data.json 1`] = `
+Array [
+  Object {
+    "authors": 14,
+    "commits": 67,
+    "cumulativeAuthors": 14,
+    "cumulativeCommits": 67,
+    "cumulativeRevisions": 94,
+    "date": "2016-01-31T23:59:59.999Z",
+    "name": "All files",
+    "revisions": 94,
+  },
+  Object {
+    "authors": 0,
+    "commits": 0,
+    "cumulativeAuthors": 14,
+    "cumulativeCommits": 67,
+    "cumulativeRevisions": 94,
+    "date": "2016-02-29T23:59:59.999Z",
+    "name": "All files",
+    "revisions": 0,
+  },
+  Object {
+    "authors": 9,
+    "commits": 52,
+    "cumulativeAuthors": 23,
+    "cumulativeCommits": 119,
+    "cumulativeRevisions": 164,
+    "date": "2016-03-31T23:59:59.999Z",
+    "name": "All files",
+    "revisions": 70,
+  },
+]
+`;
+
+exports[`System analysis tasks system-evolution-analysis with no layer group parameter with churn analysis not supported by the VCS type publishes a revisions report with data aggregated for all files: manifest 1`] = `
+Object {
+  "dataFiles": Array [
+    Object {
+      "fileType": "summary-stats",
+      "fileUrl": "376716484935bc38610b095a36fabbe9c01527ad/2016-01-01_2016-03-31_system-summary-data.json",
+      "timePeriod": "2016-01-01_2016-03-31",
+    },
+  ],
+  "dateRange": "2016-01-01_2016-03-31",
+  "enabledDiagrams": Array [
+    "revisions-trend",
+    "commits-trend",
+    "authors-trend",
+  ],
+  "id": "376716484935bc38610b095a36fabbe9c01527ad",
+  "parameters": Object {
+    "timeSplit": "eom",
+  },
+  "reportName": "system-evolution",
+  "taskName": "system-evolution-analysis",
+  "time": "2015-10-22T10:00:00.000Z",
+}
+`;
+
+exports[`System analysis tasks system-evolution-analysis with no layer group parameter with churn analysis supported by the VCS type publishes a summary report and a churn report with data aggregated for all files: 2016-01-01_2016-03-31_system-churn-data.json 1`] = `
+Array [
+  Object {
+    "addedLines": 102945,
+    "cumulativeLines": 85738,
+    "date": "2016-01-31T23:59:59.999Z",
+    "deletedLines": 17207,
+    "name": "All files",
+    "totalLines": 85738,
+  },
+  Object {
+    "addedLines": 0,
+    "cumulativeLines": 85738,
+    "date": "2016-02-29T23:59:59.999Z",
+    "deletedLines": 0,
+    "name": "All files",
+    "totalLines": 0,
+  },
+  Object {
+    "addedLines": 14127,
+    "cumulativeLines": 87911,
+    "date": "2016-03-31T23:59:59.999Z",
+    "deletedLines": 11954,
+    "name": "All files",
+    "totalLines": 2173,
+  },
+]
+`;
+
+exports[`System analysis tasks system-evolution-analysis with no layer group parameter with churn analysis supported by the VCS type publishes a summary report and a churn report with data aggregated for all files: 2016-01-01_2016-03-31_system-summary-data.json 1`] = `
+Array [
+  Object {
+    "authors": 14,
+    "commits": 67,
+    "cumulativeAuthors": 14,
+    "cumulativeCommits": 67,
+    "cumulativeRevisions": 94,
+    "date": "2016-01-31T23:59:59.999Z",
+    "name": "All files",
+    "revisions": 94,
+  },
+  Object {
+    "authors": 0,
+    "commits": 0,
+    "cumulativeAuthors": 14,
+    "cumulativeCommits": 67,
+    "cumulativeRevisions": 94,
+    "date": "2016-02-29T23:59:59.999Z",
+    "name": "All files",
+    "revisions": 0,
+  },
+  Object {
+    "authors": 9,
+    "commits": 52,
+    "cumulativeAuthors": 23,
+    "cumulativeCommits": 119,
+    "cumulativeRevisions": 164,
+    "date": "2016-03-31T23:59:59.999Z",
+    "name": "All files",
+    "revisions": 70,
+  },
+]
+`;
+
+exports[`System analysis tasks system-evolution-analysis with no layer group parameter with churn analysis supported by the VCS type publishes a summary report and a churn report with data aggregated for all files: manifest 1`] = `
+Object {
+  "dataFiles": Array [
+    Object {
+      "fileType": "summary-stats",
+      "fileUrl": "376716484935bc38610b095a36fabbe9c01527ad/2016-01-01_2016-03-31_system-summary-data.json",
+      "timePeriod": "2016-01-01_2016-03-31",
+    },
+    Object {
+      "fileType": "churn-trend",
+      "fileUrl": "376716484935bc38610b095a36fabbe9c01527ad/2016-01-01_2016-03-31_system-churn-data.json",
+      "timePeriod": "2016-01-01_2016-03-31",
+    },
+  ],
+  "dateRange": "2016-01-01_2016-03-31",
+  "enabledDiagrams": Array [
+    "revisions-trend",
+    "commits-trend",
+    "authors-trend",
+    "churn-trend",
+  ],
+  "id": "376716484935bc38610b095a36fabbe9c01527ad",
+  "parameters": Object {
+    "timeSplit": "eom",
+  },
+  "reportName": "system-evolution",
+  "taskName": "system-evolution-analysis",
+  "time": "2015-10-22T10:00:00.000Z",
+}
+`;

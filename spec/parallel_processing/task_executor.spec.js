@@ -1,8 +1,6 @@
-/*global require_src*/
-var _        = require('lodash'),
-    Bluebird = require('bluebird');
+var Bluebird = require('bluebird');
 
-var TaskExecutor = require_src('parallel_processing/task_executor');
+var TaskExecutor = require('parallel_processing/task_executor');
 
 describe('TaskExecutor', function() {
   var subject;
@@ -12,7 +10,7 @@ describe('TaskExecutor', function() {
 
   var assertSettledPromises = function(data, expectedPromises) {
     expect(data.length).toEqual(expectedPromises.length);
-    _.each(expectedPromises, function(promise, index) {
+    expectedPromises.forEach(function(promise, index) {
       if (promise.fulfilled) {
         expect(data[index].isFulfilled()).toEqual(true);
         expect(data[index].value()).toEqual(promise.value);

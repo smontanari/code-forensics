@@ -1,90 +1,85 @@
-/*global require_src cfHelpers*/
 var _        = require('lodash'),
     Bluebird = require('bluebird'),
-    stream   = require('stream');
+    stream   = require('stream'),
+    lolex    = require('lolex');
 
-var codeAnalysisTasks = require_src('tasks/code_analysis_tasks'),
-    vcs               = require_src('vcs');
+var codeAnalysisTasks = require('tasks/code_analysis_tasks'),
+    vcs               = require('vcs');
+
+var taskHelpers = require('../jest_tasks_helpers');
 
 describe('Code analysis tasks', function() {
   var runtime;
 
   describe('sloc-report', function() {
     afterEach(function() {
-      cfHelpers.clearTemp();
-      cfHelpers.clearRepo();
+      taskHelpers.clearTemp();
+      taskHelpers.clearRepo();
     });
 
     beforeEach(function() {
-      runtime = cfHelpers.runtimeSetup(codeAnalysisTasks);
+      runtime = taskHelpers.runtimeSetup(codeAnalysisTasks);
 
       runtime.prepareRepositoryFile('test_file1.js', 'line1\nline2');
       runtime.prepareRepositoryFile('test_file2.rb', 'line1\nline2\nline3\n');
     });
 
-    var assertReport = function(taskOutput) {
-      return taskOutput.assertTempReport('sloc-report.json', [
-        { path: 'test_file1.js', sourceLines: 2, totalLines: 2 },
-        { path: 'test_file2.rb', sourceLines: 3, totalLines: 3 }
-      ]);
+    var assertOutput = function(taskOutput) {
+      return taskOutput.assertTempReport('sloc-report.json');
     };
 
     describe('as a Task', function() {
       it('writes a report on the number of lines of code for each file in the repository', function() {
-        return runtime.executeStreamTask('sloc-report').then(assertReport);
+        return runtime.executeStreamTask('sloc-report').then(assertOutput);
       });
     });
 
     describe('as a Function', function() {
       it('writes a report on the number of lines of code for each file in the repository', function() {
-        return runtime.executeStreamFunction('slocReport').then(assertReport);
+        return runtime.executeStreamFunction('slocReport').then(assertOutput);
       });
     });
   });
 
   describe('sloc-trend-analysis', function() {
-    var mockVcsClient;
+    var mockVcsClient, clock;
 
     beforeEach(function() {
-      jasmine.clock().install();
-      jasmine.clock().mockDate(new Date('2015-10-22T10:00:00.000Z'));
-      mockVcsClient = jasmine.createSpyObj('vcsAdapter', ['revisions', 'showRevisionStream']);
+      clock = lolex.install({ now: new Date('2015-10-22T10:00:00.000Z') });
+      mockVcsClient = {
+        revisions: jest.fn(),
+        showRevisionStream: jest.fn()
+      };
 
-      spyOn(vcs, 'client').and.returnValue(mockVcsClient);
+      vcs.client = jest.fn().mockReturnValue(mockVcsClient);
     });
 
     afterEach(function() {
-      jasmine.clock().uninstall();
-      cfHelpers.clearOutput();
+      clock.uninstall();
+      taskHelpers.clearOutput();
     });
 
     it('publishes an analysis on the sloc trend for a given file in the repository', function(done) {
       var revisionStream1 = new stream.PassThrough();
       var revisionStream2 = new stream.PassThrough();
 
-      mockVcsClient.revisions.and.returnValue([
+      mockVcsClient.revisions.mockReturnValue([
         { revisionId: 123, date: '2015-04-29T23:00:00.000Z' },
         { revisionId: 456, date: '2015-05-04T23:00:00.000Z' }
       ]);
-      mockVcsClient.showRevisionStream.and.returnValues(revisionStream1, revisionStream2);
+      mockVcsClient.showRevisionStream
+        .mockReturnValueOnce(revisionStream1)
+        .mockReturnValueOnce(revisionStream2);
 
-      runtime = cfHelpers.runtimeSetup(codeAnalysisTasks, null, { dateFrom: '2015-03-01', targetFile: 'test_abs.rb' });
+      runtime = taskHelpers.runtimeSetup(codeAnalysisTasks, null, { dateFrom: '2015-03-01', targetFile: 'test_abs.rb' });
       runtime.executePromiseTask('sloc-trend-analysis')
         .then(function(taskOutput) {
           return Bluebird.all([
-            taskOutput.assertOutputReport('2015-03-01_2015-10-22_sloc-trend-data.json', [
-              { revision: 123, date: '2015-04-29T23:00:00.000Z', path: 'test_abs.rb', sourceLines: 3, totalLines: 3 },
-              { revision: 456, date: '2015-05-04T23:00:00.000Z', path: 'test_abs.rb', sourceLines: 5, totalLines: 5 }
-            ]),
-            taskOutput.assertManifest({
-              reportName: 'sloc-trend',
-              parameters: { targetFile: 'test_abs.rb' },
-              dateRange: '2015-03-01_2015-10-22',
-              enabledDiagrams: ['sloc']
-            })
+            taskOutput.assertOutputReport('2015-03-01_2015-10-22_sloc-trend-data.json'),
+            taskOutput.assertManifest()
           ]);
         })
-        .then(done)
+        .then(function() { done(); })
         .catch(done.fail);
 
       _.times(3, function(n) {

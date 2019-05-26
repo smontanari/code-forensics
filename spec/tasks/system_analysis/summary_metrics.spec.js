@@ -1,5 +1,4 @@
-/*global require_src*/
-var summaryMetrics = require_src('tasks/system_analysis/summary_metrics');
+var summaryMetrics = require('tasks/system_analysis/summary_metrics');
 
 describe('SummaryMetrics', function() {
   it('returns a metric value including only the given properties', function() {

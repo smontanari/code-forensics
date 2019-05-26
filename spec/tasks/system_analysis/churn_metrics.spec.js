@@ -1,5 +1,4 @@
-/*global require_src*/
-var churnMetrics = require_src('tasks/system_analysis/churn_metrics');
+var churnMetrics = require('tasks/system_analysis/churn_metrics');
 
 describe('ChurnMetrics', function() {
   it('returns the loc metrics with their total', function() {

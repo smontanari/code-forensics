@@ -1,75 +1,60 @@
-/*global require_src*/
-var factory           = require_src('vcs/vcs_factory'),
-    GitAdapter        = require_src('vcs/git/git_adapter'),
-    SvnAdapter        = require_src('vcs/svn/svn_adapter'),
-    GitLogTransformer = require_src('vcs/git/gitlog_stream_transformer'),
-    SvnLogTransformer = require_src('vcs/svn/svnlog_stream_transformer'),
-    command           = require_src('command');
+var factory           = require('vcs/vcs_factory'),
+    GitAdapter        = require('vcs/git/git_adapter'),
+    SvnAdapter        = require('vcs/svn/svn_adapter'),
+    GitLogTransformer = require('vcs/git/gitlog_stream_transformer'),
+    SvnLogTransformer = require('vcs/svn/svnlog_stream_transformer');
+
+var helpers = require('../jest_helpers');
+
+jest.mock('vcs/git/git_adapter');
+jest.mock('vcs/svn/svn_adapter');
+jest.mock('vcs/git/gitlog_stream_transformer');
+jest.mock('vcs/svn/svnlog_stream_transformer');
 
 describe('vcs factory', function() {
-  beforeEach(function() {
-    this.stubRepo = { rootPath: 'test/root' };
-    this.stubDevInfo = { find: jasmine.createSpy() };
-  });
-
-  describe('when configured to use Git', function() {
-    beforeEach(function() {
-      this.appConfigStub({ versionControlSystem: 'git' });
-    });
-
-    describe('.adapter()', function() {
-      it('returns a Git adapter', function() {
-        expect(factory.adapter(this.stubRepo).constructor).toEqual(GitAdapter.prototype.constructor);
+  describe.each([
+    ['git', GitAdapter, GitLogTransformer],
+    ['subversion', SvnAdapter, SvnLogTransformer]
+  ])('Supported VCS', function(vcsType, adapter, logTransformer) {
+    describe('when configured to use ' + vcsType, function() {
+      beforeEach(function() {
+        helpers.appConfigStub({ versionControlSystem: vcsType });
+        adapter.mockImplementation(function() { return { adapter: 'test-adapter'}; });
+        logTransformer.mockImplementation(function() { return { transformer: 'test-transformer'}; });
       });
-    });
 
-    describe('.logStreamTransformer()', function() {
-      it('returns a Git log transformer', function() {
-        expect(factory.logStreamTransformer(this.stubRepo, this.stubDevInfo).constructor).toEqual(GitLogTransformer.prototype.constructor);
+      afterEach(function() {
+        helpers.appConfigRestore();
       });
-    });
-  });
 
-  describe('when configured to use Svn', function() {
-    beforeEach(function() {
-      this.appConfigStub({ versionControlSystem: 'subversion' });
-    });
-
-    describe('.adapter()', function() {
-      it('returns a Svn adapter', function() {
-        expect(factory.adapter(this.stubRepo).constructor).toEqual(SvnAdapter.prototype.constructor);
+      it('returns a ' + vcsType + ' adapter', function() {
+        expect(factory.adapter('test-repo')).toEqual({ adapter: 'test-adapter'});
+        expect(adapter).toHaveBeenCalledWith('test-repo');
       });
-    });
 
-    describe('.logStreamTransformer()', function() {
-      it('returns a Svn log transformer', function() {
-        //this is necessary to stub out the call to adapter.vcsRelativePath()
-        spyOn(command, 'run').and.returnValue(new Buffer('/test'));
-
-        expect(factory.logStreamTransformer(this.stubRepo, this.stubDevInfo).constructor).toEqual(SvnLogTransformer.prototype.constructor);
+      it('returns a ' + vcsType + ' log transformer', function() {
+        expect(factory.logStreamTransformer('test-repo', 'test-dev-info')).toEqual({ transformer: 'test-transformer'});
+        expect(logTransformer).toHaveBeenCalledWith('test-repo', 'test-dev-info', { adapter: 'test-adapter'});
       });
     });
   });
 
-  describe('when configured to use an unsupported repository', function() {
+  describe('Unsupported VCS', function() {
     beforeEach(function() {
-      this.appConfigStub({ versionControlSystem: 'cvs' });
+      helpers.appConfigStub({ versionControlSystem: 'cvs' });
     });
 
-    describe('.adapter()', function() {
-      it('throws an error', function() {
-        expect(function() {
-          factory.adapter(this.stubRepo);
-        }).toThrowError('Cannot find vcs support files for: cvs');
-      });
+    afterEach(function() {
+      helpers.appConfigRestore();
     });
 
-    describe('.logStreamTransformer()', function() {
-      it('throws an error', function() {
-        expect(function() {
-          factory.logStreamTransformer(this.stubRepo, this.stubDevInfo);
-        }).toThrowError('Cannot find vcs support files for: cvs');
-      });
+    it.each([
+      ['adapter', ['test-repo']],
+      ['logStreamTransformer', ['test-repo', 'test-dev-info']]
+    ])('throws an error', function(factoryMethod, args) {
+      expect(function() {
+        factory[factoryMethod].apply(factory, args);
+      }).toThrow('Cannot find vcs support files for: cvs');
     });
   });
 });

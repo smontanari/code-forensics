@@ -1,0 +1,35 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Misc Tasks generate-layer-grouping-files with the layer group parameter as a Function generates layer grouping files: layer-group-test-layer-1.txt 1`] = `
+"test/path1 => Test Layer1
+^test\\\\/path2\\\\/((?!.*--abc\\\\.)).*\\\\/files$ => Test Layer1"
+`;
+
+exports[`Misc Tasks generate-layer-grouping-files with the layer group parameter as a Function generates layer grouping files: layer-group-test-layer-2.txt 1`] = `
+"test_path3 => Test Layer2
+^test\\\\/path4\\\\/.*\\\\.cf$ => Test Layer2"
+`;
+
+exports[`Misc Tasks generate-layer-grouping-files with the layer group parameter as a Function generates layer grouping files: layer-groups.txt 1`] = `
+"test/path1 => Test Layer1
+^test\\\\/path2\\\\/((?!.*--abc\\\\.)).*\\\\/files$ => Test Layer1
+test_path3 => Test Layer2
+^test\\\\/path4\\\\/.*\\\\.cf$ => Test Layer2"
+`;
+
+exports[`Misc Tasks generate-layer-grouping-files with the layer group parameter as a Task generates layer grouping files: layer-group-test-layer-1.txt 1`] = `
+"test/path1 => Test Layer1
+^test\\\\/path2\\\\/((?!.*--abc\\\\.)).*\\\\/files$ => Test Layer1"
+`;
+
+exports[`Misc Tasks generate-layer-grouping-files with the layer group parameter as a Task generates layer grouping files: layer-group-test-layer-2.txt 1`] = `
+"test_path3 => Test Layer2
+^test\\\\/path4\\\\/.*\\\\.cf$ => Test Layer2"
+`;
+
+exports[`Misc Tasks generate-layer-grouping-files with the layer group parameter as a Task generates layer grouping files: layer-groups.txt 1`] = `
+"test/path1 => Test Layer1
+^test\\\\/path2\\\\/((?!.*--abc\\\\.)).*\\\\/files$ => Test Layer1
+test_path3 => Test Layer2
+^test\\\\/path4\\\\/.*\\\\.cf$ => Test Layer2"
+`;

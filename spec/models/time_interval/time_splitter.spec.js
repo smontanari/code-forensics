@@ -1,10 +1,8 @@
-/*eslint-disable max-lines*/
-/*global require_src*/
 var _      = require('lodash'),
     moment = require('moment');
 
-var TimeSplitter      = require_src('models/time_interval/time_splitter'),
-    CFValidationError = require_src('models/validation_error');
+var TimeSplitter      = require('models/time_interval/time_splitter'),
+    CFValidationError = require('models/validation_error');
 
 describe('TimeSplitter', function() {
   var assertTimePeriod = function(period, from, to) {
@@ -16,7 +14,7 @@ describe('TimeSplitter', function() {
     it('throws an error if an invalid timeSplit is given', function() {
       expect(function() {
         new TimeSplitter(moment('2014-01-01'), moment('2015-12-31')).split('wrong-timeSplit');
-      }).toThrowError(CFValidationError, 'Invalid timeSplit value: wrong-timeSplit');
+      }).toThrow(CFValidationError, 'Invalid timeSplit value: wrong-timeSplit');
     });
 
     it('does not split if no timeSplit is given', function() {

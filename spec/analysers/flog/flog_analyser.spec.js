@@ -1,41 +1,50 @@
-/*global require_src*/
 var stream = require('stream');
 
-var FlogAnalyser = require_src('analysers/flog/flog_analyser'),
-    command      = require_src('command');
+var FlogAnalyser = require('analysers/flog/flog_analyser'),
+    command      = require('command');
 
 describe('flog command definition', function() {
+  var subject, mockCheck;
   beforeEach(function() {
-    this.subject = command.Command.definitions.getDefinition('flog');
-    this.mockCheck = jasmine.createSpyObj('check', ['verifyExecutable', 'verifyPackage']);
+    subject = command.Command.definitions.getDefinition('flog');
+    mockCheck = {
+      verifyExecutable: jest.fn(),
+      verifyPackage: jest.fn()
+    };
   });
 
   it('defines the "flog" command', function() {
-    expect(this.subject).toEqual(jasmine.anything());
+    expect(subject).toEqual({
+      cmd: 'flog',
+      args: [ '-a' ],
+      installCheck: expect.any(Function)
+    });
   });
 
   it('checks the executable', function() {
-    this.subject.installCheck.apply(this.mockCheck);
+    subject.installCheck.apply(mockCheck);
 
-    expect(this.mockCheck.verifyExecutable).toHaveBeenCalledWith('ruby', jasmine.any(String));
+    expect(mockCheck.verifyExecutable).toHaveBeenCalledWith('ruby', expect.any(String));
   });
 
   it('checks the flog gem', function() {
-    this.subject.installCheck.apply(this.mockCheck);
+    subject.installCheck.apply(mockCheck);
 
-    expect(this.mockCheck.verifyPackage).toHaveBeenCalledWith(jasmine.stringMatching(/gem list flog -i/), 'true', jasmine.any(String));
+    expect(mockCheck.verifyPackage).toHaveBeenCalledWith(
+      expect.stringMatching(/gem list flog -i/), 'true',
+      expect.any(String)
+    );
   });
 });
 
 describe('FlogAnalyser', function() {
-  var flogParser;
+  var subject;
   beforeEach(function() {
-    spyOn(command.Command, 'ensure');
-    flogParser = jasmine.createSpyObj('FlogParser', ['read']);
-    flogParser.read.and.callFake(function(report) {
-      return {flog: report};
-    });
-    this.subject = new FlogAnalyser(flogParser);
+    command.Command.ensure = jest.fn();
+    var flogParser = {
+      read: function(report) { return {flog: report}; }
+    };
+    subject = new FlogAnalyser(flogParser);
   });
 
   it('ensures the flog command is installed', function() {
@@ -46,10 +55,10 @@ describe('FlogAnalyser', function() {
     describe('without any transformation', function() {
       it('parses and streams results from the flog command applied to a file', function(done) {
         var commadStream = new stream.PassThrough();
-        spyOn(command, 'stream').and.returnValue(commadStream);
+        command.stream = jest.fn().mockReturnValue(commadStream);
         var report;
 
-        this.subject.fileAnalysisStream('test/file')
+        subject.fileAnalysisStream('test/file')
         .on('data', function(data) {
           report = data;
         })
@@ -67,10 +76,10 @@ describe('FlogAnalyser', function() {
     describe('with a transformation applied to the report', function() {
       it('parses and streams results from the flog command applied to a file and tranforms the end report', function(done) {
         var commadStream = new stream.PassThrough();
-        spyOn(command, 'stream').and.returnValue(commadStream);
+        command.stream = jest.fn().mockReturnValue(commadStream);
         var report;
 
-        this.subject.fileAnalysisStream('test/file', function(report) { return { test: 'some value', result: report.flog }; })
+        subject.fileAnalysisStream('test/file', function(report) { return { test: 'some value', result: report.flog }; })
         .on('data', function(data) {
           report = data;
         })
@@ -90,7 +99,7 @@ describe('FlogAnalyser', function() {
     describe('without any transformation', function() {
       it('parses and streams results from the flog command applied to an input stream', function(done) {
         var commandProcess = { stdin: new stream.PassThrough(), stdout: new stream.PassThrough() };
-        spyOn(command, 'createAsync').and.returnValue(commandProcess);
+        command.createAsync = jest.fn().mockReturnValue(commandProcess);
         var report;
 
         commandProcess.stdin
@@ -103,7 +112,7 @@ describe('FlogAnalyser', function() {
         });
 
         var inputStream = new stream.PassThrough();
-        inputStream.pipe(this.subject.sourceAnalysisStream('test/file'))
+        inputStream.pipe(subject.sourceAnalysisStream('test/file'))
         .on('data', function(data) {
           report = data;
         })
@@ -121,7 +130,7 @@ describe('FlogAnalyser', function() {
     describe('with a transformation applied to the report', function() {
       it('parses and streams results from the flog command applied to a stream and tranforms the end report', function(done) {
         var commandProcess = { stdin: new stream.PassThrough(), stdout: new stream.PassThrough() };
-        spyOn(command, 'createAsync').and.returnValue(commandProcess);
+        command.createAsync = jest.fn().mockReturnValue(commandProcess);
         var report;
 
         commandProcess.stdin
@@ -134,7 +143,7 @@ describe('FlogAnalyser', function() {
         });
 
         var inputStream = new stream.PassThrough();
-        inputStream.pipe(this.subject.sourceAnalysisStream('test/file', function(report) { return { test: 'some value', result: report.flog }; }))
+        inputStream.pipe(subject.sourceAnalysisStream('test/file', function(report) { return { test: 'some value', result: report.flog }; }))
         .on('data', function(data) {
           report = data;
         })

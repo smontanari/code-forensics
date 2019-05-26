@@ -1,0 +1,76 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ruby tasks ruby-complexity-report as a Function writes a report on the complexity for each ruby file in the repository: ruby-complexity-report.json 1`] = `
+"[
+{\\"path\\":\\"test_file1.rb\\",\\"methodComplexity\\":[{\\"name\\":\\"main#none\\",\\"complexity\\":18.6},{\\"name\\":\\"chain#linking_to          /absolute/path/test_file1.rb:8\\",\\"complexity\\":1.7}],\\"totalComplexity\\":22,\\"averageComplexity\\":7.3},
+{\\"path\\":\\"test_file3.rb\\",\\"methodComplexity\\":[{\\"name\\":\\"Module::TestFile2#test_method /absolute/path/test_file3.rb:54\\",\\"complexity\\":26.2}],\\"totalComplexity\\":95.1,\\"averageComplexity\\":8.6}
+]
+"
+`;
+
+exports[`ruby tasks ruby-complexity-report as a Task writes a report on the complexity for each ruby file in the repository: ruby-complexity-report.json 1`] = `
+"[
+{\\"path\\":\\"test_file1.rb\\",\\"methodComplexity\\":[{\\"name\\":\\"main#none\\",\\"complexity\\":18.6},{\\"name\\":\\"chain#linking_to          /absolute/path/test_file1.rb:8\\",\\"complexity\\":1.7}],\\"totalComplexity\\":22,\\"averageComplexity\\":7.3},
+{\\"path\\":\\"test_file3.rb\\",\\"methodComplexity\\":[{\\"name\\":\\"Module::TestFile2#test_method /absolute/path/test_file3.rb:54\\",\\"complexity\\":26.2}],\\"totalComplexity\\":95.1,\\"averageComplexity\\":8.6}
+]
+"
+`;
+
+exports[`ruby tasks ruby-complexity-trend-analysis publishes an analysis on the complexity trend for a given ruby file in the repository: 2015-03-01_2015-10-22_complexity-trend-data.json 1`] = `
+Array [
+  Object {
+    "averageComplexity": 7.3,
+    "date": "2015-04-29T23:00:00.000Z",
+    "methodComplexity": Array [
+      Object {
+        "complexity": 18.6,
+        "name": "main#none",
+      },
+      Object {
+        "complexity": 1.7,
+        "name": "chain#linking_to          /absolute/path/test_abs.rb:8",
+      },
+    ],
+    "path": "test_abs.rb",
+    "revision": 123,
+    "totalComplexity": 22,
+  },
+  Object {
+    "averageComplexity": 8.6,
+    "date": "2015-05-04T23:00:00.000Z",
+    "methodComplexity": Array [
+      Object {
+        "complexity": 26.2,
+        "name": "Module::TestFile2#test_method /absolute/path/test_abs.rb:54",
+      },
+    ],
+    "path": "test_abs.rb",
+    "revision": 456,
+    "totalComplexity": 95.1,
+  },
+]
+`;
+
+exports[`ruby tasks ruby-complexity-trend-analysis publishes an analysis on the complexity trend for a given ruby file in the repository: manifest 1`] = `
+Object {
+  "dataFiles": Array [
+    Object {
+      "fileUrl": "d319335c98cc00b068ecd0927761ff3f3d693137/2015-03-01_2015-10-22_complexity-trend-data.json",
+      "timePeriod": "2015-03-01_2015-10-22",
+    },
+  ],
+  "dateRange": "2015-03-01_2015-10-22",
+  "enabledDiagrams": Array [
+    "total",
+    "func-mean",
+    "func-sd",
+  ],
+  "id": "d319335c98cc00b068ecd0927761ff3f3d693137",
+  "parameters": Object {
+    "targetFile": "test_abs.rb",
+  },
+  "reportName": "complexity-trend",
+  "taskName": "ruby-complexity-trend-analysis",
+  "time": "2015-10-22T10:00:00.000Z",
+}
+`;

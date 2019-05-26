@@ -1,25 +1,25 @@
-/*global require_src*/
-var DefaultRunner = require_src('models/task/runners/default_runner');
+var DefaultRunner = require('models/task/runners/default_runner');
 
 describe('DefaultRunner', function() {
+  var doneCallback;
   beforeEach(function() {
-    this.doneCallback = jasmine.createSpy('done');
+    doneCallback = jest.fn().mockName('done');
   });
 
   describe('when a task function is defined', function() {
     it('executes the task function passing through the done callback', function() {
       var task = {
-        run: jasmine.createSpy('taskFunction')
+        run: jest.fn().mockName('taskFunction')
       };
-      new DefaultRunner(task).run(this.doneCallback);
+      new DefaultRunner(task).run(doneCallback);
 
-      expect(task.run).toHaveBeenCalledWith(this.doneCallback);
+      expect(task.run).toHaveBeenCalledWith(doneCallback);
     });
 
     it('returns the output of the task function', function() {
       var output = new DefaultRunner({
         run: function() { return 123; }
-      }).run(this.doneCallback);
+      }).run(doneCallback);
 
       expect(output).toEqual(123);
     });
@@ -27,10 +27,10 @@ describe('DefaultRunner', function() {
 
   describe('when a task function is not defined', function() {
     it('returns undefined and executes the callback', function() {
-      var output = new DefaultRunner({}).run(this.doneCallback);
+      var output = new DefaultRunner({}).run(doneCallback);
 
       expect(output).toBeUndefined();
-      expect(this.doneCallback).toHaveBeenCalledWith();
+      expect(doneCallback).toHaveBeenCalled();
     });
   });
 });

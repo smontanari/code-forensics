@@ -1,27 +1,27 @@
-/*global require_src*/
 var childProcess = require('child_process'),
     stream       = require('stream');
 
-var command = require_src('command'),
-    utils   = require_src('utils');
+var command = require('command'),
+    utils   = require('utils');
 
 describe('Command.ensure()', function() {
+  var commandDef;
   beforeEach(function() {
-    this.commandDef = {};
+    commandDef = {};
 
-    spyOn(command.Command.definitions, 'getDefinition').and.returnValue(this.commandDef);
+    command.Command.definitions.getDefinition = jest.fn().mockReturnValue(commandDef);
   });
 
   describe('when an installCheck function is provided', function() {
     beforeEach(function() {
-      this.commandDef.installCheck = jasmine.createSpy('command check');
+      commandDef.installCheck = jest.fn().mockName('command check');
     });
 
     it('uses the installCheck function to ensure the command is available', function() {
       command.Command.ensure('test-command');
 
-      expect(this.commandDef.installCheck).toHaveBeenCalledWith();
-      expect(this.commandDef.installCheck.calls.mostRecent().object).toBe(utils.platformCheck);
+      expect(commandDef.installCheck).toHaveBeenCalled();
+      expect(commandDef.installCheck.mock.instances).toEqual([utils.platformCheck]);
     });
   });
 
@@ -33,24 +33,26 @@ describe('Command.ensure()', function() {
 });
 
 describe('command', function() {
+  var commandDef;
   beforeEach(function() {
-    this.commandDef = {
+    commandDef = {
       cmd: 'path/to/executable',
       args: ['--param1', '--param2', { '-a': 123 }, { '-b': 456 }]
     };
 
-    spyOn(command.Command.definitions, 'getDefinition').and.returnValue(this.commandDef);
-    spyOn(process.stderr, 'write');
+    command.Command.definitions.getDefinition = jest.fn().mockReturnValue(commandDef);
+    process.stderr = jest.fn();
   });
 
   describe('.run()', function() {
+    var cmdOutput;
     beforeEach(function() {
-      spyOn(childProcess, 'spawnSync').and.returnValue({
+      childProcess.spawnSync = jest.fn().mockReturnValue({
         stdout: 'test output',
         stderr: 'test err'
       });
 
-      this.cmdOutput = command.run('test-command', ['arg1', 'arg2'], {opt1: 789, opt2: 'abc'});
+      cmdOutput = command.run('test-command', ['arg1', 'arg2'], {opt1: 789, opt2: 'abc'});
     });
 
     it('fetches the command definition', function() {
@@ -64,25 +66,25 @@ describe('command', function() {
     });
 
     it('returns the gitlog_analysis command output', function() {
-      expect(this.cmdOutput).toBe('test output');
+      expect(cmdOutput).toBe('test output');
     });
   });
 
   describe('.stream()', function() {
-    var spawnOutput;
+    var spawnOutput, cmdStream;
     beforeEach(function() {
       spawnOutput = {
         stdout: new stream.Readable(),
         stderr: new stream.Readable()
       };
-      spyOn(childProcess, 'spawn').and.returnValue(spawnOutput);
+      childProcess.spawn = jest.fn().mockReturnValue(spawnOutput);
       spawnOutput.stdout.push('test output');
       spawnOutput.stdout.push(null);
       spawnOutput.stderr.push('test err');
       spawnOutput.stderr.push(null);
-      spyOn(spawnOutput.stderr, 'pipe');
+      spawnOutput.stderr.pipe = jest.fn();
 
-      this.cmdStream = command.stream('test-command', ['arg1', 'arg2'], {opt1: 789, opt2: 'abc'});
+      cmdStream = command.stream('test-command', ['arg1', 'arg2'], {opt1: 789, opt2: 'abc'});
     });
 
     it('fetches the command definition', function() {
@@ -96,17 +98,17 @@ describe('command', function() {
     });
 
     it('returns the gitlog_analysis command output stream', function() {
-      expect(this.cmdStream.read().toString()).toEqual('test output');
+      expect(cmdStream.read().toString()).toEqual('test output');
     });
 
     it('dumps command stderr stream', function() {
-      expect(spawnOutput.stderr.pipe).toHaveBeenCalledWith(jasmine.any(stream.Writable));
+      expect(spawnOutput.stderr.pipe).toHaveBeenCalledWith(expect.any(stream.Writable));
     });
   });
 
   describe('.createSync()', function() {
     it('returns a synchronous child process', function() {
-      spyOn(childProcess, 'spawnSync').and.returnValue('sync process');
+      childProcess.spawnSync = jest.fn().mockReturnValue('sync process');
 
       var proc = command.createSync('test-command', ['arg1', 'arg2'], {opt1: 789, opt2: 'abc'});
 
@@ -120,7 +122,7 @@ describe('command', function() {
 
   describe('.createAsync()', function() {
     it('returns an asynchronous child process', function() {
-      spyOn(childProcess, 'spawn').and.returnValue('async process');
+      childProcess.spawn = jest.fn().mockReturnValue('async process');
 
       var proc = command.createAsync('test-command', ['arg1', 'arg2'], {opt1: 789, opt2: 'abc'});
 

@@ -1,16 +1,16 @@
-/*global require_src*/
-var Tree = require_src('graph_support/tree');
+var Tree = require('graph_support/tree');
 
 describe('Tree', function() {
+  var subject;
   beforeEach(function() {
-    this.subject = new Tree('/root/path', 'path');
+    subject = new Tree('/root/path', 'path');
   });
 
   describe('.addNode()', function() {
     var childNode;
 
     beforeEach(function() {
-      childNode = this.subject.addNode({
+      childNode = subject.addNode({
         path: '/root/path/branch/child',
         stringProperty: 'test-property',
         numberProperty: 123
@@ -18,7 +18,7 @@ describe('Tree', function() {
     });
 
     it('has a root node with empty name', function() {
-      expect(this.subject.rootNode.name).toBeUndefined();
+      expect(subject.rootNode.name).toBeUndefined();
     });
 
     it('returns the child node', function() {
@@ -29,13 +29,13 @@ describe('Tree', function() {
     });
 
     it('generates the children tree structure', function() {
-      expect(this.subject.rootNode.children.length).toEqual(1);
-      expect(this.subject.rootNode.children[0].name).toEqual('branch');
-      expect(this.subject.rootNode.children[0].children).toEqual([childNode]);
+      expect(subject.rootNode.children.length).toEqual(1);
+      expect(subject.rootNode.children[0].name).toEqual('branch');
+      expect(subject.rootNode.children[0].children).toEqual([childNode]);
     });
 
     it('adds another child node', function() {
-      var node = this.subject.addNode({
+      var node = subject.addNode({
         path: '/root/path/branch/child/anotherChild',
         booleanProperty: true,
         numberProperty: 456

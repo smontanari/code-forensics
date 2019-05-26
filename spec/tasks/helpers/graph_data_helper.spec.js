@@ -1,14 +1,16 @@
-/*global require_src*/
-var GraphDataHelper = require_src('tasks/helpers/graph_data_helper'),
-    graphSupport    = require_src('graph_support');
+var GraphDataHelper = require('tasks/helpers/graph_data_helper'),
+    graphSupport    = require('graph_support');
 
 describe('GraphDataHelper', function() {
   describe('.weightedTree()', function() {
     var mockTree;
     beforeEach(function() {
-      mockTree = jasmine.createSpyObj('tree', ['withItem', 'rootNode']);
-      spyOn(graphSupport, 'WeightedTree').and.returnValue(mockTree);
-      mockTree.rootNode.and.returnValue('test-root');
+      mockTree = {
+        withItem: jest.fn(),
+        rootNode: jest.fn()
+      };
+      graphSupport.WeightedTree = jest.fn(function() { return mockTree; });
+      mockTree.rootNode.mockReturnValue('test-root');
     });
 
     it('builds a weighted tree with the report data items', function() {
@@ -17,8 +19,8 @@ describe('GraphDataHelper', function() {
       expect(output).toEqual('test-root');
 
       expect(graphSupport.WeightedTree).toHaveBeenCalledWith(null, 'pathProperty', {weightedProperty: 'someProperty', normalised: true});
-      expect(mockTree.withItem.calls.argsFor(0)[0]).toEqual('reportData1');
-      expect(mockTree.withItem.calls.argsFor(1)[0]).toEqual('reportData2');
+      expect(mockTree.withItem.mock.calls[0][0]).toEqual('reportData1');
+      expect(mockTree.withItem.mock.calls[1][0]).toEqual('reportData2');
     });
   });
 
@@ -27,10 +29,10 @@ describe('GraphDataHelper', function() {
     beforeEach(function() {
       mockTree = {
         rootNode: 'test-root',
-        addNode: jasmine.createSpy('addNode')
+        addNode: jest.fn().mockName('addNode')
       };
 
-      spyOn(graphSupport, 'Tree').and.returnValue(mockTree);
+      graphSupport.Tree = jest.fn(function() { return mockTree; });
     });
 
     describe('with a children property name', function() {
@@ -44,8 +46,8 @@ describe('GraphDataHelper', function() {
         expect(output).toEqual('test-root');
 
         expect(graphSupport.Tree).toHaveBeenCalledWith(null, 'path');
-        expect(mockTree.addNode.calls.argsFor(0)[0]).toEqual({ path: 'path1', name: 'reportData1', children: [123, 456] });
-        expect(mockTree.addNode.calls.argsFor(1)[0]).toEqual({ path: 'path1', name: 'reportData2', children: ['qwe', 'zxc'] });
+        expect(mockTree.addNode.mock.calls[0][0]).toEqual({ path: 'path1', name: 'reportData1', children: [123, 456] });
+        expect(mockTree.addNode.mock.calls[1][0]).toEqual({ path: 'path1', name: 'reportData2', children: ['qwe', 'zxc'] });
       });
     });
 
@@ -60,8 +62,8 @@ describe('GraphDataHelper', function() {
         expect(output).toEqual('test-root');
 
         expect(graphSupport.Tree).toHaveBeenCalledWith(null, 'path');
-        expect(mockTree.addNode.calls.argsFor(0)[0]).toEqual({ path: 'path1', name: 'reportData1' });
-        expect(mockTree.addNode.calls.argsFor(1)[0]).toEqual({ path: 'path1', name: 'reportData2' });
+        expect(mockTree.addNode.mock.calls[0][0]).toEqual({ path: 'path1', name: 'reportData1' });
+        expect(mockTree.addNode.mock.calls[1][0]).toEqual({ path: 'path1', name: 'reportData2' });
       });
     });
   });

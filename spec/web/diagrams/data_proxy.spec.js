@@ -1,7 +1,6 @@
-/*global require_src*/
-var Bluebird  = require('bluebird');
+var Bluebird = require('bluebird');
 
-var DataProxy = require_src('web/diagrams/data_proxy');
+var DataProxy = require('web/diagrams/data_proxy');
 
 describe('DataProxy', function() {
   describe('default layout adapter', function() {
@@ -26,10 +25,7 @@ describe('DataProxy', function() {
       };
       var proxy = new DataProxy(adapter);
 
-      return proxy.processData(123)
-        .then(function(result) {
-          expect(result).toEqual(246);
-        });
+      expect(proxy.processData(123)).resolves.toEqual(246);
     });
   });
 });

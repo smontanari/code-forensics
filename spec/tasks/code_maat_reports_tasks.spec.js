@@ -1,20 +1,14 @@
-/*global require_src cfHelpers*/
 var _      = require('lodash'),
     stream = require('stream');
 
-var codeMaatReportTasks = require_src('tasks/code_maat_reports_tasks'),
-    codeMaat            = require_src('analysers/code_maat'),
-    command             = require_src('command');
+var codeMaatReportTasks = require('tasks/code_maat_reports_tasks'),
+    codeMaat            = require('analysers/code_maat'),
+    command             = require('command');
+
+var taskHelpers = require('../jest_tasks_helpers');
 
 describe('CodeMaat report tasks', function() {
   var runtime;
-
-  var assertOutput = function(taskName, taskOutput) {
-    return taskOutput.assertTempReport(taskName + '.json', [
-      { path: 'test_file1', testData: 123 },
-      { path: 'test_file2', testData: 456 }
-    ]);
-  };
 
   var assertReport = function(exampleDescription, taskName, functionName) {
     describe(taskName, function() {
@@ -22,7 +16,7 @@ describe('CodeMaat report tasks', function() {
 
       beforeEach(function() {
         analysisStream = new stream.PassThrough({ objectMode: true });
-        spyOn(codeMaat, 'analyser').and.returnValue(
+        codeMaat.analyser = jest.fn().mockReturnValue(
           {
             fileAnalysisStream: function() { return analysisStream; },
             isSupported: _.stubTrue
@@ -33,8 +27,10 @@ describe('CodeMaat report tasks', function() {
       describe('as a Task', function() {
         it(exampleDescription, function(done) {
           runtime.executePromiseTask(taskName)
-            .then(_.wrap(taskName, assertOutput))
-            .then(done)
+            .then(function(taskOutput) {
+              return taskOutput.assertTempReport(taskName + '.json');
+            })
+            .then(function() { done(); })
             .catch(done.fail);
 
           analysisStream.push({ path: 'test_file1', testData: 123 });
@@ -46,8 +42,10 @@ describe('CodeMaat report tasks', function() {
       describe('as a Function', function() {
         it(exampleDescription, function(done) {
           runtime.executePromiseFunction(functionName)
-            .then(_.wrap(taskName, assertOutput))
-            .then(done)
+            .then(function(taskOutput) {
+              return taskOutput.assertTempReport(taskName + '.json');
+            })
+            .then(function() { done(); })
             .catch(done.fail);
 
           analysisStream.push({ path: 'test_file1', testData: 123 });
@@ -61,7 +59,7 @@ describe('CodeMaat report tasks', function() {
   var assertMissingReport = function(taskName, functionName) {
     describe(taskName, function() {
       beforeEach(function() {
-        spyOn(codeMaat, 'analyser').and.returnValue(
+        codeMaat.analyser = jest.fn().mockReturnValue(
           { isSupported: _.stubFalse }
         );
       });
@@ -85,20 +83,24 @@ describe('CodeMaat report tasks', function() {
   };
 
   beforeEach(function() {
-    spyOn(command.Command, 'ensure');
-    runtime = cfHelpers.runtimeSetup(codeMaatReportTasks);
+    command.Command.ensure = jest.fn();
+    runtime = taskHelpers.runtimeSetup(codeMaatReportTasks);
   });
 
   afterEach(function() {
-    cfHelpers.clearRepo();
-    cfHelpers.clearTemp();
+    taskHelpers.clearRepo();
+    taskHelpers.clearTemp();
   });
 
   describe('task dependencies', function() {
-    _.each(['revisions-report', 'effort-report', 'authors-report', 'main-dev-report', 'code-ownership-report'], function(taskName) {
-      it('has the required dependencies', function() {
-        runtime.assertTaskDependencies(taskName, ['vcsLogDump']);
-      });
+    it.each([
+      'revisions-report',
+      'effort-report',
+      'authors-report',
+      'main-dev-report',
+      'code-ownership-report'
+    ])('has the required dependencies', function(taskName) {
+      runtime.assertTaskDependencies(taskName, ['vcsLogDump']);
     });
   });
 
@@ -118,4 +120,3 @@ describe('CodeMaat report tasks', function() {
     assertMissingReport('code-ownership-report', 'codeOwnershipReport');
   });
 });
-

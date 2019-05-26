@@ -1,11 +1,9 @@
-/*global require_src*/
-var _      = require('lodash'),
-    stream = require('stream'),
+var stream = require('stream'),
     moment = require('moment');
 
-var splitLayerStrategy = require_src('tasks/system_analysis/metric_collection_strategies/split_layer_strategy'),
-    TimePeriod         = require_src('models/time_interval/time_period'),
-    LayerGrouping      = require_src('models/layer_grouping');
+var splitLayerStrategy = require('tasks/system_analysis/metric_collection_strategies/split_layer_strategy'),
+    TimePeriod         = require('models/time_interval/time_period'),
+    LayerGrouping      = require('models/layer_grouping');
 
 describe('splitLayerStrategy', function() {
   describe('metrics collection', function() {
@@ -18,13 +16,13 @@ describe('splitLayerStrategy', function() {
         expect(output).toEqual('test_output');
         expect(mockStreamProcessor.mergeAll)
           .toHaveBeenCalledWith([
-            { timePeriod: 'p1', layer: jasmine.objectContaining({ name: 'test-layer-1', value: 'Test Layer 1' }) },
-            { timePeriod: 'p1', layer: jasmine.objectContaining({ name: 'test-layer-2', value: 'Test Layer 2' }) },
-            { timePeriod: 'p1', layer: jasmine.objectContaining({ name: 'test-layer-3', value: 'Test Layer 3' }) },
-            { timePeriod: 'p2', layer: jasmine.objectContaining({ name: 'test-layer-1', value: 'Test Layer 1' }) },
-            { timePeriod: 'p2', layer: jasmine.objectContaining({ name: 'test-layer-2', value: 'Test Layer 2' }) },
-            { timePeriod: 'p2', layer: jasmine.objectContaining({ name: 'test-layer-3', value: 'Test Layer 3' }) }
-          ], jasmine.any(Function));
+            { timePeriod: 'p1', layer: expect.objectContaining({ name: 'test-layer-1', value: 'Test Layer 1' }) },
+            { timePeriod: 'p1', layer: expect.objectContaining({ name: 'test-layer-2', value: 'Test Layer 2' }) },
+            { timePeriod: 'p1', layer: expect.objectContaining({ name: 'test-layer-3', value: 'Test Layer 3' }) },
+            { timePeriod: 'p2', layer: expect.objectContaining({ name: 'test-layer-1', value: 'Test Layer 1' }) },
+            { timePeriod: 'p2', layer: expect.objectContaining({ name: 'test-layer-2', value: 'Test Layer 2' }) },
+            { timePeriod: 'p2', layer: expect.objectContaining({ name: 'test-layer-3', value: 'Test Layer 3' }) }
+          ], expect.any(Function));
 
         var timePeriod = new TimePeriod({ start: moment('2010-05-01 00Z'), end: moment('2010-05-31 00Z') }, 'DD-MM-YYYY');
         var data = [];
@@ -40,7 +38,7 @@ describe('splitLayerStrategy', function() {
             done();
           });
 
-        _.each(streamsData, function(v) {
+        streamsData.forEach(function(v) {
           testAnalysisStream.push(v);
         });
         testAnalysisStream.end();
@@ -51,15 +49,15 @@ describe('splitLayerStrategy', function() {
       testAnalysisStream = new stream.PassThrough({ objectMode: true });
 
       mockFilesHelper = {
-        vcsNormalisedLog: jasmine.createSpy().and.returnValue('test_vcs_log'),
+        vcsNormalisedLog: jest.fn().mockReturnValue('test_vcs_log'),
         layerGrouping: function(name) { return name + '.txt'; }
       };
       mockCodeMaatHelper = {
-        testAnalysis: jasmine.createSpy('testAnalysis')
+        testAnalysis: jest.fn().mockName('testAnalysis')
       };
-      mockCodeMaatHelper.testAnalysis.and.returnValue(testAnalysisStream);
+      mockCodeMaatHelper.testAnalysis.mockReturnValue(testAnalysisStream);
       mockStreamProcessor = {
-        mergeAll: jasmine.createSpy('mergeAll').and.callFake(function(_, fn) {
+        mergeAll: jest.fn().mockName('mergeAll').mockImplementation(function(_, fn) {
           strategyAnalysisFn = fn;
           return 'test_output';
         })

@@ -1,30 +1,32 @@
-/*global require_src*/
 var fs = require('fs');
 
-var FileConfigReader = require_src('runtime/file_config_reader'),
-    utils            = require_src('utils');
+var FileConfigReader = require('runtime/file_config_reader'),
+    utils            = require('utils');
+
+jest.mock('fs');
 
 describe('FileConfigReader', function() {
+  var subject;
+
   beforeEach(function() {
-    this.subject = new FileConfigReader();
+    subject = new FileConfigReader();
+    utils.fileSystem.isFile = jest.fn();
   });
 
   describe('when no configuration file exists', function() {
     it('returns an empty object', function() {
-      spyOn(utils.fileSystem, 'isFile').and.returnValue(false);
+      utils.fileSystem.isFile.mockReturnValue(false);
 
-      expect(this.subject.getConfiguration()).toEqual({});
+      expect(subject.getConfiguration()).toEqual({});
     });
   });
 
   describe('when a configuration file exists', function() {
     it('returns the parsed object from the json file', function() {
-      spyOn(utils.fileSystem, 'isFile').and.returnValue(true);
-      spyOn(fs, 'readFileSync').and.returnValue('{ "a": 1, "b": 2, "c": { "z": "qwe" } }');
+      utils.fileSystem.isFile.mockReturnValue(true);
+      fs.readFileSync.mockReturnValue('{ "a": 1, "b": 2, "c": { "z": "qwe" } }');
 
-      expect(this.subject.getConfiguration()).toEqual({
-        a: 1, b: 2, c: { z: 'qwe' }
-      });
+      expect(subject.getConfiguration()).toEqual({ a: 1, b: 2, c: { z: 'qwe' } });
     });
   });
 });

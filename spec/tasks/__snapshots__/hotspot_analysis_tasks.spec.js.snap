@@ -1,0 +1,190 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Hotspot analysis tasks hotspot-analysis for supported languages publishes an analysis report on code size, complexity and revisions for each file in the repository: 2015-03-01_2015-10-22_revisions-hotspot-data.json 1`] = `
+Object {
+  "children": Array [
+    Object {
+      "children": Array [
+        Object {
+          "children": Array [
+            Object {
+              "children": Array [
+                Object {
+                  "children": Array [],
+                  "name": "file1.rb",
+                  "revisions": 29,
+                  "sourceLines": 33,
+                  "totalComplexity": 12.9,
+                  "totalLines": 45,
+                  "weight": 1,
+                },
+                Object {
+                  "children": Array [
+                    Object {
+                      "children": Array [],
+                      "name": "file3.rb",
+                      "revisions": 11,
+                      "sourceLines": 15,
+                      "totalComplexity": 18.4,
+                      "totalLines": 21,
+                      "weight": 0.3793103448275862,
+                    },
+                  ],
+                  "name": "models",
+                },
+              ],
+              "name": "app",
+            },
+          ],
+          "name": "ruby",
+        },
+        Object {
+          "children": Array [
+            Object {
+              "children": Array [
+                Object {
+                  "children": Array [],
+                  "name": "file2.css",
+                  "revisions": 15,
+                  "sourceLines": 23,
+                  "totalLines": 31,
+                  "weight": 0.5172413793103449,
+                },
+              ],
+              "name": "styles",
+            },
+            Object {
+              "children": Array [
+                Object {
+                  "children": Array [],
+                  "name": "file4.js",
+                  "sourceLines": 25,
+                  "totalLines": 35,
+                  "weight": 0,
+                },
+              ],
+              "name": "js",
+            },
+          ],
+          "name": "web",
+        },
+      ],
+      "name": "test",
+    },
+  ],
+}
+`;
+
+exports[`Hotspot analysis tasks hotspot-analysis for supported languages publishes an analysis report on code size, complexity and revisions for each file in the repository: manifest 1`] = `
+Object {
+  "dataFiles": Array [
+    Object {
+      "fileUrl": "103d9a240cc5358f24927d51261fd9dcdb75b314/2015-03-01_2015-10-22_revisions-hotspot-data.json",
+      "timePeriod": "2015-03-01_2015-10-22",
+    },
+  ],
+  "dateRange": "2015-03-01_2015-10-22",
+  "enabledDiagrams": Array [
+    "sloc",
+    "complexity",
+  ],
+  "id": "103d9a240cc5358f24927d51261fd9dcdb75b314",
+  "parameters": Object {},
+  "reportName": "hotspot-analysis",
+  "taskName": "hotspot-analysis",
+  "time": "2015-10-22T10:00:00.000Z",
+}
+`;
+
+exports[`Hotspot analysis tasks hotspot-analysis with no supported languages publishes an analysis report on code size and revisions for each file in the repository: 2015-03-01_2015-10-22_revisions-hotspot-data.json 1`] = `
+Object {
+  "children": Array [
+    Object {
+      "children": Array [
+        Object {
+          "children": Array [
+            Object {
+              "children": Array [
+                Object {
+                  "children": Array [],
+                  "name": "file1.java",
+                  "revisions": 29,
+                  "sourceLines": 33,
+                  "totalLines": 45,
+                  "weight": 1,
+                },
+                Object {
+                  "children": Array [
+                    Object {
+                      "children": Array [],
+                      "name": "file3.java",
+                      "revisions": 11,
+                      "sourceLines": 15,
+                      "totalLines": 21,
+                      "weight": 0.3793103448275862,
+                    },
+                  ],
+                  "name": "models",
+                },
+              ],
+              "name": "app",
+            },
+          ],
+          "name": "java",
+        },
+        Object {
+          "children": Array [
+            Object {
+              "children": Array [
+                Object {
+                  "children": Array [],
+                  "name": "file2.css",
+                  "revisions": 15,
+                  "sourceLines": 23,
+                  "totalLines": 31,
+                  "weight": 0.5172413793103449,
+                },
+              ],
+              "name": "styles",
+            },
+            Object {
+              "children": Array [
+                Object {
+                  "children": Array [],
+                  "name": "file4.jsp",
+                  "sourceLines": 25,
+                  "totalLines": 35,
+                  "weight": 0,
+                },
+              ],
+              "name": "jsp",
+            },
+          ],
+          "name": "web",
+        },
+      ],
+      "name": "test",
+    },
+  ],
+}
+`;
+
+exports[`Hotspot analysis tasks hotspot-analysis with no supported languages publishes an analysis report on code size and revisions for each file in the repository: manifest 1`] = `
+Object {
+  "dataFiles": Array [
+    Object {
+      "fileUrl": "103d9a240cc5358f24927d51261fd9dcdb75b314/2015-03-01_2015-10-22_revisions-hotspot-data.json",
+      "timePeriod": "2015-03-01_2015-10-22",
+    },
+  ],
+  "dateRange": "2015-03-01_2015-10-22",
+  "enabledDiagrams": Array [
+    "sloc",
+  ],
+  "id": "103d9a240cc5358f24927d51261fd9dcdb75b314",
+  "parameters": Object {},
+  "reportName": "hotspot-analysis",
+  "taskName": "hotspot-analysis",
+  "time": "2015-10-22T10:00:00.000Z",
+}
+`;

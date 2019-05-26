@@ -1,10 +1,9 @@
-/*global require_src*/
-var _      = require('lodash'),
-    stream = require('stream');
+var stream = require('stream');
 
-var LogStreamTransformer = require_src('vcs/git/gitlog_stream_transformer.js');
+var LogStreamTransformer = require('vcs/git/gitlog_stream_transformer.js');
 
 describe('GitLogStreamTransformer', function() {
+  var subject;
   describe('Author name normalisation', function() {
     beforeEach(function() {
       var stubDevelopersInfo = {
@@ -16,14 +15,14 @@ describe('GitLogStreamTransformer', function() {
       var stubRepository = {
         isValidPath: function() { return true; }
       };
-      this.subject = new LogStreamTransformer(stubRepository, stubDevelopersInfo);
+      subject = new LogStreamTransformer(stubRepository, stubDevelopersInfo);
     });
 
     it('streams log lines with author name changed according to the developer info', function(done) {
       var logStream = new stream.PassThrough();
 
       var result = '';
-      this.subject.normaliseLogStream(logStream)
+      subject.normaliseLogStream(logStream)
         .on('data', function(chunk) {
           result += chunk.toString();
         })
@@ -60,7 +59,7 @@ describe('GitLogStreamTransformer', function() {
         '6 8 test/file5.js'
       ];
 
-      _.each(logLines, logStream.push.bind(logStream));
+      logLines.forEach(logStream.push.bind(logStream));
       logStream.end();
     });
   });
@@ -75,14 +74,14 @@ describe('GitLogStreamTransformer', function() {
           return path !== 'test/invalid_file.rb';
         }
       };
-      this.subject = new LogStreamTransformer(stubRepository, stubDevelopersInfo);
+      subject = new LogStreamTransformer(stubRepository, stubDevelopersInfo);
     });
 
     it('streams log lines filtering out commits with invalid file paths', function(done) {
       var logStream = new stream.PassThrough();
 
       var result = '';
-      this.subject.normaliseLogStream(logStream)
+      subject.normaliseLogStream(logStream)
         .on('data', function(chunk) {
           result += chunk.toString();
         })
@@ -119,7 +118,7 @@ describe('GitLogStreamTransformer', function() {
         '6\t8\ttest/file5.js'
       ];
 
-      _.each(logLines, logStream.push.bind(logStream));
+      logLines.forEach(logStream.push.bind(logStream));
       logStream.end();
     });
 
@@ -127,7 +126,7 @@ describe('GitLogStreamTransformer', function() {
       var logStream = new stream.PassThrough();
 
       var result = '';
-      this.subject.normaliseLogStream(logStream)
+      subject.normaliseLogStream(logStream)
         .on('data', function(chunk) {
           result += chunk.toString();
         })
@@ -153,7 +152,7 @@ describe('GitLogStreamTransformer', function() {
         ''
       ].join('\n');
 
-      _.each(logLines, logStream.push.bind(logStream));
+      logStream.push(logLines);
       logStream.end();
     });
   });

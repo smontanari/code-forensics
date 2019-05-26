@@ -1,24 +1,44 @@
-/*global require_src*/
-var fsUtils = require_src('utils').fileSystem;
+// var fs = require('fs');
+
+var fsUtils = require('utils').fileSystem;
+
+// jest.mock('fs');
+var fs;
+jest.isolateModules(function() {
+  fs = require('fs');
+});
+jest.mock('fs');
 
 describe('utils.fileSystem', function() {
-  describe('.isFile()', function() {
-    it('returns true for a valid file', function() {
-      expect(fsUtils.isFile(__filename)).toBe(true);
-    });
-
-    it('returns false for a non valid file', function() {
-      expect(fsUtils.isFile('file_that_doesnot_exist')).toBe(false);
-    });
+  var mockStat;
+  beforeEach(function() {
+    mockStat = {
+      isFile: jest.fn(),
+      isDirectory: jest.fn()
+    };
+    fs.existsSync = jest.fn();
+    fs.statSync.mockReturnValue(mockStat);
   });
 
-  describe('.isDirectory()', function() {
-    it('returns true for a valid folder', function() {
-      expect(fsUtils.isDirectory(__dirname)).toBe(true);
+  describe.each([
+    ['isFile'], ['isDirectory']
+  ])('Verify path', function(query) {
+    it('returns true for an existing and valid path', function() {
+      fs.existsSync.mockReturnValue(true);
+      mockStat[query].mockReturnValue(true);
+
+      expect(fsUtils[query]('test-path')).toBe(true);
     });
 
-    it('returns false for a non valid folder', function() {
-      expect(fsUtils.isDirectory('dir_that_doesnot_exist')).toBe(false);
+    it('returns false for a non existing path', function() {
+      fs.existsSync.mockReturnValue(false);
+      expect(fsUtils[query]('test-path')).toBe(false);
+    });
+
+    it('returns false for an existing but invalid path', function() {
+      fs.existsSync.mockReturnValue(true);
+      mockStat[query].mockReturnValue(false);
+      expect(fsUtils[query]('test-path')).toBe(false);
     });
   });
 });

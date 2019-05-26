@@ -1,9 +1,8 @@
-/*global require_src*/
 var _      = require('lodash'),
   stream   = require('stream'),
   Bluebird = require('bluebird');
 
-var StreamProcessor = require_src('parallel_processing/stream_processor');
+var StreamProcessor = require('parallel_processing/stream_processor');
 
 describe('StreamProcessor', function() {
   var subject;
@@ -30,7 +29,7 @@ describe('StreamProcessor', function() {
         return _.tap(new stream.PassThrough({ objectMode: true }), function(s) {
           streams.push(s);
           _.delay(function() {
-            _.each(data, function(item) { s.push(item); });
+            data.forEach(function(item) { s.push(item); });
             s.end();
           }, 100);
         });
@@ -61,7 +60,7 @@ describe('StreamProcessor', function() {
         return _.tap(new stream.PassThrough({ objectMode: true }), function(s) {
           streams.push(s);
           _.delay(function() {
-            _.each(data, function(item) {
+            data.forEach(function(item) {
               if (item) {
                 s.push(item);
               } else {

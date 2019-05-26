@@ -1,23 +1,18 @@
-/*global require_src cfHelpers*/
 var stream   = require('stream'),
+    lolex    = require('lolex'),
     Bluebird = require('bluebird');
 
-var javascriptTasks = require_src('tasks/complexity_analysis/javascript_tasks'),
-    vcs             = require_src('vcs');
+var javascriptTasks = require('tasks/complexity_analysis/javascript_tasks'),
+    vcs             = require('vcs');
+
+var taskHelpers = require('../../jest_tasks_helpers');
 
 describe('javascript tasks', function() {
   var runtime;
 
   describe('javascript-complexity-report', function() {
-    var assertReport = function(taskOutput) {
-      return taskOutput.assertTempReport('javascript-complexity-report.json', [
-        { path: 'test_file1.js', totalComplexity: 2, averageComplexity: 1, methodComplexity: [{ name: 'sum', complexity: 1 }] },
-        { path: 'test_file3.js', totalComplexity: 3, averageComplexity: 2, methodComplexity: [{ name: 'Calculator.division', complexity: 2 }] }
-      ]);
-    };
-
     beforeEach(function() {
-      runtime = cfHelpers.runtimeSetup(javascriptTasks);
+      runtime = taskHelpers.runtimeSetup(javascriptTasks);
 
       runtime.prepareRepositoryFile('test_file1.js', 'function sum(a,b) { return a+b; };');
       runtime.prepareRepositoryFile('test_file2.rb', 'line1\nline2\nline3\n');
@@ -25,65 +20,65 @@ describe('javascript tasks', function() {
     });
 
     afterEach(function() {
-      cfHelpers.clearRepo();
-      cfHelpers.clearTemp();
+      taskHelpers.clearRepo();
+      taskHelpers.clearTemp();
     });
 
     describe('as a Task', function() {
       it('writes a report on the complexity for each javascript file in the repository', function() {
-        return runtime.executeStreamTask('javascript-complexity-report').then(assertReport);
+        return runtime.executeStreamTask('javascript-complexity-report').then(function(taskOutput) {
+          return taskOutput.assertTempReport('javascript-complexity-report.json');
+        });
       });
     });
 
     describe('as a Function', function() {
       it('writes a report on the complexity for each javascript file in the repository', function() {
-        return runtime.executeStreamFunction('javascriptComplexityReport').then(assertReport);
+        return runtime.executeStreamFunction('javascriptComplexityReport').then(function(taskOutput) {
+          return taskOutput.assertTempReport('javascript-complexity-report.json');
+        });
       });
     });
   });
 
   describe('javascript-complexity-trend-analysis', function() {
-    var mockVcs;
+    var mockVcs, clock;
 
     beforeEach(function() {
-      jasmine.clock().install();
-      jasmine.clock().mockDate(new Date('2015-10-22T10:00:00.000Z'));
-      mockVcs = jasmine.createSpyObj('vcsClient', ['revisions', 'showRevisionStream']);
-      spyOn(vcs, 'client').and.returnValue(mockVcs);
+      clock = lolex.install({ now: new Date('2015-10-22T10:00:00.000Z') });
+      mockVcs = {
+        revisions: jest.fn(),
+        showRevisionStream: jest.fn()
+      };
+      vcs.client = jest.fn().mockReturnValue(mockVcs);
     });
 
     afterEach(function() {
-      jasmine.clock().uninstall();
-      cfHelpers.clearOutput();
+      clock.uninstall();
+      taskHelpers.clearOutput();
     });
 
     it('publishes an analysis on the complexity trend for a given javascript file in the repository', function(done) {
       var revisionStream1 = new stream.PassThrough();
       var revisionStream2 = new stream.PassThrough();
 
-      mockVcs.revisions.and.returnValue([
+      mockVcs.revisions.mockReturnValue([
         { revisionId: 123, date: '2015-04-29T23:00:00.000Z' },
         { revisionId: 456, date: '2015-05-04T23:00:00.000Z' }
       ]);
-      mockVcs.showRevisionStream.and.returnValues(revisionStream1, revisionStream2);
+      mockVcs.showRevisionStream
+        .mockReturnValueOnce(revisionStream1)
+        .mockReturnValueOnce(revisionStream2);
 
-      runtime = cfHelpers.runtimeSetup(javascriptTasks, null, { dateFrom: '2015-03-01', targetFile: 'test_abs.js' });
+      runtime = taskHelpers.runtimeSetup(javascriptTasks, null, { dateFrom: '2015-03-01', targetFile: 'test_abs.js' });
 
       runtime.executePromiseTask('javascript-complexity-trend-analysis').then(function(taskOutput) {
         return Bluebird.all([
-            taskOutput.assertOutputReport('2015-03-01_2015-10-22_complexity-trend-data.json', [
-            { revision: 123, date: '2015-04-29T23:00:00.000Z', path: 'test_abs.js', totalComplexity: 2, averageComplexity: 1, methodComplexity: [{ name: 'abs', complexity: 1 }] },
-            { revision: 456, date: '2015-05-04T23:00:00.000Z', path: 'test_abs.js', totalComplexity: 3, averageComplexity: 2, methodComplexity: [{ name: 'abs', complexity: 2 }] }
-          ]),
-          taskOutput.assertManifest({
-            reportName: 'complexity-trend',
-            parameters: { targetFile: 'test_abs.js' },
-            dateRange: '2015-03-01_2015-10-22',
-            enabledDiagrams: ['total', 'func-mean', 'func-sd']
-          })
+          taskOutput.assertOutputReport('2015-03-01_2015-10-22_complexity-trend-data.json'),
+          taskOutput.assertManifest()
         ]);
       })
-      .then(done)
+      .then(function() { done(); })
       .catch(done.fail);
 
       revisionStream1.push('function abs(a,b) {\n');

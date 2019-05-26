@@ -4,7 +4,6 @@ module.exports = {
     node: true
   },
   extends: 'eslint:recommended',
-  plugins: ['jasmine'],
   rules: {
     quotes: ['error', 'single', { avoidEscape: true }],
     semi: ['error', 'always'],
@@ -20,11 +19,10 @@ module.exports = {
     {
       files: [ 'spec/**/*.js' ],
       env: {
-        jasmine: true
+        jest: true
       },
       rules: {
-        'jasmine/no-suite-dupes': 'off',
-        'jasmine/no-spec-dupes': 'off'
+        'no-console': 'off'
       }
     }
   ]

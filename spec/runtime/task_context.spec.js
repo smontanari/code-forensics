@@ -1,26 +1,24 @@
-/*global require_src*/
-var _      = require('lodash'),
-    moment = require('moment');
+var moment = require('moment');
 
-var TaskContext = require_src('runtime/task_context'),
-    models      = require_src('models');
+var TaskContext = require('runtime/task_context'),
+    models      = require('models');
 
 describe('TaskContext', function() {
   var mockPeriodBuilder;
 
   beforeEach(function() {
     mockPeriodBuilder = {};
-    _.each(['from', 'to', 'split'], function(fn) {
-      mockPeriodBuilder[fn] = jasmine.createSpy().and.returnValue(mockPeriodBuilder);
+    ['from', 'to', 'split'].forEach(function(fn) {
+      mockPeriodBuilder[fn] = jest.fn().mockReturnThis();
     });
-    mockPeriodBuilder.build = jasmine.createSpy().and.returnValue([
+    mockPeriodBuilder.build = jest.fn().mockReturnValue([
       new models.TimePeriod({ start: moment('2014-03-01'), end: moment('2014-07-31') }, 'YYYY-MM'),
       new models.TimePeriod({ start: moment('2014-08-01'), end: moment('2014-12-31') }, 'YYYY-MM')
     ]);
 
-    spyOn(models, 'TimeIntervalBuilder').and.returnValue(mockPeriodBuilder);
-    spyOn(models, 'Repository').and.returnValue({ obj: 'test-repo' });
-    spyOn(models, 'DevelopersInfo').and.returnValue({ obj: 'test-devInfo' });
+    models.TimeIntervalBuilder = jest.fn().mockImplementation(function() { return mockPeriodBuilder; });
+    models.Repository = jest.fn().mockImplementation(function() { return { obj: 'test-repo' }; });
+    models.DevelopersInfo = jest.fn().mockImplementation(function() { return { obj: 'test-devInfo' }; });
   });
 
   it('initialises the repository configuration', function() {

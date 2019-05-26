@@ -1,5 +1,4 @@
-/*global require_src*/
-var arraysUtils = require_src('utils').arrays;
+var arraysUtils = require('utils').arrays;
 
 describe('utils.arrays', function() {
   describe('.arrayToFnFactory()', function() {

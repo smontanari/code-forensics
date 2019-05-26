@@ -1,0 +1,81 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CodeMaat report tasks with any supported VCS type authors-report as a Function writes a report on the number of authors and revisions for each file: authors-report.json 1`] = `
+"[
+{\\"path\\":\\"test_file1\\",\\"testData\\":123},
+{\\"path\\":\\"test_file2\\",\\"testData\\":456}
+]
+"
+`;
+
+exports[`CodeMaat report tasks with any supported VCS type authors-report as a Task writes a report on the number of authors and revisions for each file: authors-report.json 1`] = `
+"[
+{\\"path\\":\\"test_file1\\",\\"testData\\":123},
+{\\"path\\":\\"test_file2\\",\\"testData\\":456}
+]
+"
+`;
+
+exports[`CodeMaat report tasks with any supported VCS type code-ownership-report as a Function writes a report on the developer ownership (by added lines of code) for each file: code-ownership-report.json 1`] = `
+"[
+{\\"path\\":\\"test_file1\\",\\"testData\\":123},
+{\\"path\\":\\"test_file2\\",\\"testData\\":456}
+]
+"
+`;
+
+exports[`CodeMaat report tasks with any supported VCS type code-ownership-report as a Task writes a report on the developer ownership (by added lines of code) for each file: code-ownership-report.json 1`] = `
+"[
+{\\"path\\":\\"test_file1\\",\\"testData\\":123},
+{\\"path\\":\\"test_file2\\",\\"testData\\":456}
+]
+"
+`;
+
+exports[`CodeMaat report tasks with any supported VCS type effort-report as a Function writes a report on the effort distribution for each file: effort-report.json 1`] = `
+"[
+{\\"path\\":\\"test_file1\\",\\"testData\\":123},
+{\\"path\\":\\"test_file2\\",\\"testData\\":456}
+]
+"
+`;
+
+exports[`CodeMaat report tasks with any supported VCS type effort-report as a Task writes a report on the effort distribution for each file: effort-report.json 1`] = `
+"[
+{\\"path\\":\\"test_file1\\",\\"testData\\":123},
+{\\"path\\":\\"test_file2\\",\\"testData\\":456}
+]
+"
+`;
+
+exports[`CodeMaat report tasks with any supported VCS type main-dev-report as a Function writes a report on the main developers (by revisions) for each file: main-dev-report.json 1`] = `
+"[
+{\\"path\\":\\"test_file1\\",\\"testData\\":123},
+{\\"path\\":\\"test_file2\\",\\"testData\\":456}
+]
+"
+`;
+
+exports[`CodeMaat report tasks with any supported VCS type main-dev-report as a Task writes a report on the main developers (by revisions) for each file: main-dev-report.json 1`] = `
+"[
+{\\"path\\":\\"test_file1\\",\\"testData\\":123},
+{\\"path\\":\\"test_file2\\",\\"testData\\":456}
+]
+"
+`;
+
+exports[`CodeMaat report tasks with any supported VCS type revisions-report as a Function writes a report on the number of revisions for each valid file: revisions-report.json 1`] = `
+"[
+{\\"path\\":\\"test_file1\\",\\"testData\\":123},
+{\\"path\\":\\"test_file2\\",\\"testData\\":456}
+]
+"
+`;
+
+exports[`CodeMaat report tasks with any supported VCS type revisions-report as a Task writes a report on the number of revisions for each valid file: revisions-report.json 1`] = `
+"[
+{\\"path\\":\\"test_file1\\",\\"testData\\":123},
+{\\"path\\":\\"test_file2\\",\\"testData\\":456}
+]
+"
+`;

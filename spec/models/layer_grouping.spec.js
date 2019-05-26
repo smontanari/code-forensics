@@ -1,5 +1,4 @@
-/*global require_src*/
-var LayerGrouping = require_src('models/layer_grouping');
+var LayerGrouping = require('models/layer_grouping');
 
 describe('LayerGrouping', function() {
   it('is empty when initialized with empty values', function() {

@@ -1,0 +1,169 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`VCS Tasks when files already exist vcs-commit-messages as a Function does not overwrite an existing file: vcs_commit_messages_2016-01-01_2016-01-31.log 1`] = `"pre-existing content"`;
+
+exports[`VCS Tasks when files already exist vcs-commit-messages as a Function does not overwrite an existing file: vcs_commit_messages_2016-02-01_2016-02-28.log 1`] = `
+"log-line1
+log-line2
+log-line3
+"
+`;
+
+exports[`VCS Tasks when files already exist vcs-commit-messages as a Task does not overwrite an existing file: vcs_commit_messages_2016-01-01_2016-01-31.log 1`] = `"pre-existing content"`;
+
+exports[`VCS Tasks when files already exist vcs-commit-messages as a Task does not overwrite an existing file: vcs_commit_messages_2016-02-01_2016-02-28.log 1`] = `
+"log-line1
+log-line2
+log-line3
+"
+`;
+
+exports[`VCS Tasks when files already exist vcs-log-dump as a Function does not overwrite an existing file: vcslog_2016-01-01_2016-01-31.log 1`] = `"pre-existing content"`;
+
+exports[`VCS Tasks when files already exist vcs-log-dump as a Function does not overwrite an existing file: vcslog_2016-02-01_2016-02-28.log 1`] = `
+"log-line1
+log-line2
+log-line3
+"
+`;
+
+exports[`VCS Tasks when files already exist vcs-log-dump as a Task does not overwrite an existing file: vcslog_2016-01-01_2016-01-31.log 1`] = `"pre-existing content"`;
+
+exports[`VCS Tasks when files already exist vcs-log-dump as a Task does not overwrite an existing file: vcslog_2016-02-01_2016-02-28.log 1`] = `
+"log-line1
+log-line2
+log-line3
+"
+`;
+
+exports[`VCS Tasks when no vcs files exist vcs-commit-messages as a Function writes the vcs commit messages for each period into the temp folder: vcs_commit_messages_2016-03-01_2016-03-31.log 1`] = `
+"log-line1
+log-line2
+"
+`;
+
+exports[`VCS Tasks when no vcs files exist vcs-commit-messages as a Function writes the vcs commit messages for each period into the temp folder: vcs_commit_messages_2016-04-01_2016-04-30.log 1`] = `
+"log-line1
+log-line2
+log-line3
+"
+`;
+
+exports[`VCS Tasks when no vcs files exist vcs-commit-messages as a Task writes the vcs commit messages for each period into the temp folder: vcs_commit_messages_2016-03-01_2016-03-31.log 1`] = `
+"log-line1
+log-line2
+"
+`;
+
+exports[`VCS Tasks when no vcs files exist vcs-commit-messages as a Task writes the vcs commit messages for each period into the temp folder: vcs_commit_messages_2016-04-01_2016-04-30.log 1`] = `
+"log-line1
+log-line2
+log-line3
+"
+`;
+
+exports[`VCS Tasks when no vcs files exist vcs-log-dump as a Function writes the vcs log content for each period into the temp folder and creates a normalised copy: vcslog_2016-03-01_2016-03-31.log 1`] = `
+"--98b656f--2016-10-31--Developer 1
+10	0	test_file1
+
+--6ff89bc--2016-10-31--Developer_2
+1	1	test_invalid_file
+
+--02790fd--2016-10-31--Developer.3
+--5fbfb14--2016-10-28--Alias developer 4
+0	1	test_file3
+-	-	test_invalid_file
+6	8	test_file4
+"
+`;
+
+exports[`VCS Tasks when no vcs files exist vcs-log-dump as a Function writes the vcs log content for each period into the temp folder and creates a normalised copy: vcslog_2016-04-01_2016-04-30.log 1`] = `
+"--98b656f--2016-11-14--Developer 1
+31	12	test_file2
+1	1	test_invalid_file
+
+--02790fd--2016-11-17--Developer.3
+--5fbfb14--2016-11-24--Alias developer 4
+7	41	test_file3
+-	-	test_file2
+6	8	test_file4
+"
+`;
+
+exports[`VCS Tasks when no vcs files exist vcs-log-dump as a Function writes the vcs log content for each period into the temp folder and creates a normalised copy: vcslog_normalised_2016-03-01_2016-03-31.log 1`] = `
+"--98b656f--2016-10-31--Developer 1
+10	0	test_file1
+
+--6ff89bc--2016-10-31--Developer_2
+
+--02790fd--2016-10-31--Developer.3
+--5fbfb14--2016-10-28--Dev4
+0	1	test_file3
+6	8	test_file4
+"
+`;
+
+exports[`VCS Tasks when no vcs files exist vcs-log-dump as a Function writes the vcs log content for each period into the temp folder and creates a normalised copy: vcslog_normalised_2016-04-01_2016-04-30.log 1`] = `
+"--98b656f--2016-11-14--Developer 1
+31	12	test_file2
+
+--02790fd--2016-11-17--Developer.3
+--5fbfb14--2016-11-24--Dev4
+7	41	test_file3
+-	-	test_file2
+6	8	test_file4
+"
+`;
+
+exports[`VCS Tasks when no vcs files exist vcs-log-dump as a Task writes the vcs log content for each period into the temp folder and creates a normalised copy: vcslog_2016-03-01_2016-03-31.log 1`] = `
+"--98b656f--2016-10-31--Developer 1
+10	0	test_file1
+
+--6ff89bc--2016-10-31--Developer_2
+1	1	test_invalid_file
+
+--02790fd--2016-10-31--Developer.3
+--5fbfb14--2016-10-28--Alias developer 4
+0	1	test_file3
+-	-	test_invalid_file
+6	8	test_file4
+"
+`;
+
+exports[`VCS Tasks when no vcs files exist vcs-log-dump as a Task writes the vcs log content for each period into the temp folder and creates a normalised copy: vcslog_2016-04-01_2016-04-30.log 1`] = `
+"--98b656f--2016-11-14--Developer 1
+31	12	test_file2
+1	1	test_invalid_file
+
+--02790fd--2016-11-17--Developer.3
+--5fbfb14--2016-11-24--Alias developer 4
+7	41	test_file3
+-	-	test_file2
+6	8	test_file4
+"
+`;
+
+exports[`VCS Tasks when no vcs files exist vcs-log-dump as a Task writes the vcs log content for each period into the temp folder and creates a normalised copy: vcslog_normalised_2016-03-01_2016-03-31.log 1`] = `
+"--98b656f--2016-10-31--Developer 1
+10	0	test_file1
+
+--6ff89bc--2016-10-31--Developer_2
+
+--02790fd--2016-10-31--Developer.3
+--5fbfb14--2016-10-28--Dev4
+0	1	test_file3
+6	8	test_file4
+"
+`;
+
+exports[`VCS Tasks when no vcs files exist vcs-log-dump as a Task writes the vcs log content for each period into the temp folder and creates a normalised copy: vcslog_normalised_2016-04-01_2016-04-30.log 1`] = `
+"--98b656f--2016-11-14--Developer 1
+31	12	test_file2
+
+--02790fd--2016-11-17--Developer.3
+--5fbfb14--2016-11-24--Dev4
+7	41	test_file3
+-	-	test_file2
+6	8	test_file4
+"
+`;

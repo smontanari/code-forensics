@@ -1,20 +1,19 @@
-/*global require_src*/
 var _        = require('lodash'),
     Bluebird = require('bluebird');
 
-var ReportController = require_src('web/controllers/report_controller');
+var ReportController = require('web/controllers/report_controller');
 
 describe('ReportController', function() {
   var graphModels;
   beforeEach(function() {
-    spyOn(console, 'error');
+    console.error = jest.fn();
   });
 
   describe('when all graph models are successfully initialized', function() {
     beforeEach(function() {
       graphModels = [
-        { id: 'gm1', isSelected: jasmine.createSpy(), initialize: Bluebird.resolve },
-        { id: 'gm2', isSelected: jasmine.createSpy(), initialize: Bluebird.resolve }
+        { id: 'gm1', isSelected: jest.fn(), initialize: Bluebird.resolve },
+        { id: 'gm2', isSelected: jest.fn(), initialize: Bluebird.resolve }
       ];
       new ReportController(graphModels);
     });
@@ -31,9 +30,9 @@ describe('ReportController', function() {
   describe('when some graph models are successfully initialized', function() {
     beforeEach(function() {
       graphModels = [
-        { id: 'gm1', isSelected: jasmine.createSpy(), initialize: Bluebird.reject.bind(null, new Error()) },
-        { id: 'gm2', isSelected: jasmine.createSpy(), initialize: Bluebird.resolve },
-        { id: 'gm3', isSelected: jasmine.createSpy(), initialize: Bluebird.resolve }
+        { id: 'gm1', isSelected: jest.fn(), initialize: Bluebird.reject.bind(null, new Error()) },
+        { id: 'gm2', isSelected: jest.fn(), initialize: Bluebird.resolve },
+        { id: 'gm3', isSelected: jest.fn(), initialize: Bluebird.resolve }
       ];
       new ReportController(graphModels);
     });
@@ -51,8 +50,8 @@ describe('ReportController', function() {
   describe('when no graph models are successfully initialized', function() {
     beforeEach(function() {
       graphModels = [
-        { id: 'gm1', isSelected: jasmine.createSpy(), initialize: Bluebird.reject.bind(null, new Error()) },
-        { id: 'gm2', isSelected: jasmine.createSpy(), initialize: Bluebird.reject.bind(null, new Error()) }
+        { id: 'gm1', isSelected: jest.fn(), initialize: Bluebird.reject.bind(null, new Error()) },
+        { id: 'gm2', isSelected: jest.fn(), initialize: Bluebird.reject.bind(null, new Error()) }
       ];
       new ReportController(graphModels);
     });
@@ -65,5 +64,4 @@ describe('ReportController', function() {
       }, 10);
     });
   });
-
 });

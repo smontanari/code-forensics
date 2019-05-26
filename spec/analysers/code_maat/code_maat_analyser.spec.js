@@ -1,47 +1,58 @@
-/*eslint-disable max-lines*/
-/*global require_src*/
 var stream = require('stream'),
     fs     = require('fs'),
     reduce = require('through2-reduce');
 
-var CodeMaatAnalyser = require_src('analysers/code_maat/code_maat_analyser'),
-    command          = require_src('command');
+var CodeMaatAnalyser = require('analysers/code_maat/code_maat_analyser'),
+    command          = require('command');
+
+var helpers = require('../../jest_helpers');
+jest.mock('fs');
 
 describe('codemaat command definition', function() {
+  var subject, mockCheck;
   beforeEach(function() {
-    this.subject = command.Command.definitions.getDefinition('codemaat');
-    this.mockCheck = jasmine.createSpyObj('check', ['verifyExecutable', 'verifyPackage', 'verifyFile']);
+    subject = command.Command.definitions.getDefinition('codemaat');
+    mockCheck = {
+      verifyExecutable: jest.fn(),
+      verifyPackage: jest.fn(),
+      verifyFile: jest.fn()
+    };
   });
 
   it('defines the "codemaat" command', function() {
-    expect(this.subject.cmd).toEqual('java');
-    expect(this.subject.args[0]).toEqual('-Djava.awt.headless=true');
-    expect(this.subject.args[1]).toEqual({ '-jar': jasmine.stringMatching('code-maat-1.0-SNAPSHOT-standalone.jar') });
+    expect(subject).toEqual({
+      cmd: 'java',
+      args: [
+        '-Djava.awt.headless=true',
+        { '-jar': expect.stringMatching('code-maat-1.0-SNAPSHOT-standalone.jar') }
+      ],
+      installCheck: expect.any(Function)
+    });
   });
 
   it('checks the java executable', function() {
-    this.subject.installCheck.apply(this.mockCheck);
+    subject.installCheck.apply(mockCheck);
 
-    expect(this.mockCheck.verifyExecutable).toHaveBeenCalledWith('java', jasmine.any(String));
-    expect(this.mockCheck.verifyFile).toHaveBeenCalledWith(jasmine.stringMatching('code-maat-1.0-SNAPSHOT-standalone.jar'), jasmine.any(String));
+    expect(mockCheck.verifyExecutable).toHaveBeenCalledWith('java', expect.any(String));
+    expect(mockCheck.verifyFile).toHaveBeenCalledWith(expect.stringMatching('code-maat-1.0-SNAPSHOT-standalone.jar'), expect.any(String));
   });
 });
 
 describe('CodeMaatAnalyser', function() {
-  var commandOutputStream, expectedVcsParam;
+  var analyser, outputStream, commandOutputStream, expectedVcsParam;
 
   var subject = function(instruction, vcsType) {
     beforeEach(function() {
-      this.appConfigStub({ versionControlSystem: vcsType, codeMaat: { options: { 'arg2': 'zxc', 'arg3': 'xxx' } } });
-      this.subject = new CodeMaatAnalyser(instruction);
+      helpers.appConfigStub({ versionControlSystem: vcsType, codeMaat: { options: { 'arg2': 'zxc', 'arg3': 'xxx' } } });
+      analyser = new CodeMaatAnalyser(instruction);
       expectedVcsParam = { 'git': 'git2', 'subversion': 'svn' }[vcsType];
     });
   };
 
   var prepareAnalyserStream = function(logFileSize) {
     beforeEach(function() {
-      spyOn(fs, 'statSync').and.returnValue({ size: logFileSize });
-      this.outputStream = this.subject
+      fs.statSync = jest.fn().mockReturnValue({ size: logFileSize });
+      outputStream = analyser
         .fileAnalysisStream('test/file', { 'arg1' : 'qwe', 'arg2': 'asd' })
         .pipe(reduce.obj(function(data, obj) {
           data.push(obj);
@@ -65,7 +76,7 @@ describe('CodeMaatAnalyser', function() {
 
   var verifyHandleCodeMaatError = function(analysis) {
     it('returns an empty stream when there is no output from codemaat', function(done) {
-      this.outputStream.on('data', function(data) {
+      outputStream.on('data', function(data) {
         expect(data).toEqual([]);
         assertCommand(analysis);
       })
@@ -81,7 +92,7 @@ describe('CodeMaatAnalyser', function() {
 
   var verifyNoData = function(analysis, headers) {
     it('returns an empty stream when there is no data', function(done) {
-      this.outputStream.on('data', function(data) {
+      outputStream.on('data', function(data) {
         expect(data).toEqual([]);
         assertCommand(analysis);
       })
@@ -96,20 +107,20 @@ describe('CodeMaatAnalyser', function() {
 
   var verifySupportedAnalysis = function() {
     it('returns true if the analysis is supported', function() {
-      expect(this.subject.isSupported()).toEqual(true);
+      expect(analyser.isSupported()).toEqual(true);
     });
   };
 
   var verifyNotSupportedAnalysis = function() {
     it('returns an empty stream when the analysis is not supported', function(done) {
-      this.outputStream.on('data', function(data) {
+      outputStream.on('data', function(data) {
         expect(data).toEqual([]);
       })
       .on('end', done);
     });
 
     it('returns false if the analysis is not supported', function() {
-      expect(this.subject.isSupported()).toEqual(false);
+      expect(analyser.isSupported()).toEqual(false);
     });
   };
 
@@ -121,8 +132,12 @@ describe('CodeMaatAnalyser', function() {
 
   beforeEach(function() {
     commandOutputStream = new stream.PassThrough();
-    spyOn(command.Command, 'ensure');
-    spyOn(command, 'stream').and.returnValue(commandOutputStream);
+    command.Command.ensure = jest.fn();
+    command.stream = jest.fn().mockReturnValue(commandOutputStream);
+  });
+
+  afterEach(function() {
+    helpers.appConfigRestore();
   });
 
   describe('Analysis not run for empty log file', function() {
@@ -130,18 +145,21 @@ describe('CodeMaatAnalyser', function() {
     prepareAnalyserStream(0);
 
     it('returns an empty stream when the analysis is not executed', function(done) {
-      this.outputStream.on('data', function(data) {
+      outputStream.on('data', function(data) {
         expect(data).toEqual([]);
       })
       .on('end', done);
 
-      expect(command.stream).not.toHaveBeenCalledWith('codemaat', jasmine.any(Array));
+      expect(command.stream).not.toHaveBeenCalledWith('codemaat', expect.any(Array));
     });
   });
 
-  describe('revisions analysis', function() {
-    ['git', 'subversion'].forEach(function(vcsType) {
-      describe('Supported VCS', function() {
+  describe('When VCS type is supported', function() {
+    describe('revisions analysis', function() {
+      describe.each([
+        ['git'],
+        ['subversion']
+      ])('For each supported VCS', function(vcsType) {
         subject('revisions', vcsType);
         verifyInstallCheck();
 
@@ -151,7 +169,7 @@ describe('CodeMaatAnalyser', function() {
         verifyNoData('revisions', 'entity,n-revs');
 
         it('returns a stream of the revision data for each repository file', function(done) {
-          this.outputStream.on('data', function(data) {
+          outputStream.on('data', function(data) {
             expect(data).toEqual([
               { path: 'test/path1', revisions: 18 },
               { path: 'test/path2', revisions: 17 },
@@ -172,11 +190,12 @@ describe('CodeMaatAnalyser', function() {
         });
       });
     });
-  });
 
-  describe('summary analysis', function() {
-    ['git', 'subversion'].forEach(function(vcsType) {
-      describe('Supported VCS', function() {
+    describe('summary analysis', function() {
+      describe.each([
+        ['git'],
+        ['subversion']
+      ])('For each supported VCS', function(vcsType) {
         subject('summary', vcsType);
         verifyInstallCheck();
 
@@ -186,7 +205,7 @@ describe('CodeMaatAnalyser', function() {
         verifyNoData('summary', 'statistic,value');
 
         it('returns a stream of the statistic data', function(done) {
-          this.outputStream.on('data', function(data) {
+          outputStream.on('data', function(data) {
             expect(data).toEqual([
               { stat: 'commits', value: 5007 },
               { stat: 'files', value: 4193 },
@@ -207,11 +226,12 @@ describe('CodeMaatAnalyser', function() {
         });
       });
     });
-  });
 
-  describe('soc analysis', function() {
-    ['git', 'subversion'].forEach(function(vcsType) {
-      describe('Supported VCS', function() {
+    describe('soc analysis', function() {
+      describe.each([
+        ['git'],
+        ['subversion']
+      ])('For each supported VCS', function(vcsType) {
         subject('soc', vcsType);
         verifyInstallCheck();
         prepareAnalyserStream(100);
@@ -220,7 +240,7 @@ describe('CodeMaatAnalyser', function() {
         verifyHandleCodeMaatError('soc');
 
         it('returns a stream of the sum coupling data for each repository file', function(done) {
-          this.outputStream.on('data', function(data) {
+          outputStream.on('data', function(data) {
             expect(data).toEqual([
               { path: 'test/path1', soc: 62 },
               { path: 'test/path2', soc: 32 },
@@ -241,11 +261,12 @@ describe('CodeMaatAnalyser', function() {
         });
       });
     });
-  });
 
-  describe('coupling analysis', function() {
-    ['git', 'subversion'].forEach(function(vcsType) {
-      describe('Supported VCS', function() {
+    describe('coupling analysis', function() {
+      describe.each([
+        ['git'],
+        ['subversion']
+      ])('For each supported VCS', function(vcsType) {
         subject('coupling', vcsType);
         verifyInstallCheck();
         prepareAnalyserStream(100);
@@ -254,7 +275,7 @@ describe('CodeMaatAnalyser', function() {
         verifyHandleCodeMaatError('coupling');
 
         it('returns a stream of the temporal coupling data for each repository file', function(done) {
-          this.outputStream.on('data', function(data) {
+          outputStream.on('data', function(data) {
             expect(data).toEqual([
               { path: 'test/path1', coupledPath: 'test/coupledFile1', couplingDegree: 100, revisionsAvg: 5 },
               { path: 'test/path2', coupledPath: 'test/coupledFile2', couplingDegree: 89, revisionsAvg: 4 },
@@ -275,11 +296,12 @@ describe('CodeMaatAnalyser', function() {
         });
       });
     });
-  });
 
-  describe('authors analysis', function() {
-    ['git', 'subversion'].forEach(function(vcsType) {
-      describe('Supported VCS', function() {
+    describe('authors analysis', function() {
+      describe.each([
+        ['git'],
+        ['subversion']
+      ])('For each supported VCS', function(vcsType) {
         subject('authors', vcsType);
         verifyInstallCheck();
         prepareAnalyserStream(100);
@@ -288,7 +310,7 @@ describe('CodeMaatAnalyser', function() {
         verifyHandleCodeMaatError('authors');
 
         it('returns a stream of the authors data for each repository file', function(done) {
-          this.outputStream.on('data', function(data) {
+          outputStream.on('data', function(data) {
             expect(data).toEqual([
               { path: 'test/path1', authors: 6, revisions: 18 },
               { path: 'test/path2', authors: 5, revisions: 7 },
@@ -309,11 +331,12 @@ describe('CodeMaatAnalyser', function() {
         });
       });
     });
-  });
 
-  describe('entity-effort analysis', function() {
-    ['git', 'subversion'].forEach(function(vcsType) {
-      describe('Supported VCS', function() {
+    describe('entity-effort analysis', function() {
+      describe.each([
+        ['git'],
+        ['subversion']
+      ])('For each supported VCS', function(vcsType) {
         subject('entity-effort', vcsType);
         verifyInstallCheck();
         prepareAnalyserStream(100);
@@ -322,7 +345,7 @@ describe('CodeMaatAnalyser', function() {
         verifyHandleCodeMaatError('entity-effort');
 
         it('returns a stream of the entity-effort data for each repository file', function(done) {
-          this.outputStream.on('data', function(data) {
+          outputStream.on('data', function(data) {
             expect(data).toEqual([
               { path: 'test/path1', author: 'Dev1', revisions: 2 },
               { path: 'test/path1', author: 'Dev2', revisions: 3 },
@@ -351,96 +374,83 @@ describe('CodeMaatAnalyser', function() {
         });
       });
     });
-  });
 
-  describe('main-dev analysis', function() {
-    describe('Unsupported VCS', function() {
-      subject('main-dev', 'subversion');
-      verifyInstallCheck();
-      prepareAnalyserStream(100);
-      verifyNotSupportedAnalysis();
-    });
+    describe('main-dev analysis', function() {
+      describe('For each supported VCS', function() {
+        subject('main-dev', 'git');
+        verifyInstallCheck();
+        prepareAnalyserStream(100);
+        verifySupportedAnalysis();
+        verifyNoData('main-dev', 'entity,main-dev,added,total-added,ownership');
+        verifyHandleCodeMaatError('main-dev');
 
-    describe('Supported VCS', function() {
-      subject('main-dev', 'git');
-      verifyInstallCheck();
-      prepareAnalyserStream(100);
-      verifySupportedAnalysis();
-      verifyNoData('main-dev', 'entity,main-dev,added,total-added,ownership');
-      verifyHandleCodeMaatError('main-dev');
+        it('returns a stream of the main-dev data for each repository file', function(done) {
+          outputStream.on('data', function(data) {
+            expect(data).toEqual([
+              { path: 'test/path1', author: 'Dev1', ownership: 45, addedLines: 3 },
+              { path: 'test/path2', author: 'Dev2', ownership: 68, addedLines: 34 },
+              { path: 'test/path3', author: 'Dev3', ownership: 25, addedLines: 3 },
+              { path: 'test/path4', author: 'Dev4', ownership: 26, addedLines: 12 }
+            ]);
+            assertCommand('main-dev');
+          })
+          .on('end', done);
 
-      it('returns a stream of the main-dev data for each repository file', function(done) {
-        this.outputStream.on('data', function(data) {
-          expect(data).toEqual([
-            { path: 'test/path1', author: 'Dev1', ownership: 45, addedLines: 3 },
-            { path: 'test/path2', author: 'Dev2', ownership: 68, addedLines: 34 },
-            { path: 'test/path3', author: 'Dev3', ownership: 25, addedLines: 3 },
-            { path: 'test/path4', author: 'Dev4', ownership: 26, addedLines: 12 }
+          stubCodeMaatReport([
+            'entity,main-dev,added,total-added,ownership',
+            'test/path1,Dev1,3,5,0.45',
+            'test/path2,Dev2,34,60, 0.68',
+            'test/path3,Dev3,3,12,0.25',
+            'test/path4,Dev4,12,40,0.26'
           ]);
-          assertCommand('main-dev');
-        })
-        .on('end', done);
-
-        stubCodeMaatReport([
-          'entity,main-dev,added,total-added,ownership',
-          'test/path1,Dev1,3,5,0.45',
-          'test/path2,Dev2,34,60, 0.68',
-          'test/path3,Dev3,3,12,0.25',
-          'test/path4,Dev4,12,40,0.26'
-        ]);
+        });
       });
     });
-  });
 
-  describe('entity-ownership analysis', function() {
-    describe('Unsupported VCS', function() {
-      subject('entity-ownership', 'subversion');
-      verifyInstallCheck();
-      prepareAnalyserStream(100);
-      verifyNotSupportedAnalysis();
-    });
+    describe('entity-ownership analysis', function() {
+      describe('For each supported VCS', function() {
+        subject('entity-ownership', 'git');
+        verifyInstallCheck();
+        prepareAnalyserStream(100);
+        verifySupportedAnalysis();
+        verifyNoData('entity-ownership', 'entity,author,added,deleted');
+        verifyHandleCodeMaatError('entity-ownership');
 
-    describe('Supported VCS', function() {
-      subject('entity-ownership', 'git');
-      verifyInstallCheck();
-      prepareAnalyserStream(100);
-      verifySupportedAnalysis();
-      verifyNoData('entity-ownership', 'entity,author,added,deleted');
-      verifyHandleCodeMaatError('entity-ownership');
+        it('returns a stream of the entity-ownership data for each repository file', function(done) {
+          outputStream.on('data', function(data) {
+            expect(data).toEqual([
+              { path: 'test/path1', author: 'Dev1', addedLines: 2, deletedLines: 5 },
+              { path: 'test/path1', author: 'Dev2', addedLines: 3, deletedLines: 5 },
+              { path: 'test/path2', author: 'Dev2', addedLines: 4, deletedLines: 3 },
+              { path: 'test/path2', author: 'Dev3', addedLines: 5, deletedLines: 3 },
+              { path: 'test/path2', author: 'Dev4', addedLines: 4, deletedLines: 3 },
+              { path: 'test/path3', author: 'Dev4', addedLines: 3, deletedLines: 2 },
+              { path: 'test/path3', author: 'Dev3', addedLines: 9, deletedLines: 8 },
+              { path: 'test/path4', author: 'Dev3', addedLines: 12, deletedLines: 4 }
+            ]);
+            assertCommand('entity-ownership');
+          }).on('end', done);
 
-      it('returns a stream of the entity-ownership data for each repository file', function(done) {
-        this.outputStream.on('data', function(data) {
-          expect(data).toEqual([
-            { path: 'test/path1', author: 'Dev1', addedLines: 2, deletedLines: 5 },
-            { path: 'test/path1', author: 'Dev2', addedLines: 3, deletedLines: 5 },
-            { path: 'test/path2', author: 'Dev2', addedLines: 4, deletedLines: 3 },
-            { path: 'test/path2', author: 'Dev3', addedLines: 5, deletedLines: 3 },
-            { path: 'test/path2', author: 'Dev4', addedLines: 4, deletedLines: 3 },
-            { path: 'test/path3', author: 'Dev4', addedLines: 3, deletedLines: 2 },
-            { path: 'test/path3', author: 'Dev3', addedLines: 9, deletedLines: 8 },
-            { path: 'test/path4', author: 'Dev3', addedLines: 12, deletedLines: 4 }
+          stubCodeMaatReport([
+            'entity,author,added,deleted',
+            'test/path1,Dev1,2,5',
+            'test/path1,Dev2,3,5',
+            'test/path2,Dev2,4,3',
+            'test/path2,Dev3,5,3',
+            'test/path2,Dev4,4,3',
+            'test/path3,Dev4,3,2',
+            'test/path3,Dev3,9,8',
+            'test/path4,Dev3,12,4'
           ]);
-          assertCommand('entity-ownership');
-        }).on('end', done);
-
-        stubCodeMaatReport([
-          'entity,author,added,deleted',
-          'test/path1,Dev1,2,5',
-          'test/path1,Dev2,3,5',
-          'test/path2,Dev2,4,3',
-          'test/path2,Dev3,5,3',
-          'test/path2,Dev4,4,3',
-          'test/path3,Dev4,3,2',
-          'test/path3,Dev3,9,8',
-          'test/path4,Dev3,12,4'
-        ]);
+        });
       });
     });
-  });
 
-  describe('communication analysis', function() {
-    ['git', 'subversion'].forEach(function(vcsType) {
-      describe('Supported VCS', function() {
+    describe('communication analysis', function() {
+      describe.each([
+        ['git'],
+        ['subversion']
+      ])('For each supported VCS', function(vcsType) {
         subject('communication', vcsType);
         verifyInstallCheck();
         prepareAnalyserStream(100);
@@ -449,7 +459,7 @@ describe('CodeMaatAnalyser', function() {
         verifyHandleCodeMaatError('communication');
 
         it('returns a stream of the communication coupling for each authors pair', function(done) {
-          this.outputStream.on('data', function(data) {
+          outputStream.on('data', function(data) {
             expect(data).toEqual([
               { author: 'Dev1', coupledAuthor: 'Dev2', sharedCommits: 65, couplingStrength: 55 },
               { author: 'Dev2', coupledAuthor: 'Dev1', sharedCommits: 65, couplingStrength: 55 },
@@ -473,85 +483,90 @@ describe('CodeMaatAnalyser', function() {
         });
       });
     });
-  });
 
-  describe('absolute churn analysis', function() {
-    describe('Unsupported VCS', function() {
-      subject('abs-churn', 'subversion');
-      verifyInstallCheck();
-      prepareAnalyserStream(100);
-      verifyNotSupportedAnalysis();
+    describe('absolute churn analysis', function() {
+      describe('For each supported VCS', function() {
+        subject('abs-churn', 'git');
+        verifyInstallCheck();
+        prepareAnalyserStream(100);
+        verifySupportedAnalysis();
+        verifyNoData('abs-churn', 'date,added,deleted,commits');
+        verifyHandleCodeMaatError('abs-churn');
+
+        it('returns a stream of the absolute churn analysis', function(done) {
+          outputStream.on('data', function(data) {
+            expect(data).toEqual([
+              { date: '2015-12-11', addedLines: 1959, deletedLines: 2006, commits: 9 },
+              { date: '2015-12-18', addedLines:  724, deletedLines:    0, commits: 4 },
+              { date: '2015-12-21', addedLines:   61, deletedLines:    5, commits: 2 },
+              { date: '2015-12-24', addedLines:  205, deletedLines:  131, commits: 5 },
+              { date: '2015-12-31', addedLines:   22, deletedLines:    1, commits: 1 }
+            ]);
+            assertCommand('abs-churn');
+          }).on('end', done);
+
+          stubCodeMaatReport([
+            'date,added,deleted,commits',
+            '2015-12-11,1959,2006,9',
+            '2015-12-18,724,0,4',
+            '2015-12-21,61,5,2',
+            '2015-12-24,205,131,5',
+            '2015-12-31,22,1,1'
+          ]);
+        });
+      });
     });
 
-    describe('Supported VCS', function() {
-      subject('abs-churn', 'git');
-      verifyInstallCheck();
-      prepareAnalyserStream(100);
-      verifySupportedAnalysis();
-      verifyNoData('abs-churn', 'date,added,deleted,commits');
-      verifyHandleCodeMaatError('abs-churn');
+    describe('entity churn analysis', function() {
+      describe('For each supported VCS', function() {
+        subject('entity-churn', 'git');
+        verifyInstallCheck();
+        prepareAnalyserStream(100);
+        verifySupportedAnalysis();
+        verifyNoData('entity-churn', 'entity,added,deleted,commits');
+        verifyHandleCodeMaatError('entity-churn');
 
-      it('returns a stream of the absolute churn analysis', function(done) {
-        this.outputStream.on('data', function(data) {
-          expect(data).toEqual([
-            { date: '2015-12-11', addedLines: 1959, deletedLines: 2006, commits: 9 },
-            { date: '2015-12-18', addedLines:  724, deletedLines:    0, commits: 4 },
-            { date: '2015-12-21', addedLines:   61, deletedLines:    5, commits: 2 },
-            { date: '2015-12-24', addedLines:  205, deletedLines:  131, commits: 5 },
-            { date: '2015-12-31', addedLines:   22, deletedLines:    1, commits: 1 }
+        it('returns a stream of the entity churn analysis', function(done) {
+          outputStream.on('data', function(data) {
+            expect(data).toEqual([
+              { path: 'test/path1', addedLines:      0, deletedLines: 250878, commits: 1 },
+              { path: 'test/path2', addedLines: 895462, deletedLines: 923349, commits: 2 },
+              { path: 'test/path3', addedLines: 783048, deletedLines:  65489, commits: 3 },
+              { path: 'test/path4', addedLines: 659307, deletedLines:  45631, commits: 3 },
+              { path: 'test/path5', addedLines: 581630, deletedLines:      0, commits: 1 }
+            ]);
+            assertCommand('entity-churn');
+          }).on('end', done);
+
+          stubCodeMaatReport([
+            'entity,added,deleted,commits',
+            'test/path1,0,250878,1',
+            'test/path2,895462,923349,2',
+            'test/path3,783048,65489,3',
+            'test/path4,659307,45631,3',
+            'test/path5,581630,0,1'
           ]);
-          assertCommand('abs-churn');
-        }).on('end', done);
-
-        stubCodeMaatReport([
-          'date,added,deleted,commits',
-          '2015-12-11,1959,2006,9',
-          '2015-12-18,724,0,4',
-          '2015-12-21,61,5,2',
-          '2015-12-24,205,131,5',
-          '2015-12-31,22,1,1'
-        ]);
+        });
       });
     });
   });
 
-  describe('entity churn analysis', function() {
-    describe('Unsupported VCS', function() {
-      subject('entity-churn', 'subversion');
-      verifyInstallCheck();
-      prepareAnalyserStream(100);
-      verifyNotSupportedAnalysis();
-    });
-
-    describe('Supported VCS', function() {
-      subject('entity-churn', 'git');
-      verifyInstallCheck();
-      prepareAnalyserStream(100);
-      verifySupportedAnalysis();
-      verifyNoData('entity-churn', 'entity,added,deleted,commits');
-      verifyHandleCodeMaatError('entity-churn');
-
-      it('returns a stream of the entity churn analysis', function(done) {
-        this.outputStream.on('data', function(data) {
-          expect(data).toEqual([
-            { path: 'test/path1', addedLines:      0, deletedLines: 250878, commits: 1 },
-            { path: 'test/path2', addedLines: 895462, deletedLines: 923349, commits: 2 },
-            { path: 'test/path3', addedLines: 783048, deletedLines:  65489, commits: 3 },
-            { path: 'test/path4', addedLines: 659307, deletedLines:  45631, commits: 3 },
-            { path: 'test/path5', addedLines: 581630, deletedLines:      0, commits: 1 }
-          ]);
-          assertCommand('entity-churn');
-        }).on('end', done);
-
-        stubCodeMaatReport([
-          'entity,added,deleted,commits',
-          'test/path1,0,250878,1',
-          'test/path2,895462,923349,2',
-          'test/path3,783048,65489,3',
-          'test/path4,659307,45631,3',
-          'test/path5,581630,0,1'
-        ]);
-      });
-    });
+  describe.each([
+    ['revisions'],
+    ['summary'],
+    ['soc'],
+    ['coupling'],
+    ['authors'],
+    ['entity-effort'],
+    ['main-dev'],
+    ['entity-ownership'],
+    ['communication'],
+    ['abs-churn'],
+    ['entity-churn']
+  ])('When VCS is not supported', function(analysis) {
+    subject(analysis, 'unknown-vcs');
+    verifyInstallCheck();
+    prepareAnalyserStream(100);
+    verifyNotSupportedAnalysis();
   });
 });

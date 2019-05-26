@@ -1,23 +1,24 @@
-/*eslint-disable max-lines*/
-/*global require_src cfHelpers*/
 var stream   = require('stream'),
     _        = require('lodash'),
+    lolex    = require('lolex'),
     Bluebird = require('bluebird');
 
-var systemAnalysisTasks = require_src('tasks/system_analysis/system_analysis_tasks'),
-    codeMaat            = require_src('analysers/code_maat'),
-    command             = require_src('command');
+var systemAnalysisTasks = require('tasks/system_analysis/system_analysis_tasks'),
+    codeMaat            = require('analysers/code_maat'),
+    command             = require('command');
+
+var taskHelpers = require('../../jest_tasks_helpers');
 
 describe('System analysis tasks', function() {
+  var clock;
   beforeEach(function() {
-    jasmine.clock().install();
-    jasmine.clock().mockDate(new Date('2015-10-22T10:00:00.000Z'));
-    spyOn(command.Command, 'ensure');
+    clock = lolex.install({ now: new Date('2015-10-22T10:00:00.000Z') });
+    command.Command.ensure = jest.fn();
   });
 
   afterEach(function() {
-    jasmine.clock().uninstall();
-    cfHelpers.clearOutput();
+    clock.uninstall();
+    taskHelpers.clearOutput();
   });
 
   describe('system-evolution-analysis', function() {
@@ -248,24 +249,27 @@ describe('System analysis tasks', function() {
 
     var testAnalysis = function(description, taskParameters, analysisStreams, supportedAnalyses, expectedResults) {
       it(description, function(done) {
-        var streams = _.map(analysisStreams, function(analysisStream) {
-          var streamObjects = _.map(analysisStream.data, function() { return new stream.PassThrough({ objectMode: true }); });
-          var mockAnalysisStream = jasmine.createSpy('analysisStream');
-          var stubAnalysis = _.spread(mockAnalysisStream.and.returnValues).bind(mockAnalysisStream.and);
+        var streams = analysisStreams.map(function(analysisStream) {
+          var mockAnalysisStream = jest.fn().mockName('analysisStream');
+          var streamObjects = analysisStream.data.map(function() {
+            var streamObject = new stream.PassThrough({ objectMode: true });
+            mockAnalysisStream.mockReturnValueOnce(streamObject);
+            return streamObject;
+          });
           return _.extend({}, analysisStream, {
             streamObjects: streamObjects,
             mockAnalyser: {
               isSupported: function() { return _.includes(supportedAnalyses, analysisStream.codeMaatInstruction); },
-              fileAnalysisStream: stubAnalysis(streamObjects)
+              fileAnalysisStream: mockAnalysisStream
             }
           });
         });
 
-        spyOn(codeMaat, 'analyser').and.callFake(function(instruction) {
+        codeMaat.analyser = jest.fn().mockImplementation(function(instruction) {
           return _.find(streams, { codeMaatInstruction: instruction }).mockAnalyser;
         });
 
-        var runtime = cfHelpers.runtimeSetup(systemAnalysisTasks,
+        var runtime = taskHelpers.runtimeSetup(systemAnalysisTasks,
           {
             layerGroups: {
               'test_boundary': [
@@ -280,13 +284,13 @@ describe('System analysis tasks', function() {
 
         runtime.executePromiseTask('system-evolution-analysis')
           .then(function(taskOutput) {
-            _.each(streams, function(testStream) {
+            streams.forEach(function(testStream) {
               if (testStream.mockAnalyser.isSupported()) {
-                _.each(testStream.data, function(d) {
+                testStream.data.forEach(function(d) {
                   if (d.layerGroupFile) {
-                    expect(testStream.mockAnalyser.fileAnalysisStream).toHaveBeenCalledWith(jasmine.stringMatching(d.period), jasmine.objectContaining({ '-g': jasmine.stringMatching(d.layerGroupFile) }));
+                    expect(testStream.mockAnalyser.fileAnalysisStream).toHaveBeenCalledWith(expect.stringMatching(d.period), expect.objectContaining({ '-g': expect.stringMatching(d.layerGroupFile) }));
                   } else {
-                    expect(testStream.mockAnalyser.fileAnalysisStream).toHaveBeenCalledWith(jasmine.stringMatching(d.period), undefined);
+                    expect(testStream.mockAnalyser.fileAnalysisStream).toHaveBeenCalledWith(expect.stringMatching(d.period), undefined);
                   }
                 });
               } else {
@@ -295,23 +299,23 @@ describe('System analysis tasks', function() {
             });
 
           return Bluebird.all(
-            _.map(expectedResults.reports, function(r) {
-              return taskOutput.assertOutputReport(r.fileName, r.data);
+            expectedResults.reports.map(function(filename) {
+              return taskOutput.assertOutputReport(filename);
             }).concat(
-              _.map(expectedResults.missingReports, function(r) {
-                return taskOutput.assertMissingOutputReport(r.fileName);
+              expectedResults.missingReports.map(function(filename) {
+                return taskOutput.assertMissingOutputReport(filename);
               })
             ).concat([
-              taskOutput.assertManifest(expectedResults.manifest)
+              taskOutput.assertManifest()
             ])
           );
         })
-        .then(done)
+        .then(function() { done(); })
         .catch(done.fail);
 
-        _.each(streams, function(s) {
-          _.each(s.data, function(d, index) {
-            _.each(d.values, function(v) { s.streamObjects[index].push(v); });
+        streams.forEach(function(s) {
+          s.data.forEach(function(d, index) {
+            d.values.forEach(function(v) { s.streamObjects[index].push(v); });
             s.streamObjects[index].end();
           });
         });
@@ -319,7 +323,7 @@ describe('System analysis tasks', function() {
     };
 
     it('has the required dependencies', function() {
-      var runtime = cfHelpers.runtimeSetup(systemAnalysisTasks);
+      var runtime = taskHelpers.runtimeSetup(systemAnalysisTasks);
 
       runtime.assertTaskDependencies('system-evolution-analysis', ['vcsLogDump', 'generateLayerGroupingFiles']);
     });
@@ -333,50 +337,12 @@ describe('System analysis tasks', function() {
           ['summary', 'abs-churn'],
           {
             reports: [
-              {
-                fileName: '2016-01-01_2016-03-31_system-summary-data.json',
-                data: [
-                  {
-                    name: 'All files',
-                    revisions: 94, cumulativeRevisions: 94,
-                    commits: 67, cumulativeCommits: 67,
-                    authors: 14, cumulativeAuthors: 14,
-                    date: '2016-01-31T23:59:59.999Z'
-                  },
-                  {
-                    name: 'All files',
-                    revisions: 0, cumulativeRevisions: 94,
-                    commits: 0, cumulativeCommits: 67,
-                    authors: 0, cumulativeAuthors: 14,
-                    date: '2016-02-29T23:59:59.999Z'
-                  },
-                  {
-                    name: 'All files',
-                    revisions: 70, cumulativeRevisions: 164,
-                    commits: 52, cumulativeCommits: 119,
-                    authors: 9, cumulativeAuthors:  23,
-                    date: '2016-03-31T23:59:59.999Z'
-                  }
-                ]
-              },
-              {
-                fileName: '2016-01-01_2016-03-31_system-churn-data.json',
-                data: [
-                  { name: 'All files', addedLines: 102945, deletedLines: 17207, totalLines: 85738, cumulativeLines: 85738, date: '2016-01-31T23:59:59.999Z' },
-                  { name: 'All files', addedLines: 0, deletedLines: 0, totalLines: 0, cumulativeLines: 85738, date: '2016-02-29T23:59:59.999Z' },
-                  { name: 'All files', addedLines:  14127, deletedLines: 11954, totalLines:  2173, cumulativeLines: 87911, date: '2016-03-31T23:59:59.999Z' }
-                ]
-              }
+              '2016-01-01_2016-03-31_system-summary-data.json',
+              '2016-01-01_2016-03-31_system-churn-data.json'
             ],
             missingReports: [
-              { fileName: '2016-01-01_2016-03-31_system-coupling-data.json' }
-            ],
-            manifest: {
-              reportName: 'system-evolution',
-              parameters: { timeSplit: 'eom' },
-              dateRange: '2016-01-01_2016-03-31',
-              enabledDiagrams: ['revisions-trend', 'commits-trend', 'authors-trend', 'churn-trend']
-            }
+              '2016-01-01_2016-03-31_system-coupling-data.json'
+            ]
           }
         );
       });
@@ -389,43 +355,12 @@ describe('System analysis tasks', function() {
           ['summary'],
           {
             reports: [
-              {
-                fileName: '2016-01-01_2016-03-31_system-summary-data.json',
-                data: [
-                  {
-                    name: 'All files',
-                    revisions: 94, cumulativeRevisions:  94,
-                    commits: 67, cumulativeCommits: 67,
-                    authors: 14, cumulativeAuthors: 14,
-                    date: '2016-01-31T23:59:59.999Z'
-                  },
-                  {
-                    name: 'All files',
-                    revisions: 0, cumulativeRevisions:  94,
-                    commits: 0, cumulativeCommits: 67,
-                    authors: 0, cumulativeAuthors: 14,
-                    date: '2016-02-29T23:59:59.999Z'
-                  },
-                  {
-                    name: 'All files',
-                    revisions: 70, cumulativeRevisions: 164,
-                    commits: 52, cumulativeCommits: 119,
-                    authors: 9, cumulativeAuthors: 23,
-                    date: '2016-03-31T23:59:59.999Z'
-                  }
-                ]
-              }
+              '2016-01-01_2016-03-31_system-summary-data.json'
             ],
             missingReports: [
-              { fileName: '2016-01-01_2016-03-31_system-coupling-data.json' },
-              { fileName: '2016-01-01_2016-03-31_system-churn-data.json' }
-            ],
-            manifest: {
-              reportName: 'system-evolution',
-              parameters: { timeSplit: 'eom' },
-              dateRange: '2016-01-01_2016-03-31',
-              enabledDiagrams: ['revisions-trend', 'commits-trend', 'authors-trend']
-            }
+              '2016-01-01_2016-03-31_system-coupling-data.json',
+              '2016-01-01_2016-03-31_system-churn-data.json'
+            ]
           }
         );
       });
@@ -440,100 +375,11 @@ describe('System analysis tasks', function() {
           ['summary', 'entity-churn', 'coupling'],
           {
             reports: [
-              {
-                fileName: '2016-01-01_2016-03-31_system-summary-data.json',
-                data: [
-                  {
-                    name: 'test_layer1', date: '2016-01-31T23:59:59.999Z',
-                    revisions: 12, cumulativeRevisions: 12,
-                    commits:   42, cumulativeCommits:   42,
-                    authors:    8, cumulativeAuthors:    8
-                  },
-                  {
-                    name: 'test_layer2', date: '2016-01-31T23:59:59.999Z',
-                    revisions: 9, cumulativeRevisions: 9,
-                    commits:  21, cumulativeCommits:  21,
-                    authors:   3, cumulativeAuthors:   3
-                  },
-                  {
-                    name: 'test_layer3', date: '2016-01-31T23:59:59.999Z',
-                    revisions: 2, cumulativeRevisions: 2,
-                    commits:   5, cumulativeCommits:   5,
-                    authors:   1, cumulativeAuthors:   1
-                  },
-                  {
-                    name: 'test_layer1', date: '2016-02-29T23:59:59.999Z',
-                    revisions: 0, cumulativeRevisions: 12,
-                    commits:   0, cumulativeCommits:   42,
-                    authors:   0, cumulativeAuthors:    8
-                  },
-                  {
-                    name: 'test_layer2', date: '2016-02-29T23:59:59.999Z',
-                    revisions: 0, cumulativeRevisions: 9,
-                    commits:   0, cumulativeCommits:  21,
-                    authors:   0, cumulativeAuthors:   3
-                  },
-                  {
-                    name: 'test_layer3', date: '2016-02-29T23:59:59.999Z',
-                    revisions: 0, cumulativeRevisions: 2,
-                    commits:   0, cumulativeCommits:   5,
-                    authors:   0, cumulativeAuthors:   1
-                  },
-                  {
-                    name: 'test_layer1', date: '2016-03-31T23:59:59.999Z',
-                    revisions: 27, cumulativeRevisions: 39,
-                    commits:   59, cumulativeCommits:  101,
-                    authors:   12, cumulativeAuthors:   20
-                  },
-                  {
-                    name: 'test_layer2', date: '2016-03-31T23:59:59.999Z',
-                    revisions: 14, cumulativeRevisions: 23,
-                    commits:   30, cumulativeCommits:   51,
-                    authors:    4, cumulativeAuthors:    7
-                  },
-                  {
-                    name: 'test_layer3', date: '2016-03-31T23:59:59.999Z',
-                    revisions: 5, cumulativeRevisions: 7,
-                    commits:   3, cumulativeCommits:   8,
-                    authors:   2, cumulativeAuthors:   3
-                  }
-                ]
-              },
-              {
-                fileName: '2016-01-01_2016-03-31_system-churn-data.json',
-                data: [
-                  { name: 'test_layer1', addedLines: 95295, deletedLines: 10209, totalLines: 85086, cumulativeLines: 85086, date: '2016-01-31T23:59:59.999Z'},
-                  { name: 'test_layer2', addedLines:  6940, deletedLines:  6961, totalLines:   -21, cumulativeLines:   -21, date: '2016-01-31T23:59:59.999Z'},
-                  { name: 'test_layer3', addedLines:   710, deletedLines:    37, totalLines:   673, cumulativeLines:   673, date: '2016-01-31T23:59:59.999Z'},
-                  { name: 'test_layer1', addedLines:     0, deletedLines:     0, totalLines:     0, cumulativeLines: 85086, date: '2016-02-29T23:59:59.999Z'},
-                  { name: 'test_layer2', addedLines:     0, deletedLines:     0, totalLines:     0, cumulativeLines:   -21, date: '2016-02-29T23:59:59.999Z'},
-                  { name: 'test_layer3', addedLines:     0, deletedLines:     0, totalLines:     0, cumulativeLines:   673, date: '2016-02-29T23:59:59.999Z'},
-                  { name: 'test_layer1', addedLines: 12091, deletedLines: 10138, totalLines:  1953, cumulativeLines: 87039, date: '2016-03-31T23:59:59.999Z'},
-                  { name: 'test_layer2', addedLines:  1147, deletedLines:  1156, totalLines:    -9, cumulativeLines:   -30, date: '2016-03-31T23:59:59.999Z'},
-                  { name: 'test_layer3', addedLines:   889, deletedLines:   660, totalLines:   229, cumulativeLines:   902, date: '2016-03-31T23:59:59.999Z'}
-                ]
-              },
-              {
-                fileName: '2016-01-01_2016-03-31_system-coupling-data.json',
-                data: [
-                  { name: 'test_layer1', coupledName: 'test_layer2', couplingDegree: 23, date: '2016-01-31T23:59:59.999Z'},
-                  { name: 'test_layer1', coupledName: 'test_layer3', couplingDegree: 41, date: '2016-01-31T23:59:59.999Z'},
-                  { name: 'test_layer2', coupledName: 'test_layer3', couplingDegree: 30, date: '2016-01-31T23:59:59.999Z'},
-                  { name: 'test_layer1', coupledName: 'test_layer2', couplingDegree:  0, date: '2016-02-29T23:59:59.999Z'},
-                  { name: 'test_layer1', coupledName: 'test_layer3', couplingDegree:  0, date: '2016-02-29T23:59:59.999Z'},
-                  { name: 'test_layer2', coupledName: 'test_layer3', couplingDegree:  0, date: '2016-02-29T23:59:59.999Z'},
-                  { name: 'test_layer1', coupledName: 'test_layer2', couplingDegree: 33, date: '2016-03-31T23:59:59.999Z'},
-                  { name: 'test_layer1', coupledName: 'test_layer3', couplingDegree: 52, date: '2016-03-31T23:59:59.999Z'},
-                  { name: 'test_layer2', coupledName: 'test_layer3', couplingDegree: 10, date: '2016-03-31T23:59:59.999Z'}
-                ]
-              }
+              '2016-01-01_2016-03-31_system-summary-data.json',
+              '2016-01-01_2016-03-31_system-churn-data.json',
+              '2016-01-01_2016-03-31_system-coupling-data.json'
             ],
-            manifest: {
-              reportName: 'system-evolution',
-              parameters: { timeSplit: 'eom', layerGroup: 'test_boundary' },
-              dateRange: '2016-01-01_2016-03-31',
-              enabledDiagrams: ['revisions-trend', 'commits-trend', 'authors-trend', 'churn-trend', 'coupling-trend']
-            }
+            missingReports: []
           }
         );
       });
@@ -546,89 +392,12 @@ describe('System analysis tasks', function() {
           ['summary', 'coupling'],
           {
             reports: [
-              {
-                fileName: '2016-01-01_2016-03-31_system-summary-data.json',
-                data: [
-                  {
-                    name: 'test_layer1', date: '2016-01-31T23:59:59.999Z',
-                    revisions: 12, cumulativeRevisions: 12,
-                    commits: 42, cumulativeCommits: 42,
-                    authors: 8, cumulativeAuthors: 8
-                  },
-                  {
-                    name: 'test_layer2', date: '2016-01-31T23:59:59.999Z',
-                    revisions: 9, cumulativeRevisions: 9,
-                    commits: 21, cumulativeCommits: 21,
-                    authors: 3, cumulativeAuthors: 3
-                  },
-                  {
-                    name: 'test_layer3', date: '2016-01-31T23:59:59.999Z',
-                    revisions: 2, cumulativeRevisions: 2,
-                    commits: 5, cumulativeCommits: 5,
-                    authors: 1, cumulativeAuthors: 1
-                  },
-                  {
-                    name: 'test_layer1', date: '2016-02-29T23:59:59.999Z',
-                    revisions: 0, cumulativeRevisions: 12,
-                    commits: 0, cumulativeCommits: 42,
-                    authors: 0, cumulativeAuthors: 8
-                  },
-                  {
-                    name: 'test_layer2', date: '2016-02-29T23:59:59.999Z',
-                    revisions: 0, cumulativeRevisions: 9,
-                    commits: 0, cumulativeCommits: 21,
-                    authors: 0, cumulativeAuthors: 3
-                  },
-                  {
-                    name: 'test_layer3', date: '2016-02-29T23:59:59.999Z',
-                    revisions: 0, cumulativeRevisions: 2,
-                    commits: 0, cumulativeCommits: 5,
-                    authors: 0, cumulativeAuthors: 1
-                  },
-                  {
-                    name: 'test_layer1', date: '2016-03-31T23:59:59.999Z',
-                    revisions: 27, cumulativeRevisions: 39,
-                    commits: 59, cumulativeCommits: 101,
-                    authors: 12, cumulativeAuthors: 20
-                  },
-                  {
-                    name: 'test_layer2', date: '2016-03-31T23:59:59.999Z',
-                    revisions: 14, cumulativeRevisions: 23,
-                    commits: 30, cumulativeCommits: 51,
-                    authors: 4, cumulativeAuthors: 7
-                  },
-                  {
-                    name: 'test_layer3', date: '2016-03-31T23:59:59.999Z',
-                    revisions: 5, cumulativeRevisions: 7,
-                    commits: 3, cumulativeCommits: 8,
-                    authors: 2, cumulativeAuthors: 3
-                  }
-                ]
-              },
-              {
-                fileName: '2016-01-01_2016-03-31_system-coupling-data.json',
-                data: [
-                  { name: 'test_layer1', coupledName: 'test_layer2', couplingDegree: 23, date: '2016-01-31T23:59:59.999Z'},
-                  { name: 'test_layer1', coupledName: 'test_layer3', couplingDegree: 41, date: '2016-01-31T23:59:59.999Z'},
-                  { name: 'test_layer2', coupledName: 'test_layer3', couplingDegree: 30, date: '2016-01-31T23:59:59.999Z'},
-                  { name: 'test_layer1', coupledName: 'test_layer2', couplingDegree:  0, date: '2016-02-29T23:59:59.999Z'},
-                  { name: 'test_layer1', coupledName: 'test_layer3', couplingDegree:  0, date: '2016-02-29T23:59:59.999Z'},
-                  { name: 'test_layer2', coupledName: 'test_layer3', couplingDegree:  0, date: '2016-02-29T23:59:59.999Z'},
-                  { name: 'test_layer1', coupledName: 'test_layer2', couplingDegree: 33, date: '2016-03-31T23:59:59.999Z'},
-                  { name: 'test_layer1', coupledName: 'test_layer3', couplingDegree: 52, date: '2016-03-31T23:59:59.999Z'},
-                  { name: 'test_layer2', coupledName: 'test_layer3', couplingDegree: 10, date: '2016-03-31T23:59:59.999Z'}
-                ]
-              }
+              '2016-01-01_2016-03-31_system-summary-data.json',
+              '2016-01-01_2016-03-31_system-coupling-data.json'
             ],
             missingReports: [
-              { fileName: '2016-01-01_2016-03-31_system-churn-data.json' }
-            ],
-            manifest: {
-              reportName: 'system-evolution',
-              parameters: { timeSplit: 'eom', layerGroup: 'test_boundary' },
-              dateRange: '2016-01-01_2016-03-31',
-              enabledDiagrams: ['revisions-trend', 'commits-trend', 'authors-trend', 'coupling-trend']
-            }
+              '2016-01-01_2016-03-31_system-churn-data.json'
+            ]
           }
         );
       });

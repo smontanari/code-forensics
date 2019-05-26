@@ -1,8 +1,7 @@
-/*global require_src*/
 var Path = require('path'),
     os   = require('os');
 
-var appConfig = require_src('runtime/app_config');
+var appConfig = require('runtime/app_config');
 
 describe('appConfig', function() {
   it('returns always the root of this project as the basedir', function() {

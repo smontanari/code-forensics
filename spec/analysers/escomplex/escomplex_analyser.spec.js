@@ -1,11 +1,15 @@
-/*global require_src*/
 var stream    = require('stream'),
     fs        = require('fs'),
     escomplex = require('typhonjs-escomplex');
 
-var ESComplexAnalyser = require_src('analysers/escomplex/escomplex_analyser');
+var helpers = require('../../jest_helpers');
+var ESComplexAnalyser = require('analysers/escomplex/escomplex_analyser');
+
+jest.mock('typhonjs-escomplex');
+jest.mock('fs');
 
 describe('ESComplexAnalyser', function() {
+  var subject;
   var escomplexReport = {
     aggregate: { cyclomatic: 11 },
     classes: [
@@ -37,19 +41,23 @@ describe('ESComplexAnalyser', function() {
   };
 
   beforeEach(function() {
-    this.appConfigStub({
+    helpers.appConfigStub({
       javascriptParser: {
         options: { a: 'optionA', b: 'optionB' }
       }
     });
 
-    spyOn(escomplex, 'analyzeModule').and.returnValue(escomplexReport);
-    this.subject = new ESComplexAnalyser();
+    escomplex.analyzeModule.mockReturnValue(escomplexReport);
+    subject = new ESComplexAnalyser();
+  });
+
+  afterEach(function() {
+    helpers.appConfigRestore();
   });
 
   describe('.fileAnalysisStream()', function() {
     beforeEach(function() {
-      spyOn(fs, 'readFile').and.callFake(function(_, callback) {
+      fs.readFile = jest.fn().mockImplementation(function(_, callback) {
         callback(null, 'test content');
       });
     });
@@ -57,7 +65,7 @@ describe('ESComplexAnalyser', function() {
     describe('without any transform callback function', function() {
       it('reports the complexity of the file content', function(done) {
         var report;
-        this.subject.fileAnalysisStream('test/file.js')
+        subject.fileAnalysisStream('test/file.js')
         .on('data', function(output) {
           report = output;
         })
@@ -78,7 +86,7 @@ describe('ESComplexAnalyser', function() {
           });
 
           expect(escomplex.analyzeModule).toHaveBeenCalledWith('test content', {}, { a: 'optionA', b: 'optionB' });
-          expect(fs.readFile).toHaveBeenCalledWith('test/file.js', jasmine.any(Function));
+          expect(fs.readFile).toHaveBeenCalledWith('test/file.js', expect.any(Function));
           done();
         });
       });
@@ -87,7 +95,7 @@ describe('ESComplexAnalyser', function() {
     describe('with a transform callback function', function() {
       it('returns the complexity report of the file content modified by the transform callback', function(done) {
         var report;
-        this.subject.fileAnalysisStream('test/file.js', function(report) {
+        subject.fileAnalysisStream('test/file.js', function(report) {
           return { test: 'some value', result: report.totalComplexity };
         })
         .on('data', function(output) {
@@ -100,7 +108,7 @@ describe('ESComplexAnalyser', function() {
           });
 
           expect(escomplex.analyzeModule).toHaveBeenCalledWith('test content', {}, { a: 'optionA', b: 'optionB' });
-          expect(fs.readFile).toHaveBeenCalledWith('test/file.js', jasmine.any(Function));
+          expect(fs.readFile).toHaveBeenCalledWith('test/file.js', expect.any(Function));
           done();
         });
       });
@@ -113,7 +121,7 @@ describe('ESComplexAnalyser', function() {
         var report;
         var inputStream = new stream.PassThrough();
 
-        inputStream.pipe(this.subject.sourceAnalysisStream('test/file.js'))
+        inputStream.pipe(subject.sourceAnalysisStream('test/file.js'))
         .on('data', function(output) {
           report = output;
         })
@@ -147,7 +155,7 @@ describe('ESComplexAnalyser', function() {
         var report;
         var inputStream = new stream.PassThrough();
 
-        inputStream.pipe(this.subject.sourceAnalysisStream('test/file.js', function(report) {
+        inputStream.pipe(subject.sourceAnalysisStream('test/file.js', function(report) {
           return { test: 'some value', result: report.totalComplexity };
         }))
         .on('data', function(output) {

@@ -1,10 +1,9 @@
-/*global require_src*/
 var _         = require('lodash'),
     stream    = require('stream'),
     XmlReader = require('xml-reader');
 
-var LogStreamTransformer = require_src('vcs/svn/svnlog_stream_transformer.js'),
-    XmlUtils             = require_src('utils/xml_utils');
+var LogStreamTransformer = require('vcs/svn/svnlog_stream_transformer.js'),
+    XmlUtils             = require('utils/xml_utils');
 
 describe('SvnLogStreamTransformer', function() {
   var LOG_OUTPUT = [
@@ -63,6 +62,7 @@ describe('SvnLogStreamTransformer', function() {
   ];
 
   describe('Author name normalisation', function() {
+    var subject;
     beforeEach(function() {
       var stubDevelopersInfo = {
         find: function(name) {
@@ -76,14 +76,14 @@ describe('SvnLogStreamTransformer', function() {
       var stubAdapter = {
         vcsRelativePath: function() { return '^/test/path'; }
       };
-      this.subject = new LogStreamTransformer(stubRepository, stubDevelopersInfo, stubAdapter);
+      subject = new LogStreamTransformer(stubRepository, stubDevelopersInfo, stubAdapter);
     });
 
     it('streams log entries with author name changed according to the developer info', function(done) {
       var logStream = new stream.PassThrough();
 
       var result = '';
-      this.subject.normaliseLogStream(logStream)
+      subject.normaliseLogStream(logStream)
         .on('data', function(chunk) {
           result += chunk.toString();
         })
@@ -99,12 +99,13 @@ describe('SvnLogStreamTransformer', function() {
           done();
         });
 
-      _.each(LOG_OUTPUT, logStream.push.bind(logStream));
+      LOG_OUTPUT.forEach(logStream.push.bind(logStream));
       logStream.end();
     });
   });
 
   describe('File path filtering', function() {
+    var subject;
     beforeEach(function() {
       var stubDevelopersInfo = {
         find: function(name) { return { name: name }; }
@@ -115,14 +116,14 @@ describe('SvnLogStreamTransformer', function() {
       var stubAdapter = {
         vcsRelativePath: function() { return '^/test/path\n'; }
       };
-      this.subject = new LogStreamTransformer(stubRepository, stubDevelopersInfo, stubAdapter);
+      subject = new LogStreamTransformer(stubRepository, stubDevelopersInfo, stubAdapter);
     });
 
     it('streams log entries normalising the valid paths and filtering out the invalid ones', function(done) {
       var logStream = new stream.PassThrough();
 
       var result = '';
-      this.subject.normaliseLogStream(logStream)
+      subject.normaliseLogStream(logStream)
         .on('data', function(chunk) {
           result += chunk.toString();
         })
@@ -140,7 +141,7 @@ describe('SvnLogStreamTransformer', function() {
           done();
         });
 
-      _.each(LOG_OUTPUT, logStream.push.bind(logStream));
+      LOG_OUTPUT.forEach(logStream.push.bind(logStream));
       logStream.end();
     });
   });

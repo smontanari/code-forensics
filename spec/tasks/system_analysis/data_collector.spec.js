@@ -1,8 +1,6 @@
-/*global require_src*/
-var _      = require('lodash'),
-    stream = require('stream');
+var stream = require('stream');
 
-var DataCollector = require_src('tasks/system_analysis/data_collector');
+var DataCollector = require('tasks/system_analysis/data_collector');
 
 describe('DataCollector', function() {
   var subject, mockAnalysis, testAnalysisStream;
@@ -21,27 +19,28 @@ describe('DataCollector', function() {
     testAnalysisStream = new stream.PassThrough({ objectMode: true });
 
     mockAnalysis = {
-      isSupported: jasmine.createSpy('analysis.isSupported'),
-      collect: jasmine.createSpy('analysis.collect'),
+      isSupported: jest.fn().mockName('analysis.isSupported'),
+      collect: jest.fn().mockName('analysis.collect'),
       accumulator: new stream.PassThrough({ objectMode: true })
     };
-    mockAnalysis.collect.and.returnValue(testAnalysisStream);
+    mockAnalysis.collect.mockReturnValue(testAnalysisStream);
   });
 
   describe('when analysis is not supported', function() {
     beforeEach(function() {
-      mockAnalysis.isSupported.and.returnValue(false);
+      mockAnalysis.isSupported.mockReturnValue(false);
       subject = new DataCollector(timePeriods);
     });
 
-    it('returns a rejected promise', function(done) {
-      subject.collectDataStream(mockAnalysis).catch(done);
+    it('returns a rejected promise', function() {
+      return expect(subject.collectDataStream(mockAnalysis))
+        .rejects.toEqual('Data analysis not supported');
     });
   });
 
   describe('when analysis is supported', function() {
     beforeEach(function() {
-      mockAnalysis.isSupported.and.returnValue(true);
+      mockAnalysis.isSupported.mockReturnValue(true);
       subject = new DataCollector(timePeriods);
     });
 
@@ -52,16 +51,16 @@ describe('DataCollector', function() {
           stream.on('data', function(obj) { data.push(obj); })
           .on('end', function() {
             expect(data).toEqual([
-              jasmine.objectContaining({ metric: 60, date: '2010-03-31T00:00:00.000Z' }),
-              jasmine.objectContaining({ metric: 90, date: '2010-04-30T00:00:00.000Z' }),
-              jasmine.objectContaining({ metric: 30, date: '2010-05-31T00:00:00.000Z' })
+              expect.objectContaining({ metric: 60, date: '2010-03-31T00:00:00.000Z' }),
+              expect.objectContaining({ metric: 90, date: '2010-04-30T00:00:00.000Z' }),
+              expect.objectContaining({ metric: 30, date: '2010-05-31T00:00:00.000Z' })
             ]);
             done();
           });
         })
         .catch(done.fail);
 
-      _.each(streamsData, function(data) {
+      streamsData.forEach(function(data) {
         testAnalysisStream.push(data);
       });
       testAnalysisStream.end();

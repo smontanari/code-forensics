@@ -1,15 +1,16 @@
-/*global require_src*/
-var TimePeriodBuilder = require_src('models/time_interval/builder'),
-    CFValidationError = require_src('models/validation_error');
+var lolex = require('lolex');
+
+var TimePeriodBuilder = require('models/time_interval/builder'),
+    CFValidationError = require('models/validation_error');
 
 describe('TimePeriodBuilder', function() {
+  var clock;
   beforeEach(function() {
-    jasmine.clock().install();
-    jasmine.clock().mockDate(new Date(2015, 8, 23));
+    clock = lolex.install({ now: new Date(2015, 8, 23) });
   });
 
   afterEach(function() {
-    jasmine.clock().uninstall();
+    clock.uninstall();
   });
 
   describe('validation', function() {
@@ -19,7 +20,7 @@ describe('TimePeriodBuilder', function() {
         .from('15-14-2015')
         .to('13-02-2014')
         .build();
-      }).toThrowError(CFValidationError);
+      }).toThrow(CFValidationError);
     });
 
     it('throws an error if the to date is invalid', function() {
@@ -28,7 +29,7 @@ describe('TimePeriodBuilder', function() {
         .from('15-04-2015')
         .to('32-05-2014')
         .build();
-      }).toThrowError(CFValidationError);
+      }).toThrow(CFValidationError);
     });
 
     it('throws an error if the to date is before than the from date', function() {
@@ -37,7 +38,7 @@ describe('TimePeriodBuilder', function() {
         .from('15-04-2015')
         .to('13-02-2014')
         .build();
-      }).toThrowError(CFValidationError);
+      }).toThrow(CFValidationError);
     });
   });
 

@@ -1,40 +1,35 @@
-/*global require_src*/
 var _        = require('lodash'),
     Bluebird = require('bluebird');
 
-var JobScheduler = require_src('parallel_processing/job_scheduler');
+var JobScheduler = require('parallel_processing/job_scheduler');
 
 describe('JobScheduler', function() {
   describe('.addJob()', function() {
     it('returns a promise that completes when the job is executed', function() {
       var scheduler = new JobScheduler();
-      var jobFn = jasmine.createSpy('jobFn');
+      var jobFn = jest.fn().mockName('jobFn');
 
-      expect(jobFn).not.toHaveBeenCalled();
       return scheduler.addJob(jobFn).then(function() {
-        expect(jobFn).toHaveBeenCalledWith();
+        expect(jobFn).toHaveBeenCalled();
       });
     });
 
     it('returns a promise that resolves to the output value of the job', function() {
       var scheduler = new JobScheduler();
-      var jobFn = jasmine.createSpy('jobFn').and.returnValue(123);
+      var jobFn = jest.fn().mockName('jobFn').mockReturnValue(123);
 
-      expect(jobFn).not.toHaveBeenCalled();
-      return scheduler.addJob(jobFn).then(function(result) {
-        expect(result).toEqual(123);
-      });
+      expect(scheduler.addJob(jobFn)).resolves.toEqual(123);
     });
 
     it('executes added jobs up to the max number of concurrent jobs', function() {
       var scheduler = new JobScheduler(2);
-      var job1 = jasmine.createSpy('jobFn1'),
-          job2 = jasmine.createSpy('jobFn2'),
-          job3 = jasmine.createSpy('jobFn3');
+      var job1 = jest.fn().mockName('jobFn1'),
+          job2 = jest.fn().mockName('jobFn2'),
+          job3 = jest.fn().mockName('jobFn3');
 
-      var promises = _.map([job1, job2], function(jobFn) {
+      var promises = [job1, job2].map(function(jobFn) {
         return _.tap(scheduler.addJob(jobFn), function() {
-          expect(jobFn).toHaveBeenCalledWith();
+          expect(jobFn).toHaveBeenCalled();
         });
       });
 
@@ -42,24 +37,26 @@ describe('JobScheduler', function() {
 
       expect(job3).not.toHaveBeenCalled();
       return Bluebird.all(promises).then(function() {
-        expect(job3).toHaveBeenCalledWith();
+        expect(job3).toHaveBeenCalled();
       });
     });
 
     it('runs all the jobs in the queue even if one fails', function() {
       var scheduler = new JobScheduler(1);
-      var job1 = jasmine.createSpy('jobFn1'),
-          job2 = jasmine.createSpy('jobFn2').and.throwError(),
-          job3 = jasmine.createSpy('jobFn3'),
-          job4 = jasmine.createSpy('jobFn4');
+      var job1 = jest.fn().mockName('jobFn1'),
+          job2 = jest.fn().mockName('jobFn2').mockImplementation(
+            function() { throw new Error(); }
+          ),
+          job3 = jest.fn().mockName('jobFn3'),
+          job4 = jest.fn().mockName('jobFn4');
 
-      var promises = _.map([job1, job2, job3, job4], function(jobFn) {
+      var promises = [job1, job2, job3, job4].map(function(jobFn) {
         return scheduler.addJob(jobFn).reflect();
       });
 
       return Bluebird.all(promises).then(function() {
-        _.each([job1, job2, job3, job4], function(jobFn) {
-          expect(jobFn).toHaveBeenCalledWith();
+        [job1, job2, job3, job4].forEach(function(jobFn) {
+          expect(jobFn).toHaveBeenCalled();
         });
       });
     });

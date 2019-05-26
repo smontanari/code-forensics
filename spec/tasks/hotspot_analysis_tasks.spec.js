@@ -1,32 +1,35 @@
-/*global require_src cfHelpers*/
-var hotspotAnalysisTasks = require_src('tasks/hotspot_analysis_tasks');
+var lolex    = require('lolex'),
+    Bluebird = require('bluebird');
+
+var taskHelpers = require('../jest_tasks_helpers');
+
+var hotspotAnalysisTasks = require('tasks/hotspot_analysis_tasks');
 
 describe('Hotspot analysis tasks', function() {
-  var runtime;
+  var runtime, clock;
 
   beforeEach(function() {
-    jasmine.clock().install();
-    jasmine.clock().mockDate(new Date('2015-10-22T10:00:00.000Z'));
+    clock = lolex.install({ now: new Date('2015-10-22T10:00:00.000Z') });
   });
 
   afterEach(function() {
-    jasmine.clock().uninstall();
+    clock.uninstall();
   });
 
   describe('hotspot-analysis', function() {
     afterEach(function() {
-      cfHelpers.clearTemp();
-      cfHelpers.clearOutput();
+      taskHelpers.clearTemp();
+      taskHelpers.clearOutput();
     });
 
     it('has the required dependencies', function() {
-      runtime = cfHelpers.runtimeSetup(hotspotAnalysisTasks);
+      runtime = taskHelpers.runtimeSetup(hotspotAnalysisTasks);
       runtime.assertTaskDependencies('hotspot-analysis', ['vcsLogDump', 'revisionsReport']);
     });
 
     describe('for supported languages', function() {
       it('publishes an analysis report on code size, complexity and revisions for each file in the repository', function() {
-        runtime = cfHelpers.runtimeSetup(hotspotAnalysisTasks, { languages: ['ruby'] }, { dateFrom: '2015-03-01' });
+        runtime = taskHelpers.runtimeSetup(hotspotAnalysisTasks, { languages: ['ruby'] }, { dateFrom: '2015-03-01' });
 
         runtime.prepareTempReport('sloc-report.json', [
           { path: 'test/ruby/app/file1.rb', sourceLines: 33, totalLines: 45 },
@@ -49,92 +52,17 @@ describe('Hotspot analysis tasks', function() {
         ]);
 
         return runtime.executePromiseTask('hotspot-analysis').then(function(taskOutput) {
-          return taskOutput.assertOutputReport('2015-03-01_2015-10-22_revisions-hotspot-data.json', {
-            children: [
-              {
-                name: 'test',
-                children: [
-                  {
-                    name: 'ruby',
-                    children: [
-                      {
-                        name: 'app',
-                        children: [
-                          {
-                            name: 'file1.rb',
-                            children: [],
-                            sourceLines: 33,
-                            totalLines: 45,
-                            revisions: 29,
-                            totalComplexity: 12.9,
-                            weight: 1
-                          },
-                          {
-                            name: 'models',
-                            children: [
-                              {
-                                name: 'file3.rb',
-                                children: [],
-                                sourceLines: 15,
-                                totalLines: 21,
-                                revisions: 11,
-                                totalComplexity: 18.4,
-                                weight: 0.3793103448275862
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  {
-                    name: 'web',
-                    children: [
-                      {
-                        name: 'styles',
-                        children: [
-                          {
-                            name: 'file2.css',
-                            children: [],
-                            sourceLines: 23,
-                            totalLines: 31,
-                            revisions: 15,
-                            weight: 0.5172413793103449
-                          }
-                        ]
-                      },
-                      {
-                        name: 'js',
-                        children: [
-                          {
-                            name: 'file4.js',
-                            children: [],
-                            sourceLines: 25,
-                            totalLines: 35,
-                            weight: 0
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }).then(function() {
-            return taskOutput.assertManifest({
-              reportName: 'hotspot-analysis',
-              parameters: {},
-              dateRange: '2015-03-01_2015-10-22',
-              enabledDiagrams: ['sloc', 'complexity']
-            });
-          });
+          return Bluebird.all([
+            taskOutput.assertOutputReport('2015-03-01_2015-10-22_revisions-hotspot-data.json'),
+            taskOutput.assertManifest()
+          ]);
         });
       });
     });
 
     describe('with no supported languages', function() {
       it('publishes an analysis report on code size and revisions for each file in the repository', function() {
-        runtime = cfHelpers.runtimeSetup(hotspotAnalysisTasks, {}, { dateFrom: '2015-03-01' });
+        runtime = taskHelpers.runtimeSetup(hotspotAnalysisTasks, {}, { dateFrom: '2015-03-01' });
 
         runtime.prepareTempReport('sloc-report.json', [
           { path: 'test/java/app/file1.java', sourceLines: 33, totalLines: 45 },
@@ -151,83 +79,10 @@ describe('Hotspot analysis tasks', function() {
         ]);
 
         return runtime.executePromiseTask('hotspot-analysis').then(function(taskOutput) {
-          return taskOutput.assertOutputReport('2015-03-01_2015-10-22_revisions-hotspot-data.json', {
-            children: [
-              {
-                name: 'test',
-                children: [
-                  {
-                    name: 'java',
-                    children: [
-                      {
-                        name: 'app',
-                        children: [
-                          {
-                            name: 'file1.java',
-                            children: [],
-                            sourceLines: 33,
-                            totalLines: 45,
-                            revisions: 29,
-                            weight: 1
-                          },
-                          {
-                            name: 'models',
-                            children: [
-                              {
-                                name: 'file3.java',
-                                children: [],
-                                sourceLines: 15,
-                                totalLines: 21,
-                                revisions: 11,
-                                weight: 0.3793103448275862
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  {
-                    name: 'web',
-                    children: [
-                      {
-                        name: 'styles',
-                        children: [
-                          {
-                            name: 'file2.css',
-                            children: [],
-                            sourceLines: 23,
-                            totalLines: 31,
-                            revisions: 15,
-                            weight: 0.5172413793103449
-                          }
-                        ]
-                      },
-                      {
-                        name: 'jsp',
-                        children: [
-                          {
-                            name: 'file4.jsp',
-                            children: [],
-                            sourceLines: 25,
-                            totalLines: 35,
-                            weight: 0
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }).then(function() {
-            return taskOutput.assertManifest({
-              reportName: 'hotspot-analysis',
-              parameters: {},
-              dateRange: '2015-03-01_2015-10-22',
-              enabledDiagrams: ['sloc']
-            });
-          });
+          return Bluebird.all([
+            taskOutput.assertOutputReport('2015-03-01_2015-10-22_revisions-hotspot-data.json'),
+            taskOutput.assertManifest()
+          ]);
         });
       });
     });

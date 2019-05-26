@@ -1,5 +1,4 @@
-/*global require_src*/
-var XmlUtils = require_src('utils/xml_utils');
+var XmlUtils = require('utils/xml_utils');
 
 describe('XmlUtils', function() {
   describe('nodeWithName()', function() {

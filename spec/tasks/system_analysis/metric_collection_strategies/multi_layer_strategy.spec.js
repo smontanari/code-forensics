@@ -1,9 +1,8 @@
-/*global require_src*/
 var stream = require('stream'),
     moment = require('moment');
 
-var multiLayerStrategy = require_src('tasks/system_analysis/metric_collection_strategies/multi_layer_strategy'),
-    TimePeriod         = require_src('models/time_interval/time_period');
+var multiLayerStrategy = require('tasks/system_analysis/metric_collection_strategies/multi_layer_strategy'),
+    TimePeriod         = require('models/time_interval/time_period');
 
 describe('multiLayerStrategy', function() {
   describe('metrics collection', function() {
@@ -13,14 +12,14 @@ describe('multiLayerStrategy', function() {
       testAnalysisStream = new stream.PassThrough({ objectMode: true });
 
       mockFilesHelper = {
-        vcsNormalisedLog: jasmine.createSpy().and.returnValue('test_vcs_log'),
+        vcsNormalisedLog: jest.fn().mockReturnValue('test_vcs_log'),
         layerGrouping: function() { return 'test_group_file.txt'; }
       };
       mockCodeMaatHelper = {
-        testAnalysis: jasmine.createSpy('testAnalysis').and.returnValue(testAnalysisStream)
+        testAnalysis: jest.fn().mockName('testAnalysis').mockReturnValue(testAnalysisStream)
       };
       mockStreamProcessor = {
-        mergeAll: jasmine.createSpy('mergeAll').and.callFake(function(_, fn) {
+        mergeAll: jest.fn().mockName('mergeAll').mockImplementation(function(_, fn) {
           strategyAnalysisFn = fn;
           return 'test_output';
         })
@@ -42,7 +41,7 @@ describe('multiLayerStrategy', function() {
       var output = strategyFn(['p1', 'p2']);
 
       expect(output).toEqual('test_output');
-      expect(mockStreamProcessor.mergeAll).toHaveBeenCalledWith(['p1', 'p2'], jasmine.any(Function));
+      expect(mockStreamProcessor.mergeAll).toHaveBeenCalledWith(['p1', 'p2'], expect.any(Function));
 
       var timePeriod = new TimePeriod({ start: moment('2010-05-01 00Z'), end: moment('2010-05-31 00Z') }, 'DD-MM-YYYY');
       var data = [];
@@ -50,8 +49,8 @@ describe('multiLayerStrategy', function() {
         .on('data', function(obj) { data.push(obj); })
         .on('end', function() {
           expect(data).toEqual([
-            jasmine.objectContaining({ name: 'path1', metric1: 10, metric2: 5, date: '2010-05-31T00:00:00.000Z' }),
-            jasmine.objectContaining({ name: 'path2', metric1: 50, metric2: 25, date: '2010-05-31T00:00:00.000Z' })
+            expect.objectContaining({ name: 'path1', metric1: 10, metric2: 5, date: '2010-05-31T00:00:00.000Z' }),
+            expect.objectContaining({ name: 'path2', metric1: 50, metric2: 25, date: '2010-05-31T00:00:00.000Z' })
           ]);
 
           expect(mockFilesHelper.vcsNormalisedLog).toHaveBeenCalledWith(timePeriod);

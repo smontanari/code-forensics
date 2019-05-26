@@ -1,20 +1,22 @@
-/*global require_src*/
 var stream = require('stream'),
     map    = require('through2-map'),
     moment = require('moment');
 
-var RevisionHelper = require_src('tasks/helpers/revision_helper'),
-    vcs            = require_src('vcs');
+var RevisionHelper = require('tasks/helpers/revision_helper'),
+    vcs            = require('vcs');
 
 describe('RevisionHelper', function() {
   var mockVcs, subject, analyser;
 
   beforeEach(function() {
-    mockVcs = jasmine.createSpyObj('vcs_adapter', ['revisions', 'showRevisionStream']);
-    spyOn(vcs, 'client').and.returnValue(mockVcs);
+    mockVcs = {
+      revisions: jest.fn(),
+      showRevisionStream: jest.fn()
+    };
+    vcs.client = jest.fn().mockReturnValue(mockVcs);
     analyser = {
-      sourceAnalysisStream: jasmine.createSpy('sourceAnalysisStream')
-      .and.callFake(function() {
+      sourceAnalysisStream: jest.fn().mockName('sourceAnalysisStream')
+      .mockImplementation(function() {
         return map.obj(function(obj) {
           return { result: obj.analysis + '-result' };
         });
@@ -35,19 +37,19 @@ describe('RevisionHelper', function() {
 
     describe('when no revisions exist', function() {
       beforeEach(function() {
-        mockVcs.revisions.and.returnValue([]);
+        mockVcs.revisions.mockReturnValue([]);
       });
 
       it('throws an error', function() {
         expect(function() {
           subject.revisionAnalysisStream(analyser);
-        }).toThrowError('No revisions data found');
+        }).toThrow('No revisions data found');
       });
     });
 
     describe('when revisions exist', function() {
       beforeEach(function() {
-        mockVcs.revisions.and.returnValue([
+        mockVcs.revisions.mockReturnValue([
           { revisionId: '123', date: '2010-01-01T00:00:00.000Z' },
           { revisionId: '456', date: '2010-01-05T00:00:00.000Z' }
         ]);
@@ -56,7 +58,9 @@ describe('RevisionHelper', function() {
       it('returns the stream aggregate of all the revisions', function(done) {
         var revisionStream1 = new stream.PassThrough({ objectMode: true });
         var revisionStream2 = new stream.PassThrough({ objectMode: true });
-        mockVcs.showRevisionStream.and.returnValues(revisionStream1, revisionStream2);
+        mockVcs.showRevisionStream
+          .mockReturnValueOnce(revisionStream1)
+          .mockReturnValueOnce(revisionStream2);
 
         var data = [];
         subject.revisionAnalysisStream(analyser)
