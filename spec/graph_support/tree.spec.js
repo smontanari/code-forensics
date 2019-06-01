@@ -29,7 +29,7 @@ describe('Tree', function() {
     });
 
     it('generates the children tree structure', function() {
-      expect(subject.rootNode.children.length).toEqual(1);
+      expect(subject.rootNode.children).toHaveLength(1);
       expect(subject.rootNode.children[0].name).toEqual('branch');
       expect(subject.rootNode.children[0].children).toEqual([childNode]);
     });

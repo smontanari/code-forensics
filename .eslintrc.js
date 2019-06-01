@@ -3,7 +3,8 @@ module.exports = {
   env: {
     node: true
   },
-  extends: 'eslint:recommended',
+  plugins: ['jest'],
+  extends: ['eslint:recommended', 'plugin:jest/recommended', 'plugin:jest/style'],
   rules: {
     quotes: ['error', 'single', { avoidEscape: true }],
     semi: ['error', 'always'],
@@ -22,7 +23,8 @@ module.exports = {
         jest: true
       },
       rules: {
-        'no-console': 'off'
+        'no-console': 'off',
+        'jest/valid-describe': 'off'
       }
     }
   ]

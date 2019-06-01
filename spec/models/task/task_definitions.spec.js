@@ -81,7 +81,7 @@ describe('TaskDefinitions', function() {
       if (gulpSeriesFns.length > 1) {
         expect(gulp.series.mock.calls[0]).toEqual(gulpSeriesFns);
       } else {
-        expect(gulp.series.mock.calls.length).toEqual(0);
+        expect(gulp.series.mock.calls).toHaveLength(0);
       }
     });
 
@@ -100,8 +100,8 @@ describe('TaskDefinitions', function() {
 
       expect(output).toEqual('dependency-output');
       expect(mockDependency).toHaveBeenCalledWith(doneCallback);
-      expect(runners.Default.mock.calls.length).toEqual(0);
-      expect(runners.Report.mock.calls.length).toEqual(0);
+      expect(runners.Default.mock.calls).toHaveLength(0);
+      expect(runners.Report.mock.calls).toHaveLength(0);
     });
   };
 
@@ -314,14 +314,14 @@ describe('TaskDefinitions', function() {
     it('returns all the analysis tasks', function() {
       var tasks = subject.analysisTasks();
 
-      expect(tasks.length).toEqual(1);
+      expect(tasks).toHaveLength(1);
       expect(tasks[0].name).toEqual('test-task2');
     });
 
     it('returns all the tasks', function() {
       var tasks = subject.allTasks();
 
-      expect(tasks.length).toEqual(2);
+      expect(tasks).toHaveLength(2);
       expect(tasks[0].name).toEqual('test-task2');
       expect(tasks[1].name).toEqual('test-task1');
     });

@@ -9,7 +9,7 @@ describe('TaskExecutor', function() {
   };
 
   var assertSettledPromises = function(data, expectedPromises) {
-    expect(data.length).toEqual(expectedPromises.length);
+    expect(data).toHaveLength(expectedPromises.length);
     expectedPromises.forEach(function(promise, index) {
       if (promise.fulfilled) {
         expect(data[index].isFulfilled()).toEqual(true);

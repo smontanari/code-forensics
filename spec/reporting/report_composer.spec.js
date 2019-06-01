@@ -51,7 +51,7 @@ describe('ReportComposer', function() {
           { a: 999, b: 'asd' }
         ]);
 
-        expect(mockDataSourceHandler.processDataSource.mock.calls.length).toEqual(3);
+        expect(mockDataSourceHandler.processDataSource.mock.calls).toHaveLength(3);
         expect(mockDataSourceHandler.processDataSource.mock.calls[0]).toEqual(['testInitialArray']);
         expect(mockDataSourceHandler.processDataSource.mock.calls[1]).toEqual(['test/file.json']);
         expect(mockDataSourceHandler.processDataSource.mock.calls[2]).toEqual(['testInputStream']);
@@ -72,7 +72,7 @@ describe('ReportComposer', function() {
             { a: 999, b: 'asd', d: { d1: 777, d2: 888 } }
           ]);
 
-        expect(mockDataSourceHandler.processDataSource.mock.calls.length).toEqual(3);
+        expect(mockDataSourceHandler.processDataSource.mock.calls).toHaveLength(3);
         expect(mockDataSourceHandler.processDataSource.mock.calls[0]).toEqual(['testInitialArray']);
         expect(mockDataSourceHandler.processDataSource.mock.calls[1]).toEqual(['test/file.json']);
         expect(mockDataSourceHandler.processDataSource.mock.calls[2]).toEqual(['testInputStream']);

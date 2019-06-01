@@ -48,7 +48,7 @@ describe('EnvConfigReader', function() {
       expect(new EnvConfigReader().getConfiguration().logEnabled).toBe(false);
     });
 
-    it('returns an object with a log enabled value', function() {
+    it('returns an object with a server port value', function() {
       process.env.SERVER_PORT = '1234';
 
       expect(new EnvConfigReader().getConfiguration().serverPort).toEqual(1234);

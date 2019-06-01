@@ -39,7 +39,7 @@ describe('TaskContext', function() {
     it('creates the time periods and a date range with a given date format', function() {
       var ctx = new TaskContext({ dateFormat: 'YYYY-MM' }, { dateFrom: 'test-date1', dateTo: 'test-date2', timeSplit: 'test-timeSplit' });
 
-      expect(ctx.timePeriods.length).toEqual(2);
+      expect(ctx.timePeriods).toHaveLength(2);
       expect(ctx.timePeriods[0].toString()).toEqual('2014-03_2014-07');
       expect(ctx.timePeriods[1].toString()).toEqual('2014-08_2014-12');
 
@@ -54,7 +54,7 @@ describe('TaskContext', function() {
     it('creates the time periods and a date range with the default date format', function() {
       var ctx = new TaskContext(undefined, { dateFrom: 'test-date1', dateTo: 'test-date2', timeSplit: 'test-timeSplit' });
 
-      expect(ctx.timePeriods.length).toEqual(2);
+      expect(ctx.timePeriods).toHaveLength(2);
       expect(ctx.timePeriods[0].toString()).toEqual('2014-03_2014-07');
       expect(ctx.timePeriods[1].toString()).toEqual('2014-08_2014-12');
 

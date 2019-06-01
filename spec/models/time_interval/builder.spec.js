@@ -48,7 +48,7 @@ describe('TimePeriodBuilder', function() {
         .split('eom')
         .build();
 
-      expect(periods.length).toEqual(1);
+      expect(periods).toHaveLength(1);
       expect(periods[0].startDate.toISOString()).toEqual('2015-09-22T00:00:00.000Z');
       expect(periods[0].endDate.toISOString()).toEqual('2015-09-22T23:59:59.999Z');
       expect(periods[0].toString()).toEqual('22-09-2015_22-09-2015');
@@ -62,7 +62,7 @@ describe('TimePeriodBuilder', function() {
         .split('eom')
         .build();
 
-      expect(periods.length).toEqual(6);
+      expect(periods).toHaveLength(6);
       expect(periods[0].toString()).toEqual('15-04-2015_30-04-2015');
       expect(periods[1].toString()).toEqual('01-05-2015_31-05-2015');
       expect(periods[2].toString()).toEqual('01-06-2015_30-06-2015');
@@ -79,7 +79,7 @@ describe('TimePeriodBuilder', function() {
         .to('19-05-2015')
         .build();
 
-      expect(periods.length).toEqual(1);
+      expect(periods).toHaveLength(1);
       expect(periods[0].startDate.toISOString()).toEqual('2015-04-15T00:00:00.000Z');
       expect(periods[0].endDate.toISOString()).toEqual('2015-05-19T23:59:59.999Z');
       expect(periods[0].toString()).toEqual('15-04-2015_19-05-2015');
@@ -94,7 +94,7 @@ describe('TimePeriodBuilder', function() {
         .split('2w')
         .build();
 
-      expect(periods.length).toEqual(3);
+      expect(periods).toHaveLength(3);
       expect(periods[0].startDate.toISOString()).toEqual('2015-04-15T00:00:00.000Z');
       expect(periods[0].toString()).toEqual('15-04-2015_28-04-2015');
       expect(periods[1].toString()).toEqual('29-04-2015_12-05-2015');

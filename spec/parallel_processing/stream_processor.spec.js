@@ -92,7 +92,7 @@ describe('StreamProcessor', function() {
 
       subject.processAll([0, 1, 2], function(index) { return streams[index]; })
         .then(function(data) {
-          expect(data.length).toEqual(3);
+          expect(data).toHaveLength(3);
           expect(data[0].isFulfilled()).toBe(true);
           expect(data[1].isRejected()).toBe(true);
           expect(data[1].reason().message).toEqual('test stream error');
