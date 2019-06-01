@@ -18,7 +18,7 @@ describe('Coupling analysis tasks', function() {
 
   afterEach(function() {
     clock.uninstall();
-    runtime.clear();
+    return runtime.clear();
   });
 
   describe('sum-of-coupling-analysis', function() {

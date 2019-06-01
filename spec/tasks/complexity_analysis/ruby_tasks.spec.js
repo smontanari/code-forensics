@@ -15,7 +15,7 @@ describe('ruby tasks', function() {
   });
 
   afterEach(function() {
-    runtime.clear();
+    return runtime.clear();
   });
 
   describe('ruby-complexity-report', function() {
@@ -116,7 +116,7 @@ describe('ruby tasks', function() {
         .mockReturnValueOnce({ stdin: new stream.PassThrough(), stdout: complexityStream1 })
         .mockReturnValueOnce({ stdin: new stream.PassThrough(), stdout: complexityStream2 });
 
-      var runtime = taskHelpers.createRuntime('ruby_tasks', rubyTasks, null, { dateFrom: '2015-03-01', targetFile: 'test_abs.rb' });
+      runtime = taskHelpers.createRuntime('ruby_tasks', rubyTasks, null, { dateFrom: '2015-03-01', targetFile: 'test_abs.rb' });
       runtime.executePromiseTask('ruby-complexity-trend-analysis').then(function(taskOutput) {
         return Bluebird.all([
           taskOutput.assertOutputReport('2015-03-01_2015-10-22_complexity-trend-data.json'),

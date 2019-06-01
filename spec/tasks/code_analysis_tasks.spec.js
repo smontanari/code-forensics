@@ -12,7 +12,7 @@ describe('Code analysis tasks', function() {
   var runtime;
 
   afterEach(function() {
-    runtime.clear();
+    return runtime.clear();
   });
 
   describe('sloc-report', function() {

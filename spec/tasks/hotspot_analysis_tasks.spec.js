@@ -14,7 +14,7 @@ describe('Hotspot analysis tasks', function() {
 
   afterEach(function() {
     clock.uninstall();
-    runtime.clear();
+    return runtime.clear();
   });
 
   describe('hotspot-analysis', function() {

@@ -18,7 +18,7 @@ describe('System analysis tasks', function() {
 
   afterEach(function() {
     clock.uninstall();
-    runtime.clear();
+    return runtime.clear();
   });
 
   describe('system-evolution-analysis', function() {

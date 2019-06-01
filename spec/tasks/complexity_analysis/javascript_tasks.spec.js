@@ -10,7 +10,7 @@ var taskHelpers = require('../../jest_tasks_helpers');
 describe('javascript tasks', function() {
   var runtime;
   afterEach(function() {
-    runtime.clear();
+    return runtime.clear();
   });
 
   describe('javascript-complexity-report', function() {
