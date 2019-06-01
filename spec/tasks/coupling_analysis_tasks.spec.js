@@ -18,22 +18,18 @@ describe('Coupling analysis tasks', function() {
 
   afterEach(function() {
     clock.uninstall();
+    runtime.clear();
   });
 
   describe('sum-of-coupling-analysis', function() {
     beforeEach(function() {
-      runtime = taskHelpers.runtimeSetup(couplingAnalysisTasks,
+      runtime = taskHelpers.createRuntime('coupling_analysis_tasks', couplingAnalysisTasks,
         { repository: { excludePaths: ['test_invalid_file'] } },
         { dateFrom: '2015-03-01' }
       );
       ['test_file1', 'test_file2', 'test_invalid_file'].forEach(function(f) {
         runtime.prepareRepositoryFile(f, '');
       });
-    });
-
-    afterEach(function() {
-      taskHelpers.clearRepo();
-      taskHelpers.clearOutput();
     });
 
     it('has the required dependencies', function() {
@@ -102,7 +98,7 @@ describe('Coupling analysis tasks', function() {
     ];
 
     beforeEach(function() {
-      runtime = taskHelpers.runtimeSetup(couplingAnalysisTasks,
+      runtime = taskHelpers.createRuntime('coupling_analysis_tasks', couplingAnalysisTasks,
         {},
         { dateFrom: '2016-01-01', dateTo: '2016-03-31', timeSplit: 'eom', targetFile: 'test/target_file' }
       );
@@ -114,11 +110,6 @@ describe('Coupling analysis tasks', function() {
         { path: 'test/d/file4', sourceLines: 25, totalLines: 35 },
         { path: 'test/target_file', sourceLines: 55, totalLines: 62 }
       ]);
-    });
-
-    afterEach(function() {
-      taskHelpers.clearTemp();
-      taskHelpers.clearOutput();
     });
 
     it('has the required dependencies', function() {
@@ -153,168 +144,9 @@ describe('Coupling analysis tasks', function() {
         .then(function(taskOutput) {
           return Bluebird.all([
             taskOutput.assertOutputReport('2016-01-01_2016-01-31_temporal-coupling-data.json'),
-            //   {
-            //     children: [
-            //       {
-            //         name: 'test',
-            //         children: [
-            //           {
-            //             name: 'a',
-            //             children: [
-            //               {
-            //                 name: 'file1',
-            //                 children: [],
-            //                 sourceLines: 33,
-            //                 totalLines: 35,
-            //                 couplingDegree: 23,
-            //                 revisionsAvg: 12,
-            //                 addedLines: 295,
-            //                 deletedLines: 209,
-            //                 weight: 0.7666666666666667
-            //               }
-            //             ]
-            //           },
-            //           {
-            //             name: 'b',
-            //             children: [
-            //               {
-            //                 name: 'file2',
-            //                 children: [],
-            //                 sourceLines: 23,
-            //                 totalLines: 28,
-            //                 addedLines:  40,
-            //                 deletedLines:  61,
-            //                 weight: 0
-            //               }
-            //             ]
-            //           },
-            //           {
-            //             name: 'c',
-            //             children: [
-            //               {
-            //                 name: 'file3',
-            //                 children: [],
-            //                 sourceLines: 15,
-            //                 totalLines: 21,
-            //                 revisionsAvg: 5,
-            //                 couplingDegree: 30,
-            //                 addedLines:  71,
-            //                 deletedLines:  37,
-            //                 weight: 1
-            //               }
-            //             ]
-            //           },
-            //           {
-            //             name: 'd',
-            //             children: [
-            //               {
-            //                 name: 'file4',
-            //                 children: [],
-            //                 sourceLines: 25,
-            //                 totalLines: 35,
-            //                 weight: 0
-            //               }
-            //             ]
-            //           },
-            //           {
-            //             name: 'target_file',
-            //             children: [],
-            //             sourceLines: 55,
-            //             totalLines: 62,
-            //             addedLines: 150,
-            //             deletedLines: 60,
-            //             weight: 0
-            //           }
-            //         ]
-            //       }
-            //     ]
-            //   }
-            // ),
             taskOutput.assertOutputReport('2016-03-01_2016-03-31_temporal-coupling-data.json'),
-            //   {
-            //     children: [
-            //       {
-            //         name: 'test',
-            //         children: [
-            //           {
-            //             name: 'a',
-            //             children: [
-            //               {
-            //                 name: 'file1',
-            //                 children: [],
-            //                 sourceLines: 33,
-            //                 totalLines: 35,
-            //                 revisionsAvg: 30,
-            //                 couplingDegree: 10,
-            //                 addedLines: 147,
-            //                 deletedLines: 56,
-            //                 weight: 0.30303030303030304
-            //               }
-            //             ]
-            //           },
-            //           {
-            //             name: 'b',
-            //             children: [
-            //               {
-            //                 name: 'file2',
-            //                 children: [],
-            //                 sourceLines: 23,
-            //                 totalLines: 28,
-            //                 addedLines: 19,
-            //                 deletedLines: 6,
-            //                 weight: 0
-            //               }
-            //             ]
-            //           },
-            //           {
-            //             name: 'c',
-            //             children: [
-            //               {
-            //                 name: 'file3',
-            //                 children: [],
-            //                 sourceLines: 15,
-            //                 totalLines: 21,
-            //                 weight: 0
-            //               }
-            //             ]
-            //           },
-            //           {
-            //             name: 'd',
-            //             children: [
-            //               {
-            //                 name: 'file4',
-            //                 children: [],
-            //                 sourceLines: 25,
-            //                 totalLines: 35,
-            //                 revisionsAvg: 18,
-            //                 couplingDegree: 33,
-            //                 addedLines: 91,
-            //                 deletedLines: 38,
-            //                 weight: 1
-            //               }
-            //             ]
-            //           },
-            //           {
-            //             name: 'target_file',
-            //             children: [],
-            //             sourceLines: 55,
-            //             totalLines: 62,
-            //             addedLines: 50,
-            //             deletedLines: 10,
-            //             weight: 0
-            //           }
-            //         ]
-            //       }
-            //     ]
-            //   }
-            // ),
             taskOutput.assertMissingOutputReport('2016-02-01_2016-02-29_temporal-coupling-data.json'),
             taskOutput.assertManifest()
-            // {
-            //   reportName: 'temporal-coupling',
-            //   dateRange: '2016-01-01_2016-03-31',
-            //   enabledDiagrams: ['temporal-coupling']
-            // })
           ]);
         })
         .then(function() { done(); })

@@ -14,22 +14,18 @@ describe('Hotspot analysis tasks', function() {
 
   afterEach(function() {
     clock.uninstall();
+    runtime.clear();
   });
 
   describe('hotspot-analysis', function() {
-    afterEach(function() {
-      taskHelpers.clearTemp();
-      taskHelpers.clearOutput();
-    });
-
     it('has the required dependencies', function() {
-      runtime = taskHelpers.runtimeSetup(hotspotAnalysisTasks);
+      runtime = taskHelpers.createRuntime('hotspot_analysis_tasks', hotspotAnalysisTasks);
       runtime.assertTaskDependencies('hotspot-analysis', ['vcsLogDump', 'revisionsReport']);
     });
 
     describe('for supported languages', function() {
       it('publishes an analysis report on code size, complexity and revisions for each file in the repository', function() {
-        runtime = taskHelpers.runtimeSetup(hotspotAnalysisTasks, { languages: ['ruby'] }, { dateFrom: '2015-03-01' });
+        runtime = taskHelpers.createRuntime('hotspot_analysis_tasks', hotspotAnalysisTasks, { languages: ['ruby'] }, { dateFrom: '2015-03-01' });
 
         runtime.prepareTempReport('sloc-report.json', [
           { path: 'test/ruby/app/file1.rb', sourceLines: 33, totalLines: 45 },
@@ -62,7 +58,7 @@ describe('Hotspot analysis tasks', function() {
 
     describe('with no supported languages', function() {
       it('publishes an analysis report on code size and revisions for each file in the repository', function() {
-        runtime = taskHelpers.runtimeSetup(hotspotAnalysisTasks, {}, { dateFrom: '2015-03-01' });
+        runtime = taskHelpers.createRuntime('hotspot_analysis_tasks', hotspotAnalysisTasks, {}, { dateFrom: '2015-03-01' });
 
         runtime.prepareTempReport('sloc-report.json', [
           { path: 'test/java/app/file1.java', sourceLines: 33, totalLines: 45 },

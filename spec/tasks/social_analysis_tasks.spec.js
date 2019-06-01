@@ -19,6 +19,7 @@ describe('Social analysis tasks', function() {
 
   afterEach(function() {
     clock.uninstall();
+    return runtime.clear();
   });
 
   describe('commit-message-analysis', function() {
@@ -37,7 +38,7 @@ describe('Social analysis tasks', function() {
         'Third and very last'
       ].join('\n');
 
-      runtime = taskHelpers.runtimeSetup(socialAnalysisTasks,
+      runtime = taskHelpers.createRuntime('social_analysis_tasks', socialAnalysisTasks,
         {
           commitMessageFilters: [
             /^\d+$/,
@@ -51,11 +52,6 @@ describe('Social analysis tasks', function() {
 
       runtime.prepareTempFile('vcs_commit_messages_2016-01-01_2016-01-31.log', messages1);
       runtime.prepareTempFile('vcs_commit_messages_2016-02-01_2016-02-28.log', messages2);
-    });
-
-    afterEach(function() {
-      taskHelpers.clearTemp();
-      taskHelpers.clearOutput();
     });
 
     it('has the required dependencies', function() {
@@ -74,20 +70,14 @@ describe('Social analysis tasks', function() {
   });
 
   describe('developer-effort-analysis', function() {
-    afterEach(function() {
-      taskHelpers.clearTemp();
-      taskHelpers.clearRepo();
-      taskHelpers.clearOutput();
-    });
-
     it('has the required dependencies', function() {
-      runtime = taskHelpers.runtimeSetup(socialAnalysisTasks);
+      runtime = taskHelpers.createRuntime('social_analysis_tasks', socialAnalysisTasks);
       runtime.assertTaskDependencies('developer-effort-analysis', ['vcsLogDump', 'effortReport']);
     });
 
     describe('when team information exists', function() {
       beforeEach(function() {
-        runtime = taskHelpers.runtimeSetup(socialAnalysisTasks,
+        runtime = taskHelpers.createRuntime('social_analysis_tasks', socialAnalysisTasks,
           {
             contributors: {
               'Team 1': ['Dev1', 'Dev2'],
@@ -128,7 +118,7 @@ describe('Social analysis tasks', function() {
 
     describe('when no team information exists', function() {
       beforeEach(function() {
-        runtime = taskHelpers.runtimeSetup(socialAnalysisTasks,
+        runtime = taskHelpers.createRuntime('social_analysis_tasks', socialAnalysisTasks,
           {
             contributors: ['Dev1', 'Dev2', 'Dev3', ['Dev4', 'Alias dev 4'], 'Dev5']
           },
@@ -168,7 +158,7 @@ describe('Social analysis tasks', function() {
   describe('developer-coupling-analysis', function() {
     beforeEach(function() {
       codeMaat.analyser = jest.fn();
-      runtime = taskHelpers.runtimeSetup(socialAnalysisTasks,
+      runtime = taskHelpers.createRuntime('social_analysis_tasks', socialAnalysisTasks,
         {
           contributors: {
             'Team 1': ['Dev1', 'Dev2'],
@@ -227,12 +217,6 @@ describe('Social analysis tasks', function() {
             communication: { isSupported: _.stubTrue, fileAnalysisStream: function() { return commAnalysisStream; } }
           }[instruction];
         });
-      });
-
-      afterEach(function() {
-        taskHelpers.clearTemp();
-        taskHelpers.clearRepo();
-        taskHelpers.clearOutput();
       });
 
       it('publishes a report on ownership and communication coupling between main developers', function(done) {
@@ -302,13 +286,8 @@ describe('Social analysis tasks', function() {
   });
 
   describe('knowledge-map-analysis', function() {
-    afterEach(function() {
-      taskHelpers.clearTemp();
-      taskHelpers.clearOutput();
-    });
-
     it('has the required dependencies', function() {
-      runtime = taskHelpers.runtimeSetup(socialAnalysisTasks);
+      runtime = taskHelpers.createRuntime('social_analysis_tasks', socialAnalysisTasks);
       runtime.assertTaskDependencies('knowledge-map-analysis', ['vcsLogDump', 'slocReport', 'mainDevReport']);
     });
 
@@ -336,7 +315,7 @@ describe('Social analysis tasks', function() {
 
       describe('when team information exists', function() {
         beforeEach(function() {
-          runtime = taskHelpers.runtimeSetup(socialAnalysisTasks,
+          runtime = taskHelpers.createRuntime('social_analysis_tasks', socialAnalysisTasks,
             {
               contributors: {
                 'Team 1': ['Dev1', 'Dev2'],
@@ -361,7 +340,7 @@ describe('Social analysis tasks', function() {
 
       describe('when no team information exists', function() {
         beforeEach(function() {
-          runtime = taskHelpers.runtimeSetup(socialAnalysisTasks,
+          runtime = taskHelpers.createRuntime('social_analysis_tasks', socialAnalysisTasks,
             {
               contributors: ['Dev1', 'Dev2', 'Dev3', ['Dev4', 'Alias dev 4'], 'Dev5']
             },
@@ -383,7 +362,7 @@ describe('Social analysis tasks', function() {
 
     describe('for an unsupported vcs type', function() {
       beforeEach(function() {
-        runtime = taskHelpers.runtimeSetup(socialAnalysisTasks,
+        runtime = taskHelpers.createRuntime('social_analysis_tasks', socialAnalysisTasks,
           {
             contributors: ['Dev1', 'Dev2', 'Dev3', ['Dev4', 'Alias dev 4'], 'Dev5']
           },

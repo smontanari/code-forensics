@@ -1,7 +1,7 @@
 var stream   = require('stream'),
     Bluebird = require('bluebird');
 
-var gitTasks = require('tasks/vcs_tasks'),
+var vcsTasks = require('tasks/vcs_tasks'),
     vcs      = require('vcs'),
     command  = require('command');
 
@@ -18,15 +18,15 @@ describe('VCS Tasks', function() {
     command.Command.ensure = jest.fn();
   });
 
+  afterEach(function() {
+    return runtime.clear();
+  });
+
   describe('when files already exist', function() {
     beforeEach(function() {
-      runtime = taskHelpers.runtimeSetup(gitTasks, null, {
+      runtime = taskHelpers.createRuntime('vcs_tasks', vcsTasks, null, {
         dateFrom: '2016-01-01', dateTo: '2016-02-28', timeSplit: 'eom'
       });
-    });
-
-    afterEach(function() {
-      taskHelpers.clearTemp();
     });
 
     var assertNoOverriding = function(taskName, functionName, adapterMethod, filenamePrefix) {
@@ -82,7 +82,7 @@ describe('VCS Tasks', function() {
 
   describe('when no vcs files exist', function() {
     beforeEach(function() {
-      runtime = taskHelpers.runtimeSetup(gitTasks, {
+      runtime = taskHelpers.createRuntime('vcs_tasks', vcsTasks, {
         repository: { excludePaths: ['test_invalid_file'] },
         contributors: {
           'Team 1': ['Developer 1', 'Developer_2'],
@@ -91,11 +91,6 @@ describe('VCS Tasks', function() {
       }, {
         dateFrom: '2016-03-01', dateTo: '2016-04-30', timeSplit: 'eom'
       });
-    });
-
-    afterEach(function() {
-      taskHelpers.clearRepo();
-      taskHelpers.clearTemp();
     });
 
     describe('vcs-log-dump', function() {

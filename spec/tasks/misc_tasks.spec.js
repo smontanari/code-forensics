@@ -17,7 +17,7 @@ describe('Misc Tasks', function() {
     };
 
     afterEach(function() {
-      taskHelpers.clearTemp();
+      runtime.clear();
     });
 
     describe('with the layer group parameter', function() {
@@ -30,7 +30,7 @@ describe('Misc Tasks', function() {
       };
 
       beforeEach(function() {
-        runtime = taskHelpers.runtimeSetup(miscTasks, contextConfig, { layerGroup: 'test_group' });
+        runtime = taskHelpers.createRuntime('misc_tasks', miscTasks, contextConfig, { layerGroup: 'test_group' });
       });
 
       describe('as a Task', function() {
@@ -58,7 +58,7 @@ describe('Misc Tasks', function() {
       };
 
       beforeEach(function() {
-        runtime = taskHelpers.runtimeSetup(miscTasks, contextConfig);
+        runtime = taskHelpers.createRuntime('misc_tasks', miscTasks, contextConfig);
       });
 
       describe('as a Task', function() {

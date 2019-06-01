@@ -14,6 +14,10 @@ describe('ruby tasks', function() {
     command.Command.ensure = jest.fn();
   });
 
+  afterEach(function() {
+    runtime.clear();
+  });
+
   describe('ruby-complexity-report', function() {
     var analysisStream1, analysisStream2;
     beforeEach(function() {
@@ -23,7 +27,7 @@ describe('ruby tasks', function() {
         .mockReturnValueOnce(analysisStream1)
         .mockReturnValueOnce(analysisStream2);
 
-      runtime = taskHelpers.runtimeSetup(rubyTasks);
+      runtime = taskHelpers.createRuntime('ruby_tasks', rubyTasks);
       ['test_file1.rb', 'test_file2.js', 'test_file3.rb'].forEach(function(f) {
         runtime.prepareRepositoryFile(f, '');
       });
@@ -51,11 +55,6 @@ describe('ruby tasks', function() {
       analysisStream2.end();
       analysisStream1.end();
     };
-
-    afterEach(function() {
-      taskHelpers.clearRepo();
-      taskHelpers.clearTemp();
-    });
 
     describe('as a Task', function() {
       it('writes a report on the complexity for each ruby file in the repository', function(done) {
@@ -98,7 +97,6 @@ describe('ruby tasks', function() {
 
     afterEach(function() {
       clock.uninstall();
-      taskHelpers.clearOutput();
     });
 
     it('publishes an analysis on the complexity trend for a given ruby file in the repository', function(done) {
@@ -118,7 +116,7 @@ describe('ruby tasks', function() {
         .mockReturnValueOnce({ stdin: new stream.PassThrough(), stdout: complexityStream1 })
         .mockReturnValueOnce({ stdin: new stream.PassThrough(), stdout: complexityStream2 });
 
-      var runtime = taskHelpers.runtimeSetup(rubyTasks, null, { dateFrom: '2015-03-01', targetFile: 'test_abs.rb' });
+      var runtime = taskHelpers.createRuntime('ruby_tasks', rubyTasks, null, { dateFrom: '2015-03-01', targetFile: 'test_abs.rb' });
       runtime.executePromiseTask('ruby-complexity-trend-analysis').then(function(taskOutput) {
         return Bluebird.all([
           taskOutput.assertOutputReport('2015-03-01_2015-10-22_complexity-trend-data.json'),

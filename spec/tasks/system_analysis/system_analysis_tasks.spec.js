@@ -10,7 +10,7 @@ var systemAnalysisTasks = require('tasks/system_analysis/system_analysis_tasks')
 var taskHelpers = require('../../jest_tasks_helpers');
 
 describe('System analysis tasks', function() {
-  var clock;
+  var clock, runtime;
   beforeEach(function() {
     clock = lolex.install({ now: new Date('2015-10-22T10:00:00.000Z') });
     command.Command.ensure = jest.fn();
@@ -18,7 +18,7 @@ describe('System analysis tasks', function() {
 
   afterEach(function() {
     clock.uninstall();
-    taskHelpers.clearOutput();
+    runtime.clear();
   });
 
   describe('system-evolution-analysis', function() {
@@ -269,7 +269,7 @@ describe('System analysis tasks', function() {
           return _.find(streams, { codeMaatInstruction: instruction }).mockAnalyser;
         });
 
-        var runtime = taskHelpers.runtimeSetup(systemAnalysisTasks,
+        runtime = taskHelpers.createRuntime('system_analysis_tasks', systemAnalysisTasks,
           {
             layerGroups: {
               'test_boundary': [
@@ -323,7 +323,7 @@ describe('System analysis tasks', function() {
     };
 
     it('has the required dependencies', function() {
-      var runtime = taskHelpers.runtimeSetup(systemAnalysisTasks);
+      runtime = taskHelpers.createRuntime('system_analysis_tasks', systemAnalysisTasks);
 
       runtime.assertTaskDependencies('system-evolution-analysis', ['vcsLogDump', 'generateLayerGroupingFiles']);
     });

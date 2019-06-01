@@ -9,19 +9,17 @@ var taskHelpers = require('../../jest_tasks_helpers');
 
 describe('javascript tasks', function() {
   var runtime;
+  afterEach(function() {
+    runtime.clear();
+  });
 
   describe('javascript-complexity-report', function() {
     beforeEach(function() {
-      runtime = taskHelpers.runtimeSetup(javascriptTasks);
+      runtime = taskHelpers.createRuntime('javascript_tasks', javascriptTasks);
 
       runtime.prepareRepositoryFile('test_file1.js', 'function sum(a,b) { return a+b; };');
       runtime.prepareRepositoryFile('test_file2.rb', 'line1\nline2\nline3\n');
       runtime.prepareRepositoryFile('test_file3.js', 'class Calculator { division(a,b) { if (b > 0) { return a/b; } }; };');
-    });
-
-    afterEach(function() {
-      taskHelpers.clearRepo();
-      taskHelpers.clearTemp();
     });
 
     describe('as a Task', function() {
@@ -55,7 +53,6 @@ describe('javascript tasks', function() {
 
     afterEach(function() {
       clock.uninstall();
-      taskHelpers.clearOutput();
     });
 
     it('publishes an analysis on the complexity trend for a given javascript file in the repository', function(done) {
@@ -70,7 +67,7 @@ describe('javascript tasks', function() {
         .mockReturnValueOnce(revisionStream1)
         .mockReturnValueOnce(revisionStream2);
 
-      runtime = taskHelpers.runtimeSetup(javascriptTasks, null, { dateFrom: '2015-03-01', targetFile: 'test_abs.js' });
+      runtime = taskHelpers.createRuntime('javascript_tasks', javascriptTasks, null, { dateFrom: '2015-03-01', targetFile: 'test_abs.js' });
 
       runtime.executePromiseTask('javascript-complexity-trend-analysis').then(function(taskOutput) {
         return Bluebird.all([

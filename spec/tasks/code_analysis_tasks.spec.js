@@ -11,14 +11,13 @@ var taskHelpers = require('../jest_tasks_helpers');
 describe('Code analysis tasks', function() {
   var runtime;
 
-  describe('sloc-report', function() {
-    afterEach(function() {
-      taskHelpers.clearTemp();
-      taskHelpers.clearRepo();
-    });
+  afterEach(function() {
+    runtime.clear();
+  });
 
+  describe('sloc-report', function() {
     beforeEach(function() {
-      runtime = taskHelpers.runtimeSetup(codeAnalysisTasks);
+      runtime = taskHelpers.createRuntime('code_analysis_tasks', codeAnalysisTasks);
 
       runtime.prepareRepositoryFile('test_file1.js', 'line1\nline2');
       runtime.prepareRepositoryFile('test_file2.rb', 'line1\nline2\nline3\n');
@@ -56,7 +55,6 @@ describe('Code analysis tasks', function() {
 
     afterEach(function() {
       clock.uninstall();
-      taskHelpers.clearOutput();
     });
 
     it('publishes an analysis on the sloc trend for a given file in the repository', function(done) {
@@ -71,7 +69,7 @@ describe('Code analysis tasks', function() {
         .mockReturnValueOnce(revisionStream1)
         .mockReturnValueOnce(revisionStream2);
 
-      runtime = taskHelpers.runtimeSetup(codeAnalysisTasks, null, { dateFrom: '2015-03-01', targetFile: 'test_abs.rb' });
+      runtime = taskHelpers.createRuntime('code_analysis_tasks', codeAnalysisTasks, null, { dateFrom: '2015-03-01', targetFile: 'test_abs.rb' });
       runtime.executePromiseTask('sloc-trend-analysis')
         .then(function(taskOutput) {
           return Bluebird.all([

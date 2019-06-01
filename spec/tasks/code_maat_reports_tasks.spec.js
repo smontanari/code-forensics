@@ -84,12 +84,11 @@ describe('CodeMaat report tasks', function() {
 
   beforeEach(function() {
     command.Command.ensure = jest.fn();
-    runtime = taskHelpers.runtimeSetup(codeMaatReportTasks);
+    runtime = taskHelpers.createRuntime('codemaat_report_tasks', codeMaatReportTasks);
   });
 
   afterEach(function() {
-    taskHelpers.clearRepo();
-    taskHelpers.clearTemp();
+    runtime.clear();
   });
 
   describe('task dependencies', function() {

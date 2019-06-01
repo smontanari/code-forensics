@@ -10,22 +10,23 @@ var TaskContext     = require('runtime/task_context'),
     TaskDefinitions = require('models/task/task_definitions'),
     taskHelpers     = require('tasks/helpers');
 
-var TEST_TMP_DIR    = Path.resolve('test_fixtures/tmp'),
-    TEST_OUTPUT_DIR = Path.resolve('test_fixtures/output'),
-    TEST_REPO_DIR   = Path.resolve('test_fixtures/repo_root');
+var TEST_FIXTURES_DIR  = Path.resolve('test_fixtures/'),
+    TMP_FOLDER         = 'tmp',
+    OUTPUT_FOLDER      = 'output',
+    REPO_FOLDER        = 'repo_root';
 
 var readFile = Bluebird.promisify(fs.readFile);
 
-var TaskOutput = function(reportId) {
+var TaskOutput = function(dataDir, reportId) {
   this.assertTempFile = function(filename) {
-    return readFile(Path.join(TEST_TMP_DIR, filename))
+    return readFile(Path.join(dataDir, TMP_FOLDER, filename))
       .then(function(buffer) {
         expect(buffer.toString()).toMatchSnapshot(filename);
       });
   };
 
   this.assertTempReport = function(filename) {
-    return readFile(Path.join(TEST_TMP_DIR, filename))
+    return readFile(Path.join(dataDir, TMP_FOLDER, filename))
       .then(function(buffer) {
         expect(buffer.toString()).toMatchSnapshot(filename);
       });
@@ -33,30 +34,30 @@ var TaskOutput = function(reportId) {
 
   this.assertMissingTempReports = function(filenames) {
     filenames.forEach(function(filename) {
-      expect(fs.existsSync(Path.join(TEST_TMP_DIR, filename))).toBe(false);
+      expect(fs.existsSync(Path.join(dataDir, TMP_FOLDER, filename))).toBe(false);
     });
     return Bluebird.resolve();
   };
 
   this.assertMissingTempReport = function(filename) {
-    expect(fs.existsSync(Path.join(TEST_TMP_DIR, filename))).toBe(false);
+    expect(fs.existsSync(Path.join(dataDir, TMP_FOLDER, filename))).toBe(false);
     return Bluebird.resolve();
   };
 
   this.assertOutputReport = function(filename) {
-    return readFile(Path.join(TEST_OUTPUT_DIR, reportId, filename))
+    return readFile(Path.join(dataDir, OUTPUT_FOLDER, reportId, filename))
       .then(function(buffer) {
         expect(JSON.parse(buffer)).toMatchSnapshot(filename);
       });
   };
 
   this.assertMissingOutputReport = function(filename) {
-    expect(fs.existsSync(Path.join(TEST_OUTPUT_DIR, reportId, filename))).toBe(false);
+    expect(fs.existsSync(Path.join(dataDir, OUTPUT_FOLDER, reportId, filename))).toBe(false);
     return Bluebird.resolve();
   };
 
   this.assertManifest = function() {
-    return readFile(Path.join(TEST_OUTPUT_DIR, reportId, 'manifest.json'))
+    return readFile(Path.join(dataDir, OUTPUT_FOLDER, reportId, 'manifest.json'))
       .then(function(buffer) {
         expect(JSON.parse(buffer)).toMatchSnapshot('manifest');
       });
@@ -69,51 +70,46 @@ var TaskOutput = function(reportId) {
 
 var doneCallback = function() {};
 
-var Runtime = function(gulpTasks, functions) {
+var Runtime = function(dataDir, gulpTasks, functions) {
   this.executeStreamTask = function(name) {
     return new Bluebird(function(resolve) {
       gulpTasks[name].run.call(null, doneCallback)
-      .on('close', resolve.bind(null, new TaskOutput()))
+      .on('close', resolve.bind(null, new TaskOutput(dataDir)))
       .on('error', function(err) { throw err; });
-      // .on('error', function(err) { fail(err); });
     });
   };
 
   this.executePromiseTask = function(name) {
     return gulpTasks[name].run.call(null, doneCallback)
-      .then(function(reportId) { return new TaskOutput(reportId); });
-      // .catch(function(err) { throw err; });
-      // .catch(function(err) { fail(err); });
+      .then(function(reportId) { return new TaskOutput(dataDir, reportId); });
   };
 
   this.executeStreamFunction = function(name) {
     return new Bluebird(function(resolve) {
       functions[name].call()
-      .on('close', resolve.bind(null, new TaskOutput()))
+      .on('close', resolve.bind(null, new TaskOutput(dataDir)))
       .on('error', function(err) { throw err; });
-      // .on('error', function(err) { fail(err); });
     });
   };
 
   this.executePromiseFunction = function(name) {
     return functions[name].call()
-      .then(function() { return new TaskOutput(); })
+      .then(function() { return new TaskOutput(dataDir); })
       .catch(function(err) { throw err; });
-      // .catch(function(err) { fail(err); });
   };
 
   this.prepareTempReport = function(filename, content) {
-    fs.writeFileSync(Path.join(TEST_TMP_DIR, filename), JSON.stringify(content));
+    fs.writeFileSync(Path.join(dataDir, TMP_FOLDER, filename), JSON.stringify(content));
   };
 
   this.prepareTempFile = function(filename, content) {
-    fs.writeFileSync(Path.join(TEST_TMP_DIR, filename), content);
+    fs.writeFileSync(Path.join(dataDir, TMP_FOLDER, filename), content);
   };
 
   this.prepareRepositoryFile = function(filename, content) {
-    var folder = Path.join(TEST_REPO_DIR, Path.dirname(filename));
+    var folder = Path.join(dataDir, REPO_FOLDER, Path.dirname(filename));
     mkdirp.sync(folder);
-    fs.writeFileSync(Path.join(TEST_REPO_DIR, filename), content);
+    fs.writeFileSync(Path.join(dataDir, REPO_FOLDER, filename), content);
   };
 
   this.assertTaskDependencies = function(name, dependencies) {
@@ -121,25 +117,20 @@ var Runtime = function(gulpTasks, functions) {
       expect(gulpTasks[name].dependencies).toContain(dependency);
     });
   };
+
+  this.clear = function() {
+    return del(dataDir + '/**');
+  };
 };
 
 module.exports = {
-  clearTemp: function() {
-    del.sync(TEST_TMP_DIR + '/*');
-  },
-  clearRepo: function() {
-    del.sync(TEST_REPO_DIR + '/*');
-  },
-  clearOutput: function() {
-    del.sync(TEST_OUTPUT_DIR + '/*');
-  },
-  runtimeSetup: function(tasksFn, contextConfig, parameters) {
+  createRuntime: function(name, tasksFn, contextConfig, parameters) {
     var gulpTasks = {};
     var currentTaskDependencies = [];
 
     var addToDependecies = function() {
       currentTaskDependencies = currentTaskDependencies.concat(
-        _.map(_.filter(arguments, _.isFunction), _.property('name'))
+      _.map(_.filter(arguments, _.isFunction), _.property('name'))
       );
     };
     gulp.parallel.mockImplementation(addToDependecies);
@@ -154,11 +145,15 @@ module.exports = {
       return {};
     });
 
+    var runtimeDataDir = fs.mkdtempSync(Path.join(TEST_FIXTURES_DIR, name + '_'));
     var config = _.merge({
-      tempDir: TEST_TMP_DIR,
-      outputDir: TEST_OUTPUT_DIR,
-      repository: { rootPath: TEST_REPO_DIR }
+      tempDir: Path.join(runtimeDataDir, TMP_FOLDER),
+      outputDir: Path.join(runtimeDataDir, OUTPUT_FOLDER),
+      repository: { rootPath: Path.join(runtimeDataDir, REPO_FOLDER) }
     }, contextConfig);
+    mkdirp.sync(config.tempDir);
+    mkdirp.sync(config.outputDir);
+    mkdirp.sync(config.repository.rootPath);
 
     var taskContext = new TaskContext(config, parameters || {});
     var taskDefinitions = new TaskDefinitions(taskContext);
@@ -180,10 +175,6 @@ module.exports = {
 
     var tasksRuntimeConfig = tasksFn(taskDefinitions, taskContext, taskHelpers(taskContext));
     tasksRuntimeConfig.tasks(); //process the gulp tasks
-    return new Runtime(gulpTasks, tasksRuntimeConfig.functions);
+    return new Runtime(runtimeDataDir, gulpTasks, tasksRuntimeConfig.functions);
   }
 };
-
-mkdirp.sync(TEST_TMP_DIR);
-mkdirp.sync(TEST_OUTPUT_DIR);
-mkdirp.sync(TEST_REPO_DIR);
