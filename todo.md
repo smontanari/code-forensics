@@ -1,7 +1,7 @@
 Refactoring:
-- use jest
+- suggest using Git `.mailmap` to reduce effort in configuring developers names
 - define contributor group to capture any/every other dev
-- support/move to code-maat docker image
+- support using a code-maat docker image
 - refactor ReportController initialisation
 
 Features:
