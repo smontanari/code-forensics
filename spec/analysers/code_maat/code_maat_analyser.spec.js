@@ -24,7 +24,7 @@ describe('codemaat command definition', function() {
       cmd: 'java',
       args: [
         '-Djava.awt.headless=true',
-        { '-jar': expect.stringMatching('code-maat-1.0-SNAPSHOT-standalone.jar') }
+        { '-jar': expect.stringMatching('code-maat-1.0.1-standalone.jar') }
       ],
       installCheck: expect.any(Function)
     });
@@ -34,7 +34,7 @@ describe('codemaat command definition', function() {
     subject.installCheck.apply(mockCheck);
 
     expect(mockCheck.verifyExecutable).toHaveBeenCalledWith('java', expect.any(String));
-    expect(mockCheck.verifyFile).toHaveBeenCalledWith(expect.stringMatching('code-maat-1.0-SNAPSHOT-standalone.jar'), expect.any(String));
+    expect(mockCheck.verifyFile).toHaveBeenCalledWith(expect.stringMatching('code-maat-1.0.1-standalone.jar'), expect.any(String));
   });
 });
 
