@@ -6,44 +6,22 @@ var CodeMaatAnalyser = require('analysers/code_maat/code_maat_analyser'),
     command          = require('command');
 
 var helpers = require('../../jest_helpers');
+
 jest.mock('fs');
 
-describe('codemaat command definition', function() {
-  var subject, mockCheck;
-  beforeEach(function() {
-    subject = command.Command.definitions.getDefinition('codemaat');
-    mockCheck = {
-      verifyExecutable: jest.fn(),
-      verifyPackage: jest.fn(),
-      verifyFile: jest.fn()
-    };
-  });
-
-  it('defines the "codemaat" command', function() {
-    expect(subject).toEqual({
-      cmd: 'java',
-      args: [
-        '-Djava.awt.headless=true',
-        { '-jar': expect.stringMatching('code-maat-1.0.1-standalone.jar') }
-      ],
-      installCheck: expect.any(Function)
-    });
-  });
-
-  it('checks the java executable', function() {
-    subject.installCheck.apply(mockCheck);
-
-    expect(mockCheck.verifyExecutable).toHaveBeenCalledWith('java', expect.any(String));
-    expect(mockCheck.verifyFile).toHaveBeenCalledWith(expect.stringMatching('code-maat-1.0.1-standalone.jar'), expect.any(String));
-  });
-});
-
-describe('CodeMaatAnalyser', function() {
+describe.each([
+  ['codemaat', {}],
+  ['codemaat-docker', { docker: {} }],
+  ['codemaat-docker', { docker: {} }]
+])('CodeMaatAnalyser', function(expectedCmd, codeMaatConfig) {
   var analyser, outputStream, commandOutputStream, expectedVcsParam;
 
   var subject = function(instruction, vcsType) {
     beforeEach(function() {
-      helpers.appConfigStub({ versionControlSystem: vcsType, codeMaat: { options: { 'arg2': 'zxc', 'arg3': 'xxx' } } });
+      helpers.appConfigStub({
+        versionControlSystem: vcsType,
+        codeMaat: Object.assign({ options: { 'arg2': 'zxc', 'arg3': 'xxx' } }, codeMaatConfig)
+      });
       analyser = new CodeMaatAnalyser(instruction);
       expectedVcsParam = { 'git': 'git2', 'subversion': 'svn' }[vcsType];
     });
@@ -53,7 +31,7 @@ describe('CodeMaatAnalyser', function() {
     beforeEach(function() {
       fs.statSync = jest.fn().mockReturnValue({ size: logFileSize });
       outputStream = analyser
-        .fileAnalysisStream('test/file', { 'arg1' : 'qwe', 'arg2': 'asd' })
+        .fileAnalysisStream('/some/local/project/path/tmp/file.log', { 'arg1' : 'qwe', 'arg2': 'asd' })
         .pipe(reduce.obj(function(data, obj) {
           data.push(obj);
           return data;
@@ -62,8 +40,8 @@ describe('CodeMaatAnalyser', function() {
   };
 
   var verifyInstallCheck = function() {
-    it('ensures the codemaat command is installed', function() {
-      expect(command.Command.ensure).toHaveBeenCalledWith('codemaat');
+    it('ensures the ' + expectedCmd + ' command is installed', function() {
+      expect(command.Command.ensure).toHaveBeenCalledWith(expectedCmd);
     });
   };
 
@@ -125,14 +103,22 @@ describe('CodeMaatAnalyser', function() {
   };
 
   var assertCommand = function(analysis) {
-    expect(command.stream).toHaveBeenCalledWith('codemaat', [
-      { '-c': expectedVcsParam, '-l': 'test/file', '-a': analysis }, { 'arg1' : 'qwe', 'arg2': 'zxc', 'arg3': 'xxx' }
+    var expectedLogFileArgument;
+    if (codeMaatConfig.docker) {
+      expectedLogFileArgument = '/containerData/tmp/file.log';
+      expect(command.Command.getConfig).toHaveBeenCalledWith(expectedCmd);
+    } else {
+      expectedLogFileArgument = '/some/local/project/path/tmp/file.log';
+    }
+    expect(command.stream).toHaveBeenCalledWith(expectedCmd, [
+      { '-c': expectedVcsParam, '-l': expectedLogFileArgument, '-a': analysis }, { 'arg1' : 'qwe', 'arg2': 'zxc', 'arg3': 'xxx' }
     ]);
   };
 
   beforeEach(function() {
     commandOutputStream = new stream.PassThrough();
     command.Command.ensure = jest.fn();
+    command.Command.getConfig = jest.fn().mockReturnValue({ containerVolume: '/containerData', hostVolume: '/some/local/project/path' });
     command.stream = jest.fn().mockReturnValue(commandOutputStream);
   });
 
@@ -142,6 +128,7 @@ describe('CodeMaatAnalyser', function() {
 
   describe('Analysis not run for empty log file', function() {
     subject('revisions', 'git');
+    verifyInstallCheck();
     prepareAnalyserStream(0);
 
     it('returns an empty stream when the analysis is not executed', function(done) {
@@ -150,7 +137,7 @@ describe('CodeMaatAnalyser', function() {
       })
       .on('end', done);
 
-      expect(command.stream).not.toHaveBeenCalledWith('codemaat', expect.any(Array));
+      expect(command.stream).not.toHaveBeenCalled();
     });
   });
 

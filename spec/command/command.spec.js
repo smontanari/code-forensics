@@ -20,6 +20,7 @@ describe('Command.ensure()', function() {
     it('uses the installCheck function to ensure the command is available', function() {
       command.Command.ensure('test-command');
 
+      expect(command.Command.definitions.getDefinition).toHaveBeenCalledWith('test-command');
       expect(commandDef.installCheck).toHaveBeenCalled();
       expect(commandDef.installCheck.mock.instances).toEqual([utils.platformCheck]);
     });
@@ -28,6 +29,37 @@ describe('Command.ensure()', function() {
   describe('when no installCheck function is provided', function() {
     it('performs no check and no errors are returned', function() {
       command.Command.ensure('test-command');
+
+      expect(command.Command.definitions.getDefinition).toHaveBeenCalledWith('test-command');
+    });
+  });
+});
+
+describe('Command.getConfig()', function() {
+  var commandDef;
+  describe('when a configuration is provided', function() {
+    beforeEach(function() {
+      commandDef = { config: { propA: 123 } };
+
+      command.Command.definitions.getDefinition = jest.fn().mockReturnValue(commandDef);
+    });
+
+    it('returns the exposed configuration properties', function() {
+      expect(command.Command.getConfig('test-command')).toEqual({ propA: 123 });
+      expect(command.Command.definitions.getDefinition).toHaveBeenCalledWith('test-command');
+    });
+  });
+
+  describe('when no configuration is provided', function() {
+    beforeEach(function() {
+      commandDef = {};
+
+      command.Command.definitions.getDefinition = jest.fn().mockReturnValue(commandDef);
+    });
+
+    it('returns an enpty object', function() {
+      expect(command.Command.getConfig('test-command')).toEqual({});
+      expect(command.Command.definitions.getDefinition).toHaveBeenCalledWith('test-command');
     });
   });
 });

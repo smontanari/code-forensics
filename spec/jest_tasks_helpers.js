@@ -119,7 +119,7 @@ var Runtime = function(dataDir, gulpTasks, functions) {
   };
 
   this.clear = function() {
-    return del(dataDir + '/**');
+    return del(dataDir + '/**').catch(function() {});
   };
 };
 

@@ -19,7 +19,7 @@ This project is based on the excellent work of **Adam Tornhill** and his command
 ## Pre-requisites
 * **Node.js** - **From release 1.0.0 code-forensics requires Nodejs 4 or later**. If you can't upgrade I suggest you use an earlier version of this package.
 * **npm v3** - code-forensics requires a flat install of its dependencies into the node_modules folder in order to visualise d3 diagrams.
-* **java 8** - Required in order to run code-maat. See the [Code Maat](https://github.com/adamtornhill/code-maat) repository for more details.
+* **code-maat**: code-forensics is distributed with a pre-built (a _.jar_ package) version of code-maat that requires **Java 8**. Alternatively you can use **Docker**, provided you can [supply a docker image of code-maat](https://github.com/smontanari/code-forensics/wiki/Advanced-setup#code-maat-options). See the [Code Maat](https://github.com/adamtornhill/code-maat) repository for details on how to run the tool with Java or Docker.
 
 ## Install
 
@@ -70,7 +70,7 @@ $ gulp <analysis-task-name> [parameters]
 ```
 See [below](#task-usage-information) how to learn about any available task parameter.
 
-**Note: it is highly recommended to specify a time interval for any analysis**. If not, **code-forensics** will attempt to analyse the git commits for the current date only, most likely resulting in empty or near empty reports. You can specify a time interval via command line parameters or through the configuration file. Please refer to the [provided documentation](https://github.com/smontanari/code-forensics/wiki).
+**Note: it is highly recommended to specify a time interval for any analysis**. If not, **code-forensics** will attempt to analyse the git commits for the current date only, most likely resulting in empty or near empty reports. You can specify a time interval via command line parameters or through the configuration file. Please refer to the [provided documentation](https://github.com/smontanari/code-forensics/wiki/Tasks-parameters).
 
 #### List analysis tasks
 By default running gulp without any argument will print the list of all the top level analysis tasks. Alternatively you can explicitly run the task `list-analysis-tasks`:
@@ -107,7 +107,7 @@ $ gulp help --taskName=<task-name>
 ```
 
 ##### Temporal period of analysis
-For most tasks it's possible to specify a time period for which the analysis is performed by passing the parameters _dateFrom_ and _dateTo_. This is particularly useful to understand the evolution of the code in time and analyse negative or positive trends of particular metrics (see the [wiki pages](https://github.com/smontanari/code-forensics/wiki) for more detailed documentation).
+For most tasks it's possible to specify a time period for which the analysis is performed by passing the parameters _dateFrom_ and _dateTo_. This is particularly useful to understand the evolution of the code in time and analyse negative or positive trends of particular metrics (see the [wiki pages](https://github.com/smontanari/code-forensics/wiki/Tasks-parameters#datetime-interval-of-analysis) for more detailed documentation).
 
 ### Visualise the reports
 The results of each analysis can be displayed in the form of D3 diagrams.

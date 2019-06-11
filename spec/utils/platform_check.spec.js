@@ -72,4 +72,25 @@ describe('platformCheck', function() {
       expect(shell.exit).toHaveBeenCalledWith(1);
     });
   });
+
+  describe('.verifyConfigurationProperty()', function() {
+    var mockAppConfig;
+    beforeEach(function() {
+      mockAppConfig = { get: jest.fn() };
+    });
+
+    it('succeeds if the property exists', function() {
+      mockAppConfig.get.mockReturnValue('some-value');
+      platformCheck.verifyConfigurationProperty(mockAppConfig, 'some.property', 'test error');
+
+      expect(shell.exit).not.toHaveBeenCalled();
+    });
+
+    it('exits the program with an error if the property does not exist', function() {
+      platformCheck.verifyConfigurationProperty(mockAppConfig, 'some.property', 'test error');
+
+      expect(shell.echo).toHaveBeenCalledWith(expect.stringMatching(/test error/));
+      expect(shell.exit).toHaveBeenCalledWith(1);
+    });
+  });
 });

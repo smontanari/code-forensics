@@ -1,10 +1,13 @@
 # Changelog
 
-### [Unreleased]
+### [2.2.0] - 2019-06-11
 
 #### Changed
 
-- Upgraded escomplex to 0.1.0
+- Support running `codemaat` via `docker`
+- Updated `codemaat` package to version `1.0.1`
+- Migrated tests from Jasmine to _Jest_
+- Upgraded `escomplex` to `0.1.0`
 - Upgraded package dependencies: JSONStream, bluebird, csv-string, d3,
   d3-tip,ecstatic, findup-sync, glob, less, lodash, merge2, moment, multipipe,
   multistream, mustache, router, shelljs, sloc, string_decoder, systemjs,
