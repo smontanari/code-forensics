@@ -1,5 +1,11 @@
 # Changelog
 
+### [2.2.1] - 2019-07-31
+
+#### Fixed
+
+- #42: logging CFValidationError fails with undefined logger
+
 ### [2.2.0] - 2019-06-11
 
 #### Changed
