@@ -17,6 +17,11 @@ var TEST_FIXTURES_DIR  = Path.resolve('test_fixtures/'),
 
 var readFile = Bluebird.promisify(fs.readFile);
 
+var TaskException = function(originalError, taskOutput) {
+  this.taskException = originalError;
+  this.taskOutput = taskOutput;
+};
+
 var TaskOutput = function(dataDir, reportId) {
   this.assertTempFile = function(filename) {
     return readFile(Path.join(dataDir, TMP_FOLDER, filename))
@@ -75,27 +80,28 @@ var Runtime = function(dataDir, gulpTasks, functions) {
     return new Bluebird(function(resolve) {
       gulpTasks[name].run.call(null, doneCallback)
       .on('close', resolve.bind(null, new TaskOutput(dataDir)))
-      .on('error', function(err) { throw err; });
+      .on('error', function(err) { throw new TaskException(err, new TaskOutput(dataDir)); });
     });
   };
 
   this.executePromiseTask = function(name) {
     return gulpTasks[name].run.call(null, doneCallback)
-      .then(function(reportId) { return new TaskOutput(dataDir, reportId); });
+      .then(function(reportId) { return new TaskOutput(dataDir, reportId); })
+      .catch(function(error) { return Bluebird.reject(new TaskException(error, new TaskOutput(dataDir))); });
   };
 
   this.executeStreamFunction = function(name) {
     return new Bluebird(function(resolve) {
       functions[name].call()
       .on('close', resolve.bind(null, new TaskOutput(dataDir)))
-      .on('error', function(err) { throw err; });
+      .on('error', function(err) { throw new TaskException(err, new TaskOutput(dataDir)); });
     });
   };
 
   this.executePromiseFunction = function(name) {
     return functions[name].call()
       .then(function() { return new TaskOutput(dataDir); })
-      .catch(function(err) { throw err; });
+      .catch(function(err) { throw new TaskException(err, new TaskOutput(dataDir)); });
   };
 
   this.prepareTempReport = function(filename, content) {

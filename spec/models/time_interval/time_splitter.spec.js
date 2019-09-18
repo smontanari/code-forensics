@@ -2,7 +2,7 @@ var _      = require('lodash'),
     moment = require('moment');
 
 var TimeSplitter      = require('models/time_interval/time_splitter'),
-    CFValidationError = require('models/validation_error');
+    CFValidationError = require('models/errors').CFValidationError;
 
 describe('TimeSplitter', function() {
   var assertTimePeriod = function(period, from, to) {

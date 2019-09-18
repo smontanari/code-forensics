@@ -71,17 +71,18 @@ describe('GitLogStreamTransformer', function() {
       };
       var stubRepository = {
         isValidPath: function(path) {
-          return path !== 'test/invalid_file.rb';
+          return !/invalid_file/.test(path);
         }
       };
       subject = new LogStreamTransformer(stubRepository, stubDevelopersInfo);
     });
 
-    it('streams log lines filtering out commits with invalid file paths', function(done) {
+    it('streams log lines filtering out invalid file paths', function(done) {
+      var capturedPathnames = 0;
       var logStream = new stream.PassThrough();
 
       var result = '';
-      subject.normaliseLogStream(logStream)
+      subject.normaliseLogStream(logStream, function(result) { if (result) capturedPathnames++; })
         .on('data', function(chunk) {
           result += chunk.toString();
         })
@@ -99,6 +100,7 @@ describe('GitLogStreamTransformer', function() {
             '0\t1\ttest/file3.rb',
             '6\t8\ttest/file5.js'
           ].join('\n'));
+          expect(capturedPathnames).toEqual(5);
           done();
         });
 
@@ -116,6 +118,46 @@ describe('GitLogStreamTransformer', function() {
         '0\t1\ttest/file3.rb\n',
         '-\t-\ttest/invalid_file.rb\n',
         '6\t8\ttest/file5.js'
+      ];
+
+      logLines.forEach(logStream.push.bind(logStream));
+      logStream.end();
+    });
+
+    it('streams log lines filtering out all file paths', function(done) {
+      var capturedPathnames = 0;
+      var logStream = new stream.PassThrough();
+
+      var result = '';
+      subject.normaliseLogStream(logStream, function(result) { if (result) capturedPathnames++; })
+        .on('data', function(chunk) {
+          result += chunk.toString();
+        })
+        .on('end', function() {
+          expect(result).toEqual([
+            '--98b656f--2016-10-31--Developer 1',
+            '',
+            '--6ff89bc--2016-10-31--Developer_2',
+            '',
+            '--02790fd--2016-10-31--Developer.3',
+            '--5fbfb14--2016-10-28--Developer_2'
+          ].join('\n'));
+          expect(capturedPathnames).toEqual(0);
+          done();
+        });
+
+      var logLines = [
+        '--98b656f--2016-10-31--Developer 1\n',
+        '1\t17\ttest/some/invalid_file123.rb\n',
+        '42\t0\ttest/another/invalid_filefile456.rb\n',
+        '\n',
+        '--6ff89bc--2016-10-31--Developer_2\n',
+        '1\t1\ttest/invalid_file.rb\n',
+        '\n',
+        '--02790fd--2016-10-31--Developer.3\n',
+        '--5fbfb14--2016-10-28--Developer_2\n',
+        '-\t-\ttest/invalid_file.rb\n',
+        '6\t8\ttest/invalid_file5.js'
       ];
 
       logLines.forEach(logStream.push.bind(logStream));

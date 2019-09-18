@@ -1,5 +1,5 @@
 var DevelopersInfo    = require('models/developers_info'),
-    CFValidationError = require('models/validation_error');
+    CFValidationError = require('models/errors').CFValidationError;
 
 describe('DevelopersInfo', function() {
   describe('with given team definitions', function() {
