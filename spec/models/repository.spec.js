@@ -3,7 +3,7 @@ var glob = require('glob');
 var Repository        = require('models/repository'),
     repositoryPath    = require('models/repository_path'),
     languages         = require('models/language_definitions'),
-    CFValidationError = require('models/errors').CFValidationError,
+    CFValidationError = require('runtime/errors').CFValidationError,
     utils             = require('utils');
 
 describe('Repository', function() {

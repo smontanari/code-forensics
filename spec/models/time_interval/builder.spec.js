@@ -1,7 +1,7 @@
 var lolex = require('lolex');
 
 var TimePeriodBuilder = require('models/time_interval/builder'),
-    CFValidationError = require('models/errors').CFValidationError;
+    CFValidationError = require('runtime/errors').CFValidationError;
 
 describe('TimePeriodBuilder', function() {
   var clock;

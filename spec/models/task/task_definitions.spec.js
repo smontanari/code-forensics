@@ -3,7 +3,7 @@ var _    = require('lodash'),
     diff = require('jest-diff');
 
 var TaskDefinitions   = require('models/task/task_definitions'),
-    CFValidationError = require('models/errors').CFValidationError,
+    CFValidationError = require('runtime/errors').CFValidationError,
     runners           = require('models/task/runners');
 
 jest.mock('gulp');

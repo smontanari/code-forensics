@@ -4,7 +4,7 @@ var stream   = require('stream'),
 var vcsTasks       = require('tasks/vcs_tasks'),
     vcs            = require('vcs'),
     command        = require('command'),
-    CFRuntimeError = require('models/errors').CFRuntimeError;
+    CFRuntimeError = require('runtime/errors').CFRuntimeError;
 
 var taskHelpers = require('../jest_tasks_helpers');
 
@@ -127,7 +127,7 @@ describe('VCS Tasks', function() {
         setupRuntime('test_*');
       });
 
-      verifyTaskAndFunctionOutput('No commit data available');
+      verifyTaskAndFunctionOutput('No commit data available for the analysis');
     });
   });
 

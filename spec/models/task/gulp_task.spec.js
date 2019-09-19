@@ -1,5 +1,5 @@
 var Task              = require('models/task/gulp_task'),
-    CFValidationError = require('models/errors').CFValidationError;
+    CFValidationError = require('runtime/errors').CFValidationError;
 
 describe('Task', function() {
   var task;
