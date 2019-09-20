@@ -43,10 +43,17 @@ describe('Task', function() {
     it('returns a Task with the usage information', function() {
       task = new Task('test-task', {
         run: 'testFunction',
-        parameters: [{ name: 'param1', required: true }, { name: 'param2' }, { name: 'param3' }]
+        parameters: [
+          { name: 'param1', required: true },
+          { name: 'param2' },
+          { name: 'param3', isFlag: true }
+        ]
       }, 'test-dependency');
 
-      assertTask(task, 'No description available', 'test-dependency', 'testFunction', 'gulp test-task --param1=<param1> [--param2=<param2>] [--param3=<param3>]');
+      assertTask(task,
+        'No description available', 'test-dependency', 'testFunction',
+        'gulp test-task --param1=<param1> [--param2=<param2>] [--param3]'
+      );
     });
   });
 
@@ -77,7 +84,7 @@ describe('Task', function() {
       });
     });
 
-    it('does not throw any error if any required parameter is present', function() {
+    it('does not throw any error if all required parameter are present', function() {
       task.validateParameters({ param1: 123, param3: 'zxc' });
     });
 

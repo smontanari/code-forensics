@@ -23,7 +23,7 @@ describe('VCS Tasks', function() {
     return runtime.clear();
   });
 
-  var setupRuntime = function(excludePathsExpr) {
+  var setupRuntime = function(excludePathsExpr, updateOption) {
     runtime = taskHelpers.createRuntime('vcs_tasks', vcsTasks, {
       repository: { excludePaths: [excludePathsExpr || ''] },
       contributors: {
@@ -31,7 +31,7 @@ describe('VCS Tasks', function() {
         'Team 2': ['Developer.3', ['Dev4', 'Alias developer 4']]
       }
     }, {
-      dateFrom: '2016-02-01', dateTo: '2016-04-30', timeSplit: 'eom'
+      dateFrom: '2016-02-01', dateTo: '2016-04-30', timeSplit: 'eom', updateLogs: updateOption
     });
 
     ['vcslog', 'vcslog_normalised', 'vcs_commit_messages'].forEach(function(filenamePrefix) {
@@ -57,7 +57,17 @@ describe('VCS Tasks', function() {
       ]);
     };
 
-    var logLines1 = [
+    var logStream1 = [
+      '--6ff89bc--2016-10-31--Developer_2',
+      '10\t0\ttest_file1',
+      '1\t1\ttest_invalid_file',
+      '',
+      '--02790fd--2016-10-31--Developer 1',
+      '-\t-\ttest_invalid_file',
+      '6\t8\ttest_file4'
+    ];
+
+    var logStream2 = [
       '--98b656f--2016-10-31--Developer 1',
       '10\t0\ttest_file1',
       '',
@@ -71,7 +81,7 @@ describe('VCS Tasks', function() {
       '6\t8\ttest_file4'
     ];
 
-    var logLines2 = [
+    var logStream3 = [
       '--98b656f--2016-11-14--Developer 1',
       '31\t12\ttest_file2',
       '1\t1\ttest_invalid_file',
@@ -83,43 +93,52 @@ describe('VCS Tasks', function() {
       '6\t8\ttest_file4'
     ];
 
-    var verifyTaskAndFunctionOutput = function(executionError) {
+    var verifyTaskAndFunctionOutput = function(logStreams, executionError) {
       describe('as a ' + executionType, function() {
         it('writes the vcs log content for each period into the temp folder and creates a normalised copy', function(done) {
-          var outStream1 = new stream.PassThrough();
-          var outStream2 = new stream.PassThrough();
-          mockVcs.logStream
-            .mockReturnValueOnce(outStream1)
-            .mockReturnValueOnce(outStream2);
+          var outStreams = logStreams.map(function() {
+            var s = new stream.PassThrough();
+            mockVcs.logStream.mockReturnValueOnce(s);
+            return s;
+          });
 
-            var resultPromise = runtime['executePromise' + executionType](executionName).then(assertOutput);
-            if (executionError) {
-              resultPromise
-                .then(function() { done.fail('Expected error: ' + executionError); })
-                .catch(function(err) {
-                  expect(err.taskException).toBeInstanceOf(CFRuntimeError);
-                  expect(err.taskException.message).toEqual(executionError);
-                  return assertOutput(err.taskOutput);
-                })
-                .finally(done);
-            } else {
-              resultPromise.then(function() { done(); }).catch(done.fail);
-            }
+          var resultPromise = runtime['executePromise' + executionType](executionName).then(assertOutput);
+          if (executionError) {
+            resultPromise
+              .then(function() { done.fail('Expected error: ' + executionError); })
+              .catch(function(err) {
+                expect(err.taskException).toBeInstanceOf(CFRuntimeError);
+                expect(err.taskException.message).toEqual(executionError);
+                return assertOutput(err.taskOutput);
+              })
+              .finally(done);
+          } else {
+            resultPromise.then(function() { done(); }).catch(done.fail);
+          }
 
-          logLines1.forEach(function(line) { outStream1.push(line + '\n'); });
-          logLines2.forEach(function(line) { outStream2.push(line + '\n'); });
-          outStream1.end();
-          outStream2.end();
+          logStreams.forEach(function(logLines, index) {
+            logLines.forEach(function(line) { outStreams[index].push(line + '\n'); });
+          });
+          outStreams.forEach(function(s) { s.end(); });
         });
       });
     };
 
     describe('when relevant file metrics are captured', function() {
-      beforeEach(function() {
-        setupRuntime('test_invalid_file');
+      describe('without clearing the logs first', function() {
+        beforeEach(function() {
+          setupRuntime('test_invalid_file');
+        });
+        verifyTaskAndFunctionOutput([logStream2, logStream3]);
       });
 
-      verifyTaskAndFunctionOutput();
+      describe('when clearing the logs first', function() {
+        beforeEach(function() {
+          setupRuntime('test_invalid_file', true);
+        });
+        verifyTaskAndFunctionOutput([logStream1, logStream2, logStream3]);
+        // verifyTaskAndFunctionOutput([logStream2, logStream3]);
+      });
     });
 
     describe('when no relevant file metrics are captured', function() {
@@ -127,7 +146,7 @@ describe('VCS Tasks', function() {
         setupRuntime('test_*');
       });
 
-      verifyTaskAndFunctionOutput('No commit data available for the analysis');
+      verifyTaskAndFunctionOutput([logStream2, logStream3], 'No commit data available for the analysis');
     });
   });
 
