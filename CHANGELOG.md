@@ -2,6 +2,11 @@
 
 ### [Unreleased]
 
+### [2.3.1] - 2019-11-04
+
+#### Fixed
+- Issue when analysing git log files with no commit churn data, causing churn report to fail metric calculation
+
 ### [2.3.0] - 2019-09-23
 
 #### Added

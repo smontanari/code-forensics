@@ -1,11 +1,21 @@
 var churnMetrics = require('tasks/system_analysis/churn_metrics');
 
 describe('ChurnMetrics', function() {
-  it('returns the loc metrics with their total', function() {
-    expect(churnMetrics.selector({ addedLines: 14, deletedLines: 10 })).toEqual({
-      addedLines: 14,
-      deletedLines: 10,
-      totalLines: 4
+  describe('selector', function() {
+    it('returns the loc metrics with their total', function() {
+      expect(churnMetrics.selector({ addedLines: 14, deletedLines: 10 })).toEqual({
+        addedLines: 14,
+        deletedLines: 10,
+        totalLines: 4
+      });
+    });
+
+    it('returns the loc metrics reset to zero when the input metrics are not numbers', function() {
+      expect(churnMetrics.selector({ addedLines: NaN, deletedLines: NaN })).toEqual({
+        addedLines: 0,
+        deletedLines: 0,
+        totalLines: 0
+      });
     });
   });
 
