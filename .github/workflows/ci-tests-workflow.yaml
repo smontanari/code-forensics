@@ -1,0 +1,17 @@
+name: Run tests
+on:
+  push:
+jobs:
+  test_and_lint:
+    name: Run tests and lint code
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [8, 12]
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+      - run: npm install
+      - run: npm test
+      - run: npm run lint

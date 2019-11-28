@@ -125,7 +125,7 @@ var Runtime = function(dataDir, gulpTasks, functions) {
   };
 
   this.clear = function() {
-    return del(dataDir + '/**').catch(function() {});
+    return del(dataDir);
   };
 };
 
