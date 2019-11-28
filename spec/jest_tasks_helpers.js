@@ -151,6 +151,7 @@ module.exports = {
       return {};
     });
 
+    mkdirp.sync(TEST_FIXTURES_DIR);
     var runtimeDataDir = fs.mkdtempSync(Path.join(TEST_FIXTURES_DIR, name + '_'));
     var config = _.merge({
       tempDir: Path.join(runtimeDataDir, TMP_FOLDER),

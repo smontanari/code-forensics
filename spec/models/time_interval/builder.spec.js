@@ -6,7 +6,8 @@ var TimePeriodBuilder = require('models/time_interval/builder'),
 describe('TimePeriodBuilder', function() {
   var clock;
   beforeEach(function() {
-    clock = lolex.install({ now: new Date(2015, 8, 23) });
+    // clock = lolex.install({ now: new Date(2015, 8, 23) });
+    clock = lolex.install({ now: new Date('2015-09-22T12:00:00.000Z') });
   });
 
   afterEach(function() {
