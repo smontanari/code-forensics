@@ -5,7 +5,7 @@ on:
       - master
   pull_request:
     branches:
-      - dependabot/**
+      - 'dependabot/**'
 jobs:
   test_and_lint:
     name: Run tests and lint code

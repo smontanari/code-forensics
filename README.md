@@ -1,6 +1,8 @@
 code-forensics
 --------------
 
+![Run tests](https://github.com/smontanari/code-forensics/workflows/Run%20tests/badge.svg?branch=master)
+
 **code-forensics** is a toolset for analysing codebases stored in a version control system. It leverages the repository logs, or version history data, to perform deep analyses with regards to complexity, logical coupling, authors coupling and to inspect the evolution in time of different parts of a software system with respect to metrics like code churn and number of revisions.
 
 #### Version 2 release (September 2018)
