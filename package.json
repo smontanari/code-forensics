@@ -74,7 +74,7 @@
   "devDependencies": {
     "eslint": "^5.16.0",
     "eslint-plugin-jest": "^22.6.4",
-    "jest": "^24.8.0",
+    "jest": "^25.4.0",
     "lolex": "^4.0.1",
     "moment-timezone": "^0.5.25"
   }
