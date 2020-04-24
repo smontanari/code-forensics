@@ -3,9 +3,10 @@ on:
   push:
     branches:
       - master
+      - 'dependabot/**'
   pull_request:
     branches:
-      - 'dependabot/**'
+      - master
 jobs:
   test_and_lint:
     name: Run tests and lint code
