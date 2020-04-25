@@ -1,3 +1,4 @@
+/* eslint jest/expect-expect: [1, { "assertFunctionNames": ["expect", "taskOutput.assert*", "runtime.assert*"] }] */
 var lolex    = require('lolex'),
     Bluebird = require('bluebird');
 

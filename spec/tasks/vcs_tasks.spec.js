@@ -1,3 +1,4 @@
+/* eslint jest/expect-expect: [1, { "assertFunctionNames": ["expect", "assertOutput"] }] */
 var stream   = require('stream'),
     Bluebird = require('bluebird');
 
@@ -95,31 +96,33 @@ describe('VCS Tasks', function() {
 
     var verifyTaskAndFunctionOutput = function(logStreams, executionError) {
       describe('as a ' + executionType, function() {
-        it('writes the vcs log content for each period into the temp folder and creates a normalised copy', function(done) {
-          var outStreams = logStreams.map(function() {
-            var s = new stream.PassThrough();
-            mockVcs.logStream.mockReturnValueOnce(s);
-            return s;
-          });
+        it('writes the vcs log content for each period into the temp folder and creates a normalised copy', function() {
+          return new Bluebird(function(done) {
+            var outStreams = logStreams.map(function() {
+              var s = new stream.PassThrough();
+              mockVcs.logStream.mockReturnValueOnce(s);
+              return s;
+            });
 
-          var resultPromise = runtime['executePromise' + executionType](executionName).then(assertOutput);
-          if (executionError) {
-            resultPromise
-              .then(function() { done.fail('Expected error: ' + executionError); })
-              .catch(function(err) {
-                expect(err.taskException).toBeInstanceOf(CFRuntimeError);
-                expect(err.taskException.message).toEqual(executionError);
-                return assertOutput(err.taskOutput);
-              })
-              .finally(done);
-          } else {
-            resultPromise.then(function() { done(); }).catch(done.fail);
-          }
+            var resultPromise = runtime['executePromise' + executionType](executionName).then(assertOutput);
+            if (executionError) {
+              resultPromise
+                .then(function() { done.fail('Expected error: ' + executionError); })
+                .catch(function(err) {
+                  expect(err.taskException).toBeInstanceOf(CFRuntimeError);
+                  expect(err.taskException.message).toEqual(executionError);
+                  return assertOutput(err.taskOutput);
+                })
+                .finally(done);
+            } else {
+              resultPromise.then(function() { done(); }).catch(done.fail);
+            }
 
-          logStreams.forEach(function(logLines, index) {
-            logLines.forEach(function(line) { outStreams[index].push(line + '\n'); });
+            logStreams.forEach(function(logLines, index) {
+              logLines.forEach(function(line) { outStreams[index].push(line + '\n'); });
+            });
+            outStreams.forEach(function(s) { s.end(); });
           });
-          outStreams.forEach(function(s) { s.end(); });
         });
       });
     };
@@ -137,7 +140,6 @@ describe('VCS Tasks', function() {
           setupRuntime('test_invalid_file', true);
         });
         verifyTaskAndFunctionOutput([logStream1, logStream2, logStream3]);
-        // verifyTaskAndFunctionOutput([logStream2, logStream3]);
       });
     });
 
@@ -166,28 +168,32 @@ describe('VCS Tasks', function() {
       setupRuntime();
     });
 
+    /* eslint-disable jest/expect-expect */
     describe('as a ' + executionType, function() {
-      it('writes the vcs commit messages for each period into the temp folder', function(done) {
-        var outStream1 = new stream.PassThrough();
-        var outStream2 = new stream.PassThrough();
-        mockVcs.commitMessagesStream
-          .mockReturnValueOnce(outStream1)
-          .mockReturnValueOnce(outStream2);
+      it('writes the vcs commit messages for each period into the temp folder', function() {
+        return new Bluebird(function(done) {
+          var outStream1 = new stream.PassThrough();
+          var outStream2 = new stream.PassThrough();
+          mockVcs.commitMessagesStream
+            .mockReturnValueOnce(outStream1)
+            .mockReturnValueOnce(outStream2);
 
-        runtime['executePromise' + executionType](executionName)
-          .then(assertOutput)
-          .then(function() { done(); })
-          .catch(done.fail);
+          runtime['executePromise' + executionType](executionName)
+            .then(assertOutput)
+            .then(function() { done(); })
+            .catch(done.fail);
 
-        outStream1.push('messages-1-line1\n');
-        outStream1.push('messages-1-line2\n');
-        outStream1.end();
+          outStream1.push('messages-1-line1\n');
+          outStream1.push('messages-1-line2\n');
+          outStream1.end();
 
-        outStream2.push('messages-2-line1\n');
-        outStream2.push('messages-2-line2\n');
-        outStream2.push('messages-2-line3\n');
-        outStream2.end();
+          outStream2.push('messages-2-line1\n');
+          outStream2.push('messages-2-line2\n');
+          outStream2.push('messages-2-line3\n');
+          outStream2.end();
+        });
       });
     });
+    /* eslint-enable jest/expect-expect */
   });
 });

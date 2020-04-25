@@ -1,4 +1,5 @@
-var stream = require('stream');
+var stream   = require('stream'),
+    Bluebird = require('bluebird');
 
 var DataCollector = require('tasks/system_analysis/data_collector');
 
@@ -44,26 +45,28 @@ describe('DataCollector', function() {
       subject = new DataCollector(timePeriods);
     });
 
-    it('returns a promise with the stream of all time periods analysis results, sorted', function(done) {
-      subject.collectDataStream(mockAnalysis)
-        .then(function(stream) {
-          var data = [];
-          stream.on('data', function(obj) { data.push(obj); })
-          .on('end', function() {
-            expect(data).toEqual([
-              expect.objectContaining({ metric: 60, date: '2010-03-31T00:00:00.000Z' }),
-              expect.objectContaining({ metric: 90, date: '2010-04-30T00:00:00.000Z' }),
-              expect.objectContaining({ metric: 30, date: '2010-05-31T00:00:00.000Z' })
-            ]);
-            done();
-          });
-        })
-        .catch(done.fail);
+    it('returns a promise with the stream of all time periods analysis results, sorted', function() {
+      return new Bluebird(function(done) {
+        subject.collectDataStream(mockAnalysis)
+          .then(function(stream) {
+            var data = [];
+            stream.on('data', function(obj) { data.push(obj); })
+            .on('end', function() {
+              expect(data).toEqual([
+                expect.objectContaining({ metric: 60, date: '2010-03-31T00:00:00.000Z' }),
+                expect.objectContaining({ metric: 90, date: '2010-04-30T00:00:00.000Z' }),
+                expect.objectContaining({ metric: 30, date: '2010-05-31T00:00:00.000Z' })
+              ]);
+              done();
+            });
+          })
+          .catch(done.fail);
 
-      streamsData.forEach(function(data) {
-        testAnalysisStream.push(data);
+        streamsData.forEach(function(data) {
+          testAnalysisStream.push(data);
+        });
+        testAnalysisStream.end();
       });
-      testAnalysisStream.end();
     });
   });
 });

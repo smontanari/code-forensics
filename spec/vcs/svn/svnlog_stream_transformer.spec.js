@@ -1,5 +1,6 @@
 var _         = require('lodash'),
     stream    = require('stream'),
+    Bluebird  = require('bluebird'),
     XmlReader = require('xml-reader');
 
 var LogStreamTransformer = require('vcs/svn/svnlog_stream_transformer.js'),
@@ -116,28 +117,30 @@ describe('SvnLogStreamTransformer', function() {
       subject = new LogStreamTransformer(stubRepository, stubDevelopersInfo, stubAdapter);
     });
 
-    it('streams log entries with author name changed according to the developer info', function(done) {
-      var logStream = new stream.PassThrough();
+    it('streams log entries with author name changed according to the developer info', function() {
+      return new Bluebird(function(done) {
+        var logStream = new stream.PassThrough();
 
-      var result = '';
-      subject.normaliseLogStream(logStream)
-        .on('data', function(chunk) {
-          result += chunk.toString();
-        })
-        .on('end', function() {
-          var rootNode = XmlReader.parseSync(result);
-          var logEntries = _.filter(rootNode.children, XmlUtils.nodeWithName('logentry'));
-          var authors = logEntries.map(function(entry) {
-            var authorElement = _.find(entry.children, XmlUtils.nodeWithName('author'));
-            return XmlUtils.nodeText(authorElement);
+        var result = '';
+        subject.normaliseLogStream(logStream)
+          .on('data', function(chunk) {
+            result += chunk.toString();
+          })
+          .on('end', function() {
+            var rootNode = XmlReader.parseSync(result);
+            var logEntries = _.filter(rootNode.children, XmlUtils.nodeWithName('logentry'));
+            var authors = logEntries.map(function(entry) {
+              var authorElement = _.find(entry.children, XmlUtils.nodeWithName('author'));
+              return XmlUtils.nodeText(authorElement);
+            });
+
+            expect(authors).toEqual(['Developer_1', 'Developer_2', 'Developer_2']);
+            done();
           });
 
-          expect(authors).toEqual(['Developer_1', 'Developer_2', 'Developer_2']);
-          done();
-        });
-
-      LOG_OUTPUT.forEach(logStream.push.bind(logStream));
-      logStream.end();
+        LOG_OUTPUT.forEach(logStream.push.bind(logStream));
+        logStream.end();
+      });
     });
   });
 
@@ -156,60 +159,64 @@ describe('SvnLogStreamTransformer', function() {
       subject = new LogStreamTransformer(stubRepository, stubDevelopersInfo, stubAdapter);
     });
 
-    it('streams log entries normalising the valid paths and filtering out the invalid ones', function(done) {
-      var capturedPathnames = 0;
-      var logStream = new stream.PassThrough();
+    it('streams log entries normalising the valid paths and filtering out the invalid ones', function() {
+      return new Bluebird(function(done) {
+        var capturedPathnames = 0;
+        var logStream = new stream.PassThrough();
 
-      var result = '';
-      subject.normaliseLogStream(logStream, function(result) { if (result) capturedPathnames++; })
-        .on('data', function(chunk) {
-          result += chunk.toString();
-        })
-        .on('end', function() {
-          var rootNode = XmlReader.parseSync(result);
-          var logEntries = _.filter(rootNode.children, XmlUtils.nodeWithName('logentry'));
-          var revisions = logEntries.map(function(entry) { return entry.attributes.revision; });
-          var paths = _.flatMap(logEntries, function(entry) {
-            var pathsElement = _.find(entry.children, XmlUtils.nodeWithName('paths'));
-            return pathsElement.children.map(XmlUtils.nodeText);
+        var result = '';
+        subject.normaliseLogStream(logStream, function(result) { if (result) capturedPathnames++; })
+          .on('data', function(chunk) {
+            result += chunk.toString();
+          })
+          .on('end', function() {
+            var rootNode = XmlReader.parseSync(result);
+            var logEntries = _.filter(rootNode.children, XmlUtils.nodeWithName('logentry'));
+            var revisions = logEntries.map(function(entry) { return entry.attributes.revision; });
+            var paths = _.flatMap(logEntries, function(entry) {
+              var pathsElement = _.find(entry.children, XmlUtils.nodeWithName('paths'));
+              return pathsElement.children.map(XmlUtils.nodeText);
+            });
+
+            expect(revisions).toEqual(['344333', '345094', '344885']);
+            expect(paths).toEqual(['src/file1.yml.erb', 'src/file4.html.erb']);
+            expect(capturedPathnames).toEqual(2);
+            done();
           });
 
-          expect(revisions).toEqual(['344333', '345094', '344885']);
-          expect(paths).toEqual(['src/file1.yml.erb', 'src/file4.html.erb']);
-          expect(capturedPathnames).toEqual(2);
-          done();
-        });
-
-      LOG_OUTPUT.forEach(logStream.push.bind(logStream));
-      logStream.end();
+        LOG_OUTPUT.forEach(logStream.push.bind(logStream));
+        logStream.end();
+      });
     });
 
-    it('streams log entries filtering out all the paths', function(done) {
-      var capturedPathnames = 0;
-      var logStream = new stream.PassThrough();
+    it('streams log entries filtering out all the paths', function() {
+      return new Bluebird(function(done) {
+        var capturedPathnames = 0;
+        var logStream = new stream.PassThrough();
 
-      var result = '';
-      subject.normaliseLogStream(logStream, function(result) { if (result) capturedPathnames++; })
-        .on('data', function(chunk) {
-          result += chunk.toString();
-        })
-        .on('end', function() {
-          var rootNode = XmlReader.parseSync(result);
-          var logEntries = _.filter(rootNode.children, XmlUtils.nodeWithName('logentry'));
-          var revisions = logEntries.map(function(entry) { return entry.attributes.revision; });
-          var paths = _.flatMap(logEntries, function(entry) {
-            var pathsElement = _.find(entry.children, XmlUtils.nodeWithName('paths'));
-            return pathsElement.children.map(XmlUtils.nodeText);
+        var result = '';
+        subject.normaliseLogStream(logStream, function(result) { if (result) capturedPathnames++; })
+          .on('data', function(chunk) {
+            result += chunk.toString();
+          })
+          .on('end', function() {
+            var rootNode = XmlReader.parseSync(result);
+            var logEntries = _.filter(rootNode.children, XmlUtils.nodeWithName('logentry'));
+            var revisions = logEntries.map(function(entry) { return entry.attributes.revision; });
+            var paths = _.flatMap(logEntries, function(entry) {
+              var pathsElement = _.find(entry.children, XmlUtils.nodeWithName('paths'));
+              return pathsElement.children.map(XmlUtils.nodeText);
+            });
+
+            expect(revisions).toEqual(['344333', '344885']);
+            expect(paths).toEqual([]);
+            expect(capturedPathnames).toEqual(0);
+            done();
           });
 
-          expect(revisions).toEqual(['344333', '344885']);
-          expect(paths).toEqual([]);
-          expect(capturedPathnames).toEqual(0);
-          done();
-        });
-
-      LOG_OUTPUT_WITH_ONLY_INVALID_PATHS.forEach(logStream.push.bind(logStream));
-      logStream.end();
+        LOG_OUTPUT_WITH_ONLY_INVALID_PATHS.forEach(logStream.push.bind(logStream));
+        logStream.end();
+      });
     });
   });
 });

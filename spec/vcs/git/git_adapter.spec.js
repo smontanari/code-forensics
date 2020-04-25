@@ -1,5 +1,6 @@
-var moment = require('moment'),
-    stream = require('stream');
+var moment   = require('moment'),
+    Bluebird = require('bluebird'),
+    stream   = require('stream');
 
 var GitAdapter = require('vcs/git/git_adapter'),
     TimePeriod = require('models/time_interval/time_period'),
@@ -49,26 +50,28 @@ describe('GitAdapter', function() {
   });
 
   describe('.logStream()', function() {
-    it('returns the git log as a stream', function(done) {
-      var logStream = new stream.PassThrough();
-      command.stream.mockReturnValue(logStream);
+    it('returns the git log as a stream', function() {
+      return new Bluebird(function(done) {
+        var logStream = new stream.PassThrough();
+        command.stream.mockReturnValue(logStream);
 
-      var result = '';
+        var result = '';
 
-      subject.logStream(timePeriod)
-        .on('data', function(chunk) {
-          result += chunk.toString();
-        })
-        .on('end', function() {
-          expect(result).toEqual('test-output1');
-          done();
-        });
+        subject.logStream(timePeriod)
+          .on('data', function(chunk) {
+            result += chunk.toString();
+          })
+          .on('end', function() {
+            expect(result).toEqual('test-output1');
+            done();
+          });
 
-      expect(command.stream).toHaveBeenCalledWith('git',
-          ['log', '--all', '--numstat', '--date=short', '--no-renames', '--pretty=format:--%h--%ad--%an', '--after=2015-08-22T14:51:42.123Z', '--before=2015-10-12T11:10:06.456Z'], {cwd: '/root/dir'});
+        expect(command.stream).toHaveBeenCalledWith('git',
+            ['log', '--all', '--numstat', '--date=short', '--no-renames', '--pretty=format:--%h--%ad--%an', '--after=2015-08-22T14:51:42.123Z', '--before=2015-10-12T11:10:06.456Z'], {cwd: '/root/dir'});
 
-      logStream.push('test-output1');
-      logStream.end();
+        logStream.push('test-output1');
+        logStream.end();
+      });
     });
   });
 

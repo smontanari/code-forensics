@@ -1,3 +1,4 @@
+/* eslint jest/expect-expect: [1, { "assertFunctionNames": ["expect", "taskOutput.assert*", "runtime.assert*"] }] */
 var _        = require('lodash'),
     Bluebird = require('bluebird'),
     stream   = require('stream'),
@@ -219,33 +220,35 @@ describe('Social analysis tasks', function() {
         });
       });
 
-      it('publishes a report on ownership and communication coupling between main developers', function(done) {
-        runtime.executePromiseTask('developer-coupling-analysis')
-          .then(function(taskOutput) {
-            return Bluebird.all([
-              taskOutput.assertOutputReport('2016-01-01_2016-10-22_main-dev-coupling-data.json'),
-              taskOutput.assertOutputReport('2016-01-01_2016-10-22_communication-network-data.json'),
-              taskOutput.assertManifest()
-            ]);
-          })
-          .then(function() { done(); })
-          .catch(done.fail);
+      it('publishes a report on ownership and communication coupling between main developers', function() {
+        return new Bluebird(function(done) {
+          runtime.executePromiseTask('developer-coupling-analysis')
+            .then(function(taskOutput) {
+              return Bluebird.all([
+                taskOutput.assertOutputReport('2016-01-01_2016-10-22_main-dev-coupling-data.json'),
+                taskOutput.assertOutputReport('2016-01-01_2016-10-22_communication-network-data.json'),
+                taskOutput.assertManifest()
+              ]);
+            })
+            .then(function() { done(); })
+            .catch(done.fail);
 
-        couplingStream.push({ path: 'test_invalid_file', coupledPath: 'test_file2', couplingDegree: 74, revisionsAvg: 68 });
-        couplingStream.push({ path: 'test_file2', coupledPath: 'test_file5', couplingDegree: 66, revisionsAvg: 31 });
-        couplingStream.push({ path: 'test_file5', coupledPath: 'test_file3', couplingDegree: 49, revisionsAvg: 29 });
-        couplingStream.push({ path: 'test_file4', coupledPath: 'test_file1', couplingDegree: 41, revisionsAvg: 22 });
-        couplingStream.push({ path: 'test_file1', coupledPath: 'test_file3', couplingDegree: 23, revisionsAvg: 12 });
-        couplingStream.push({ path: 'test_file6', coupledPath: 'test_invalid_file', couplingDegree: 37, revisionsAvg: 18 });
-        couplingStream.push({ path: 'test_file1', coupledPath: 'test_file5', couplingDegree: 30, revisionsAvg: 5 });
-        couplingStream.end();
-        commAnalysisStream.push({ author: 'Dev1', coupledAuthor: 'Dev2', sharedCommits: 65, couplingStrength: 55 });
-        commAnalysisStream.push({ author: 'Dev2', coupledAuthor: 'Dev1', sharedCommits: 65, couplingStrength: 55 });
-        commAnalysisStream.push({ author: 'Dev3', coupledAuthor: 'Dev1', sharedCommits: 194, couplingStrength: 51 });
-        commAnalysisStream.push({ author: 'Dev1', coupledAuthor: 'Dev3', sharedCommits: 194, couplingStrength: 51 });
-        commAnalysisStream.push({ author: 'Dev4', coupledAuthor: 'Dev5', sharedCommits: 62, couplingStrength: 48 });
-        commAnalysisStream.push({ author: 'Dev5', coupledAuthor: 'Dev4', sharedCommits: 62, couplingStrength: 48 });
-        commAnalysisStream.end();
+          couplingStream.push({ path: 'test_invalid_file', coupledPath: 'test_file2', couplingDegree: 74, revisionsAvg: 68 });
+          couplingStream.push({ path: 'test_file2', coupledPath: 'test_file5', couplingDegree: 66, revisionsAvg: 31 });
+          couplingStream.push({ path: 'test_file5', coupledPath: 'test_file3', couplingDegree: 49, revisionsAvg: 29 });
+          couplingStream.push({ path: 'test_file4', coupledPath: 'test_file1', couplingDegree: 41, revisionsAvg: 22 });
+          couplingStream.push({ path: 'test_file1', coupledPath: 'test_file3', couplingDegree: 23, revisionsAvg: 12 });
+          couplingStream.push({ path: 'test_file6', coupledPath: 'test_invalid_file', couplingDegree: 37, revisionsAvg: 18 });
+          couplingStream.push({ path: 'test_file1', coupledPath: 'test_file5', couplingDegree: 30, revisionsAvg: 5 });
+          couplingStream.end();
+          commAnalysisStream.push({ author: 'Dev1', coupledAuthor: 'Dev2', sharedCommits: 65, couplingStrength: 55 });
+          commAnalysisStream.push({ author: 'Dev2', coupledAuthor: 'Dev1', sharedCommits: 65, couplingStrength: 55 });
+          commAnalysisStream.push({ author: 'Dev3', coupledAuthor: 'Dev1', sharedCommits: 194, couplingStrength: 51 });
+          commAnalysisStream.push({ author: 'Dev1', coupledAuthor: 'Dev3', sharedCommits: 194, couplingStrength: 51 });
+          commAnalysisStream.push({ author: 'Dev4', coupledAuthor: 'Dev5', sharedCommits: 62, couplingStrength: 48 });
+          commAnalysisStream.push({ author: 'Dev5', coupledAuthor: 'Dev4', sharedCommits: 62, couplingStrength: 48 });
+          commAnalysisStream.end();
+        });
       });
     });
 
@@ -263,24 +266,26 @@ describe('Social analysis tasks', function() {
         });
       });
 
-      it('publishes a report on communication coupling only', function(done) {
-        runtime.executePromiseTask('developer-coupling-analysis').then(function(taskOutput) {
-          return Bluebird.all([
-            taskOutput.assertMissingOutputReport('2016-01-01_2016-10-22_main-dev-coupling-data.json'),
-            taskOutput.assertOutputReport('2016-01-01_2016-10-22_communication-network-data.json'),
-            taskOutput.assertManifest()
-          ]);
-        })
-        .then(function() { done(); })
-        .catch(done.fail);
+      it('publishes a report on communication coupling only', function() {
+        return new Bluebird(function(done) {
+          runtime.executePromiseTask('developer-coupling-analysis').then(function(taskOutput) {
+            return Bluebird.all([
+              taskOutput.assertMissingOutputReport('2016-01-01_2016-10-22_main-dev-coupling-data.json'),
+              taskOutput.assertOutputReport('2016-01-01_2016-10-22_communication-network-data.json'),
+              taskOutput.assertManifest()
+            ]);
+          })
+          .then(function() { done(); })
+          .catch(done.fail);
 
-        commAnalysisStream.push({ author: 'Dev1', coupledAuthor: 'Dev2', sharedCommits: 65, couplingStrength: 55 });
-        commAnalysisStream.push({ author: 'Dev2', coupledAuthor: 'Dev1', sharedCommits: 65, couplingStrength: 55 });
-        commAnalysisStream.push({ author: 'Dev3', coupledAuthor: 'Dev1', sharedCommits: 194, couplingStrength: 51 });
-        commAnalysisStream.push({ author: 'Dev1', coupledAuthor: 'Dev3', sharedCommits: 194, couplingStrength: 51 });
-        commAnalysisStream.push({ author: 'Dev4', coupledAuthor: 'Dev5', sharedCommits: 62, couplingStrength: 48 });
-        commAnalysisStream.push({ author: 'Dev5', coupledAuthor: 'Dev4', sharedCommits: 62, couplingStrength: 48 });
-        commAnalysisStream.end();
+          commAnalysisStream.push({ author: 'Dev1', coupledAuthor: 'Dev2', sharedCommits: 65, couplingStrength: 55 });
+          commAnalysisStream.push({ author: 'Dev2', coupledAuthor: 'Dev1', sharedCommits: 65, couplingStrength: 55 });
+          commAnalysisStream.push({ author: 'Dev3', coupledAuthor: 'Dev1', sharedCommits: 194, couplingStrength: 51 });
+          commAnalysisStream.push({ author: 'Dev1', coupledAuthor: 'Dev3', sharedCommits: 194, couplingStrength: 51 });
+          commAnalysisStream.push({ author: 'Dev4', coupledAuthor: 'Dev5', sharedCommits: 62, couplingStrength: 48 });
+          commAnalysisStream.push({ author: 'Dev5', coupledAuthor: 'Dev4', sharedCommits: 62, couplingStrength: 48 });
+          commAnalysisStream.end();
+        });
       });
     });
   });

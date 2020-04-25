@@ -18,12 +18,14 @@ describe('ReportController', function() {
       new ReportController(graphModels);
     });
 
-    it('selects the first graph model', function(done) {
-      _.delay(function() {
-        expect(graphModels[0].isSelected).toHaveBeenCalledWith(true);
-        expect(graphModels[1].isSelected).not.toHaveBeenCalled();
-        done();
-      }, 10);
+    it('selects the first graph model', function() {
+      return new Bluebird(function(done) {
+        _.delay(function() {
+          expect(graphModels[0].isSelected).toHaveBeenCalledWith(true);
+          expect(graphModels[1].isSelected).not.toHaveBeenCalled();
+          done();
+        }, 10);
+      });
     });
   });
 
@@ -37,13 +39,15 @@ describe('ReportController', function() {
       new ReportController(graphModels);
     });
 
-    it('selects the first graph model succesfully initialized', function(done) {
-      _.delay(function() {
-        expect(graphModels[0].isSelected).not.toHaveBeenCalled();
-        expect(graphModels[1].isSelected).toHaveBeenCalledWith(true);
-        expect(graphModels[2].isSelected).not.toHaveBeenCalled();
-        done();
-      }, 10);
+    it('selects the first graph model succesfully initialized', function() {
+      return new Bluebird(function(done) {
+        _.delay(function() {
+          expect(graphModels[0].isSelected).not.toHaveBeenCalled();
+          expect(graphModels[1].isSelected).toHaveBeenCalledWith(true);
+          expect(graphModels[2].isSelected).not.toHaveBeenCalled();
+          done();
+        }, 10);
+      });
     });
   });
 
@@ -56,12 +60,14 @@ describe('ReportController', function() {
       new ReportController(graphModels);
     });
 
-    it('selects the first graph model', function(done) {
-      _.delay(function() {
-        expect(graphModels[0].isSelected).toHaveBeenCalledWith(true);
-        expect(graphModels[1].isSelected).not.toHaveBeenCalled();
-        done();
-      }, 10);
+    it('selects the first graph model', function() {
+      return new Bluebird(function(done) {
+        _.delay(function() {
+          expect(graphModels[0].isSelected).toHaveBeenCalledWith(true);
+          expect(graphModels[1].isSelected).not.toHaveBeenCalled();
+          done();
+        }, 10);
+      });
     });
   });
 });

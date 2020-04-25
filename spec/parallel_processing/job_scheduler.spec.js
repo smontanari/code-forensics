@@ -18,7 +18,7 @@ describe('JobScheduler', function() {
       var scheduler = new JobScheduler();
       var jobFn = jest.fn().mockName('jobFn').mockReturnValue(123);
 
-      expect(scheduler.addJob(jobFn)).resolves.toEqual(123);
+      return expect(scheduler.addJob(jobFn)).resolves.toEqual(123);
     });
 
     it('executes added jobs up to the max number of concurrent jobs', function() {

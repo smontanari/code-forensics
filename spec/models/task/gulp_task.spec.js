@@ -1,3 +1,4 @@
+/* eslint jest/expect-expect: [1, { "assertFunctionNames": ["expect", "assertTask"] }] */
 var Task              = require('models/task/gulp_task'),
     CFValidationError = require('runtime/errors').CFValidationError;
 
@@ -85,7 +86,9 @@ describe('Task', function() {
     });
 
     it('does not throw any error if all required parameter are present', function() {
-      task.validateParameters({ param1: 123, param3: 'zxc' });
+      expect(
+        function() { task.validateParameters({ param1: 123, param3: 'zxc' }); }
+      ).not.toThrow();
     });
 
     it('throws an error if any required parameter is undefined', function() {

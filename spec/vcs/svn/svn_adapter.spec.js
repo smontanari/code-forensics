@@ -1,5 +1,6 @@
-var moment = require('moment'),
-    stream = require('stream');
+var moment   = require('moment'),
+    Bluebird = require('bluebird'),
+    stream   = require('stream');
 
 var SvnAdapter = require('vcs/svn/svn_adapter'),
     TimePeriod = require('models/time_interval/time_period'),
@@ -160,48 +161,52 @@ describe('SvnAdapter', function() {
   });
 
   describe('.logStream()', function() {
-    it('returns the svn log as a stream', function(done) {
-      buildLogStream('LOG_OUTPUT');
-      var result = '';
+    it('returns the svn log as a stream', function() {
+      return new Bluebird(function(done) {
+        buildLogStream('LOG_OUTPUT');
+        var result = '';
 
-      subject.logStream(timePeriod)
-        .on('data', function(chunk) {
-          result += chunk.toString();
-        })
-        .on('end', function() {
-          expect(result).toEqual('LOG_OUTPUT');
-          done();
-        });
+        subject.logStream(timePeriod)
+          .on('data', function(chunk) {
+            result += chunk.toString();
+          })
+          .on('end', function() {
+            expect(result).toEqual('LOG_OUTPUT');
+            done();
+          });
 
-      expect(command.stream).toHaveBeenCalledWith('svn',
-        ['log', '-v', '--xml', '-r{2015-08-22T14:51:42.123Z}:{2015-10-12T11:10:06.456Z}'], {cwd: '/root/dir'});
+        expect(command.stream).toHaveBeenCalledWith('svn',
+          ['log', '-v', '--xml', '-r{2015-08-22T14:51:42.123Z}:{2015-10-12T11:10:06.456Z}'], {cwd: '/root/dir'});
+      });
     });
   });
 
   describe('.commitMessagesStream()', function() {
-    it('returns the svn commit messages as a stream', function(done) {
-      buildLogStream(GENERIC_LOG_OUTPUT);
+    it('returns the svn commit messages as a stream', function() {
+      return new Bluebird(function(done) {
+        buildLogStream(GENERIC_LOG_OUTPUT);
 
-      var result = '';
-      subject.commitMessagesStream(timePeriod)
-        .on('data', function(chunk) {
-          result += chunk.toString();
-        })
-        .on('end', function() {
-          expect(result).toEqual('test message 123\ntest message 456\ntest message 789\n');
-          done();
-        });
+        var result = '';
+        subject.commitMessagesStream(timePeriod)
+          .on('data', function(chunk) {
+            result += chunk.toString();
+          })
+          .on('end', function() {
+            expect(result).toEqual('test message 123\ntest message 456\ntest message 789\n');
+            done();
+          });
 
-      expect(command.stream).toHaveBeenCalledWith('svn',
-        ['log', '-v', '--xml', '-r{2015-08-22T14:51:42.123Z}:{2015-10-12T11:10:06.456Z}'], {cwd: '/root/dir'});
+        expect(command.stream).toHaveBeenCalledWith('svn',
+          ['log', '-v', '--xml', '-r{2015-08-22T14:51:42.123Z}:{2015-10-12T11:10:06.456Z}'], {cwd: '/root/dir'});
+      });
     });
 
-    it('throws an error if the stream ends before the xml document is complete', function(done) {
-      buildLogStream(CORRUPTED_LOG_OUTPUT);
-      subject.commitMessagesStream(timePeriod)
-        .on('error', function() {
-          done();
-        });
+    it('throws an error if the stream ends before the xml document is complete', function() {
+      return expect(new Bluebird(function(resolve, reject) {
+        buildLogStream(CORRUPTED_LOG_OUTPUT);
+        subject.commitMessagesStream(timePeriod)
+          .on('error', reject);
+      })).rejects.toMatch('xml parsing');
     });
   });
 

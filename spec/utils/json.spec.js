@@ -1,5 +1,6 @@
-var fs     = require('fs'),
-    stream = require('stream');
+var fs       = require('fs'),
+    Bluebird = require('bluebird'),
+    stream   = require('stream');
 
 var json = require('utils').json;
 jest.mock('fs');
@@ -31,36 +32,40 @@ describe('utils.json', function() {
       fs.createReadStream.mockReturnValue(input);
     });
 
-    it('returns a stream of objects from the json array file', function(done) {
-      var data = [];
-      json.fileToObjectStream('test/file')
-        .on('data', function(content) { data.push(content); })
-        .once('end', function() {
-          expect(data).toEqual([
-            { a: 123 },
-            { a: 456, b: { c: 'test' } }
-          ]);
-          done();
-        });
+    it('returns a stream of objects from the json array file', function() {
+      return new Bluebird(function(done) {
+        var data = [];
+        json.fileToObjectStream('test/file')
+          .on('data', function(content) { data.push(content); })
+          .once('end', function() {
+            expect(data).toEqual([
+              { a: 123 },
+              { a: 456, b: { c: 'test' } }
+            ]);
+            done();
+          });
 
-      input.write('[{"a": 123},{"a": 456, "b": {"c": "test"}}]');
-      input.end();
+        input.write('[{"a": 123},{"a": 456, "b": {"c": "test"}}]');
+        input.end();
+      });
     });
 
-    it('returns a stream of objects from the json object property file', function(done) {
-      var data = [];
-      json.fileToObjectStream('test/file', 'properties.*')
-        .on('data', function(content) { data.push(content); })
-        .once('end', function() {
-          expect(data).toEqual([
-            { a: 123 },
-            { a: 456, b: { c: 'test' } }
-          ]);
-          done();
-        });
+    it('returns a stream of objects from the json object property file', function() {
+      return new Bluebird(function(done) {
+        var data = [];
+        json.fileToObjectStream('test/file', 'properties.*')
+          .on('data', function(content) { data.push(content); })
+          .once('end', function() {
+            expect(data).toEqual([
+              { a: 123 },
+              { a: 456, b: { c: 'test' } }
+            ]);
+            done();
+          });
 
-      input.write('{ "properties": [{"a": 123},{"a": 456, "b": {"c": "test"}}]');
-      input.end();
+        input.write('{ "properties": [{"a": 123},{"a": 456, "b": {"c": "test"}}]');
+        input.end();
+      });
     });
   });
 
@@ -92,19 +97,21 @@ describe('utils.json', function() {
       );
     });
 
-    it('writes a stream of objects into a file as a json array', function(done) {
-      var input = new stream.PassThrough({objectMode: true});
-      json.objectArrayToFileStream('test/path', input)
-      .on('finish', function() {
-        expect(output.toString()).toEqual(
-          '[\n{"obj":{"a":123,"b":"zxc"}},\n{"obj":{"c":456,"d":[789,"vbn"]}}\n]\n'
-        );
-        done();
-      });
+    it('writes a stream of objects into a file as a json array', function() {
+      return new Bluebird(function(done) {
+        var input = new stream.PassThrough({objectMode: true});
+        json.objectArrayToFileStream('test/path', input)
+        .on('finish', function() {
+          expect(output.toString()).toEqual(
+            '[\n{"obj":{"a":123,"b":"zxc"}},\n{"obj":{"c":456,"d":[789,"vbn"]}}\n]\n'
+          );
+          done();
+        });
 
-      input.write({obj: {a: 123, b: 'zxc'}});
-      input.write({obj: {c: 456, d: [789, 'vbn']}});
-      input.end();
+        input.write({obj: {a: 123, b: 'zxc'}});
+        input.write({obj: {c: 456, d: [789, 'vbn']}});
+        input.end();
+      });
     });
   });
 
@@ -122,18 +129,20 @@ describe('utils.json', function() {
       );
     });
 
-    it('writes an object from a stream into a file as json', function(done) {
-      var input = new stream.PassThrough({objectMode: true});
+    it('writes an object from a stream into a file as json', function() {
+      return new Bluebird(function(done) {
+        var input = new stream.PassThrough({objectMode: true});
 
-      json.objectToFileStream('test/path', input).on('finish', function() {
-        expect(output.toString()).toEqual(
-          '{\n  "obj": {\n    "a": 123,\n    "b": "zxc"\n  }\n}\n'
-        );
-        done();
+        json.objectToFileStream('test/path', input).on('finish', function() {
+          expect(output.toString()).toEqual(
+            '{\n  "obj": {\n    "a": 123,\n    "b": "zxc"\n  }\n}\n'
+          );
+          done();
+        });
+
+        input.write({obj: {a: 123, b: 'zxc'}});
+        input.end();
       });
-
-      input.write({obj: {a: 123, b: 'zxc'}});
-      input.end();
     });
   });
 });

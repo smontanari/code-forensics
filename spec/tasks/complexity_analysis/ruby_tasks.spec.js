@@ -1,3 +1,4 @@
+/* eslint jest/expect-expect: [1, { "assertFunctionNames": ["expect", "taskOutput.assert*"] }] */
 var Bluebird = require('bluebird'),
     lolex    = require('lolex'),
     stream   = require('stream');
@@ -57,28 +58,32 @@ describe('ruby tasks', function() {
     };
 
     describe('as a Task', function() {
-      it('writes a report on the complexity for each ruby file in the repository', function(done) {
-        runtime.executeStreamTask('ruby-complexity-report')
-          .then(function(taskOutput) {
-            return taskOutput.assertTempReport('ruby-complexity-report.json');
-          })
-          .then(function() { done(); })
-          .catch(done.fail);
+      it('writes a report on the complexity for each ruby file in the repository', function() {
+        return new Bluebird(function(done) {
+          runtime.executeStreamTask('ruby-complexity-report')
+            .then(function(taskOutput) {
+              return taskOutput.assertTempReport('ruby-complexity-report.json');
+            })
+            .then(function() { done(); })
+            .catch(done.fail);
 
-        streamData();
+          streamData();
+        });
       });
     });
 
     describe('as a Function', function() {
-      it('writes a report on the complexity for each ruby file in the repository', function(done) {
-        runtime.executeStreamFunction('rubyComplexityReport')
-          .then(function(taskOutput) {
-            return taskOutput.assertTempReport('ruby-complexity-report.json');
-          })
-          .then(function() { done(); })
-          .catch(done.fail);
+      it('writes a report on the complexity for each ruby file in the repository', function() {
+        return new Bluebird(function(done) {
+          runtime.executeStreamFunction('rubyComplexityReport')
+            .then(function(taskOutput) {
+              return taskOutput.assertTempReport('ruby-complexity-report.json');
+            })
+            .then(function() { done(); })
+            .catch(done.fail);
 
-        streamData();
+          streamData();
+        });
       });
     });
   });
@@ -99,59 +104,61 @@ describe('ruby tasks', function() {
       clock.uninstall();
     });
 
-    it('publishes an analysis on the complexity trend for a given ruby file in the repository', function(done) {
-      var revisionStream1 = new stream.PassThrough();
-      var revisionStream2 = new stream.PassThrough();
-      var complexityStream1 = new stream.PassThrough();
-      var complexityStream2 = new stream.PassThrough();
+    it('publishes an analysis on the complexity trend for a given ruby file in the repository', function() {
+      return new Bluebird(function(done) {
+        var revisionStream1 = new stream.PassThrough();
+        var revisionStream2 = new stream.PassThrough();
+        var complexityStream1 = new stream.PassThrough();
+        var complexityStream2 = new stream.PassThrough();
 
-      mockVcs.revisions.mockReturnValue([
-        { revisionId: 123, date: '2015-04-29T23:00:00.000Z' },
-        { revisionId: 456, date: '2015-05-04T23:00:00.000Z' }
-      ]);
-      mockVcs.showRevisionStream
-        .mockReturnValueOnce(revisionStream1)
-        .mockReturnValueOnce(revisionStream2);
-      command.createAsync = jest.fn()
-        .mockReturnValueOnce({ stdin: new stream.PassThrough(), stdout: complexityStream1 })
-        .mockReturnValueOnce({ stdin: new stream.PassThrough(), stdout: complexityStream2 });
-
-      runtime = taskHelpers.createRuntime('ruby_tasks', rubyTasks, null, { dateFrom: '2015-03-01', targetFile: 'test_abs.rb' });
-      runtime.executePromiseTask('ruby-complexity-trend-analysis').then(function(taskOutput) {
-        return Bluebird.all([
-          taskOutput.assertOutputReport('2015-03-01_2015-10-22_complexity-trend-data.json'),
-          taskOutput.assertManifest()
+        mockVcs.revisions.mockReturnValue([
+          { revisionId: 123, date: '2015-04-29T23:00:00.000Z' },
+          { revisionId: 456, date: '2015-05-04T23:00:00.000Z' }
         ]);
-      })
-      .then(function() { done(); })
-      .catch(done.fail);
+        mockVcs.showRevisionStream
+          .mockReturnValueOnce(revisionStream1)
+          .mockReturnValueOnce(revisionStream2);
+        command.createAsync = jest.fn()
+          .mockReturnValueOnce({ stdin: new stream.PassThrough(), stdout: complexityStream1 })
+          .mockReturnValueOnce({ stdin: new stream.PassThrough(), stdout: complexityStream2 });
 
-      revisionStream1.push('def abs(a,b)\n');
-      revisionStream1.push('a - b\nend');
-      revisionStream1.end();
+        runtime = taskHelpers.createRuntime('ruby_tasks', rubyTasks, null, { dateFrom: '2015-03-01', targetFile: 'test_abs.rb' });
+        runtime.executePromiseTask('ruby-complexity-trend-analysis').then(function(taskOutput) {
+          return Bluebird.all([
+            taskOutput.assertOutputReport('2015-03-01_2015-10-22_complexity-trend-data.json'),
+            taskOutput.assertManifest()
+          ]);
+        })
+        .then(function() { done(); })
+        .catch(done.fail);
 
-      revisionStream2.push('def abs(a,b)\n');
-      revisionStream2.push('return b - a if (a < b)\n');
-      revisionStream2.push('a - b\n');
-      revisionStream2.push('end\n');
-      revisionStream2.end();
+        revisionStream1.push('def abs(a,b)\n');
+        revisionStream1.push('a - b\nend');
+        revisionStream1.end();
 
-      complexityStream1.push(
-        '\t22.0: flog total\n' +
-        '\t 7.3: flog/method average\n' +
-        '\n' +
-        '\t18.6: main#none\n' +
-        '\t 1.7: chain#linking_to          /absolute/path/test_abs.rb:8\n'
-      );
-      complexityStream1.end();
+        revisionStream2.push('def abs(a,b)\n');
+        revisionStream2.push('return b - a if (a < b)\n');
+        revisionStream2.push('a - b\n');
+        revisionStream2.push('end\n');
+        revisionStream2.end();
 
-      complexityStream2.push(
-        '\t95.1: flog total\n' +
-        '\t 8.6: flog/method average\n' +
-        '\n' +
-        '\t26.2: Module::TestFile2#test_method /absolute/path/test_abs.rb:54'
-      );
-      complexityStream2.end();
+        complexityStream1.push(
+          '\t22.0: flog total\n' +
+          '\t 7.3: flog/method average\n' +
+          '\n' +
+          '\t18.6: main#none\n' +
+          '\t 1.7: chain#linking_to          /absolute/path/test_abs.rb:8\n'
+        );
+        complexityStream1.end();
+
+        complexityStream2.push(
+          '\t95.1: flog total\n' +
+          '\t 8.6: flog/method average\n' +
+          '\n' +
+          '\t26.2: Module::TestFile2#test_method /absolute/path/test_abs.rb:54'
+        );
+        complexityStream2.end();
+      });
     });
   });
 });

@@ -1,5 +1,7 @@
-var _      = require('lodash'),
-    stream = require('stream');
+/* eslint jest/expect-expect: [1, { "assertFunctionNames": ["expect", "taskOutput.assert*"] }] */
+var _        = require('lodash'),
+    stream   = require('stream'),
+    Bluebird = require('bluebird');
 
 var codeMaatReportTasks = require('tasks/code_maat_reports_tasks'),
     codeMaat            = require('analysers/code_maat'),
@@ -25,32 +27,36 @@ describe('CodeMaat report tasks', function() {
       });
 
       describe('as a Task', function() {
-        it(exampleDescription, function(done) {
-          runtime.executePromiseTask(taskName)
-            .then(function(taskOutput) {
-              return taskOutput.assertTempReport(taskName + '.json');
-            })
-            .then(function() { done(); })
-            .catch(done.fail);
+        it(exampleDescription, function() {
+          return new Bluebird(function(done) {
+            runtime.executePromiseTask(taskName)
+              .then(function(taskOutput) {
+                return taskOutput.assertTempReport(taskName + '.json');
+              })
+              .then(function() { done(); })
+              .catch(done.fail);
 
-          analysisStream.push({ path: 'test_file1', testData: 123 });
-          analysisStream.push({ path: 'test_file2', testData: 456 });
-          analysisStream.end();
+            analysisStream.push({ path: 'test_file1', testData: 123 });
+            analysisStream.push({ path: 'test_file2', testData: 456 });
+            analysisStream.end();
+          });
         });
       });
 
       describe('as a Function', function() {
-        it(exampleDescription, function(done) {
-          runtime.executePromiseFunction(functionName)
-            .then(function(taskOutput) {
-              return taskOutput.assertTempReport(taskName + '.json');
-            })
-            .then(function() { done(); })
-            .catch(done.fail);
+        it(exampleDescription, function() {
+          return new Bluebird(function(done) {
+            runtime.executePromiseFunction(functionName)
+              .then(function(taskOutput) {
+                return taskOutput.assertTempReport(taskName + '.json');
+              })
+              .then(function() { done(); })
+              .catch(done.fail);
 
-          analysisStream.push({ path: 'test_file1', testData: 123 });
-          analysisStream.push({ path: 'test_file2', testData: 456 });
-          analysisStream.end();
+            analysisStream.push({ path: 'test_file1', testData: 123 });
+            analysisStream.push({ path: 'test_file2', testData: 456 });
+            analysisStream.end();
+          });
         });
       });
     });

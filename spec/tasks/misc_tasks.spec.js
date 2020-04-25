@@ -1,3 +1,4 @@
+/* eslint-disable jest/expect-expect */
 var Bluebird = require('bluebird');
 
 var miscTasks = require('tasks/misc_tasks');

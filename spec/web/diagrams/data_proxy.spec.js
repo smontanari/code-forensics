@@ -25,7 +25,7 @@ describe('DataProxy', function() {
       };
       var proxy = new DataProxy(adapter);
 
-      expect(proxy.processData(123)).resolves.toEqual(246);
+      return expect(proxy.processData(123)).resolves.toEqual(246);
     });
   });
 });

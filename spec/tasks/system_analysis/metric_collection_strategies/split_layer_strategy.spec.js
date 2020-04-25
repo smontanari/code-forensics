@@ -1,5 +1,6 @@
-var stream = require('stream'),
-    moment = require('moment');
+var stream   = require('stream'),
+    Bluebird = require('bluebird'),
+    moment   = require('moment');
 
 var splitLayerStrategy = require('tasks/system_analysis/metric_collection_strategies/split_layer_strategy'),
     TimePeriod         = require('models/time_interval/time_period'),
@@ -10,38 +11,40 @@ describe('splitLayerStrategy', function() {
     var strategyFn, mockFilesHelper, mockStreamProcessor, mockCodeMaatHelper, testAnalysisStream, streamsData, strategyAnalysisFn;
 
     var assertStream = function() {
-      it('merges the streams of the individual layers analysis', function(done) {
-        var output = strategyFn(['p1', 'p2']);
+      it('merges the streams of the individual layers analysis', function() {
+        return new Bluebird(function(done) {
+          var output = strategyFn(['p1', 'p2']);
 
-        expect(output).toEqual('test_output');
-        expect(mockStreamProcessor.mergeAll)
-          .toHaveBeenCalledWith([
-            { timePeriod: 'p1', layer: expect.objectContaining({ name: 'test-layer-1', value: 'Test Layer 1' }) },
-            { timePeriod: 'p1', layer: expect.objectContaining({ name: 'test-layer-2', value: 'Test Layer 2' }) },
-            { timePeriod: 'p1', layer: expect.objectContaining({ name: 'test-layer-3', value: 'Test Layer 3' }) },
-            { timePeriod: 'p2', layer: expect.objectContaining({ name: 'test-layer-1', value: 'Test Layer 1' }) },
-            { timePeriod: 'p2', layer: expect.objectContaining({ name: 'test-layer-2', value: 'Test Layer 2' }) },
-            { timePeriod: 'p2', layer: expect.objectContaining({ name: 'test-layer-3', value: 'Test Layer 3' }) }
-          ], expect.any(Function));
+          expect(output).toEqual('test_output');
+          expect(mockStreamProcessor.mergeAll)
+            .toHaveBeenCalledWith([
+              { timePeriod: 'p1', layer: expect.objectContaining({ name: 'test-layer-1', value: 'Test Layer 1' }) },
+              { timePeriod: 'p1', layer: expect.objectContaining({ name: 'test-layer-2', value: 'Test Layer 2' }) },
+              { timePeriod: 'p1', layer: expect.objectContaining({ name: 'test-layer-3', value: 'Test Layer 3' }) },
+              { timePeriod: 'p2', layer: expect.objectContaining({ name: 'test-layer-1', value: 'Test Layer 1' }) },
+              { timePeriod: 'p2', layer: expect.objectContaining({ name: 'test-layer-2', value: 'Test Layer 2' }) },
+              { timePeriod: 'p2', layer: expect.objectContaining({ name: 'test-layer-3', value: 'Test Layer 3' }) }
+            ], expect.any(Function));
 
-        var timePeriod = new TimePeriod({ start: moment('2010-05-01 00Z'), end: moment('2010-05-31 00Z') }, 'DD-MM-YYYY');
-        var data = [];
-        strategyAnalysisFn({ timePeriod: timePeriod, layer: { name: 'test-layer', value: 'Test Layer' } })
-          .on('data', function(obj) { data.push(obj); })
-          .on('end', function() {
-            expect(data).toEqual([
-              { name: 'Test Layer', metric1: 10, metric2:  5, date: '2010-05-31T00:00:00.000Z' }
-            ]);
+          var timePeriod = new TimePeriod({ start: moment('2010-05-01 00Z'), end: moment('2010-05-31 00Z') }, 'DD-MM-YYYY');
+          var data = [];
+          strategyAnalysisFn({ timePeriod: timePeriod, layer: { name: 'test-layer', value: 'Test Layer' } })
+            .on('data', function(obj) { data.push(obj); })
+            .on('end', function() {
+              expect(data).toEqual([
+                { name: 'Test Layer', metric1: 10, metric2:  5, date: '2010-05-31T00:00:00.000Z' }
+              ]);
 
-            expect(mockFilesHelper.vcsNormalisedLog).toHaveBeenCalledWith(timePeriod);
-            expect(mockCodeMaatHelper.testAnalysis).toHaveBeenCalledWith('test_vcs_log', { '-g': 'test-layer.txt' });
-            done();
+              expect(mockFilesHelper.vcsNormalisedLog).toHaveBeenCalledWith(timePeriod);
+              expect(mockCodeMaatHelper.testAnalysis).toHaveBeenCalledWith('test_vcs_log', { '-g': 'test-layer.txt' });
+              done();
+            });
+
+          streamsData.forEach(function(v) {
+            testAnalysisStream.push(v);
           });
-
-        streamsData.forEach(function(v) {
-          testAnalysisStream.push(v);
+          testAnalysisStream.end();
         });
-        testAnalysisStream.end();
       });
     };
 

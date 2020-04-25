@@ -1,3 +1,4 @@
+/* eslint jest/expect-expect: [1, { "assertFunctionNames": ["expect", "assertLayersRepresentation"] }] */
 var LayerGrouping = require('models/layer_grouping');
 
 describe('LayerGrouping', function() {

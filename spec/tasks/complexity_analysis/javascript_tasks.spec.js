@@ -1,3 +1,4 @@
+/* eslint jest/expect-expect: [1, { "assertFunctionNames": ["expect", "taskOutput.assert*"] }] */
 var stream   = require('stream'),
     lolex    = require('lolex'),
     Bluebird = require('bluebird');
@@ -55,38 +56,40 @@ describe('javascript tasks', function() {
       clock.uninstall();
     });
 
-    it('publishes an analysis on the complexity trend for a given javascript file in the repository', function(done) {
-      var revisionStream1 = new stream.PassThrough();
-      var revisionStream2 = new stream.PassThrough();
+    it('publishes an analysis on the complexity trend for a given javascript file in the repository', function() {
+      return new Bluebird(function(done) {
+        var revisionStream1 = new stream.PassThrough();
+        var revisionStream2 = new stream.PassThrough();
 
-      mockVcs.revisions.mockReturnValue([
-        { revisionId: 123, date: '2015-04-29T23:00:00.000Z' },
-        { revisionId: 456, date: '2015-05-04T23:00:00.000Z' }
-      ]);
-      mockVcs.showRevisionStream
-        .mockReturnValueOnce(revisionStream1)
-        .mockReturnValueOnce(revisionStream2);
-
-      runtime = taskHelpers.createRuntime('javascript_tasks', javascriptTasks, null, { dateFrom: '2015-03-01', targetFile: 'test_abs.js' });
-
-      runtime.executePromiseTask('javascript-complexity-trend-analysis').then(function(taskOutput) {
-        return Bluebird.all([
-          taskOutput.assertOutputReport('2015-03-01_2015-10-22_complexity-trend-data.json'),
-          taskOutput.assertManifest()
+        mockVcs.revisions.mockReturnValue([
+          { revisionId: 123, date: '2015-04-29T23:00:00.000Z' },
+          { revisionId: 456, date: '2015-05-04T23:00:00.000Z' }
         ]);
-      })
-      .then(function() { done(); })
-      .catch(done.fail);
+        mockVcs.showRevisionStream
+          .mockReturnValueOnce(revisionStream1)
+          .mockReturnValueOnce(revisionStream2);
 
-      revisionStream1.push('function abs(a,b) {\n');
-      revisionStream2.push('function abs(a,b) {\n');
-      revisionStream2.push('if (a < b) {\n;');
-      revisionStream2.push('return b - a;\n};\n');
-      revisionStream1.push('return a - b;\n};');
-      revisionStream1.end();
-      revisionStream2.push('return a - b;\n');
-      revisionStream2.push('};\n');
-      revisionStream2.end();
+        runtime = taskHelpers.createRuntime('javascript_tasks', javascriptTasks, null, { dateFrom: '2015-03-01', targetFile: 'test_abs.js' });
+
+        runtime.executePromiseTask('javascript-complexity-trend-analysis').then(function(taskOutput) {
+          return Bluebird.all([
+            taskOutput.assertOutputReport('2015-03-01_2015-10-22_complexity-trend-data.json'),
+            taskOutput.assertManifest()
+          ]);
+        })
+        .then(function() { done(); })
+        .catch(done.fail);
+
+        revisionStream1.push('function abs(a,b) {\n');
+        revisionStream2.push('function abs(a,b) {\n');
+        revisionStream2.push('if (a < b) {\n;');
+        revisionStream2.push('return b - a;\n};\n');
+        revisionStream1.push('return a - b;\n};');
+        revisionStream1.end();
+        revisionStream2.push('return a - b;\n');
+        revisionStream2.push('};\n');
+        revisionStream2.end();
+      });
     });
   });
 });

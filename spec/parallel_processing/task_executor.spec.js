@@ -1,3 +1,4 @@
+/* eslint jest/expect-expect: [1, { "assertFunctionNames": ["expect", "assertSettledPromises"] }] */
 var Bluebird = require('bluebird');
 
 var TaskExecutor = require('parallel_processing/task_executor');

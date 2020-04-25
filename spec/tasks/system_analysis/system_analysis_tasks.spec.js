@@ -1,3 +1,4 @@
+/* eslint jest/expect-expect: [1, { "assertFunctionNames": ["expect", "runtime.assertTaskDependencies"] }] */
 var stream   = require('stream'),
     _        = require('lodash'),
     lolex    = require('lolex'),
@@ -248,75 +249,77 @@ describe('System analysis tasks', function() {
     };
 
     var testAnalysis = function(description, taskParameters, analysisStreams, supportedAnalyses, expectedResults) {
-      it(description, function(done) {
-        var streams = analysisStreams.map(function(analysisStream) {
-          var mockAnalysisStream = jest.fn().mockName('analysisStream');
-          var streamObjects = analysisStream.data.map(function() {
-            var streamObject = new stream.PassThrough({ objectMode: true });
-            mockAnalysisStream.mockReturnValueOnce(streamObject);
-            return streamObject;
-          });
-          return _.extend({}, analysisStream, {
-            streamObjects: streamObjects,
-            mockAnalyser: {
-              isSupported: function() { return _.includes(supportedAnalyses, analysisStream.codeMaatInstruction); },
-              fileAnalysisStream: mockAnalysisStream
-            }
-          });
-        });
-
-        codeMaat.analyser = jest.fn().mockImplementation(function(instruction) {
-          return _.find(streams, { codeMaatInstruction: instruction }).mockAnalyser;
-        });
-
-        runtime = taskHelpers.createRuntime('system_analysis_tasks', systemAnalysisTasks,
-          {
-            layerGroups: {
-              'test_boundary': [
-                { name: 'test_layer1', paths: 'some paths' },
-                { name: 'test_layer2', paths: 'some paths' },
-                { name: 'test_layer3', paths: 'some paths' }
-              ]
-            }
-          },
-          taskParameters
-        );
-
-        runtime.executePromiseTask('system-evolution-analysis')
-          .then(function(taskOutput) {
-            streams.forEach(function(testStream) {
-              if (testStream.mockAnalyser.isSupported()) {
-                testStream.data.forEach(function(d) {
-                  if (d.layerGroupFile) {
-                    expect(testStream.mockAnalyser.fileAnalysisStream).toHaveBeenCalledWith(expect.stringMatching(d.period), expect.objectContaining({ '-g': expect.stringMatching(d.layerGroupFile) }));
-                  } else {
-                    expect(testStream.mockAnalyser.fileAnalysisStream).toHaveBeenCalledWith(expect.stringMatching(d.period), undefined);
-                  }
-                });
-              } else {
-                expect(testStream.mockAnalyser.fileAnalysisStream).not.toHaveBeenCalled();
+      it(description, function() {
+        return new Bluebird(function(done) {
+          var streams = analysisStreams.map(function(analysisStream) {
+            var mockAnalysisStream = jest.fn().mockName('analysisStream');
+            var streamObjects = analysisStream.data.map(function() {
+              var streamObject = new stream.PassThrough({ objectMode: true });
+              mockAnalysisStream.mockReturnValueOnce(streamObject);
+              return streamObject;
+            });
+            return _.extend({}, analysisStream, {
+              streamObjects: streamObjects,
+              mockAnalyser: {
+                isSupported: function() { return _.includes(supportedAnalyses, analysisStream.codeMaatInstruction); },
+                fileAnalysisStream: mockAnalysisStream
               }
             });
+          });
 
-          return Bluebird.all(
-            expectedResults.reports.map(function(filename) {
-              return taskOutput.assertOutputReport(filename);
-            }).concat(
-              expectedResults.missingReports.map(function(filename) {
-                return taskOutput.assertMissingOutputReport(filename);
-              })
-            ).concat([
-              taskOutput.assertManifest()
-            ])
+          codeMaat.analyser = jest.fn().mockImplementation(function(instruction) {
+            return _.find(streams, { codeMaatInstruction: instruction }).mockAnalyser;
+          });
+
+          runtime = taskHelpers.createRuntime('system_analysis_tasks', systemAnalysisTasks,
+            {
+              layerGroups: {
+                'test_boundary': [
+                  { name: 'test_layer1', paths: 'some paths' },
+                  { name: 'test_layer2', paths: 'some paths' },
+                  { name: 'test_layer3', paths: 'some paths' }
+                ]
+              }
+            },
+            taskParameters
           );
-        })
-        .then(function() { done(); })
-        .catch(done.fail);
 
-        streams.forEach(function(s) {
-          s.data.forEach(function(d, index) {
-            d.values.forEach(function(v) { s.streamObjects[index].push(v); });
-            s.streamObjects[index].end();
+          runtime.executePromiseTask('system-evolution-analysis')
+            .then(function(taskOutput) {
+              streams.forEach(function(testStream) {
+                if (testStream.mockAnalyser.isSupported()) {
+                  testStream.data.forEach(function(d) {
+                    if (d.layerGroupFile) {
+                      expect(testStream.mockAnalyser.fileAnalysisStream).toHaveBeenCalledWith(expect.stringMatching(d.period), expect.objectContaining({ '-g': expect.stringMatching(d.layerGroupFile) }));
+                    } else {
+                      expect(testStream.mockAnalyser.fileAnalysisStream).toHaveBeenCalledWith(expect.stringMatching(d.period), undefined);
+                    }
+                  });
+                } else {
+                  expect(testStream.mockAnalyser.fileAnalysisStream).not.toHaveBeenCalled();
+                }
+              });
+
+            return Bluebird.all(
+              expectedResults.reports.map(function(filename) {
+                return taskOutput.assertOutputReport(filename);
+              }).concat(
+                expectedResults.missingReports.map(function(filename) {
+                  return taskOutput.assertMissingOutputReport(filename);
+                })
+              ).concat([
+                taskOutput.assertManifest()
+              ])
+            );
+          })
+          .then(function() { done(); })
+          .catch(done.fail);
+
+          streams.forEach(function(s) {
+            s.data.forEach(function(d, index) {
+              d.values.forEach(function(v) { s.streamObjects[index].push(v); });
+              s.streamObjects[index].end();
+            });
           });
         });
       });

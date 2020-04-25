@@ -1,3 +1,4 @@
+/* eslint jest/expect-expect: [1, { "assertFunctionNames": ["expect", "taskOutput.assert*", "runtime.assert*"] }] */
 var Bluebird = require('bluebird'),
     lolex    = require('lolex'),
     stream   = require('stream');
@@ -36,26 +37,28 @@ describe('Coupling analysis tasks', function() {
       runtime.assertTaskDependencies('sum-of-coupling-analysis', ['vcsLogDump']);
     });
 
-    it('publishes a report on the sum of coupling for each file', function(done) {
-      var analysisStream = new stream.PassThrough({ objectMode: true });
-      codeMaat.analyser = jest.fn().mockReturnValue(
-        { fileAnalysisStream: function() { return analysisStream; } }
-      );
+    it('publishes a report on the sum of coupling for each file', function() {
+      return new Bluebird(function(done) {
+        var analysisStream = new stream.PassThrough({ objectMode: true });
+        codeMaat.analyser = jest.fn().mockReturnValue(
+          { fileAnalysisStream: function() { return analysisStream; } }
+        );
 
-      runtime.executePromiseTask('sum-of-coupling-analysis').then(function(taskOutput) {
-        return Bluebird.all([
-          taskOutput.assertOutputReport('2015-03-01_2015-10-22_sum-of-coupling-data.json'),
-          taskOutput.assertManifest()
-        ]);
-      })
-      .then(function() { done(); })
-      .catch(done.fail);
+        runtime.executePromiseTask('sum-of-coupling-analysis').then(function(taskOutput) {
+          return Bluebird.all([
+            taskOutput.assertOutputReport('2015-03-01_2015-10-22_sum-of-coupling-data.json'),
+            taskOutput.assertManifest()
+          ]);
+        })
+        .then(function() { done(); })
+        .catch(done.fail);
 
-      expect(codeMaat.analyser).toHaveBeenCalledWith('soc');
-      analysisStream.push({ path: 'test_file1', soc: 34 });
-      analysisStream.push({ path: 'test_file2', soc: 62 });
-      analysisStream.push({ path: 'test_invalid_file', soc: 23 });
-      analysisStream.end();
+        expect(codeMaat.analyser).toHaveBeenCalledWith('soc');
+        analysisStream.push({ path: 'test_file1', soc: 34 });
+        analysisStream.push({ path: 'test_file2', soc: 62 });
+        analysisStream.push({ path: 'test_invalid_file', soc: 23 });
+        analysisStream.end();
+      });
     });
   });
 
@@ -116,49 +119,51 @@ describe('Coupling analysis tasks', function() {
       runtime.assertTaskDependencies('temporal-coupling-analysis', ['vcsLogDump', 'slocReport']);
     });
 
-    it('publishes as many reports as the given time periods with coupling information between each file and a target file', function(done) {
-      var couplingStreams = [
-        new stream.PassThrough({ objectMode: true }),
-        new stream.PassThrough({ objectMode: true }),
-        new stream.PassThrough({ objectMode: true })
-      ];
-      var churnStreams = [
-        new stream.PassThrough({ objectMode: true }),
-        new stream.PassThrough({ objectMode: true }),
-        new stream.PassThrough({ objectMode: true })
-      ];
+    it('publishes as many reports as the given time periods with coupling information between each file and a target file', function() {
+      return new Bluebird(function(done) {
+        var couplingStreams = [
+          new stream.PassThrough({ objectMode: true }),
+          new stream.PassThrough({ objectMode: true }),
+          new stream.PassThrough({ objectMode: true })
+        ];
+        var churnStreams = [
+          new stream.PassThrough({ objectMode: true }),
+          new stream.PassThrough({ objectMode: true }),
+          new stream.PassThrough({ objectMode: true })
+        ];
 
-      var couplingAnalysisIndex = 0,
-          churnAnalysisIndex    = 0;
+        var couplingAnalysisIndex = 0,
+            churnAnalysisIndex    = 0;
 
-      codeMaat.analyser = jest.fn().mockImplementation(function(analysis) {
-        if (analysis === 'coupling') {
-          return { fileAnalysisStream: jest.fn().mockReturnValueOnce(couplingStreams[couplingAnalysisIndex++]) };
-        }
-        if (analysis === 'entity-churn') {
-          return { fileAnalysisStream: jest.fn().mockReturnValueOnce(churnStreams[churnAnalysisIndex++]) };
-        }
-      });
+        codeMaat.analyser = jest.fn().mockImplementation(function(analysis) {
+          if (analysis === 'coupling') {
+            return { fileAnalysisStream: jest.fn().mockReturnValueOnce(couplingStreams[couplingAnalysisIndex++]) };
+          }
+          if (analysis === 'entity-churn') {
+            return { fileAnalysisStream: jest.fn().mockReturnValueOnce(churnStreams[churnAnalysisIndex++]) };
+          }
+        });
 
-      runtime.executePromiseTask('temporal-coupling-analysis')
-        .then(function(taskOutput) {
-          return Bluebird.all([
-            taskOutput.assertOutputReport('2016-01-01_2016-01-31_temporal-coupling-data.json'),
-            taskOutput.assertOutputReport('2016-03-01_2016-03-31_temporal-coupling-data.json'),
-            taskOutput.assertMissingOutputReport('2016-02-01_2016-02-29_temporal-coupling-data.json'),
-            taskOutput.assertManifest()
-          ]);
-        })
-        .then(function() { done(); })
-        .catch(done.fail);
+        runtime.executePromiseTask('temporal-coupling-analysis')
+          .then(function(taskOutput) {
+            return Bluebird.all([
+              taskOutput.assertOutputReport('2016-01-01_2016-01-31_temporal-coupling-data.json'),
+              taskOutput.assertOutputReport('2016-03-01_2016-03-31_temporal-coupling-data.json'),
+              taskOutput.assertMissingOutputReport('2016-02-01_2016-02-29_temporal-coupling-data.json'),
+              taskOutput.assertManifest()
+            ]);
+          })
+          .then(function() { done(); })
+          .catch(done.fail);
 
-      couplingStreams.forEach(function(s, index) {
-        couplingStreamsData[index].forEach(s.push.bind(s));
-        s.end();
-      });
-      churnStreams.forEach(function(s, index) {
-        churnStreamsData[index].forEach(s.push.bind(s));
-        s.end();
+        couplingStreams.forEach(function(s, index) {
+          couplingStreamsData[index].forEach(s.push.bind(s));
+          s.end();
+        });
+        churnStreams.forEach(function(s, index) {
+          churnStreamsData[index].forEach(s.push.bind(s));
+          s.end();
+        });
       });
     });
   });

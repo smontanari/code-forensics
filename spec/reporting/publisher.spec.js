@@ -239,15 +239,19 @@ describe('Publisher', function() {
 
       describe('when no report files are added', function() {
         it('returns a rejected promise upon creation', function() {
-          expect(subject.createManifest()).rejects.toThrow('Failed to create report: no available data files');
-          expect(mkdirp.sync).not.toHaveBeenCalled();
+          return expect(subject.createManifest())
+            .rejects
+            .toThrow('Failed to create report: no available data files')
+            .then(function() {
+              expect(mkdirp.sync).not.toHaveBeenCalled();
+             });
         });
       });
 
       describe('when no diagrams are enabled', function() {
         it('returns a rejected promise upon creation', function() {
           subject.addReportFile(new TimePeriod({ start: moment('2012-04-01'), end: moment('2012-05-31') }, 'YYYY-MM'));
-          expect(subject.createManifest()).rejects.toThrow('Failed to create report: no diagrams enabled');
+          return expect(subject.createManifest()).rejects.toThrow('Failed to create report: no diagrams enabled');
         });
       });
     });
@@ -285,7 +289,8 @@ describe('Publisher', function() {
       });
 
       it('exposes the reportId value', function() {
-        expect(subject.createManifest()).resolves
+        return expect(subject.createManifest())
+          .resolves
           .toEqual('c8c1dcae8f21797ee19a82d7958caf0aba7da1c6');
       });
     });

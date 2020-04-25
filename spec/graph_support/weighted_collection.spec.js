@@ -5,7 +5,9 @@ var WeightedCollection = require('graph_support/weighted_collection');
 describe('WeightedCollection', function() {
   describe('empty collection', function() {
     it('does nothing', function() {
-      new WeightedCollection('value').assignWeights();
+      expect(
+        function() { new WeightedCollection('value').assignWeights(); }
+      ).not.toThrow();
     });
   });
 
