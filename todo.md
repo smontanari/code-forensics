@@ -1,6 +1,7 @@
+Dependencies:
+- more upgrades require higher versions of NodeJS. Assess upgrading to NodeJS >= 8.
+
 Improvements:
-- don't execute code-maat and print error message if log dump is empty or without file metrics
-- add option to clear logs before analysis run
 
 Refactoring:
 - suggest using Git `.mailmap` to reduce effort in configuring developers names
