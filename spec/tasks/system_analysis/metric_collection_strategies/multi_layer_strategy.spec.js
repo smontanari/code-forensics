@@ -56,7 +56,7 @@ describe('multiLayerStrategy', function() {
             ]);
 
             expect(mockFilesHelper.vcsNormalisedLog).toHaveBeenCalledWith(timePeriod);
-            expect(mockCodeMaatHelper.testAnalysis).toHaveBeenCalledWith('test_vcs_log', { '-g': 'test_group_file.txt' });
+            expect(mockCodeMaatHelper.testAnalysis).toHaveBeenCalledWith('test_vcs_log', 'test_group_file.txt');
             done();
           });
 

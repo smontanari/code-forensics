@@ -31,11 +31,11 @@ describe('CodeMaatHelper', function() {
     });
 
     it('returns the codemaat analysis of the input file', function() {
-      var result = subject[analysis]('test_input', 'test_options');
+      var result = subject[analysis]('test_log_input', 'test_group_input', 'test_options');
 
       expect(result).toEqual('test_result');
       expect(codeMaat.analyser).toHaveBeenCalledWith(instruction);
-      expect(mockAnalyser.fileAnalysisStream).toHaveBeenCalledWith('test_input', 'test_options');
+      expect(mockAnalyser.fileAnalysisStream).toHaveBeenCalledWith('test_log_input', 'test_group_input', 'test_options');
     });
   });
 });

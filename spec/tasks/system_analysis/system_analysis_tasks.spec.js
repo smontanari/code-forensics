@@ -290,9 +290,9 @@ describe('System analysis tasks', function() {
                 if (testStream.mockAnalyser.isSupported()) {
                   testStream.data.forEach(function(d) {
                     if (d.layerGroupFile) {
-                      expect(testStream.mockAnalyser.fileAnalysisStream).toHaveBeenCalledWith(expect.stringMatching(d.period), expect.objectContaining({ '-g': expect.stringMatching(d.layerGroupFile) }));
+                      expect(testStream.mockAnalyser.fileAnalysisStream).toHaveBeenCalledWith(expect.stringMatching(d.period), expect.stringMatching(d.layerGroupFile), undefined);
                     } else {
-                      expect(testStream.mockAnalyser.fileAnalysisStream).toHaveBeenCalledWith(expect.stringMatching(d.period), undefined);
+                      expect(testStream.mockAnalyser.fileAnalysisStream).toHaveBeenCalledWith(expect.stringMatching(d.period), undefined, undefined);
                     }
                   });
                 } else {

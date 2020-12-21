@@ -36,7 +36,7 @@ describe('splitLayerStrategy', function() {
               ]);
 
               expect(mockFilesHelper.vcsNormalisedLog).toHaveBeenCalledWith(timePeriod);
-              expect(mockCodeMaatHelper.testAnalysis).toHaveBeenCalledWith('test_vcs_log', { '-g': 'test-layer.txt' });
+              expect(mockCodeMaatHelper.testAnalysis).toHaveBeenCalledWith('test_vcs_log', 'test-layer.txt');
               done();
             });
 
