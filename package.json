@@ -36,7 +36,7 @@
     "d3-tip": "^0.9.1",
     "del": "^3.0.0",
     "duplexer2": "^0.1.4",
-    "ecstatic": "^3.3.2",
+    "ecstatic": "^4.1.4",
     "fast-csv": "^2.5.0",
     "findup-sync": "^3.0.0",
     "glob": "^7.1.6",
