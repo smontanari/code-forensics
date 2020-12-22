@@ -1,6 +1,6 @@
 {
   "name": "code-forensics",
-  "version": "2.3.1",
+  "version": "2.4.0",
   "homepage": "https://github.com/smontanari/code-forensics",
   "bugs": "https://github.com/smontanari/code-forensics/issues",
   "license": "GPL-3.0",
@@ -16,7 +16,6 @@
     "public",
     "scripts"
   ],
-  "bin": {},
   "engines": {
     "node": ">=4.5.0",
     "npm": ">=3.0.0"
