@@ -37,7 +37,7 @@
     "del": "^3.0.0",
     "duplexer2": "^0.1.4",
     "ecstatic": "^3.3.2",
-    "fast-csv": "^2.5.0",
+    "fast-csv": "^4.3.6",
     "findup-sync": "^3.0.0",
     "glob": "^7.1.6",
     "gulp": "^4.0.2",
