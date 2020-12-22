@@ -2,11 +2,11 @@ name: Run tests
 on:
   push:
     branches:
-      - master
+      - main
       - 'dependabot/**'
   pull_request:
     branches:
-      - master
+      - main
 jobs:
   test_and_lint:
     name: Run tests and lint code
