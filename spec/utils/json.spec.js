@@ -9,7 +9,7 @@ describe('utils.json', function() {
   describe('.fileToObject()', function() {
     beforeEach(function() {
       fs.readFile.mockImplementation(function(_file, callback) {
-        callback(null, new Buffer('{"object": [{"a": 123},{"a": 456, "b": {"c": "test"}}]}'));
+        callback(null, Buffer.from('{"object": [{"a": 123},{"a": 456, "b": {"c": "test"}}]}'));
       });
     });
 
@@ -85,7 +85,7 @@ describe('utils.json', function() {
   describe('.objectArrayToFileStream()', function() {
     var output;
     beforeEach(function() {
-      output = new Buffer(0);
+      output = Buffer.from([]);
 
       fs.createWriteStream.mockReturnValue(
         new stream.Writable({
@@ -118,7 +118,7 @@ describe('utils.json', function() {
   describe('.objectToFileStream()', function() {
     var output;
     beforeEach(function() {
-      output = new Buffer(0);
+      output = Buffer.from([]);
       fs.createWriteStream.mockReturnValue(
         new stream.Writable({
           write: function(data, _enc, next) {

@@ -35,8 +35,6 @@ expect.extend({
 
 describe('TaskDefinitions', function() {
   var gulpTask,
-      // gulpTaskFn,
-      // gulpSeries,
       taskRunnerFunction,
       mockRunners,
       mockDependency,
@@ -49,8 +47,6 @@ describe('TaskDefinitions', function() {
       report: { run: jest.fn().mockReturnValue('report-output') }
     };
 
-    // gulpTaskFn = spyOn(gulp, 'task');
-    // gulpSeries = spyOn(gulp, 'series');
     gulpTask = {};
     gulp.task.mockImplementation(function(_, fn) {
       if (fn) {
@@ -71,20 +67,25 @@ describe('TaskDefinitions', function() {
     doneCallback = jest.fn();
   });
 
-  var assertGulpInvocation = function(parameters, dependency, runner, description) {
-    it('serializes the task function with the dependencies', function() {
-      var gulpSeriesFns = [];
-      if (parameters) { gulpSeriesFns.push(expect.any(Function)); }
-      if (dependency) { gulpSeriesFns.push(mockDependency); }
-      if (runner) { gulpSeriesFns.push(mockRunners[runner].run); }
+  var assertGulpSeries = function(parameters, dependency, runner) {
+    if (_.filter([parameters, dependency, runner]).length > 1) {
+      it('serializes the task function with the dependencies', function() {
+        var gulpSeriesFns = [];
+        if (parameters) { gulpSeriesFns.push(expect.any(Function)); }
+        if (dependency) { gulpSeriesFns.push(mockDependency); }
+        if (runner) { gulpSeriesFns.push(mockRunners[runner].run); }
 
-      if (gulpSeriesFns.length > 1) {
         expect(gulp.series.mock.calls[0]).toEqual(gulpSeriesFns);
-      } else {
+      });
+    } else {
+      it('does not serialize the task function', function() {
         expect(gulp.series.mock.calls).toHaveLength(0);
-      }
-    });
+        expect(gulp.series).not.toHaveBeenCalled();
+      });
+    }
+  };
 
+  var assertGulpTask = function(description) {
     it('adds a task with gulp', function() {
       expect(gulp.task).toHaveBeenCalledWith('test-task', expect.any(Function));
     });
@@ -143,7 +144,8 @@ describe('TaskDefinitions', function() {
         subject.addTask('test-task', { run: 'taskFunction' });
       });
 
-      assertGulpInvocation(false, false, 'default', 'No description available');
+      assertGulpSeries(false, false, 'default');
+      assertGulpTask('No description available');
       assertDefaultRunnerInvocation({
         name: 'test-task', run: 'taskFunction', description: 'No description available', parameters: []
       });
@@ -154,7 +156,8 @@ describe('TaskDefinitions', function() {
         subject.addTask('test-task', mockDependency);
       });
 
-      assertGulpInvocation(false, true, undefined, 'No description available');
+      assertGulpSeries(false, true, undefined);
+      assertGulpTask('No description available');
       assertNoRunnerInvocation();
     });
 
@@ -163,7 +166,8 @@ describe('TaskDefinitions', function() {
         subject.addTask('test-task', { run: 'taskFunction' }, mockDependency);
       });
 
-      assertGulpInvocation(false, true, 'default', 'No description available');
+      assertGulpSeries(false, true, 'default');
+      assertGulpTask('No description available');
       assertDefaultRunnerInvocation({
         name: 'test-task', dependency: true, run: 'taskFunction', description: 'No description available', parameters: []
       });
@@ -178,7 +182,8 @@ describe('TaskDefinitions', function() {
         }, mockDependency);
       });
 
-      assertGulpInvocation(true, true, 'default', 'test task description');
+      assertGulpSeries(true, true, 'default');
+      assertGulpTask('test task description');
       assertDefaultRunnerInvocation({
         name: 'test-task', dependency: true, run: 'taskFunction', description: 'test task description', parameters: [{ name: 'testParam' }]
       });
@@ -189,7 +194,8 @@ describe('TaskDefinitions', function() {
         subject.addAnalysisTask('test-task', { run: 'taskFunction' }, mockDependency);
       });
 
-      assertGulpInvocation(false, true, 'report', 'No description available');
+      assertGulpSeries(false, true, 'report');
+      assertGulpTask('No description available');
       assertReportRunnerInvocation({
         name: 'test-task', dependency: true, run: 'taskFunction', description: 'No description available', parameters: []
       });
@@ -204,7 +210,8 @@ describe('TaskDefinitions', function() {
         });
       });
 
-      assertGulpInvocation(true, false, 'report', 'test task description');
+      assertGulpSeries(true, false, 'report');
+      assertGulpTask('test task description');
       assertReportRunnerInvocation({
         name: 'test-task', run: 'taskFunction', description: 'test task description', parameters: [{ name: 'testParam' }]
       });
@@ -273,9 +280,9 @@ describe('TaskDefinitions', function() {
       });
     });
 
-    describe('when unsuccessful ', function() {
+    describe('when unsuccessful', function() {
       describe('for a default task', function() {
-        it('it throws an error if any required parameter is not present', function() {
+        it('throws an error if any required parameter is not present', function() {
           subject.addTask('test-task', {
             description: 'test task description',
             run: 'taskFunction',
@@ -287,7 +294,7 @@ describe('TaskDefinitions', function() {
       });
 
       describe('for an analysis task', function() {
-        it('it throws an error if any required parameter is not present', function() {
+        it('throws an error if any required parameter is not present', function() {
           subject.addAnalysisTask('test-task', {
             description: 'test task description',
             run: 'taskFunction',

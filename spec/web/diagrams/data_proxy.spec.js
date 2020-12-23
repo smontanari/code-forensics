@@ -4,7 +4,7 @@ var DataProxy = require('web/diagrams/data_proxy');
 
 describe('DataProxy', function() {
   describe('default layout adapter', function() {
-    it('it does not change the data for the layout', function() {
+    it('does not change the data for the layout', function() {
       var proxy = new DataProxy(null, function(data) {
         return 'transformed ' + data;
       });

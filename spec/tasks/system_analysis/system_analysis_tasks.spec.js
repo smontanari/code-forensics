@@ -1,8 +1,8 @@
 /* eslint jest/expect-expect: [1, { "assertFunctionNames": ["expect", "runtime.assertTaskDependencies"] }] */
-var stream   = require('stream'),
-    _        = require('lodash'),
-    lolex    = require('lolex'),
-    Bluebird = require('bluebird');
+var stream     = require('stream'),
+    _          = require('lodash'),
+    FakeTimers = require('@sinonjs/fake-timers'),
+    Bluebird   = require('bluebird');
 
 var systemAnalysisTasks = require('tasks/system_analysis/system_analysis_tasks'),
     codeMaat            = require('analysers/code_maat'),
@@ -13,7 +13,7 @@ var taskHelpers = require('../../jest_tasks_helpers');
 describe('System analysis tasks', function() {
   var clock, runtime;
   beforeEach(function() {
-    clock = lolex.install({ now: new Date('2015-10-22T10:00:00.000Z') });
+    clock = FakeTimers.install({ now: new Date('2015-10-22T10:00:00.000Z') });
     command.Command.ensure = jest.fn();
   });
 
@@ -249,6 +249,7 @@ describe('System analysis tasks', function() {
     };
 
     var testAnalysis = function(description, taskParameters, analysisStreams, supportedAnalyses, expectedResults) {
+      // eslint-disable-next-line jest/valid-title
       it(description, function() {
         return new Bluebird(function(done) {
           var streams = analysisStreams.map(function(analysisStream) {
@@ -287,6 +288,7 @@ describe('System analysis tasks', function() {
           runtime.executePromiseTask('system-evolution-analysis')
             .then(function(taskOutput) {
               streams.forEach(function(testStream) {
+                /* eslint-disable jest/no-conditional-expect */
                 if (testStream.mockAnalyser.isSupported()) {
                   testStream.data.forEach(function(d) {
                     if (d.layerGroupFile) {
@@ -298,6 +300,7 @@ describe('System analysis tasks', function() {
                 } else {
                   expect(testStream.mockAnalyser.fileAnalysisStream).not.toHaveBeenCalled();
                 }
+                /* eslint-enable jest/no-conditional-expect */
               });
 
             return Bluebird.all(

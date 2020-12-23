@@ -98,7 +98,7 @@ describe('GitAdapter', function() {
 
   describe('.revisions()', function() {
     it('returns the list of revisions for the given time period', function() {
-      command.run.mockReturnValue(new Buffer(
+      command.run.mockReturnValue(Buffer.from(
         '123,test-date1\n456,test-date2\n789,test-date3\n'
       ));
       var revisions = subject.revisions('test/file', timePeriod);
@@ -114,7 +114,7 @@ describe('GitAdapter', function() {
     });
 
     it('returns an empty list if the command output is empty', function() {
-      command.run.mockReturnValue(new Buffer('\n'));
+      command.run.mockReturnValue(Buffer.from('\n'));
       var revisions = subject.revisions('test/file', timePeriod);
 
       expect(revisions).toEqual([]);

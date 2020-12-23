@@ -12,6 +12,7 @@ var taskHelpers = require('../jest_tasks_helpers');
 describe('CodeMaat report tasks', function() {
   var runtime;
 
+  /* eslint-disable jest/valid-title */
   var assertReport = function(exampleDescription, taskName, functionName) {
     describe(taskName, function() {
       var analysisStream;

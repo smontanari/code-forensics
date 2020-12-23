@@ -565,7 +565,7 @@ Object {
 }
 `;
 
-exports[`Social analysis tasks knowledge-map-analysis for a supported vcs type when no team information exists publishes a report on the main developer for each file : 2016-01-01_2016-10-22_knowledge-map-data.json 1`] = `
+exports[`Social analysis tasks knowledge-map-analysis for a supported vcs type when no team information exists publishes a report on the main developer for each file: 2016-01-01_2016-10-22_knowledge-map-data.json 1`] = `
 Object {
   "children": Array [
     Object {
@@ -643,7 +643,7 @@ Object {
 }
 `;
 
-exports[`Social analysis tasks knowledge-map-analysis for a supported vcs type when no team information exists publishes a report on the main developer for each file : manifest 1`] = `
+exports[`Social analysis tasks knowledge-map-analysis for a supported vcs type when no team information exists publishes a report on the main developer for each file: manifest 1`] = `
 Object {
   "dataFiles": Array [
     Object {
@@ -663,7 +663,7 @@ Object {
 }
 `;
 
-exports[`Social analysis tasks knowledge-map-analysis for a supported vcs type when team information exists publishes a report on the main developer for each file : 2016-01-01_2016-10-22_knowledge-map-data.json 1`] = `
+exports[`Social analysis tasks knowledge-map-analysis for a supported vcs type when team information exists publishes a report on the main developer for each file: 2016-01-01_2016-10-22_knowledge-map-data.json 1`] = `
 Object {
   "children": Array [
     Object {
@@ -745,7 +745,7 @@ Object {
 }
 `;
 
-exports[`Social analysis tasks knowledge-map-analysis for a supported vcs type when team information exists publishes a report on the main developer for each file : manifest 1`] = `
+exports[`Social analysis tasks knowledge-map-analysis for a supported vcs type when team information exists publishes a report on the main developer for each file: manifest 1`] = `
 Object {
   "dataFiles": Array [
     Object {

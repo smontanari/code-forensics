@@ -1,4 +1,4 @@
-var lolex = require('lolex');
+var FakeTimers = require('@sinonjs/fake-timers');
 
 var logger = require('log');
 jest.unmock('log');
@@ -11,7 +11,7 @@ describe('Logger', function() {
   };
 
   beforeEach(function() {
-    clock = lolex.install({ now: new Date('2015-10-22T10:14:57.000Z') });
+    clock = FakeTimers.install({ now: new Date('2015-10-22T10:14:57.000Z') });
     process.stdout.write = jest.fn();
     console.log = jest.fn();
   });

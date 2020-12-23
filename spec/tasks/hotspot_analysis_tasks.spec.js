@@ -1,5 +1,5 @@
 /* eslint jest/expect-expect: [1, { "assertFunctionNames": ["expect", "taskOutput.assert*", "runtime.assert*"] }] */
-var lolex    = require('lolex'),
+var FakeTimers = require('@sinonjs/fake-timers'),
     Bluebird = require('bluebird');
 
 var taskHelpers = require('../jest_tasks_helpers');
@@ -10,7 +10,7 @@ describe('Hotspot analysis tasks', function() {
   var runtime, clock;
 
   beforeEach(function() {
-    clock = lolex.install({ now: new Date('2015-10-22T10:00:00.000Z') });
+    clock = FakeTimers.install({ now: new Date('2015-10-22T10:00:00.000Z') });
   });
 
   afterEach(function() {

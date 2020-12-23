@@ -109,7 +109,9 @@ describe('VCS Tasks', function() {
               resultPromise
                 .then(function() { done.fail('Expected error: ' + executionError); })
                 .catch(function(err) {
+                  // eslint-disable-next-line jest/no-conditional-expect
                   expect(err.taskException).toBeInstanceOf(CFRuntimeError);
+                  // eslint-disable-next-line jest/no-conditional-expect
                   expect(err.taskException.message).toEqual(executionError);
                   return assertOutput(err.taskOutput);
                 })

@@ -97,7 +97,7 @@ describe('DataSourceHandler', function() {
     });
   });
 
-  it('fails if the data source has an error ', function() {
+  it('fails if the data source has an error', function() {
     return new Bluebird(function(done) {
       var inputStream = new stream.PassThrough({ objectMode: true });
 

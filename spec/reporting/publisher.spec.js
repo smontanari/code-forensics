@@ -1,7 +1,7 @@
 /*eslint-disable max-lines*/
-var moment = require('moment'),
-    mkdirp = require('mkdirp'),
-    lolex  = require('lolex');
+var moment =     require('moment'),
+    mkdirp =     require('mkdirp'),
+    FakeTimers = require('@sinonjs/fake-timers');
 
 var Publisher  = require('reporting/publisher'),
     utils      = require('utils'),
@@ -12,7 +12,7 @@ jest.mock('mkdirp');
 describe('Publisher', function() {
   var clock, context, subject;
   beforeEach(function() {
-    clock = lolex.install({ now: new Date('2013-10-22T13:00:00.000Z') });
+    clock = FakeTimers.install({ now: new Date('2013-10-22T13:00:00.000Z') });
 
     context = {
       dateRange: new TimePeriod({ start: moment('2012-03-01'), end: moment('2012-07-31') }, 'YYYY-MM'),

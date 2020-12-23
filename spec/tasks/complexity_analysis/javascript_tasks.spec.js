@@ -1,7 +1,7 @@
 /* eslint jest/expect-expect: [1, { "assertFunctionNames": ["expect", "taskOutput.assert*"] }] */
-var stream   = require('stream'),
-    lolex    = require('lolex'),
-    Bluebird = require('bluebird');
+var stream     = require('stream'),
+    FakeTimers = require('@sinonjs/fake-timers'),
+    Bluebird   = require('bluebird');
 
 var javascriptTasks = require('tasks/complexity_analysis/javascript_tasks'),
     vcs             = require('vcs');
@@ -44,7 +44,7 @@ describe('javascript tasks', function() {
     var mockVcs, clock;
 
     beforeEach(function() {
-      clock = lolex.install({ now: new Date('2015-10-22T10:00:00.000Z') });
+      clock = FakeTimers.install({ now: new Date('2015-10-22T10:00:00.000Z') });
       mockVcs = {
         revisions: jest.fn(),
         showRevisionStream: jest.fn()

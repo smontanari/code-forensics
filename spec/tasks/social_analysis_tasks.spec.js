@@ -1,8 +1,8 @@
 /* eslint jest/expect-expect: [1, { "assertFunctionNames": ["expect", "taskOutput.assert*", "runtime.assert*"] }] */
-var _        = require('lodash'),
-    Bluebird = require('bluebird'),
-    stream   = require('stream'),
-    lolex    = require('lolex');
+var _          = require('lodash'),
+    Bluebird   = require('bluebird'),
+    stream     = require('stream'),
+    FakeTimers = require('@sinonjs/fake-timers');
 
 var socialAnalysisTasks = require('tasks/social_analysis_tasks'),
     codeMaat            = require('analysers/code_maat'),
@@ -14,7 +14,7 @@ describe('Social analysis tasks', function() {
   var runtime, clock;
 
   beforeEach(function() {
-    clock = lolex.install({ now: new Date('2016-10-22T10:00:00.000Z') });
+    clock = FakeTimers.install({ now: new Date('2016-10-22T10:00:00.000Z') });
     command.Command.ensure = jest.fn();
   });
 
@@ -333,7 +333,7 @@ describe('Social analysis tasks', function() {
           prepareReports(runtime);
         });
 
-        it('publishes a report on the main developer for each file ', function() {
+        it('publishes a report on the main developer for each file', function() {
           return runtime.executePromiseTask('knowledge-map-analysis').then(function(taskOutput) {
             return Bluebird.all([
               taskOutput.assertOutputReport('2016-01-01_2016-10-22_knowledge-map-data.json'),
@@ -354,7 +354,7 @@ describe('Social analysis tasks', function() {
           prepareReports(runtime);
         });
 
-        it('publishes a report on the main developer for each file ', function() {
+        it('publishes a report on the main developer for each file', function() {
           return runtime.executePromiseTask('knowledge-map-analysis').then(function(taskOutput) {
             return Bluebird.all([
               taskOutput.assertOutputReport('2016-01-01_2016-10-22_knowledge-map-data.json'),
@@ -376,7 +376,7 @@ describe('Social analysis tasks', function() {
         codeMaat.analyser = jest.fn().mockReturnValue({ isSupported: _.stubFalse });
       });
 
-      it('fails to publish the report ', function() {
+      it('fails to publish the report', function() {
         return runtime.executePromiseTask('knowledge-map-analysis').then(function(taskOutput) {
           return taskOutput.assertMissingReportId();
         });

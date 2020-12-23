@@ -222,7 +222,7 @@ describe('SvnAdapter', function() {
 
   describe('.revisions()', function() {
     it('returns the list of revisions for the given time period', function() {
-      command.run.mockReturnValue(new Buffer(SINGLE_FILE_OUTPUT));
+      command.run.mockReturnValue(Buffer.from(SINGLE_FILE_OUTPUT));
       var revisions = subject.revisions('test/file', timePeriod);
 
       expect(revisions).toEqual([
@@ -235,7 +235,7 @@ describe('SvnAdapter', function() {
     });
 
     it('returns an empty list if the command output is empty', function() {
-      command.run.mockReturnValue(new Buffer([
+      command.run.mockReturnValue(Buffer.from([
         '<?xml version="1.0" encoding="UTF-8"?>',
         '<log>',
         '</log>'
@@ -248,7 +248,7 @@ describe('SvnAdapter', function() {
 
   describe('vcsRelativePath()', function() {
     it('returns the relative file path based on the repository url', function() {
-      command.run.mockReturnValue(new Buffer('^/local/project/path'));
+      command.run.mockReturnValue(Buffer.from('^/local/project/path'));
 
       var result = subject.vcsRelativePath();
 

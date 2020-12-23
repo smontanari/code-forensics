@@ -1,7 +1,7 @@
 /* eslint jest/expect-expect: [1, { "assertFunctionNames": ["expect", "taskOutput.assert*", "runtime.assert*"] }] */
-var Bluebird = require('bluebird'),
-    lolex    = require('lolex'),
-    stream   = require('stream');
+var Bluebird   = require('bluebird'),
+    FakeTimers = require('@sinonjs/fake-timers'),
+    stream     = require('stream');
 
 var couplingAnalysisTasks = require('tasks/coupling_analysis_tasks'),
     codeMaat              = require('analysers/code_maat'),
@@ -13,7 +13,7 @@ describe('Coupling analysis tasks', function() {
   var runtime, clock;
 
   beforeEach(function() {
-    clock = lolex.install({ now: new Date('2015-10-22T10:00:00.000Z') });
+    clock = FakeTimers.install({ now: new Date('2015-10-22T10:00:00.000Z') });
     command.Command.ensure = jest.fn();
   });
 
