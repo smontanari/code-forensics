@@ -2,7 +2,6 @@ var EnvConfigReader = require('runtime/env_config_reader');
 
 describe('EnvConfigReader', function() {
   beforeEach(function() {
-    delete process.env.MAX_CONCURRENCY;
     delete process.env.SERIAL_PROCESSING;
     delete process.env.COMMAND_DEBUG;
     delete process.env.LOG_DISABLED;
@@ -13,7 +12,7 @@ describe('EnvConfigReader', function() {
   describe('when no environment variables exist', function() {
     it('returns an object with default values', function() {
       expect(new EnvConfigReader().getConfiguration()).toEqual({
-        maxConcurrency: undefined,
+        serialProcessing: false,
         debugMode: false,
         logEnabled: true,
         serverPort: undefined,
@@ -23,17 +22,10 @@ describe('EnvConfigReader', function() {
   });
 
   describe('when environment variables exist', function() {
-    it('returns an object with a max concurrency value based on MAX_CONCURRENCY', function() {
-      process.env.MAX_CONCURRENCY = '3';
-
-      expect(new EnvConfigReader().getConfiguration().maxConcurrency).toEqual(3);
-    });
-
     it('returns an object with a max concurrency equal to 1', function() {
-      process.env.MAX_CONCURRENCY = '3';
       process.env.SERIAL_PROCESSING = 'true';
 
-      expect(new EnvConfigReader().getConfiguration().maxConcurrency).toEqual(1);
+      expect(new EnvConfigReader().getConfiguration().serialProcessing).toBe(true);
     });
 
     it('returns an object with a debug mode value', function() {

@@ -43,7 +43,7 @@ This is the last release to support Node versions `>=4.5`. Future releases will 
 
 ### [2.1.0] - 2018-12-27
 #### Changed
-- Improved and simplified async and parallel processing logic. By default the program will use all the available cpu cores to run multiple commands in parallel. With the environment variable `SERIAL_PROCESSING` set, or with the configuration property `serialProcessing: true`, the program will switch to run one command at a time. See the [wiki](https://github.com/smontanari/code-forensics/wiki/Advanced-setup#parallel-vs-serial-execution) for more information. The previous way of configuring parallelism (using the `maxConcurrency` setting) is still maintained for backward compatibility, but it is _deprecated_.
+- Improved and simplified async and parallel processing logic. By default the program will use all the available cpu cores to run multiple commands in parallel. With the environment variable `SERIAL_PROCESSING` set, or with the configuration property `serialProcessing: true`, the program will switch to run one command at a time. See the [wiki](https://github.com/smontanari/code-forensics/wiki/Advanced-setup#parallel-vs-serial-execution) for more information.
 
 ### [2.0.1] - 2018-11-08
 #### Fixed

@@ -1,5 +1,4 @@
-var Path = require('path'),
-    os   = require('os');
+var Path = require('path');
 
 var appConfig = require('runtime/app_config');
 
@@ -13,7 +12,7 @@ describe('appConfig', function() {
   });
 
   it('returns the default max concurrency value', function() {
-    expect(appConfig.get('maxConcurrency')).toEqual(os.cpus().length);
+    expect(appConfig.get('serialProcessing')).toBe(false);
   });
 
   it('returns the default debug mode value', function() {
