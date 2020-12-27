@@ -10,8 +10,7 @@ var TaskContext     = require('runtime/task_context'),
     TaskDefinitions = require('models/task/task_definitions'),
     taskHelpers     = require('tasks/helpers');
 
-var TEST_FIXTURES_DIR  = Path.resolve('test_fixtures/'),
-    TMP_FOLDER         = 'tmp',
+var TMP_FOLDER         = 'tmp',
     OUTPUT_FOLDER      = 'output',
     REPO_FOLDER        = 'repo_root';
 
@@ -151,7 +150,9 @@ module.exports = {
       return {};
     });
 
+    // eslint-disable-next-line no-undef
     mkdirp.sync(TEST_FIXTURES_DIR);
+    // eslint-disable-next-line no-undef
     var runtimeDataDir = fs.mkdtempSync(Path.join(TEST_FIXTURES_DIR, name + '_'));
     var config = _.merge({
       tempDir: Path.join(runtimeDataDir, TMP_FOLDER),

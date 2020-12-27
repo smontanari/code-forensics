@@ -99,7 +99,7 @@ describe('utils.json', function() {
 
     it('writes a stream of objects into a file as a json array', function() {
       return new Bluebird(function(done) {
-        var input = new stream.PassThrough({objectMode: true});
+        var input = new stream.PassThrough({ objectMode: true });
         json.objectArrayToFileStream('test/path', input)
         .on('finish', function() {
           expect(output.toString()).toEqual(

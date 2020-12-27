@@ -7,55 +7,74 @@
  * see http://www.gnu.org/licenses/gpl.html
  */
 
-var httpServer = require('http-server/lib/http-server'),
-    findup     = require('findup-sync'),
-    ecstatic   = require('ecstatic'),
-    ansi       = require('ansi-colors'),
-    Path       = require('path');
+var Koa            = require('koa'),
+    mount          = require('koa-mount'),
+    serveStatic    = require('koa-static'),
+    LocalWebServer = require('local-web-server'),
+    findup         = require('findup-sync'),
+    ansi           = require('ansi-colors'),
+    Path           = require('path'),
+    parseArgs      = require('minimist'),
+    _              = require('lodash');
 
-var args   = require('minimist')(process.argv.slice(2));
-var server = require(Path.resolve(__dirname, '../lib/server'));
+var ApiMiddleware   = require(Path.resolve(__dirname, '../lib/api_middleware')),
+    runtimeDefaults = require(Path.resolve(__dirname, '../lib/runtime/defaults'));
 
-var host = '0.0.0.0';
-var port = args.p || 3000;
-var webPath = Path.resolve(__dirname, '../public');
+
+var args = parseArgs(process.argv.slice(2), {
+  default: {
+    'd': Path.resolve(runtimeDefaults.configuration.outputDir),
+    'p': 3000
+  }
+});
+
+var publicPath = Path.resolve(__dirname, '../public');
 var jsPath = Path.resolve(__dirname, '../lib/web');
 var libPath = findup('node_modules');
-var dataPath = args.d || Path.resolve(__dirname, '../output');
+var dataPath = args.d;
+
+var ROUTES = {
+  '/js': jsPath,
+  '/lib': libPath,
+  '/data': dataPath
+};
+
+var StaticRoutes = new Function();
+StaticRoutes.prototype.middleware = function() {
+  return _.map(ROUTES, function(path, route) {
+    var staticRoute = new Koa();
+    staticRoute.use(serveStatic(path, {}));
+    return mount(route, staticRoute);
+  });
+};
 
 var options = {
-  root: webPath,
-  cache: -1,
-  showDir: true,
-  autoIndex: true,
-  before: [
-    ecstatic({ root: jsPath, baseDir: '/js' }),
-    ecstatic({ root: libPath, baseDir: '/lib' }),
-    ecstatic({ root: dataPath, baseDir: '/data' }),
-    server.newRouter(dataPath)
+  hostname: '0.0.0.0',
+  port: args.p,
+  directory: publicPath,
+  reportDir: dataPath,
+  stack: [
+    'static',
+    StaticRoutes,
+    ApiMiddleware
   ]
 };
 
-var webServer = httpServer.createServer(options);
+/* eslint-disable no-console */
+console.log(ansi.yellow('Web server listening on ' + options.hostname + ':' + options.port));
+console.log(ansi.cyan('serving "/"     files from ' + publicPath));
+console.log(ansi.cyan('serving "/js"   files from ' + jsPath));
+console.log(ansi.cyan('serving "/lib"  files from ' + libPath));
+console.log(ansi.cyan('serving "/data" files from ' + dataPath));
+console.log('Hit CTRL-C to stop the server');
 
-/*eslint-disable no-console*/
-
-webServer.listen(port, host, function() {
-  console.log(ansi.yellow('Starting up http-server'));
-  console.log(ansi.cyan('listening on ' + host + ':' + port));
-  console.log(ansi.cyan('serving "/"     files from ' + webPath));
-  console.log(ansi.cyan('serving "/js"   files from ' + jsPath));
-  console.log(ansi.cyan('serving "/lib"  files from ' + libPath));
-  console.log(ansi.cyan('serving "/data" files from ' + dataPath));
-  console.log('Hit CTRL-C to stop the server');
-});
-
+var lws = LocalWebServer.create(options);
 
 ['SIGINT', 'SIGTERM'].forEach(function(event) {
   process.on(event, function() {
-    webServer.close();
-    console.log(ansi.yellow('\nhttp-server stopped.'));
+    lws.server.close();
+    console.log(ansi.yellow('\nWeb server stopped.'));
   });
 });
 
-/*eslint-disable no-console*/
+/* eslint-enable no-console */
