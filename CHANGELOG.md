@@ -3,9 +3,9 @@
 ### [Unreleased]
 This release requires Node `>=12.0`.
 #### Changed
-- replaced `http-server` with `local-web-server`
-- removed deprecated use of maxConcurrency cofig (or MAX_CONCURRENCY env variable) value
-- Upgraded package dependencies: ansi-colors, csv-string, del, fast-csv, findup-sync, is-stream, merge2, mkdirp, multipipe, multistream, through2
+- Replaced `http-server` with `local-web-server`
+- Removed deprecated use of maxConcurrency config (or MAX_CONCURRENCY env variable) value
+- Upgraded package dependencies: ansi-colors, csv-string, d3, del, fast-csv, findup-sync, is-stream, knockout, less, merge2, mkdirp, multipipe, multistream, mustache, through2
 
 ### [2.4.0] - 2020-12-22
 This is the last release to support Node versions `>=4.5`. Future releases will require a higher version.

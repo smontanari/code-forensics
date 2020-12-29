@@ -16,7 +16,7 @@
 }
 
 .hierarchical-node-mixin() {
-  .node-mixin;
+  .node-mixin();
   &.node-root {
     stroke: #777777;
     stroke-width: 2px;
@@ -54,7 +54,7 @@
 
   &#hotspot-analysis-sloc, &#hotspot-analysis-complexity, &.temporal-coupling {
     .node {
-      .hierarchical-node-mixin;
+      .hierarchical-node-mixin();
     }
 
     .label {
@@ -69,7 +69,7 @@
 
   &#individual-knowledge-map, &#team-knowledge-map {
     .node {
-      .hierarchical-node-mixin;
+      .hierarchical-node-mixin();
     }
     .label {
       .hierarchical-label-mixin(#000000, #000000, #FFFFFF, #FFFFFF);
@@ -79,7 +79,7 @@
   &#main-developer-coupling {
     font-size: 10px;
     .node {
-      .node-mixin;
+      .node-mixin();
       stroke: #777777;
       stroke-width: 1px;
 
