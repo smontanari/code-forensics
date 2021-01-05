@@ -5,36 +5,45 @@
  * see http://www.gnu.org/licenses/gpl.html
  */
 
-.tooltip-element-mixin(@value-color; @value-text-align: right; @label-padding: 2px; @label-font-weight: normal;) {
+@tooltip-border: 1px solid #000000;
+
+.element-property-tooltip-mixin(
+  @value-color: #4682B4;
+  @value-text-align: right;
+  @label-padding: 2px;
+  @label-font-weight: normal;
+  @grid-template-columns: 1fr 1fr;
+) {
   .element-property {
+    font-size: 1.2em;
     color: #000000;
-    display: table-row;
+    display: grid;
+    grid-template-columns: @grid-template-columns;
+
     .property-label {
       font-weight: @label-font-weight;
-      padding: @label-padding;
-      display: table-cell;
+      padding-right: @label-padding;
     }
     .property-value {
       text-align: @value-text-align;
-      display: table-cell;
       color: @value-color;
     }
   }
 }
 
-@tooltip-border: 1px solid #000000;
+.element-info-tooltip-mixin(
+  @title-color: #FFFFFF;
+  @title-bg-color: #4682B4;
+  @element-value-color: #4682B4;
+  @font-size: 1.2em;
+  @font-weight: normal
+) {
 
-.title-element-info-tooltip(@title-color: #FFFFFF; @title-bg-color: #4682B4; @element-value-color: #4682B4) {
-  background-color: #FFFFFF;
-  border-radius: 0 0 5px 5px;
-  box-shadow: 4px 4px 12px rgba(0,0,0,.5);
-  border-left: @tooltip-border;
-  border-right: @tooltip-border;
-  border-bottom: @tooltip-border;
-  display: table;
+  display: grid;
 
   .element-name {
-    font-size: 1.1em;
+    font-size: @font-size;
+    font-weight: @font-weight;
     padding: 5px;
     color: @title-color;
     text-align: center;
@@ -43,11 +52,22 @@
     white-space: nowrap;
     border-radius: 5px 5px 0 0;
     border-top: @tooltip-border;
-    border-left: @tooltip-border;
     border-right: @tooltip-border;
+    border-left: @tooltip-border;
   }
 
-  .tooltip-element-mixin(@element-value-color);
+  .property-list {
+    background-color: #FFFFFF;
+    padding: 5px;
+    border-radius: 0 0 5px 5px;
+    border-bottom: @tooltip-border;
+    border-right: @tooltip-border;
+    border-left: @tooltip-border;
+    display: grid;
+    row-gap: 5px;
+
+    .element-property-tooltip-mixin(@element-value-color);
+  }
 }
 
 .control-values-mixin() {

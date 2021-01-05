@@ -40,26 +40,24 @@
 .d3-tip {
   &.network-graph-diagram {
     &.node-info {
-      background-color: #EEEEEE;
-      padding: 5px;
-      border: 1px solid #DDDDDD;
-
-      transition: opacity 300ms linear;
-      border-radius: 10px;
-      box-shadow: 5px 5px 12px rgba(0,0,0,.5);
-
-      .element-property {
-        color: #000000;
-        padding: 2px 0;
-        &.title {
-          font-weight: bold;
+      .item-list {
+        background-color: #EEEEEE;
+        border: 1px solid #DDDDDD;
+        border-radius: 5px;
+        padding: 5px;
+        .item {
           text-align: center;
+          color: #000000;
+          padding: 2px 0;
+          &.title {
+            font-weight: bold;
+          }
         }
       }
     }
-  }
 
-  &.link-info {
-    .title-element-info-tooltip();
+    &.link-info {
+      .element-info-tooltip-mixin();
+    }
   }
 }

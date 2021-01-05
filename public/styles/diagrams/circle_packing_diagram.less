@@ -31,7 +31,12 @@
   }
 }
 
-.hierarchical-label-mixin(@parent_color, @leaf_color, @parent_shadow_color, @leaf_shadow_color) {
+.hierarchical-label-mixin(
+  @parent_color,
+  @leaf_color,
+  @parent_shadow_color,
+  @leaf_shadow_color
+) {
   font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
   text-anchor: middle;
   pointer-events: none;
@@ -95,7 +100,6 @@
     }
 
     .label {
-      dy: 0.3em;
       text-anchor: middle;
       pointer-events: none;
     }
@@ -104,6 +108,6 @@
 
 .d3-tip {
   &.circle-packing-diagram {
-    .title-element-info-tooltip();
+    .element-info-tooltip-mixin();
   }
 }

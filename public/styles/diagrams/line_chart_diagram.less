@@ -44,20 +44,19 @@
 
 .d3-tip {
   &.line-chart-diagram {
-    background-color: #FFFFFF;
-    padding: 0px 5px 5px 5px;
-    border: 1px solid #DDDDDD;
+    .element-info-tooltip-mixin(
+      @title-color: #4682B4;
+      @title-bg-color: #FFFFFF;
+      @font-weight: bold
+    );
 
-    transition: opacity 300ms linear;
-    border-radius: 10px;
-    box-shadow: 4px 4px 12px rgba(0,0,0,.5);
-
-    .title {
-      font-size: 14px;
-      font-weight: bold;
-      text-align: center;
+    .property-list {
+      .element-property-tooltip-mixin(
+        @value-color: #000000;
+        @value-text-align: left;
+        @label-font-weight: bold;
+        @grid-template-columns: 1fr 2fr;
+      );
     }
-
-    .tooltip-element-mixin(#000000; left; 2px 5px 2px 0; bold);
   }
 }
