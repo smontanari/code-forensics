@@ -1,9 +1,14 @@
 # Changelog
 
 ### [Unreleased]
-This release requires Node `>=12.0`.
+**This release requires Node versions `>=12.0`**.
+
+This release sets the stage for a future upgrade of the syntax to E6.
+
 #### Changed
-- Replaced `http-server` with `local-web-server`
+- Upgraded the UI diagrams to use d3 version 6, which involved changing the event handling logic in several SVG elements
+- Replaced `d3-tip` with `d3-v6-tip`. Refactored the d3 tooltip integration and styling
+- Replaced `http-server` and `ecstatic` (no longer supported) with `local-web-server` and other `koa` modules
 - Removed deprecated use of maxConcurrency config (or MAX_CONCURRENCY env variable) value
 - Upgraded package dependencies: ansi-colors, csv-string, d3, del, fast-csv, findup-sync, is-stream, knockout, less, merge2, mkdirp, multipipe, multistream, mustache, through2
 
