@@ -5,18 +5,17 @@ code-forensics
 
 **code-forensics** is a toolset for analysing codebases stored in a version control system. It leverages the repository logs, or version history data, to perform deep analyses with regards to complexity, logical coupling, authors coupling and to inspect the evolution in time of different parts of a software system with respect to metrics like code churn and number of revisions.
 
-#### Version 2 release (September 2018)
-This release introduces new metrics trends in the system evolution analysis (number of commits, number of authors). This change requires a different logic to generate and render the revisions trend diagram, which breaks compatibility with respect to older versions. See the [CHANGELOG](./CHANGELOG.md) for more details.
-
-#### Upcoming features
-I'm also planning to add the following analyses in future versions of code-forensics:
-- code fragmentation analysis: to be used together with the current developer effort analysis to see if the fragmentation in your files is healthy or not.
-- code age analysis: another perspective to find out how old and stable the different parts of your codebase actually are.
-
-Of course, if you think there could be any new analysis or feature that could be useful in this tool, you're welcome to open a new issue and even to help directly with the code!
-
 ## Credits
 This project is based on the excellent work of **Adam Tornhill** and his command line tool [Code Maat](https://github.com/adamtornhill/code-maat). The majority of the analysis that **code-forensics** performs are actually described in Adam's book [Your Code as a Crime Scene](https://pragprog.com/book/atcrime/your-code-as-a-crime-scene).
+
+## Release news
+### Version 3 release (January 2021)
+This release upgrades a number of packages and drops support for old Node versions in order to start migrating the code to ES6.
+
+### Version 2 release (September 2018)
+This release introduces new metrics trends in the system evolution analysis (number of commits, number of authors). This change requires a different logic to generate and render the revisions trend diagram, which breaks compatibility with respect to older versions.
+
+See the [CHANGELOG](./CHANGELOG.md) for release details.
 
 ## Pre-requisites
 * **Node.js** - **From release 1.0.0 code-forensics requires Nodejs 4 or later**. If you can't upgrade I suggest you use an earlier version of this package.
@@ -164,8 +163,15 @@ The results can then be displayed in a word cloud diagram at the url given above
   </tbody>
 </table>
 
+## Upcoming features
+In time I'm also planning to add the following analyses in future versions of code-forensics:
+- code fragmentation analysis: to be used together with the current developer effort analysis to see if the fragmentation in your files is healthy or not.
+- code age analysis: another perspective to find out how old and stable the different parts of your codebase actually are.
+
+Of course, if you think there could be any new analysis or feature that could be useful in this tool, you're welcome to open a new issue and even to help directly with the code!
+
 ## License
-Copyright &copy; 2016-2019 Silvio Montanari
+Copyright &copy; 2016-2021 Silvio Montanari
 
 **code-forensics** is free software; you can redistribute it and/or modify it under the terms of the [GNU General Public License v3.0 or any later version](http://www.gnu.org/licenses/gpl.html).
 
