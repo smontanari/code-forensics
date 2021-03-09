@@ -2,7 +2,7 @@
 
 ### [Unreleased]
 
-### [3.0.1] - 2021-03-10
+### [3.1.0] - 2021-03-10
 
 #### Fixed
 - `flog` command fails to pipe from stdin for newer versions of the gem
