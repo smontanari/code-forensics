@@ -2,6 +2,11 @@
 
 ### [Unreleased]
 
+### [3.0.1] - 2021-03-10
+
+#### Fixed
+- `flog` command fails to pipe from stdin for newer versions of the gem
+
 ### [3.0.0] - 2021-01-09
 **This release requires Node versions `>=13.0`**.
 

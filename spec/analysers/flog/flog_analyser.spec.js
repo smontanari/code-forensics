@@ -17,7 +17,7 @@ describe('flog command definition', function() {
   it('defines the "flog" command', function() {
     expect(subject).toEqual({
       cmd: 'flog',
-      args: [ '-a' ],
+      args: ['-a', '-'],
       installCheck: expect.any(Function)
     });
   });
